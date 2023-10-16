@@ -28,9 +28,9 @@ msgstr "L'indirizzo richiesto {0} non è stato trovato su questo server."
 
 #: src/Template/Error/error500.php:38
 msgid "An Internal Error Has Occurred"
-msgstr "É successo un errore interno"
+msgstr "Errore interno"
 
 #: src/Template/Errors/error500.php:19
 msgid "An Internal Error Has Occurred."
-msgstr "É successo un errore interno"
+msgstr "Errore interno"
 

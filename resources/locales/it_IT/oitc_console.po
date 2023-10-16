@@ -503,7 +503,7 @@ msgstr "Stato dell'host"
 
 #: MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:66
 msgid "State of the Service"
-msgstr "Sato del servizio"
+msgstr "Stato del servizio"
 
 #: PagerdutyModule/src/Command/PagerdutyNotificationCommand.php:37
 #: ServicenowModule/src/Command/ServicenowNotificationCommand.php:56

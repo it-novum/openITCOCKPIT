@@ -4280,7 +4280,7 @@ msgstr "Intervallo rotazione"
 
 #: plugins/MapModule/templates/Rotations/add.php:135
 msgid "Create rotation"
-msgstr "crea rotazione"
+msgstr "Crea rotazione"
 
 #: plugins/MapModule/templates/Rotations/edit.php:51
 msgid "Edit map rotation:"
@@ -4708,68 +4708,68 @@ msgstr "Ristora i permessi di default per il gruppo utente \"Administrator\""
 
 #: src/Command/RolesCommand.php:412
 msgid "Re-Enable default permissions for user group \"{0}\" but keep custom changes."
-msgstr ""
+msgstr "Ri-abilita i permessi di default per il gruppo utente \"{0}\" ma mantieni i cambiamenti."
 
 #: src/Command/SetupCommand.php:128
 msgid "Setup will continue in {0} seconds. Press CTRL + C to abort."
-msgstr ""
+msgstr "Il setup continuerà in {0} secondi. Premere CTRL + C per terminare."
 
 #: src/Command/SetupCommand.php:141
 msgid "This shell helps you to setup your fresh installation of openITCOCKPIT."
-msgstr ""
+msgstr "Questa shell ti aiuta a configurare la tua nuova installazione di openITCOCKPIT"
 
 #: src/Command/SetupCommand.php:142
 msgid "Warning:"
-msgstr ""
+msgstr "Attenzione:"
 
 #: src/Command/SetupCommand.php:143
 msgid "Only run this command, if you installed openITCOCKPIT right now and never logged in to the interface!"
-msgstr ""
+msgstr "Esegui questo comando soltanto se hai installato openITCOCKPIT ora e non hai mai fatto il login!"
 
 #: src/Command/SetupCommand.php:144
 msgid "If you continue, you will lose all your archive data!"
-msgstr ""
+msgstr "Se continui perderai tutti i tuoi dati d'archivio!"
 
 #: src/Command/SetupCommand.php:163
 msgid "Setup openITCOCKPIT and create your first user."
-msgstr ""
+msgstr "Configura openITCOCKPIT e crea il tuo primo utente."
 
 #: src/Command/SetupCommand.php:172
 msgid "You can now open the web frontend in your browser and login. Have a nice day!"
-msgstr ""
+msgstr "Puoi aprire il frontend web nel tuo browser e fare il login. Buona giornata!"
 
 #: src/Command/SetupCommand.php:338
 msgid "Please enter the FQDN or IP address of your openITCOCKPIT Server. If you do not know your IP address enter a random one and change it via the interface later."
-msgstr ""
+msgstr "Per favore inserisci l'FQDN o l'indirizzo IP del tuo Server openITCOCKPIT. Se non conosci il tuo indirizzo IP inseriscine uno randomico e cambialo con l'interfaccia dopo."
 
 #: src/Command/SetupCommand.php:543
 msgid "User \"{0}\" created successfully"
-msgstr ""
+msgstr "Utente \"{0}\" creato con successo"
 
 #: src/Command/SetupCommand.php:568
 msgid "Hostname was set to \"{0}\""
-msgstr ""
+msgstr "L'hostname è stato settato come \"{0}\""
 
 #: src/Command/SetupCommand.php:584
 msgid "E-Mail sender was set to \"{0}\""
-msgstr ""
+msgstr "Mittente e-mail è stato settato come \"{0}\""
 
 #: src/Command/SetupCommand.php:600
 #: src/Command/Update3To4Command.php:256
 msgid "Mail configuration \"{0}\" saved successfully."
-msgstr ""
+msgstr "Configurazione email \"{0}\" salvata con successo"
 
 #: src/Command/Update3To4Command.php:86
 msgid "Migrate openITCOCKPIT V3 E-Mail configuration"
-msgstr ""
+msgstr "Migra la configurazione e-mail a openITCOCKPIT V3"
 
 #: src/Command/Update3To4Command.php:92
 msgid "Enable users from the file /root/.openitcockpit_active_user_migration.json"
-msgstr ""
+msgstr "Abilita gli utenti dal file /root/.openitcockpit_active_user_migration.json"
 
 #: src/Command/Update3To4Command.php:98
 msgid "Send a new random password to all local users per mail."
-msgstr ""
+msgstr "Invia una nuova password random a tutti gli utenti locali via mail"
 
 #: src/Command/Update3To4Command.php:104
 msgid "Migrate notification history records from nagios_ to statusengine_ tables."
@@ -24922,197 +24922,197 @@ msgstr ""
 
 #: SlackModule/templates/SlackSettings/index.php:115
 msgid "Slack FAQ"
-msgstr ""
+msgstr "FAQ Slack"
 
 #: SnmpTrapModule/src/Controller/SnmpttListController.php:69
 msgid "Snmptt entry not found"
-msgstr ""
+msgstr "Entry Snmptt non trovata"
 
 #: SnmpTrapModule/src/Lib/Menu.php:27
 msgid "Snmp Trap Logs"
-msgstr ""
+msgstr "Logs Snmp Trap"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:33
 msgid "Snmp Trap Module"
-msgstr ""
+msgstr "Modulo Snmp Trap"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:37
 msgid "SnmpttList"
-msgstr ""
+msgstr "SnmpttList"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:53
 msgid "Snmp trap logs"
-msgstr ""
+msgstr "Logs Snmp trap"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:82
 #: SnmpTrapModule/templates/SnmpttList/index.php:179
 msgid "Event name"
-msgstr ""
+msgstr "Nome Evento"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:95
 #: SnmpTrapModule/templates/SnmpttList/index.php:187
 msgid "Event ID"
-msgstr ""
+msgstr "ID Evento"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:109
 #: SnmpTrapModule/templates/SnmpttList/index.php:191
 msgid "Trap OID"
-msgstr ""
+msgstr "Trap OID"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:122
 #: SnmpTrapModule/templates/SnmpttList/index.php:199
 msgid "Format line"
-msgstr ""
+msgstr "Formato linea"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:149
 #: SnmpTrapModule/templates/SnmpttList/index.php:195
 msgid "Agent IP"
-msgstr ""
+msgstr "Agente IP"
 
 #: SnmpTrapModule/templates/SnmpttList/index.php:175
 msgid "Severity"
-msgstr ""
+msgstr "Severity"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:81
 msgid "Welcome to the Template Export Shell."
-msgstr ""
+msgstr "Benvenuto nella Shell di esportazione"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:82
 msgid "I will give you all the necessary data to get a valid file which can be imported in openITCOCKPIT to have awesome new monitoring possibilities :)"
-msgstr ""
+msgstr "Ti darò tutti i dati necessari per ottenere un file valido ad essere importato in openITCOCKPIT per avere nuove incredibili opportunità di monitoraggio :)"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:83
 msgid "Now please answer a few questions: "
-msgstr ""
+msgstr "Rispondi ad alcune domande: "
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:86
 msgid "Would you like to export Hosttemplate data ?"
-msgstr ""
+msgstr "Vuoi esportare i dati Hosttemplate ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:90
 msgid "Please enter the Hosttemplate wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Inserire la wildcard Hosttemplate in formato SQL (%sap% o qualcosa del genere"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:91
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:104
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:114
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:130
 msgid "Do you want to add additional Filters ?"
-msgstr ""
+msgstr "Vuoi aggiungere filtri addizionali ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:99
 msgid "Would you like to export Servicetemplate data ?"
-msgstr ""
+msgstr "Vuoi esportare i dati Servicetemplate ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:103
 msgid "Please enter the Servicetemplate wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Inserire la wildcard Servicetemplate in formato SQL (%sap% o qualcosa del genere"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:109
 msgid "Would you like to export Servicetemplategroup data too ?"
-msgstr ""
+msgstr "Vuoi esportare anche i dati Servicetemplategroup ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:113
 msgid "Please enter the Servicetemplategroup wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Inserire la wildcard Servicetemplategroup in formato SQL (%sap% o qualcosa del genere"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:125
 msgid "Would you like to export Macro data ?"
-msgstr ""
+msgstr "Vuoi esportare i dati Macro ?"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:129
 msgid "Please enter the Macro wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Inserire la Macro wildcard in formato SQL (%sap% o qualcosa del genere"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:154
 msgid "You want to do nothing ? Okay bye bye :) "
-msgstr ""
+msgstr "Non vuoi fare nulla ? Okay ciao ciao :)"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:161
 msgid "No filters given"
-msgstr ""
+msgstr "Nessun filtro fornito"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:172
 msgid "Retrieving commands"
-msgstr ""
+msgstr "Trovando comandi"
 
 #: TemplateExportModule/src/Command/TemplateExportCommand.php:175
 msgid "Replacing Ids"
-msgstr ""
+msgstr "Rimpiazzando gli id"
 
 #: UPSModule/templates/Wizards/ups.php:20
 msgid "UPS"
-msgstr ""
+msgstr "UPS"
 
 #: UPSModule/templates/Wizards/ups.php:43
 msgid "Configure SNMP for UPS Monitoring"
-msgstr ""
+msgstr "Configura SNMP per monitoraggio UPS"
 
 #: UPSModule/templates/Wizards/ups.php:192
 msgid "UPS services"
-msgstr ""
+msgstr "Servizi UPS"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:29
 msgid "Configuration Wizard: VMware Horizon"
-msgstr ""
+msgstr "Wizard configurazione: VMware Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:52
 msgid "VMware Horizon Connection Server"
-msgstr ""
+msgstr "Connection Server VMware Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:62
 msgid "VMware Horizon configuration help"
-msgstr ""
+msgstr "Aiuto configurazione VMware Horizon"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:79
 msgid "Please create a User within the Connection-Center with Administrator permission on {0}. Because only these Users will have permission to connect to the REST API."
-msgstr ""
+msgstr "Crea un utente nel Connection-Center con permessi di amministratore su {0}. Perchè solo questi utenti avranno i permessi di connettersi alla REST API"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:85
 msgid "Please ensure to have a recent API version installed, because not all functions are included within old versions."
-msgstr ""
+msgstr "Assicurati di avere una versione recente dell'API installata, perchè non tutte le funzioni sono incluse nelle versioni vecchie."
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:121
 msgid "Domain"
-msgstr ""
+msgstr "Dominio"
 
 #: VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:135
 msgid "VMware Horizon services"
-msgstr ""
+msgstr "Servizi VMware Horizon"
 
 #: VMWAREModule/src/Lib/Wizards.php:39
 #: VMWAREModule/src/Lib/Wizards.php:50
 msgid "Check everything regarding VMware. ESX Hosts, vCenter, virtual machines..."
-msgstr ""
+msgstr "Controlla tutto ciò che riguarda VMware. ESX Hosts, vCenter e macchine virtuali..."
 
 #: VMWAREModule/templates/Wizards/vmware.php:38
 #: VMWAREModule/templates/Wizards/vmware.php:65
 msgid "VMware"
-msgstr ""
+msgstr "VMware"
 
 #: VMWAREModule/templates/Wizards/vmware.php:47
 msgid "Configuration Wizard: VMware Server"
-msgstr ""
+msgstr "Wizard configurazione: VMware Server"
 
 #: VMWAREModule/templates/Wizards/vmware.php:49
 msgid "through vCenter"
-msgstr ""
+msgstr "attraverso vCenter"
 
 #: VMWAREModule/templates/Wizards/vmware.php:52
 msgid "esx directly"
-msgstr ""
+msgstr "direttamente esx"
 
 #: VMWAREModule/templates/Wizards/vmware.php:76
 msgid "VMware Server"
-msgstr ""
+msgstr "Server VMware"
 
 #: VMWAREModule/templates/Wizards/vmware.php:87
 msgid "VMware configuration help"
-msgstr ""
+msgstr "Aiuto configurazione VMware"
 
 #: VMWAREModule/templates/Wizards/vmware.php:100
 msgid "Check everything regarding VMware. ESX Hosts, vCenter, virtual machine"
-msgstr ""
+msgstr "Controlla tutto ciò che riguarda VMware. ESX Hosts, vCenter e macchine virtuali"
 
 #: VMWAREModule/templates/Wizards/vmware.php:104
 msgid "Download the VMware Perl SDK"
