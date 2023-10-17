@@ -129,6 +129,15 @@ class Locales {
                 ]
             ],
 
+            'Polish' => [
+                'label'   => 'Polski / ' . __('Polish'),
+                'flag'    => 'flag-icon flag-icon-pl',
+                'i18n'    => 'pl_PL',
+                'locales' => [
+                    'pl_PL'
+                ]
+            ],
+
             'Russian' => [
                 'label'   => 'Русский / ' . __('Russian'),
                 'flag'    => 'flag-icon flag-icon-ru',
