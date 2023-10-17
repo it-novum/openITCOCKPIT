@@ -316,8 +316,36 @@
                                         </div>
                                     </fieldset>
                                 </div>
+                                <div class="col-xs-12 col-lg-2">
+                                    <fieldset>
+                                        <h5><?php echo __('State Types'); ?></h5>
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statusFilterSoft"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Hoststatus.state_types.soft"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="statusFilterSoft"><?php echo __('Soft'); ?></label>
+                                            </div>
 
-
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox"
+                                                       id="statusFilterHard"
+                                                       class="custom-control-input"
+                                                       name="checkbox"
+                                                       checked="checked"
+                                                       ng-model="filter.Hoststatus.state_types.hard"
+                                                       ng-model-options="{debounce: 500}">
+                                                <label class="custom-control-label"
+                                                       for="statusFilterHard"><?php echo __('Hard'); ?></label>
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
                                 <div class="col-xs-12 col-lg-2">
                                     <fieldset>
                                         <h5><?php echo __('Acknowledgements'); ?></h5>
