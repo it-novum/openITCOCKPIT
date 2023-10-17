@@ -88,7 +88,25 @@ angular.module('openITCOCKPIT').directive('topSearch', function($state, $http, N
                         });
 
                         break;
+                    case 'tags_host':
+                        $state.go('HostsIndex', {
+                            hostname: '',
+                            address: '',
+                            keywords: $scope.searchStr
+                        }).then(function(d){
+                            $scope.isSearching = false;
+                        });
+                        break;
+                    case 'tags_service':
+                        $state.go('ServicesIndex', {
+                            servicename: '',
+                            keywords: $scope.searchStr
+                        }).then(function(d){
+                            $scope.isSearching = false;
+                        });
+                        break;
                 }
+
             };
 
             $scope.isReturnKey = function($event){

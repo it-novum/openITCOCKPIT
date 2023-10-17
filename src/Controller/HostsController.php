@@ -2266,7 +2266,7 @@ class HostsController extends AppController {
 
         $downtime = [];
         if ($Hoststatus->isInDowntime()) {
-            $downtime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid());
+            $downtime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid(), true);
             if (!empty($downtime)) {
                 $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();

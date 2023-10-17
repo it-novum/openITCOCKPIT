@@ -36,7 +36,6 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
-use App\Model\Entity\Servicetemplate;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -1734,7 +1733,7 @@ class ServicesController extends AppController {
 
         $downtime = [];
         if ($Servicestatus->isInDowntime()) {
-            $downtime = $DowntimehistoryServicesTable->byServiceUuid($serviceObj->getUuid());
+            $downtime = $DowntimehistoryServicesTable->byServiceUuid($serviceObj->getUuid(), true);
             if (!empty($downtime)) {
                 $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
@@ -1771,7 +1770,7 @@ class ServicesController extends AppController {
 
         $hostDowntime = [];
         if ($Hoststatus->isInDowntime()) {
-            $hostDowntime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid());
+            $hostDowntime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid(), true);
             if (!empty($hostDowntime)) {
                 $DowntimeHost = new Downtime($hostDowntime, $allowEdit, $UserTime);
                 $hostDowntime = $DowntimeHost->toArray();
