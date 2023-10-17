@@ -429,6 +429,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     hostname: {
                         value: null
                     },
+                    keywords: {
+                        value: null
+                    },
                     filter: {
                         value: null
                     },
@@ -1185,6 +1188,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         value: null
                     },
                     filter: {
+                        value: null
+                    },
+                    keywords: {
                         value: null
                     },
                 },
