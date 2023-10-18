@@ -82,6 +82,8 @@ angular.module('openITCOCKPIT')
         $scope.selectedGrafanaTimerange = 'now-3h';
         $scope.selectedGrafanaAutorefresh = '60s';
 
+        $scope.hasServiceIndexPermission = false;
+
         $scope.showFlashMsg = function(){
             new Noty({
                 theme: 'metroui',
@@ -160,6 +162,8 @@ angular.module('openITCOCKPIT')
                     $scope.loadTimelineData();
                 }
 
+                $scope.hasServiceIndexPermission = result.data.mergedHost.showServices;
+
                 $scope.load();
                 $scope.loadGrafanaIframeUrl();
                 $scope.loadAdditionalInformation();
@@ -209,6 +213,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.load = function(){
+            if($scope.hasServiceIndexPermission === false){
+                return;
+            }
             switch($scope.activeTab){
                 case 'active':
                     $scope.loadActiveServices();
