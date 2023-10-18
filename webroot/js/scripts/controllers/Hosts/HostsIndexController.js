@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
         filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');
+        keywords = QueryStringService.getStateValue($stateParams, 'keywords');
         //console.log(QueryStringService.getStateValue($stateParams, 'filter'));
         /*** Filter Settings ***/
             //filterId = QueryStringService.getStateValue($stateParams, 'filter');
@@ -31,7 +32,7 @@ angular.module('openITCOCKPIT')
                         name: (filterHostname) ? filterHostname : '',
                         name_regex: false,
                         hostdescription: '',
-                        keywords: '',
+                        keywords: (keywords) ? keywords : '',
                         not_keywords: '',
                         address: (filterAddress) ? filterAddress : '',
                         address_regex: false,
