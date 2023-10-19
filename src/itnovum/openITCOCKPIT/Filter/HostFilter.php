@@ -35,7 +35,8 @@ class HostFilter extends Filter {
             'bool'          => [
                 'Hoststatus.problem_has_been_acknowledged',
                 'Hoststatus.notifications_enabled',
-                'Hoststatus.active_checks_enabled'
+                'Hoststatus.active_checks_enabled',
+                'Hoststatus.is_hardstate'
             ],
             'like'          => [
                 'Hosts.description',

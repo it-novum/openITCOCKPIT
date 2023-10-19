@@ -22,9 +22,12 @@ angular.module('openITCOCKPIT')
                         not_in_downtime: QueryStringService.getStateValue($stateParams, 'not_in_downtime', false) == '1',
                         notifications_not_enabled: QueryStringService.getStateValue($stateParams, 'notifications_enabled', false) == '1',
                         notifications_enabled: QueryStringService.getStateValue($stateParams, 'notifications_not_enabled', false) == '1',
-                        output: ''
-                    },
-                    Host: {
+                        output: '',
+                        state_types: {
+                            soft: false,
+                            hard: false
+                        }
+                    }, Host: {
                         id: QueryStringService.getStateValue($stateParams, 'id', []),
                         name: (filterHostname) ? filterHostname : '',
                         name_regex: false,
@@ -125,6 +128,13 @@ angular.module('openITCOCKPIT')
                     priorityFilter.push(key);
                 }
             }
+            var state_type = null;
+            if($scope.filter.Hoststatus.state_types.soft ^ $scope.filter.Hoststatus.state_types.hard){
+                state_type = 0;
+                if($scope.filter.Hoststatus.state_types.hard === true){
+                    state_type = 1;
+                }
+            }
 
             var params = {
                 'angular': true,
@@ -166,6 +176,7 @@ angular.module('openITCOCKPIT')
                     'Hoststatus.problem_has_been_acknowledged': hasBeenAcknowledged,
                     'Hoststatus.scheduled_downtime_depth': inDowntime,
                     'Hoststatus.notifications_enabled': notificationsEnabled,
+                    'Hoststatus.is_hardstate': state_type,
                     'hostpriority': priorityFilter
                 }
             };
@@ -279,6 +290,13 @@ angular.module('openITCOCKPIT')
             if($scope.filter.Hoststatus.in_downtime ^ $scope.filter.Hoststatus.not_in_downtime){
                 inDowntime = $scope.filter.Hoststatus.in_downtime === true;
             }
+            var state_type = null;
+            if($scope.filter.Hoststatus.state_types.soft ^ $scope.filter.Hoststatus.state_types.hard){
+                state_type = 0;
+                if($scope.filter.Hoststatus.state_types.hard === true){
+                    state_type = 1;
+                }
+            }
 
             var params = {
                 'angular': true,
@@ -293,6 +311,7 @@ angular.module('openITCOCKPIT')
                 'filter[Hosts.not_keywords][]': $scope.filter.Host.not_keywords.split(','),
                 'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                 'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
+                'filter[Hoststatus.is_hardstate]': state_type,
                 'filter[Hosts.address]': $scope.filter.Host.address,
                 'filter[Hosts.satellite_id][]': $scope.filter.Host.satellite_id,
                 'filter[Hosts.host_type][]': $scope.filter.Host.host_type
