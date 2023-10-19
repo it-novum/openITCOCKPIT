@@ -91,25 +91,8 @@ if ($images['description'] !== ''):
 endif;
 ?>
 
-
-<div class="peers ai-s fxw-nw h-100vh" ng-controller="LoginLayoutController">
-
-    <?php if ($disableAnimation === false): ?>
-        <div class="login-screen">
-            <figure>
-                <figcaption><?= h($images['images'][0]['credit']) ?><?= $description; ?></figcaption>
-            </figure>
-            <figure>
-                <figcaption><?= h($images['images'][1]['credit']) ?><?= $description; ?></figcaption>
-            </figure>
-        </div>
-    <?php else: ?>
-        <div class="login-screen-vnc"></div>
-    <?php endif; ?>
-
-
-    <?= $this->fetch('content') ?>
-
+<div class="peers ai-s fxw-nw h-100vh">
+    <login-layout></login-layout>
 </div>
 
 <?php /*

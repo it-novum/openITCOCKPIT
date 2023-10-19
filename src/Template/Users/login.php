@@ -37,7 +37,6 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 </div>
 
 <div
-        ng-controller="UsersLoginController"
         class="col-12 col-md-4 peer pX-40 pY-80 h-100 scrollable pos-r login-side-bg" style='min-width: 320px;'>
 
     <div class="col-12 text-center">
@@ -60,15 +59,15 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
     <!-- Start login form for username and password (Session and LDAP) -->
     <?php if ($forceRedirectSsousersToLoginScreen === false): ?>
-        <form ng-submit="submit();" ng-if="!hasValidSslCertificate">
+        <form ng-submit="$ctrl.submit();" ng-if="!$ctrl.hasValidSslCertificate">
             <div class="form-group">
                 <label class="text-normal c-white"><?= __('Username') ?></label>
                 <input
                         type="text"
                         class="form-control"
                         placeholder="John Doe"
-                        ng-disabled="disableLogin"
-                        ng-model="post.email">
+                        ng-disabled="$ctrl.disableLogin"
+                        ng-model="$ctrl.post.email">
             </div>
             <div class="form-group">
                 <label class="text-normal c-white"><?= __('Password') ?></label>
@@ -76,8 +75,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                         type="password"
                         class="form-control"
                         placeholder="Password"
-                        ng-disabled="disableLogin"
-                        ng-model="post.password">
+                        ng-disabled="$ctrl.disableLogin"
+                        ng-model="$ctrl.post.password">
             </div>
             <div class="form-group">
                 <div class="peers ai-c jc-sb fxw-nw">
@@ -87,8 +86,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     type="checkbox"
                                     ng-true-value="1"
                                     ng-false-value="0"
-                                    ng-model="post.remember_me"
-                                    ng-disabled="disableLogin"
+                                    ng-model="$ctrl.post.remember_me"
+                                    ng-disabled="$ctrl.disableLogin"
                                     id="RememberMeCheckbox"
                                     class="peer">
                             <label for="RememberMeCheckbox" class=" peers peer-greed js-sb ai-c">
@@ -100,9 +99,9 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                         <button
                                 type="submit"
                                 class="btn btn-primary"
-                                ng-disabled="disableLogin">
+                                ng-disabled="$ctrl.disableLogin">
                         <span>
-                            <i class="fa fa-spinner fa-spin" ng-show="disableLogin"></i>
+                            <i class="fa fa-spinner fa-spin" ng-show="$ctrl.disableLogin"></i>
                         </span>
                             <?= __('Login') ?>
                         </button>
@@ -114,7 +113,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     <!-- End form login -->
 
     <!-- Users with valid SSL certificates are always logged in -->
-    <div ng-if="hasValidSslCertificate">
+    <div ng-if="$ctrl.hasValidSslCertificate">
         <div class="alert alert-success" role="alert">
             <?= __('Authorization through SSL certificate successfully.') ?>
         </div>

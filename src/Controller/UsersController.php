@@ -97,6 +97,11 @@ class UsersController extends AppController {
             return;
         }
 
+        // Ship HTML template of Login form for AngularJS??
+        if($this->request->getQuery('template', null) === 'true'){
+            $this->viewBuilder()->setLayout('default');
+        }
+
         $disableAnimation = $SystemsettingsTable->isLoginAnimationDisabled();
         if ($this->getRequest()->getQuery('remote')) {
             $disableAnimation = true;
