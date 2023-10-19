@@ -1,5 +1,6 @@
 import * as angular from 'angular';
-import {tsParticles} from "tsparticles";
+import {tsParticles} from "tsparticles-engine"
+import { loadFull } from "tsparticles";
 
 angular
     .module("openITCOCKPITLogin")
@@ -500,14 +501,13 @@ angular
 
                 // TODO implement disableLoginAnimation
                 if (particlesConfig) {
-                    // It is what it is (╯°□°）╯︵ ┻━┻
-                    setTimeout(function(){
-                        tsParticles.load({
+                    (async () => {
+                        await loadFull(tsParticles);
+                        await tsParticles.load({
                             'id': "tsparticles",
                             options: particlesConfig
                         });
-                    }, 250);
-
+                    })();
                 }
             });
         };

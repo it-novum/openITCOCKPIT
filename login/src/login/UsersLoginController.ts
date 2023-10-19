@@ -1,5 +1,5 @@
 import * as angular from 'angular';
-import {parseUri} from "../lib/parseuri.js"
+import {parseUri} from "../../../webroot/js/lib/parseuri.js"
 import Noty from "noty"
 
 angular

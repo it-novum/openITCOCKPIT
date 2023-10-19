@@ -9,7 +9,7 @@
         "mapRoot": "./",
         "module": "es6",
         "moduleResolution": "node",
-        "outDir": "./webroot/webpack/out-tsc",
+        "outDir": "../webroot/webpack/out-tsc",
         "sourceMap": true,
         "target": "es5",
         "typeRoots": [
