@@ -6,14 +6,29 @@
     "author": "it-novum GmbH",
     "license": "openITCOCKPIT Enterprise Edition licence agreement",
     "dependencies": {
+        "@angular/animations": "^16.2.10",
+        "@angular/common": "^16.2.10",
+        "@angular/compiler": "^16.2.10",
+        "@angular/compiler-cli": "^16.2.10",
+        "@angular/core": "^16.2.10",
+        "@angular/forms": "^16.2.10",
+        "@angular/platform-browser": "^16.2.10",
+        "@angular/platform-browser-dynamic": "^16.2.10",
+        "@angular/platform-server": "^16.2.10",
+        "@angular/router": "^16.2.10",
+        "@angular/upgrade": "^16.2.10",
         "@fortawesome/fontawesome-free": "^6.1.1",
         "angular": "^1.8.1",
         "angular-flippy": "^2.1.1",
         "angular-gridster": "^0.13.14",
+        "angular-in-memory-web-api": "^0.16.0",
         "angular-ui-router": "^1.0.28",
+        "core-js": "^3.33.0",
         "font-awesome": "^4.7.0",
+        "rxjs": "^7.8.1",
         "tsparticles": "^2.12.0",
-        "tsparticles-engine": "^2.12.0"
+        "tsparticles-engine": "^2.12.0",
+        "web-animations-js": "^2.3.2"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
@@ -23,7 +38,7 @@
     "devDependencies": {
         "rimraf": "^5.0.5",
         "ts-loader": "^9.5.0",
-        "typescript": "^5.2.2",
+        "typescript": "^5.1.0",
         "webpack": "^5.89.0",
         "webpack-cli": "^5.1.4"
     }
