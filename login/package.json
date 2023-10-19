@@ -17,7 +17,8 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "rimraf ../webroot/webpack && webpack --bail --progress --profile"
+        "build": "rimraf ../webroot/webpack && webpack --bail --progress --profile",
+        "dev": "rimraf ../webroot/webpack && webpack --watch --progress --mode=development"
     },
     "devDependencies": {
         "rimraf": "^5.0.5",
