@@ -6,7 +6,14 @@ let LoginLayoutComponent = {
     selector: "loginLayout", // maps to <login-layout>
     template: `
 
-        <div class="login-screen-vnc"></div>
+        <div class="login-screen">
+            <figure>
+                <figcaption>Bild 1</figcaption>
+            </figure>
+            <figure>
+                <figcaption>Bild 2</figcaption>
+            </figure>
+        </div>
 
         <users-login></users-login>
 `,
@@ -21,13 +28,11 @@ let LoginLayoutComponent = {
 
         constructor($http) {
             this.$http = $http;
-
+            
             this.load();
         }
 
         load() {
-
-
             // in case you get an error like this:
             // Potentially invalid reference access to a class field via 'this.' of a nested function
             // use the "fat arrow" sytnax () => { } instead of var _this = this
