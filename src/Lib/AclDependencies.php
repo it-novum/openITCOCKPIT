@@ -276,6 +276,8 @@ class AclDependencies {
             ->allow('Users', 'getLocaleOptions')
             ->allow('Users', 'getUserPermissions');
 
+        $this->allow('Vue', 'getSystemInformation');
+
         ///////////////////////////////
         //    Add dependencies       //
         //////////////////////////////
