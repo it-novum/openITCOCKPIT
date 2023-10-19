@@ -40,25 +40,21 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\Servicestatus;
+
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
-use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
-use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
-use itnovum\openITCOCKPIT\Core\Views\Downtime;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Model\Table\StatuspagesTable;
-use Cake\Event\EventInterface;
-use Cake\Http\Exception\ForbiddenException;
-
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+
 
 /**
  * Statuspages Controller
@@ -114,177 +110,48 @@ class StatuspagesController extends AppController
      * @return \Cake\Http\Response|null|void Renders view
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null) {
+    public function view($id = null)
+    {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
-
+        if(empty($id)){
+            throw new NotFoundException('Statuspage not found');
+        }
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
-        //$statuspage = $StatuspagesTable->getStatuspage($id);
-        $statuspage = $StatuspagesTable->getStatuspageObjects($id);
-        $statuspageView = [
-            'statuspage'    => [
-                'name'         => $statuspage['name'],
-                'description'  => $statuspage['description'],
-                'public'       => $statuspage['public'],
-                'showComments' => $statuspage['show_comments'],
-            ],
-            'hosts'         => [],
-            'services'      => [],
-            'hostgroups'    => [],
-            'servicegroups' => []
-        ];
+        //$UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+        $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime);
 
-        foreach($statuspage as $key => $objectData) {
-
-            if ($key === 'hosts' && count($objectData) > 0) {
-                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-                $HoststatusTable = $this->DbBackend->getHoststatusTable();
-                $AcknowledgementHostsTable = $this->DbBackend->getAcknowledgementHostsTable();
-                $DowntimehistoryHostsTable = $this->DbBackend->getDowntimehistoryHostsTable();
-                $ServicesTable = TableRegistry::getTableLocator()->get(alias: 'Services');
-                /** @var ServicesTable $ServicesTable */
-                $ServicestatusTable = $this->DbBackend->getServicestatusTable();
-                $hosts = $objectData;
-                $hostsViewData = [];
-                foreach ($hosts as $host) {
-                    $hostExtended = $HostsTable->getHostById($host['id']);
-                    $properties = $this->getHostInformation($ServicesTable, $HoststatusTable, $ServicestatusTable, $hostExtended);
-                    $hostViewData = [];
-                    $hostViewData['type'] = 'Host';
-                    $hostViewData['id'] = $host['id'];
-                    $hostViewData['uuid'] = $host['uuid'];
-                    $hostViewData['name'] = ($host['_joinData']['display_alias'] !== null && $host['_joinData']['display_alias'] !== '') ? $host['_joinData']['display_alias'] : $host['name'];
-
-                    $hostViewData = array_merge($hostViewData, $properties);
-                    if($hostViewData['isAcknowledged']){
-                        $acknowledgement = $AcknowledgementHostsTable->byhostUuid($host['uuid']);
-                        if (!empty($acknowledgement)) {
-                            $Acknowledgement = new AcknowledgementHost($acknowledgement, $UserTime);
-                            $hostViewData['acknowledgeData'] = $Acknowledgement->toArray();
-                        }
-                    }
-                    if($hostViewData['isInDowntime']){
-                        $downtime = $this->getHostDowntime($host['uuid'], $DowntimehistoryHostsTable);
-                        if (!empty($downtime)) {
-                            $Downtime = new Downtime($downtime, false, $UserTime);
-                            $hostViewData['downtimeData'] = $Downtime->toArray();
-                        }
-                    }
-
-                    $hostsViewData[] = $hostViewData;
-                }
-                $statuspageView['hosts'] = $hostsViewData;
-            }
-
-            if ($key === 'services' && count($objectData) > 0) {
-                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                $ServicestatusTable = $this->DbBackend->getServicestatusTable();
-                $AcknowledgementServicesTable = $this->DbBackend->getAcknowledgementServicesTable();
-                $DowntimehistoryServicesTable = $this->DbBackend->getDowntimehistoryServicesTable();
-                $services = $objectData;
-                $servicesViewData = [];
-
-                foreach ($services as $service) {
-                    $serviceExtended = $ServicesTable->getServiceByIdWithHostAndServicetemplate($service['id']);
-                    $properties = $this->getServiceInformation($ServicestatusTable, $serviceExtended);
-
-                    $serviceViewData = [];
-                    $serviceViewData['type'] = 'Service';
-                    $serviceViewData['id'] = $service['id'];
-                    $serviceViewData['uuid'] = $service['uuid'];
-                    $serviceViewData['name'] = ($service['_joinData']['display_alias'] !== null && $service['_joinData']['display_alias'] !== '') ? $service['_joinData']['display_alias'] : $service['servicename'];
-                    $serviceViewData = array_merge($serviceViewData, $properties);
-                    if($serviceViewData['isAcknowledged'] && $statuspageView['statuspage']['showComments']){
-                        $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($service['uuid']);
-                        if (!empty($acknowledgement)) {
-                            $Acknowledgement = new AcknowledgementService($acknowledgement, $UserTime);
-                            $serviceViewData['acknowledgeData'] = $Acknowledgement->toArray();
-                        }
-                    }
-                    if($serviceViewData['isInDowntime']){
-                        $downtime = $this->getserviceDowntime($service['uuid'], $DowntimehistoryServicesTable);
-                        //$downtime = $DowntimehistoryServicesTable->byServiceUuid($service['uuid']);
-                        if (!empty($downtime)) {
-                            $Downtime = new Downtime($downtime, false, $UserTime);
-                            $serviceViewData['downtimeData'] = $Downtime->toArray();
-                        }
-                    }
-                    $servicesViewData[] = $serviceViewData;
-                }
-                $statuspageView['services'] = $servicesViewData;
-            }
-        }
-        $items = array_merge($statuspageView['hosts'], $statuspageView['services']);
-        $itemsSortedState = Hash::sort($items, '{s}.type',  'desc');
-        $itemsSortedState = Hash::sort($itemsSortedState, '{n}.cumulatedState', 'desc' );
-        $statuspageView['items'] = $itemsSortedState;
-        $this->set('Statuspage', $statuspageView);
+        $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
-    /**
-     * @param ServicesTable $Service
-     * @param HoststatusTableInterface $Hoststatus
-     * @param ServicestatusTableInterface $Servicestatus
-     * @param Host $host
-     * @return array
-     */
-    private function getHostInformation(ServicesTable $Service, HoststatusTableInterface $Hoststatus, ServicestatusTableInterface $Servicestatus, Host $host): array {
-        $info = [];
-        $HoststatusFields = new HoststatusFields(new DbBackend());
-        $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
-        $hoststatus = $Hoststatus->byUuid($host->get('uuid'), $HoststatusFields);
-        $HostView = new \itnovum\openITCOCKPIT\Core\Views\Host($host->toArray());
-        $hoststatus = new Hoststatus($hoststatus['Hoststatus']);
-        $info['currentState'] = $hoststatus->currentState();
-        $info['cumulatedState'] = $hoststatus->currentState();
-        $info['color'] = $hoststatus->HostStatusColor();
-        $info['isAcknowledged'] = $hoststatus->isAcknowledged();
-        $info['isInDowntime'] = $hoststatus->isInDowntime();
-        if($info['currentState'] == 1) { $info['cumulatedState'] = 2;}
-        if($info['currentState'] == 2) { $info['cumulatedState'] = 3;}
-        if($info['currentState'] == 0) {
-            $services = $Service->getActiveServicesByHostId($host->get('id'), false);
-            $services = $services->toArray();
-            $serviceUuids = Hash::extract($services, '{n}.uuid');
-            $servicestatus = [];
-            if (!empty($serviceUuids)) {
-                $ServicestatusFieds = new ServicestatusFields(new DbBackend());
-                $ServicestatusFieds->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
-                $ServicestatusConditions = new ServicestatusConditions(new DbBackend());
-                $ServicestatusConditions->servicesWarningCriticalAndUnknown();
-                $servicestatus = $Servicestatus->byUuid($serviceUuids, $ServicestatusFieds, $ServicestatusConditions);
-            }
-            if (!empty($servicestatus)) {
-                $worstServiceState = array_values(
-                    Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
-                );
-                $info['biggestServiceProblemState'] = $worstServiceState[0]['Servicestatus']['current_state'];
-                $info['color'] = $this->getServiceStatusColor($info['biggestServiceProblemState']);
-                $info['cumulatedState'] = $info['biggestServiceProblemState'];
-                $problems = count($servicestatus);
-                $problemsNotAcknowledged = 0;
-                foreach ($worstServiceState as $problemState) {
-                    if ($problemState['Servicestatus']['problem_has_been_acknowledged'] == false) {
-                        $problemsNotAcknowledged++;
-                    }
-                }
-                $problemsAcknowledged = $problems - $problemsNotAcknowledged;
-                if ($problemsNotAcknowledged > 0) {
-                    $info['problemtext'] = "{$problemsAcknowledged} of {$problems} problems acknowledged";
-                }
-            }
+    public function public ($id = null) {
+        if(empty($id)){
+            throw new NotFoundException('Statuspage not found');
         }
-        return $info;
-    }
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException('Statuspage not found');
+        }
+        if(!$StatuspagesTable->isPublic($id)){
+            throw new  MethodNotAllowedException('Statuspage not public');
+        }
+        $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
+        $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime);
 
+        $this->set('Statuspage', $statuspageViewData);
+        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
+    }
 
     /**
      * Add method
@@ -423,7 +290,8 @@ class StatuspagesController extends AppController
     /**
      * @return void
      */
-    public function loadContainers() {
+    public function loadContainers()
+    {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -445,22 +313,23 @@ class StatuspagesController extends AppController
     /**
      * @return void
      */
-    public function loadHostsByContainerIds() {
+    public function loadHostsByContainerIds()
+    {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
         $containerIds = $this->request->getQuery('containerIds');
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        foreach($containerIds as $containerId){
+        foreach ($containerIds as $containerId) {
             $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
             $containerIds = array_merge($containerIds, $subIds);
         }
         $containerIds = array_unique($containerIds);
 
-     /*  if (!in_array(ROOT_CONTAINER, $containerIds)){
-            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-        } */
+        /*  if (!in_array(ROOT_CONTAINER, $containerIds)){
+               $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+           } */
         $selected = $this->request->getQuery('selected');
 
         /** @var $HostsTable HostsTable */
@@ -481,7 +350,8 @@ class StatuspagesController extends AppController
     /**
      * @return void
      */
-    public function loadServicesByContainerIds() {
+    public function loadServicesByContainerIds()
+    {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -489,20 +359,20 @@ class StatuspagesController extends AppController
         $selected = $this->request->getQuery('selected');
         $containerIds = $this->request->getQuery('containerIds');
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        foreach($containerIds as $containerId){
+        foreach ($containerIds as $containerId) {
             $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
             $containerIds = array_merge($containerIds, $subIds);
         }
         $containerIds = array_unique($containerIds);
-       /* if (!in_array(ROOT_CONTAINER, $containerIds)){
-            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-        } */
+        /* if (!in_array(ROOT_CONTAINER, $containerIds)){
+             $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+         } */
         $ServiceFilter = new ServiceFilter($this->request);
 
 
-       // $serviceConditions = ['Services.disabled' => 0];
+        // $serviceConditions = ['Services.disabled' => 0];
         //if(!empty($ServiceFilter->indexFilter())){
-            $serviceConditions = $ServiceFilter->indexFilter();
+        $serviceConditions = $ServiceFilter->indexFilter();
         //}
         $ServiceCondition = new ServiceConditions($serviceConditions);
         $ServiceCondition->setContainerIds($containerIds);
@@ -521,7 +391,8 @@ class StatuspagesController extends AppController
     /**
      * @return void
      */
-    public function loadServicegroupsByContainerIds() {
+    public function loadServicegroupsByContainerIds()
+    {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -529,7 +400,7 @@ class StatuspagesController extends AppController
         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
         $containerIds = $this->request->getQuery('containerIds');
-        if (!in_array(ROOT_CONTAINER, $containerIds)){
+        if (!in_array(ROOT_CONTAINER, $containerIds)) {
             $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
         }
 
@@ -543,14 +414,15 @@ class StatuspagesController extends AppController
     /**
      * @return void
      */
-    public function loadHostgroupsByContainerIds() {
+    public function loadHostgroupsByContainerIds()
+    {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
 
         $containerIds = $this->request->getQuery('containerIds');
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        foreach($containerIds as $containerId){
+        foreach ($containerIds as $containerId) {
             $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
             $containerIds = array_merge($containerIds, $subIds);
         }
@@ -558,9 +430,6 @@ class StatuspagesController extends AppController
         $HostgroupFilter = new HostgroupFilter($this->request);
 
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-
-      /*  $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-        $containerIds = array_unique($containerIds); */
 
 
         $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
@@ -626,60 +495,6 @@ class StatuspagesController extends AppController
         $this->set('Statuspage', $statuspage);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
 
-    }
-
-
-    private function getServiceInformation(ServicestatusTableInterface $Servicestatus, Service $service, $includeServiceOutput = false){
-        $ServicestatusFields = new ServicestatusFields(new DbBackend());
-        $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged()->isFlapping();
-        $serviceArray = $service->toArray();
-        $servicestatus = $Servicestatus->byUuid($service->get('uuid'), $ServicestatusFields);
-        $servicestatus = new Servicestatus($servicestatus['Servicestatus']);
-        $tmpServicestatus = $servicestatus->toArray();
-        return [
-            'currentState' => $tmpServicestatus['currentState'],
-            'cumulatedState' => $tmpServicestatus['currentState'],
-            'isAcknowledged' => $servicestatus->isAcknowledged(),
-            'isInDowntime'   => $servicestatus->isInDowntime(),
-            'color'          => $servicestatus->ServiceStatusColor(),
-            'background'     => $servicestatus->ServiceStatusBackgroundColor(),
-        ];
-    }
-
-
-    private function getServiceDowntime ($uuid, $table)
-    {
-        $downtime = $table->byServiceUuid(($uuid));;
-        $downtime = $downtime->toArray();
-        return $downtime;
-    }
-
-    private function getHostDowntime ($uuid, $table)
-    {
-        $downtime = $table->byHostUuid(($uuid));;
-        $downtime = $downtime->toArray();
-        return $downtime;
-    }
-
-
-    private function getServiceStatusColor($state = null) {
-        if ($state === null) {
-            return 'text-primary';
-        }
-
-        switch ($state) {
-            case 0:
-                return 'ok';
-
-            case 1:
-                return 'warning';
-
-            case 2:
-                return 'critical';
-
-            default:
-                return 'unknown';
-        }
     }
 
 
