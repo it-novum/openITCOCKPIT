@@ -673,6 +673,7 @@ class NagiosNotificationCommand extends Command {
                 $PuppeteerChartRenderClient->setGraphEndTimestamp(time());
                 $PuppeteerChartRenderClient->setHeight(180);
                 $PuppeteerChartRenderClient->setWidth(560);
+                $PuppeteerChartRenderClient->setTimezone(date_default_timezone_get());
                 $PuppeteerChartRenderClient->setTitle(
                     sprintf(
                         '%s - %s',

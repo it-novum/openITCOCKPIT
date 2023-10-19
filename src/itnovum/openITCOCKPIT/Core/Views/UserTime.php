@@ -247,6 +247,13 @@ class UserTime {
         return $ServerTime->getOffset();
     }
 
+    /**
+     * @return string
+     */
+    public function getUserTimezone(): string {
+        return $this->timezone;
+    }
+
 
     /**
      * @param $remote_tz
