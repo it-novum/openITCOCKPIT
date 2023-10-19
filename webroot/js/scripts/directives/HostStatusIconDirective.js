@@ -4,7 +4,7 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
         templateUrl: '/hosts/icon.html',
         scope: {
             'host': '=?',
-            'state': '=?'
+            'state': '=?',
         },
         controller: function($scope){
 
@@ -17,6 +17,7 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
 
             $scope.isFlapping = $scope.host.Hoststatus.isFlapping;
             $scope.flappingState = 0;
+            $scope.opacity = '';
             var interval;
 
             $scope.setHostStatusColors = function(){
@@ -30,6 +31,14 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                     currentstate = parseInt($scope.state, 10);
                 }
 
+
+                $scope.title = $scope.host.Hoststatus.humanState + ' (HARD)';
+                // Check the opacity if the stateType is soft.
+                $scope.opacity = '';
+                if($scope.host.Hoststatus.isHardstate === false){
+                    $scope.opacity = 'opacity-50 ';
+                    $scope.title = $scope.host.Hoststatus.humanState + ' (SOFT)';
+                }
                 switch(currentstate){
                     case 0:
                         $scope.btnColor = 'success';
