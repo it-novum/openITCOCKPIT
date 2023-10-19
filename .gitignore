@@ -75,6 +75,9 @@ package-lock.json
 webroot/package-lock.json
 webroot/node_modules
 
+# Webpack #
+#######################
+webroot/webpack
 
 # Plugins #
 #######################

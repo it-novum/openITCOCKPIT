@@ -1,1 +1,6 @@
-var loginApp = angular.module("openITCOCKPITLogin", ["ui.router"]);
+import * as angular from 'angular';
+
+angular
+    .module("openITCOCKPITLogin", [
+        "ui.router"
+    ]);

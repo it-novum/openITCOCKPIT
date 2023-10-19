@@ -80,13 +80,6 @@
         }
     </style>
 
-    <script>
-        <?php if($disableAnimation): ?>
-        var disableLoginAnimation = true;
-        <?php else: ?>
-        var disableLoginAnimation = false;
-        <?php endif; ?>
-    </script>
 
 </head>
 <body class="app">
@@ -119,6 +112,8 @@ endif;
 
 </div>
 
+<?php /*
+
 <script src="/node_modules/jquery/dist/jquery.min.js"></script>
 <script src="/node_modules/angular/angular.min.js"></script>
 <script src="/node_modules/angular-ui-router/release/angular-ui-router.min.js"></script>
@@ -129,7 +124,9 @@ endif;
 <script src="/js/login/ng.login-app.js"></script>
 <script src="/js/login/LoginLayoutController.js"></script>
 <script src="/js/login/UsersLoginController.js"></script>
+*/ ?>
 
+<script src="/webpack/main.js"></script>
 
 </body>
 </html>
