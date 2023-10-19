@@ -5,6 +5,7 @@ module.exports = {
     entry: "./src/main.ts",
     output: {
         path: path.resolve(__dirname, '../webroot/webpack'),
+        filename: "main.js"
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.
@@ -12,8 +13,10 @@ module.exports = {
     },
     module: {
         rules: [
-            // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
-            {test: /\.tsx?$/, use: "ts-loader"}
+            {
+                test: /\.tsx?$/, // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
+                use: 'ts-loader', // Use TypeScript loader
+            },
         ]
     }
 };
