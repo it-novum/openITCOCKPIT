@@ -1,9 +1,9 @@
 const path = require('path');
 
 module.exports = {
-    entry: "./webroot/js/login/main.ts",
+    entry: "./src/main.ts",
     output: {
-        path: path.resolve(__dirname, 'webroot/webpack'),
+        path: path.resolve(__dirname, '../webroot/webpack'),
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.

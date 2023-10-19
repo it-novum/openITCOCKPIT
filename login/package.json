@@ -1,0 +1,29 @@
+{
+    "name": "login",
+    "version": "1.0.0",
+    "description": "Login of openITCOCKPIT",
+    "main": "webpack.config.js",
+    "author": "it-novum GmbH",
+    "license": "openITCOCKPIT Enterprise Edition licence agreement",
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^6.1.1",
+        "angular": "^1.8.1",
+        "angular-flippy": "^2.1.1",
+        "angular-gridster": "^0.13.14",
+        "angular-ui-router": "^1.0.28",
+        "font-awesome": "^4.7.0",
+        "tsparticles": "^2.12.0",
+        "tsparticles-engine": "^2.12.0"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "rimraf ../webroot/webpack && webpack --bail --progress --profile"
+    },
+    "devDependencies": {
+        "rimraf": "^5.0.5",
+        "ts-loader": "^9.5.0",
+        "typescript": "^5.2.2",
+        "webpack": "^5.89.0",
+        "webpack-cli": "^5.1.4"
+    }
+}

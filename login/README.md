@@ -9,10 +9,12 @@ There is also no ETA (estimated time of arrival) yet
 
 ---
 
+The Login-Screen of openITCOCKPIT is a separate AngularJS (and hopefully soon an Angular) application.
+
 1. Install dependencies
 
 ```sh
-cd /opt/openitc/frontend
+cd /opt/openitc/frontend/login
 npm install
 ```
 
@@ -24,12 +26,15 @@ chown -R www-data:www-data "/var/www/.npm"
 ````
 
 3. Switch to the `www-data` user and DO **NOT** USE `root` anymore!
+
 ```
 sudo -u www-data /bin/bash
 ```
+
 4. Build the required files (whenever you change something)
+
 ```
-npm run build-login
+npm run build
 ```
 
 
