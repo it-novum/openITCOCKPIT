@@ -50,7 +50,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                     id="sso-redirect-href"
                     href="/users/login?redirect_sso=true"
                     class="btn btn-primary btn-block">
-                    <i class="fas fa-sign-in-alt"></i>
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
                     <?= __('Login through Single sign-on') ?>
                 </a>
             </div>
@@ -100,7 +100,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                 class="btn btn-primary"
                                 ng-disabled="$ctrl.disableLogin">
                         <span>
-                            <i class="fa fa-spinner fa-spin" ng-show="$ctrl.disableLogin"></i>
+                            <i class="fa-solid fa-spinner fa-spin" ng-show="$ctrl.disableLogin"></i>
                         </span>
                                 <?= __('Login') ?>
                             </button>
@@ -136,20 +136,20 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 
         <div class="float-right" style="padding-top: 100px;">
             <a href="https://openitcockpit.io/" target="_blank" class="btn btn-sm btn-light btn-icon">
-                <i class="fa fa-lg fa-globe"></i>
+                <i class="fa-solid fa-earth-americas"></i>
             </a>
             <a href="https://github.com/it-novum/openITCOCKPIT" target="_blank"
                class="btn btn-sm btn-light btn-icon">
-                <i class="fab fa-lg fa-github"></i>
+                <i class="fa-brands fa-github"></i>
             </a>
             <a href="https://twitter.com/openITCOCKPIT" target="_blank" class="btn btn-sm btn-light btn-icon">
-                <i class="fab fa-lg fa-twitter"></i>
+                <i class="fa-brands fa-x-twitter"></i>
             </a>
             <a href="https://www.reddit.com/r/openitcockpit" target="_blank" class="btn btn-sm btn-light btn-icon">
-                <i class="fab fa-lg fa-reddit"></i>
+                <i class="fa-brands fa-reddit"></i>
             </a>
             <a href="https://discord.gg/G8KhxKuQ9G" target="_blank" class="btn btn-sm btn-light btn-icon">
-                <i class="fab fa-lg fa-discord"></i>
+                <i class="fa-brands fa-discord"></i>
             </a>
         </div>
     </div>

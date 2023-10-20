@@ -33,17 +33,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <!-- font awesome 4 is usd by the checkbox fa-check -->
-    <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css">
-
-    <link rel="stylesheet" type="text/css" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
-
-    <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/noty.css">
-
-    <link rel="stylesheet" type="text/css" href="/css/login/adminator.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/login/login.css">
+    
+    <link rel="stylesheet" type="text/css" href="/webpack/main.css">
 
     <title><?= __('Sign In') ?></title>
 

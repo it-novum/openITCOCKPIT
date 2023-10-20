@@ -1,6 +1,11 @@
 const path = require('path');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
+    plugins: [
+        new MiniCssExtractPlugin(),
+    ],
+
     //mode: "development",
     entry: "./src/main.ts",
     output: {
@@ -9,7 +14,7 @@ module.exports = {
     },
     resolve: {
         // Add '.ts' and '.tsx' as a resolvable extension.
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".css"]
     },
     module: {
         rules: [
@@ -17,6 +22,10 @@ module.exports = {
                 test: /\.tsx?$/, // all files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'
                 use: 'ts-loader', // Use TypeScript loader
             },
+            {
+                test: /\.(css)$/,
+                use: [MiniCssExtractPlugin.loader, 'css-loader'],
+            }
         ]
     }
 };
