@@ -7,6 +7,7 @@ import "../../webroot/js/lib/parseuri.js"
 
 import "./ng.login-app"
 import "./controllers"
+import "./directives"
 import '@angular/compiler';
 import 'zone.js';
 
@@ -14,6 +15,7 @@ import {DoBootstrap, NgModule} from "@angular/core";
 import {BrowserModule} from "@angular/platform-browser";
 import {UpgradeModule} from "@angular/upgrade/static";
 import {HttpClientModule} from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
 import {platformBrowserDynamic} from "@angular/platform-browser-dynamic";
 import {ToastService, AngularToastifyModule} from 'angular-toastify';
 
@@ -24,22 +26,28 @@ import "noty/lib/noty.css"
 import "noty/lib/themes/metroui.css"
 import "./assets/css/index.css";
 import {LoginLayoutComponent} from "./controllers/LoginLayout.component";
+import {UsersLoginComponent} from "./controllers/UsersLogin.component";
+import {TrueFalseValueDirective} from "./directives/TrueFalseValue.directive";
 
 @NgModule({
     imports: [
         BrowserModule,
         UpgradeModule,
         HttpClientModule,
+        FormsModule,
         AngularToastifyModule,
     ],
     providers: [
         ToastService
     ],
     declarations: [
-        LoginLayoutComponent
+        LoginLayoutComponent,
+        UsersLoginComponent,
+        TrueFalseValueDirective
     ],
     bootstrap: [
-        LoginLayoutComponent
+        LoginLayoutComponent,
+        UsersLoginComponent,
     ]
 
 })
