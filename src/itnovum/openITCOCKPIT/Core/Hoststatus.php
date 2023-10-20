@@ -490,7 +490,7 @@ class Hoststatus {
             $arr['nextCheck'] = $this->getNextCheck();
         }
 
-        $arr['isHardstate'] =false;
+        $arr['isHardstate'] = $this->isHardState();
         $arr['problemHasBeenAcknowledged'] = $this->isAcknowledged();
         $arr['isInMonitoring'] = $this->isInMonitoring();
         $arr['humanState'] = $this->HostStatusAsString();
