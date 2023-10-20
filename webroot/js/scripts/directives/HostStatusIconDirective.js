@@ -75,11 +75,13 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                 $scope.opacity = '';
 
                 // Switch state type
-                if($scope.isHardstate){
-                    $scope.title = $scope.title + ' (HARD)';
-                }else{
-                    $scope.title = $scope.title + ' (SOFT)';
-                    $scope.opacity = 'opacity-50 ';
+                if(typeof ($scope.isHardstate) === "boolean"){
+                    if($scope.isHardstate){
+                        $scope.title = $scope.title + ' (HARD)';
+                    }else{
+                        $scope.title = $scope.title + ' (SOFT)';
+                        $scope.opacity = 'opacity-50 ';
+                    }
                 }
             };
 
