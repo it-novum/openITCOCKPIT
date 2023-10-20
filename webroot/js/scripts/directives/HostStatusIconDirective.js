@@ -5,6 +5,8 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
         scope: {
             'host': '=?',
             'state': '=?',
+            'humanState': '=?',
+            'isHardstate': '=?'
         },
         controller: function($scope){
 
@@ -30,31 +32,54 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                 }else{
                     currentstate = parseInt($scope.state, 10);
                 }
-
-
-                $scope.title = $scope.host.Hoststatus.humanState + ' (HARD)';
-                // Check the opacity if the stateType is soft.
-                $scope.opacity = '';
-                if($scope.host.Hoststatus.isHardstate === false){
-                    $scope.opacity = 'opacity-50 ';
-                    $scope.title = $scope.host.Hoststatus.humanState + ' (SOFT)';
+                console.log($scope.humanState);
+                // If not passed directly into directive, check host for the humanState.
+                if(typeof ($scope.humanState) !== "string"){
+                    if(typeof ($scope.host.Hoststatus.humanState) === "string"){
+                        $scope.humanState = $scope.host.Hoststatus.humanState;
+                    }
                 }
+
+                // If not passed directly into directive, check host for the state type.
+                if(typeof ($scope.isHardstate) !== "boolean"){
+                    if(typeof ($scope.host.Hoststatus.isHardstate) === "boolean"){
+                        $scope.isHardstate = $scope.host.Hoststatus.isHardstate;
+                    }
+                }
+
+                // Switch state
                 switch(currentstate){
                     case 0:
                         $scope.btnColor = 'success';
                         $scope.flappingColor = 'text-success';
-                        return;
+                        $scope.humanState = $scope.humanState || 'up';
+                        break;
                     case 1:
                         $scope.btnColor = 'danger';
                         $scope.flappingColor = 'text-danger';
-                        return;
+                        $scope.humanState = $scope.humanState || 'down';
+                        break;
                     case 2:
                         $scope.btnColor = 'secondary';
                         $scope.flappingColor = 'text-secondary';
-                        return;
+                        $scope.humanState = $scope.humanState || 'unreachable';
+                        break;
                     default:
                         $scope.btnColor = 'primary';
                         $scope.flappingColor = 'text-primary';
+                        $scope.humanState = $scope.humanState || 'unknown';
+                }
+
+                // Ouptut no state type by default.
+                $scope.title = $scope.humanState;
+                $scope.opacity = '';
+
+                // Switch state type
+                if($scope.isHardstate){
+                    $scope.title = $scope.title + ' (HARD)';
+                }else{
+                    $scope.title = $scope.title + ' (SOFT)';
+                    $scope.opacity = 'opacity-50 ';
                 }
             };
 

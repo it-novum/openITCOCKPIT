@@ -222,7 +222,7 @@
                             <tr ng-repeat="Hostcheck in hostchecks">
 
                                 <td class="text-center">
-                                    <hoststatusicon state="Hostcheck.Hostcheck.state"></hoststatusicon>
+                                    <hoststatusicon state="Hostcheck.Hostcheck.state" is-hardstate="Hostcheck.Hostcheck.is_hardstate"></hoststatusicon>
                                 </td>
                                 <td>
                                     {{ Hostcheck.Hostcheck.start_time }}

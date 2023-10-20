@@ -217,7 +217,7 @@
                             <tr ng-repeat="StatehistoryHost in statehistories">
 
                                 <td class="text-center">
-                                    <hoststatusicon state="StatehistoryHost.StatehistoryHost.state"></hoststatusicon>
+                                    <hoststatusicon state="StatehistoryHost.StatehistoryHost.state" is-hardstate="StatehistoryHost.StatehistoryHost.is_hardstate"></hoststatusicon>
                                 </td>
                                 <td>
                                     {{ StatehistoryHost.StatehistoryHost.state_time }}
