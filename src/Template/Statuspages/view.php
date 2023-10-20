@@ -125,7 +125,7 @@ $logo = new Logo();
                                         <tr ng-repeat="downtime in item.plannedDowntimes">
                                             <td style="border-width:1px; border-color:lightgray;"><div><h5>Start:</h5></div><div> {{downtime.scheduledStartTime}}</div></td>
                                             <td style="border-width:1px; border-color:lightgray"><div><h5>End:</h5></div><div>{{downtime.scheduledEndTime}}</div></td>
-                                            <td style="border-width:1px; border-color:lightgray;"><div><h5>:Comment:</h5></div><div> {{Statuspage.statuspage.showComments ? downtime.commentData : "work in progress" }}</div></td>
+                                            <td style="border-width:1px; border-color:lightgray;"><div><h5>:Comment:</h5></div><div> {{downtime.commentData}}</div></td>
                                         </tr>
                                     </table>
                                 </div>

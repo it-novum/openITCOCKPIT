@@ -116,19 +116,19 @@ class StatuspagesController extends AppController
             //Only ship HTML template for angular
             return;
         }
-        if(empty($id)){
+       /* if(empty($id)){
             throw new NotFoundException('Statuspage not found');
-        }
-        $User = new User($this->getUser());
-        $UserTime = $User->getUserTime();
-
+        } */
+        //$User = new User($this->getUser());
+        //$UserTime = $User->getUserTime();
+        $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
-        //$UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
-        $User = new User($this->getUser());
-        $UserTime = $User->getUserTime();
+        $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
+       // $User = new User($this->getUser());
+        //$UserTime = $User->getUserTime();
         $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime);
 
         $this->set('Statuspage', $statuspageViewData);
@@ -147,7 +147,7 @@ class StatuspagesController extends AppController
             throw new  MethodNotAllowedException('Statuspage not public');
         }
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
-        $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime);
+        $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime, true);
 
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
