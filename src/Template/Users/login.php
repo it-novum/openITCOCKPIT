@@ -31,58 +31,57 @@
 
 $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 ?>
-
-<div id="tsparticles" class="peer peer-greed h-100 pos-r">
-    <!-- layout fix -->
-</div>
-
-<div
-        class="col-12 col-md-4 peer pX-40 pY-80 h-100 scrollable pos-r login-side-bg" style='min-width: 320px;'>
-
-    <div class="col-12 text-center">
-        <img class="img-fluid" src="<?= h($Logo->getLoginLogoHtml()); ?>" style="max-height: 230px;"/>
+<div class="peers ai-s fxw-nw h-100vh">
+    <div id="tsparticles" class="peer peer-greed h-100 pos-r">
+        <!-- layout fix -->
     </div>
 
-    <h4 class="fw-300 c-white mB-40"><?= __('Login') ?></h4>
+    <div class="col-12 col-md-4 peer pX-40 pY-80 h-100 scrollable pos-r login-side-bg" style='min-width: 320px;'>
 
-    <?php if ($isSsoEnabled === true): ?>
-        <div class="form-group">
-            <a
+        <div class="col-12 text-center">
+            <img class="img-fluid" src="<?= h($Logo->getLoginLogoHtml()); ?>" style="max-height: 230px;"/>
+        </div>
+
+        <h4 class="fw-300 c-white mB-40"><?= __('Login') ?></h4>
+
+        <?php if ($isSsoEnabled === true): ?>
+            <div class="form-group">
+                <a
                     id="sso-redirect-href"
                     href="/users/login?redirect_sso=true"
                     class="btn btn-primary btn-block">
-                <i class="fas fa-sign-in-alt"></i>
-                <?= __('Login through Single sign-on') ?>
-            </a>
-        </div>
-    <?php endif; ?>
+                    <i class="fas fa-sign-in-alt"></i>
+                    <?= __('Login through Single sign-on') ?>
+                </a>
+            </div>
+        <?php endif; ?>
 
-    <!-- Start login form for username and password (Session and LDAP) -->
-    <?php if ($forceRedirectSsousersToLoginScreen === false): ?>
-        <form ng-submit="$ctrl.submit();" ng-if="!$ctrl.hasValidSslCertificate">
-            <div class="form-group">
-                <label class="text-normal c-white"><?= __('Username') ?></label>
-                <input
+        <!-- Start login form for username and password (Session and LDAP) -->
+        <?php if ($forceRedirectSsousersToLoginScreen === false): ?>
+            <form ng-submit="$ctrl.submit();" ng-if="!$ctrl.hasValidSslCertificate">
+                <div class="form-group">
+                    <label class="text-normal c-white"><?= __('Username') ?></label>
+                    <input
                         type="text"
                         class="form-control"
                         placeholder="John Doe"
                         ng-disabled="$ctrl.disableLogin"
                         ng-model="$ctrl.post.email">
-            </div>
-            <div class="form-group">
-                <label class="text-normal c-white"><?= __('Password') ?></label>
-                <input
+                </div>
+                <div class="form-group">
+                    <label class="text-normal c-white"><?= __('Password') ?></label>
+                    <input
                         type="password"
                         class="form-control"
                         placeholder="Password"
                         ng-disabled="$ctrl.disableLogin"
                         ng-model="$ctrl.post.password">
-            </div>
-            <div class="form-group">
-                <div class="peers ai-c jc-sb fxw-nw">
-                    <div class="peer">
-                        <div class="checkbox checkbox-circle checkbox-info peers ai-c">
-                            <input
+                </div>
+                <div class="form-group">
+                    <div class="peers ai-c jc-sb fxw-nw">
+                        <div class="peer">
+                            <div class="checkbox checkbox-circle checkbox-info peers ai-c">
+                                <input
                                     type="checkbox"
                                     ng-true-value="1"
                                     ng-false-value="0"
@@ -90,68 +89,68 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     ng-disabled="$ctrl.disableLogin"
                                     id="RememberMeCheckbox"
                                     class="peer">
-                            <label for="RememberMeCheckbox" class=" peers peer-greed js-sb ai-c">
-                                <span class="peer peer-greed"><?= __('Remember Me') ?></span>
-                            </label>
+                                <label for="RememberMeCheckbox" class=" peers peer-greed js-sb ai-c">
+                                    <span class="peer peer-greed"><?= __('Remember Me') ?></span>
+                                </label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="peer">
-                        <button
+                        <div class="peer">
+                            <button
                                 type="submit"
                                 class="btn btn-primary"
                                 ng-disabled="$ctrl.disableLogin">
                         <span>
                             <i class="fa fa-spinner fa-spin" ng-show="$ctrl.disableLogin"></i>
                         </span>
-                            <?= __('Login') ?>
-                        </button>
+                                <?= __('Login') ?>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        <?php endif; ?>
+        <!-- End form login -->
+
+        <!-- Users with valid SSL certificates are always logged in -->
+        <div ng-if="$ctrl.hasValidSslCertificate">
+            <div class="alert alert-success" role="alert">
+                <?= __('Authorization through SSL certificate successfully.') ?>
+            </div>
+
+            <div class="form-group">
+                <div class="peers ai-c jc-sb fxw-nw">
+                    <div class="peer">
+                    </div>
+                    <div class="peer">
+                        <a
+                            href="/"
+                            class="btn btn-primary">
+                            <?= __('Start') ?>
+                        </a>
                     </div>
                 </div>
             </div>
-        </form>
-    <?php endif; ?>
-    <!-- End form login -->
-
-    <!-- Users with valid SSL certificates are always logged in -->
-    <div ng-if="$ctrl.hasValidSslCertificate">
-        <div class="alert alert-success" role="alert">
-            <?= __('Authorization through SSL certificate successfully.') ?>
         </div>
+        <!-- End certificates login -->
 
-        <div class="form-group">
-            <div class="peers ai-c jc-sb fxw-nw">
-                <div class="peer">
-                </div>
-                <div class="peer">
-                    <a
-                            href="/"
-                            class="btn btn-primary">
-                        <?= __('Start') ?>
-                    </a>
-                </div>
-            </div>
+
+        <div class="float-right" style="padding-top: 100px;">
+            <a href="https://openitcockpit.io/" target="_blank" class="btn btn-sm btn-light btn-icon">
+                <i class="fa fa-lg fa-globe"></i>
+            </a>
+            <a href="https://github.com/it-novum/openITCOCKPIT" target="_blank"
+               class="btn btn-sm btn-light btn-icon">
+                <i class="fab fa-lg fa-github"></i>
+            </a>
+            <a href="https://twitter.com/openITCOCKPIT" target="_blank" class="btn btn-sm btn-light btn-icon">
+                <i class="fab fa-lg fa-twitter"></i>
+            </a>
+            <a href="https://www.reddit.com/r/openitcockpit" target="_blank" class="btn btn-sm btn-light btn-icon">
+                <i class="fab fa-lg fa-reddit"></i>
+            </a>
+            <a href="https://discord.gg/G8KhxKuQ9G" target="_blank" class="btn btn-sm btn-light btn-icon">
+                <i class="fab fa-lg fa-discord"></i>
+            </a>
         </div>
     </div>
-    <!-- End certificates login -->
-
-
-    <div class="float-right" style="padding-top: 100px;">
-        <a href="https://openitcockpit.io/" target="_blank" class="btn btn-sm btn-light btn-icon">
-            <i class="fa fa-lg fa-globe"></i>
-        </a>
-        <a href="https://github.com/it-novum/openITCOCKPIT" target="_blank"
-           class="btn btn-sm btn-light btn-icon">
-            <i class="fab fa-lg fa-github"></i>
-        </a>
-        <a href="https://twitter.com/openITCOCKPIT" target="_blank" class="btn btn-sm btn-light btn-icon">
-            <i class="fab fa-lg fa-twitter"></i>
-        </a>
-        <a href="https://www.reddit.com/r/openitcockpit" target="_blank" class="btn btn-sm btn-light btn-icon">
-            <i class="fab fa-lg fa-reddit"></i>
-        </a>
-        <a href="https://discord.gg/G8KhxKuQ9G" target="_blank" class="btn btn-sm btn-light btn-icon">
-            <i class="fab fa-lg fa-discord"></i>
-        </a>
-    </div>
-
 </div>

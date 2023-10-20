@@ -91,9 +91,9 @@ if ($images['description'] !== ''):
 endif;
 ?>
 
-<div class="peers ai-s fxw-nw h-100vh">
-    <login-layout></login-layout>
-</div>
+
+<login-layout></login-layout>
+
 
 <?php /*
 
