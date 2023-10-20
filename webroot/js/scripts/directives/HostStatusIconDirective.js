@@ -32,7 +32,7 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                 }else{
                     currentstate = parseInt($scope.state, 10);
                 }
-                console.log($scope.humanState);
+
                 // If not passed directly into directive, check host for the humanState.
                 if(typeof ($scope.humanState) !== "string"){
                     if(typeof ($scope.host.Hoststatus.humanState) === "string"){
