@@ -23,19 +23,27 @@ import "@fortawesome/fontawesome-free/css/all.css"
 import "noty/lib/noty.css"
 import "noty/lib/themes/metroui.css"
 import "./assets/css/index.css";
+import {LoginLayoutComponent} from "./controllers/LoginLayout.component";
 
 @NgModule({
     imports: [
         BrowserModule,
         UpgradeModule,
         HttpClientModule,
-        AngularToastifyModule
+        AngularToastifyModule,
     ],
     providers: [
         ToastService
+    ],
+    declarations: [
+        LoginLayoutComponent
+    ],
+    bootstrap: [
+        LoginLayoutComponent
     ]
+
 })
-export class AppModule {
+export class AppModule implements DoBootstrap {
     // Override Angular bootstrap so it doesn't do anything
     ngDoBootstrap() {
     }
