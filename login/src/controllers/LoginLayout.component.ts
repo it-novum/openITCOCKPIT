@@ -8,10 +8,16 @@ let LoginLayoutComponent = {
 
         <div class="login-screen">
             <figure>
-                <figcaption>Bild 1</figcaption>
+                <figcaption>
+                    {{ $ctrl.images.images[0].credit }}
+                    <span ng-if="$ctrl.images.description != ''">- {{$ctrl.images.description}}</span>
+                </figcaption>
             </figure>
             <figure>
-                <figcaption>Bild 2</figcaption>
+                <figcaption>
+                    {{ $ctrl.images.images[1].credit }}
+                    <span ng-if="$ctrl.images.description != ''">- {{$ctrl.images.description}}</span>
+                </figcaption>
             </figure>
         </div>
 
@@ -28,7 +34,7 @@ let LoginLayoutComponent = {
 
         constructor($http) {
             this.$http = $http;
-            
+
             this.load();
         }
 
