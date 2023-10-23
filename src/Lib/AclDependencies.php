@@ -276,6 +276,7 @@ class AclDependencies {
             ->allow('Users', 'getLocaleOptions')
             ->allow('Users', 'getUserPermissions');
 
+
         ///////////////////////////////
         //    Add dependencies       //
         //////////////////////////////

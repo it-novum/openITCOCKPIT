@@ -192,7 +192,9 @@ class StatuspagesTable extends Table
     public function getStatuspagesIndex(StatuspagesFilter $StatuspagesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all');
         $query->contain(['Containers']);
-        $query->where($StatuspagesFilter->indexFilter());
+        $query->where($StatuspagesFilter->indexFilter())
+            ->distinct('Statuspages.id');
+        ;
 
         $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
@@ -201,10 +203,8 @@ class StatuspagesTable extends Table
             return $q;
         });
 
-        $query->distinct('Statuspages.id');
-
         $query->disableHydration();
-        $query->order($StatuspagesFilter->getOrderForPaginator('Statuspages.name', 'asc'));
+        $query->order($StatuspagesFilter->getOrderForPaginator('Statuspages.id', 'asc'));
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -352,7 +352,7 @@ class StatuspagesTable extends Table
                         }
                     }
                     if ($hostViewData['isInDowntime']) {
-                        $downtime = $this->getHostDowntime($host['uuid'], $DowntimehistoryHostsTable);
+                        $downtime = $this->getHostDowntime($host['uuid'], $DowntimehistoryHostsTable, $UserTime);
                       //  $downtime = $DowntimehistoryHostsTable->byHostUuid($host['uuid']);
                         if (!empty($downtime)) {
                            // $Downtime = new Downtime($downtime, false, $UserTime);
@@ -396,7 +396,7 @@ class StatuspagesTable extends Table
                         }
                     }
                     if ($serviceViewData['isInDowntime']) {
-                        $downtime = $this->getserviceDowntime($service['uuid'], $DowntimehistoryServicesTable);
+                        $downtime = $this->getserviceDowntime($service['uuid'], $DowntimehistoryServicesTable, $UserTime);
                         if (!empty($downtime)) {
                             $serviceViewData['downtimeData'] = $downtime;
                         }
@@ -753,16 +753,17 @@ class StatuspagesTable extends Table
      * @param DowntimehistoryServicesTableInterface $table
      * @return array
      */
-    private function getServiceDowntime($uuid, DowntimehistoryServicesTableInterface $table, $isRunning = true) {
+    private function getServiceDowntime($uuid, DowntimehistoryServicesTableInterface $table, $userTime, $isRunning = true) {
         $downtime = $table->byServiceUuid($uuid, $isRunning);
+        $downtime = new Downtime($downtime->toArray(), true, $userTime);
         $downtime = $downtime->toArray();
         $comment = "Work in progress";
         if($this->comments){
-            $comment = $downtime['comment_data'];
+            $comment = $downtime['commentData'];
         }
         return [
-            'scheduledStartTime' => $downtime['scheduled_start_time'],
-            'scheduledEndTime' => $downtime['scheduled_end_time'],
+            'scheduledStartTime' => $downtime['scheduledStartTime'],
+            'scheduledEndTime' => $downtime['scheduledEndTime'],
             'commentData' => $comment
         ];
     }
@@ -770,18 +771,20 @@ class StatuspagesTable extends Table
     /**
      * @param string $uuid
      * @param DowntimehistoryHostsTableInterface $table
+     * @param $userTime
      * $return array
      */
-    private function getHostDowntime($uuid, DowntimehistoryHostsTableInterface $table, $isRunning = true) {
+    private function getHostDowntime($uuid, DowntimehistoryHostsTableInterface $table, $userTime, $isRunning = true) {
         $downtime = $table->byHostUuid($uuid, $isRunning);
+        $downtime = new Downtime($downtime->toArray(), true, $userTime);
         $downtime = $downtime->toArray();
         $comment = "Work in progress";
         if($this->comments){
-            $comment = $downtime['comment_data'];
+            $comment = $downtime['commentData'];
         }
         return [
-            'scheduledStartTime' => $downtime['scheduled_start_time'],
-            'scheduledEndTime' => $downtime['scheduled_end_time'],
+            'scheduledStartTime' => $downtime['scheduledStartTime'],
+            'scheduledEndTime' => $downtime['scheduledEndTime'],
             'commentData' => $comment
         ];
     }
@@ -808,8 +811,7 @@ class StatuspagesTable extends Table
             foreach ($hostDowntimes as $hostDowntime) {
                 $HostDowntime = new Downtime($hostDowntime->toArray(), true, $userTime);
                 $downtimeArray = $HostDowntime->toArray();
-               // $planned[] = $HostDowntime->toArray();
-                $comment = "TestWork in progress";
+                $comment = "Work in progress";
                 if($this->comments){
                     $comment = $downtimeArray['commentData'];
                 }

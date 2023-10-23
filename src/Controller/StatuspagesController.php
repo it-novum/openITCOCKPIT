@@ -54,6 +54,7 @@ use App\Model\Table\StatuspagesTable;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
+use Cake\Event\EventInterface;
 
 
 /**
@@ -64,6 +65,12 @@ use itnovum\openITCOCKPIT\Core\HostgroupConditions;
  */
 class StatuspagesController extends AppController
 {
+    //https://discourse.cakephp.org/t/bypass-authentication/9197/3
+   public function beforeFilter(EventInterface $event) {
+        parent::beforeFilter($event);
+        $this->Authentication->addUnauthenticatedActions(['public']);
+    }
+
     /**
      * Index method
      *
@@ -116,19 +123,15 @@ class StatuspagesController extends AppController
             //Only ship HTML template for angular
             return;
         }
-       /* if(empty($id)){
-            throw new NotFoundException('Statuspage not found');
-        } */
-        //$User = new User($this->getUser());
-        //$UserTime = $User->getUserTime();
+
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
-        $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
-       // $User = new User($this->getUser());
-        //$UserTime = $User->getUserTime();
+        //$UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
         $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime);
 
         $this->set('Statuspage', $statuspageViewData);
@@ -146,6 +149,7 @@ class StatuspagesController extends AppController
         if(!$StatuspagesTable->isPublic($id)){
             throw new  MethodNotAllowedException('Statuspage not public');
         }
+        $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime, true);
 
@@ -364,14 +368,9 @@ class StatuspagesController extends AppController
             $containerIds = array_merge($containerIds, $subIds);
         }
         $containerIds = array_unique($containerIds);
-        /* if (!in_array(ROOT_CONTAINER, $containerIds)){
-             $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-         } */
+
         $ServiceFilter = new ServiceFilter($this->request);
 
-
-        // $serviceConditions = ['Services.disabled' => 0];
-        //if(!empty($ServiceFilter->indexFilter())){
         $serviceConditions = $ServiceFilter->indexFilter();
         //}
         $ServiceCondition = new ServiceConditions($serviceConditions);

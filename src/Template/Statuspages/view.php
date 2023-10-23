@@ -28,9 +28,6 @@
  * @var \App\Model\Entity\Statuspage $statuspage
  */
 
-use itnovum\openITCOCKPIT\Core\Views\Logo;
-
-$logo = new Logo();
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -47,7 +44,6 @@ $logo = new Logo();
         <i class="fa fa-plus"></i> <?php echo __('View'); ?>
     </li>
 </ol>
-
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
@@ -81,28 +77,30 @@ $logo = new Logo();
                                     <div class="txt-color-white">
                                         <div ng-if="item.currentState > 0 && !item.isAcknowledged && item.type != 'Servicegroup' && item.type != 'Hostgroup'"
                                              class="bg-{{item.color}}">
-                                            <h4><b><i class="far fa-user"></i> {{item.type}} is not acknowledged!</b>
+                                            <h4><b><i class="far fa-user"></i> {{item.type}} <?php echo __('is not acknowledged!');?> </b>
                                             </h4>
                                         </div>
-                                        <div ng-if="item.currentState > 0 && item.isAcknowledged && item.type != 'Servicegroup' && item.type != 'Hostgroup'">
-                                            <h4><b><i class="fas fa-user"></i> {{item.type}} is acknowledged!</b></h4>
+                                        <div ng-if="item.currentState > 0 && item.isAcknowledged">
+                                            <h4 ng-if="item.type == 'Service'"><b><i class="fas fa-user"></i> <?php echo __('State of service is acknowledged'); ?></b></h4>
+                                            <h4 ng-if="item.type == 'Host'"><b><i class="fas fa-user"></i> <?php echo __('State of host is acknowledged'); ?></b></h4>
                                         </div>
                                         <div ng-if="item.isAcknowledged">
-                                            <b ng-if="Statuspage.statuspage.showComments">Comment:
+                                            <b ng-if="Statuspage.statuspage.showComments"><?php echo __('Comment'); ?>:
                                                 {{item.acknowledgeData.comment_data }}</b>
-                                            <b ng-if="!Statuspage.statuspage.showComments">Comment: Work in
-                                                progress!</b>
+                                            <b ng-if="!Statuspage.statuspage.showComments"><?php echo __('Comment'); ?>: <?php echo __('Work in progress'); ?></b>
                                         </div>
                                     </div>
                                     <div class="txt-color-white">
                                         <div ng-if="item.isInDowntime && item.downtimeData" class="pt-3">
                                             <table class="table table-sm">
-                                                <tr> <div><h4><i class="fa fa-power-off"></i>{{item.type}} is currently in a
-                                                            planned maintenance period!</b></h4></div></tr>
+                                                <tr>
+                                                    <div ng-if="item.type == 'Service'"><h4><i class="fa fa-power-off"></i> <?php echo __('The service is currently in a planned maintenance period');?></b></h4></div>
+                                                    <div ng-if="item.type == 'Host'"><h4><i class="fa fa-power-off"></i> <?php echo __('The host is currently in a planned maintenance period');?></b></h4></div>
+                                                </tr>
                                                 <tr class="txt-color-white bg-{{item.color}}">
-                                                    <td><div class="txt-color-white"><h5> From: {{item.downtimeData.scheduledStartTime}}</h5></div></td>
-                                                    <td><div class="txt-color-white"><h5>End: {{item.downtimeData.scheduledEndTime}}</h5></div></td>
-                                                    <td><div class="txt-color-white"><h5>:Comment: {{Statuspage.statuspage.showComments ? item.downtimeData.commentData : "work in progress" }}</h5></div></td>
+                                                    <td><div class="txt-color-white"><h5> <?php echo __('Start'); ?>: {{item.downtimeData.scheduledStartTime}}</h5></div></td>
+                                                    <td><div class="txt-color-white"><h5><?php echo __('End'); ?>: {{item.downtimeData.scheduledEndTime}}</h5></div></td>
+                                                    <td><div class="txt-color-white"><h5><?php echo __('Comment'); ?>: {{Statuspage.statuspage.showComments ? item.downtimeData.commentData : "work in progress" }}</h5></div></td>
                                                 </tr>
                                             </table>
                                         </div>
@@ -113,19 +111,14 @@ $logo = new Logo();
                                     <div ng-if="item.problemtext_down" class="txt-color-white"><h4>
                                             <b>{{item.problemtext_down}}</b></h4>
                                     </div>
-                                    <div ng-if="item.cumulatedState == 0 && item.currentState == 0 && !item.isInDowntime"
-                                         class="txt-color-white">
-                                        <h4><b>Full operational!</b></h4>
-                                    </div>
-
                                 </div>
                                 <div ng-if="item.plannedDowntimes" class="card-footer table-responsive">
                                     <table class="table table-bordered table-striped table-sm">
-                                        <tr> <div><h5><i class="fa fa-power-off"></i>Planned Downtimes for the next 10 days:</h5></div></tr>
+                                        <tr> <div><h5><i class="fa fa-power-off"></i><?php echo __('Planned Downtimes for the next 10 days:'); ?></h5></div></tr>
                                         <tr ng-repeat="downtime in item.plannedDowntimes">
-                                            <td style="border-width:1px; border-color:lightgray;"><div><h5>Start:</h5></div><div> {{downtime.scheduledStartTime}}</div></td>
-                                            <td style="border-width:1px; border-color:lightgray"><div><h5>End:</h5></div><div>{{downtime.scheduledEndTime}}</div></td>
-                                            <td style="border-width:1px; border-color:lightgray;"><div><h5>:Comment:</h5></div><div> {{downtime.commentData}}</div></td>
+                                            <td style="border-width:1px; border-color:lightgray;"><div><h5><?php echo __('Start'); ?>:</h5></div><div> {{downtime.scheduledStartTime}}</div></td>
+                                            <td style="border-width:1px; border-color:lightgray"><div><h5><?php echo __('End'); ?>:</h5></div><div>{{downtime.scheduledEndTime}}</div></td>
+                                            <td style="border-width:1px; border-color:lightgray;"><div><h5><?php echo __('Comment'); ?>:</h5></div><div> {{downtime.commentData}}</div></td>
                                         </tr>
                                     </table>
                                 </div>
@@ -137,3 +130,4 @@ $logo = new Logo();
         </div>
     </div>
 </div>
+
