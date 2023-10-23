@@ -9053,7 +9053,7 @@ msgstr "Spróbuj ręcznego ponownego połączenia"
 
 #: ./src/Template/Administrators/querylog.php:66
 msgid "Truncate log"
-msgstr "Opróżnij log""
+msgstr "Opróżnij log"
 
 #: ./src/Template/Administrators/querylog.php:76
 msgid "Enable query logging"
@@ -10217,7 +10217,7 @@ msgstr "Agenci z dokładnym dopasowaniem adresu IP zostaną wybrani automatyczni
 
 #: ./src/Template/Agentconnector/show_output.php:46
 msgid "openITCOCKPIT Agent Output of:"
-msgstr "Output Agenta openITCOCKPIT z:" 
+msgstr "Output Agenta openITCOCKPIT z:"
 
 #: ./src/Template/Agentconnector/show_output.php:49
 msgid "Agent: "
@@ -20243,7 +20243,7 @@ msgstr "Tytuł : {0}"
 
 #: ./src/Template/email/text/message_otd_mail.php:40
 msgid "Description : {0}"
-msgstr "Opis : {0}""
+msgstr "Opis : {0}"
 
 #: ./src/Template/email/text/message_otd_mail.php:44
 msgid "Expiration (Duration in days: {0})"
@@ -21123,7 +21123,7 @@ msgstr "Status usługi nieznany"
 
 #: ./src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:55
 msgid "Service warning"
-msgstr "Ostrzeżenie usługi""
+msgstr "Ostrzeżenie usługi"
 
 #: ./src/itnovum/openITCOCKPIT/Core/ValueObjects/LogentryTypes.php:56
 msgid "Service critical"
@@ -21989,7 +21989,7 @@ msgstr "Ostatni unikatowy numer zdarzenia hosta."
 
 #: ./src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:106
 msgid "Unique number of the current host problem state."
-msgstr "Unikatowy numer bieżącego stanu problemowego hosta.""
+msgstr "Unikatowy numer bieżącego stanu problemowego hosta."
 
 #: ./src/itnovum/openITCOCKPIT/Monitoring/DefaultMacros.php:110
 msgid "Unique number of the last host problem state."
@@ -29741,4 +29741,3 @@ msgstr "Host VMware"
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:96
 msgid "VMware Snapshot services"
 msgstr "Usługi Snapshot VMware"
-
