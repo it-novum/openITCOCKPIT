@@ -2,9 +2,7 @@
 
 The open source configuration interface for [Nagios](https://www.nagios.org/), [Naemon](http://www.naemon.org/) and [Prometheus](https://prometheus.io/)
 
-<center>
-<img src="https://openitcockpit.io/img/openitcockpit_logo_webseite_weisse_kacheln_nur_logo.svg" alt="openITCOCKPIT logo" width="auto" height="200">
-</center>
+![openITCOCKPIT Logo](https://openitcockpit.io/assets/images/site/logos/logo_open_it_cockpit_community_edition_rgb.svg)
 
 [![Discord: ](https://img.shields.io/badge/Discord-Discord.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/G8KhxKuQ9G)
 [![Twitter: ](https://img.shields.io/twitter/follow/openitcockpit?style=social)](https://twitter.com/openitcockpit)
@@ -31,13 +29,15 @@ Password: demo123
 
 # Build status
 
-| Distribution | Stable                                                                                                      | Nightly                                                                                                      |
-|--------------|-------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+| Distribution | Stable                                                                                                            | Nightly                                                                                                            |
+|--------------|-------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------|
 | Focal        | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
-| Bionic       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
-| Bullseye     | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
-| Buster       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
-| RHEL 8       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
+| Jammy        | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| Bullseye     | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| Bookworm     | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| RHEL 8       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| RHEL 9       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square)  | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square)  |
+| Docker       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-docker%2Fstable&style=flat-square)    | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-docker%2Fnightly&style=flat-square)    |
 
 
 # System requirements
