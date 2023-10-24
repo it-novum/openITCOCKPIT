@@ -89,11 +89,11 @@ msgstr "Alle Cronjobs werden sofort ausgeführt!"
 
 #: ./src/Command/CronjobsCommand.php:73
 msgid "List all available cronjobs!"
-msgstr ""
+msgstr "Alle verfügbaren Cronjobs auflisten!"
 
 #: ./src/Command/CronjobsCommand.php:79
 msgid "Only execute the given cronjob by Task name"
-msgstr ""
+msgstr "Führen Sie den angegebenen Cronjob nur nach Aufgabennamen aus"
 
 #: ./src/Command/DebugCommand.php:66
 msgid "Tail and parse monitoring logfile"
@@ -109,7 +109,7 @@ msgstr "Lese und übersetze stdin. Zum Beispiel: cat file.cfg | oitc debug -s"
 
 #: ./src/Command/DebugCommand.php:69
 msgid "Replace timestamps in output - only for --stdin"
-msgstr ""
+msgstr "Zeitstempel in der Ausgabe ersetzen – nur für --stdin"
 
 #: ./src/Command/DebugCommand.php:114
 msgid "[T]ail and parse monitoring log file"
@@ -121,11 +121,11 @@ msgstr "[TF] (Tail -f) Zeige die Monitoring Logdatei"
 
 #: ./src/Command/DebugCommand.php:116
 msgid "[H] Debug host configuration files"
-msgstr ""
+msgstr "[H] Hostkonfigurationsdateien debuggen"
 
 #: ./src/Command/DebugCommand.php:117
 msgid "[HG] Debug host group configuration files"
-msgstr ""
+msgstr "[HG] Hostgruppen-Konfigurationsdateien debuggen"
 
 #: ./src/Command/DebugCommand.php:118
 msgid "[HT] Debug host template configuration files"
@@ -137,7 +137,7 @@ msgstr "[S] Zeige die Konfigurationsdatei des Services"
 
 #: ./src/Command/DebugCommand.php:120
 msgid "[SG] Debug service group configuration files"
-msgstr ""
+msgstr "[SG] Debug-Servicegruppenkonfigurationsdateien"
 
 #: ./src/Command/DebugCommand.php:121
 msgid "[ST] Debug service template configuration files"
@@ -145,7 +145,7 @@ msgstr "[ST] Zeige die Konfigurationsdatei der Servicevorlage"
 
 #: ./src/Command/DebugCommand.php:122
 msgid "[TP] Debug time period configuration files"
-msgstr ""
+msgstr "[TP] Debug-Zeitraum-Konfigurationsdateien"
 
 #: ./src/Command/DebugCommand.php:123
 msgid "[CM] Debug command configuration files"
@@ -165,15 +165,15 @@ msgstr "[HE] Zeige die Konfigurationsdatei der Host-Eskalation"
 
 #: ./src/Command/DebugCommand.php:127
 msgid "[SE] Debug service escalation configuration files"
-msgstr ""
+msgstr "[SE] Debug-Service-Eskalationskonfigurationsdateien"
 
 #: ./src/Command/DebugCommand.php:128
 msgid "[HD] Debug host dependency configuration files"
-msgstr ""
+msgstr "[HD] Hostabhängigkeitskonfigurationsdateien debuggen"
 
 #: ./src/Command/DebugCommand.php:129
 msgid "[SD] Debug service dependency configuration files"
-msgstr ""
+msgstr "[SD] Debug-Serviceabhängigkeitskonfigurationsdateien"
 
 #: ./src/Command/DebugCommand.php:130
 msgid "[UUID] Search object by UUID"
@@ -504,43 +504,43 @@ msgstr "Schreiben Sie die erste Checkmk-Konfiguration"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:82
 msgid "ID of the container open alerts should be monitored. If empty, all alerts will be considered. There can be multiple container-id arguments"
-msgstr ""
+msgstr "Die ID der Container-Offen-Warnungen sollte überwacht werden. Wenn es leer ist, werden alle Warnungen berücksichtigt. Es können mehrere Container-ID-Argumente vorhanden sein"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:91
 msgid "Include alerts of all sub-container."
-msgstr ""
+msgstr "Schließen Sie Warnungen für alle Untercontainer ein."
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:101
 msgid "0=New, 1=In Progress, 2=Done, 3=Manually Closed. There can be multiple statetype arguments"
-msgstr ""
+msgstr "0=Neu, 1=In Bearbeitung, 2=Fertig, 3=Manuell geschlossen. Es können mehrere Statetype-Argumente vorhanden sein"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:110
 msgid "Number of alerts before the plugin will output a warning state. There can be multiple warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --warning 5 --statetype 1 --warning 10"
-msgstr ""
+msgstr "Anzahl der Warnungen, bevor das Plugin einen Warnstatus ausgibt. Für jeden --statetype können mehrere Warnargumente vorhanden sein. Es ist wichtig, die gleiche Reihenfolge einzuhalten, z. B.: --statetype 0 --warning 5 --statetype 1 --warning 10"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:119
 msgid "Number of alerts before the plugin will output a critical state. There can be multiple critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --critical 10 --statetype 1 --critical 15"
-msgstr ""
+msgstr "Anzahl der Warnungen, bevor das Plugin einen kritischen Zustand ausgibt. Für jeden --statetype können mehrere kritische Argumente vorhanden sein. Es ist wichtig, die gleiche Reihenfolge zu haben, z. B.: --statetype 0 --critical 10 --statetype 1 --critical 15"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:128
 msgid "Alerts older than the provided number in days will trigger a warning state. There can be multiple age-warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
-msgstr ""
+msgstr "Warnungen, die älter als die angegebene Anzahl in Tagen sind, lösen einen Warnstatus aus. Für jeden --statetype können mehrere Alters-Warnungsargumente vorhanden sein. Es ist wichtig, die gleiche Reihenfolge zu haben, z. B.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:136
 msgid "Alerts older than the provided number in days will trigger a critical state. There can be multiple age-critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
-msgstr ""
+msgstr "Warnungen, die älter als die angegebene Anzahl in Tagen sind, lösen einen kritischen Status aus. Für jeden --statetype kann es mehrere alters-kritische Argumente geben. Es ist wichtig, die gleiche Reihenfolge zu haben, z. B.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:144
 msgid "Only consider alerts where the message contains provided string"
-msgstr ""
+msgstr "Berücksichtigen Sie nur Warnungen, bei denen die Nachricht die angegebene Zeichenfolge enthält"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:153
 msgid "Determines if the plugin should print detailed information as long output."
-msgstr ""
+msgstr "Legt fest, ob das Plugin detaillierte Informationen als lange ausgabe ausgeben soll."
 
 #: .-modules/CustomalertModule/src/Command/CustomAlertWorkerCommand.php:111
 msgid "Print UUIDs of dropped services"
-msgstr ""
+msgstr "UUIDs gelöschter Services ausgeben"
 
 #: .-modules/MassenversandDeModule/src/Command/NotifyByMassenversandDeCommand.php:53
 msgid "The Receiver of the message in international format eg. 0049123456789"
@@ -603,4 +603,3 @@ msgstr "Schleifenintervall in Sekunden"
 #: .-modules/ServicenowModule/src/Command/ServicenowNotificationCommand.php:59
 msgid "comment"
 msgstr "Kommentar"
-
