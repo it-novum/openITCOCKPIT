@@ -106,7 +106,7 @@ After successful registration you can install the free community modules at Syst
 openITCOCKPIT's development is publicly available in GitHub. Everybody is welcome to join :-)
 
 - [Creating an openITCOCKPIT development environment¶](https://docs.openitcockpit.io/en/development/setup-dev-env/)
-- [Create your own translation](https://github.com/it-novum/openITCOCKPIT/issues/1248)
+- [Create your own translation](https://github.com/it-novum/openITCOCKPIT/issues/1573)
 - [Creating a new openITCOCKPIT module](https://docs.openitcockpit.io/en/development/create-new-module/introduction/)
 - [Creating a new check plugin](https://docs.openitcockpit.io/en/development/new-check-plugin/)
 
