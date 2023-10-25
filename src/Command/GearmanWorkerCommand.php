@@ -1476,9 +1476,10 @@ class GearmanWorkerCommand extends Command {
                     exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
 
                     // Avoid "MySQL server has gone away"
-                    $connection = $SystemsettingsTable->getConnection();
-                    $connection->disconnect();
-                    $connection->connect();
+                    // CakePHP has a ReconnectStrategy which should make this code obsolet.
+                    //$connection = $SystemsettingsTable->getConnection();
+                    //$connection->getDriver()->disconnect();
+                    //$connection->getDriver()->connect();
 
                     $entity->set('finished', 1);
                     $entity->set('successfully', 0);
@@ -1523,9 +1524,10 @@ class GearmanWorkerCommand extends Command {
                     exec($systemsettings['MONITORING']['MONITORING.AFTER_EXPORT'], $output, $returncode);
 
                     // Avoid "MySQL server has gone away"
-                    $connection = $SystemsettingsTable->getConnection();
-                    $connection->disconnect();
-                    $connection->connect();
+                    // CakePHP has a ReconnectStrategy which should make this code obsolet.
+                    //$connection = $SystemsettingsTable->getConnection();
+                    //$connection->getDriver()->disconnect();
+                    //$connection->getDriver()->connect();
 
                     $entity->set('finished', 1);
                     $entity->set('successfully', 0);
@@ -1666,10 +1668,10 @@ class GearmanWorkerCommand extends Command {
             /** @var ExportsTable $ExportsTable */
             $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
 
-            // Avoid "MySQL server has gone away"
-            $connection = $ExportsTable->getConnection();
-            $connection->disconnect();
-            $connection->connect();
+            // CakePHP has a ReconnectStrategy which should make this code obsolet.
+            //$connection = $SystemsettingsTable->getConnection();
+            //$connection->getDriver()->disconnect();
+            //$connection->getDriver()->connect();
 
             $entity = $ExportsTable->find()
                 ->where([
@@ -1700,8 +1702,7 @@ class GearmanWorkerCommand extends Command {
         $ExportsTable = TableRegistry::getTableLocator()->get('Exports');
 
         // Reset satellites.nsta_sync_instance field for go NSTA
-        $SatellitesTable->query()
-            ->update()
+        $SatellitesTable->updateQuery()
             ->set(['nsta_sync_instance' => 0])
             ->execute();
 

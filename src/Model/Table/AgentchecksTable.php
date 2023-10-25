@@ -137,7 +137,7 @@ class AgentchecksTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getAgentcheckById($id) {
-        return $this->query()
+        return $this->selectQuery()
             ->contain([
                 'Servicetemplates'
             ])
@@ -152,7 +152,7 @@ class AgentchecksTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getAgentcheckByName($name) {
-        return $this->query()
+        return $this->selectQuery()
             ->contain([
                 'Servicetemplates' => function (Query $q) {
                     $q->contain([
