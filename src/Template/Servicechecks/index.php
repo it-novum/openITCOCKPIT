@@ -234,7 +234,7 @@
                             <tr ng-repeat="Servicecheck in servicechecks">
 
                                 <td class="text-center">
-                                    <servicestatusicon state="Servicecheck.Servicecheck.state"></servicestatusicon>
+                                    <servicestatusicon state="Servicecheck.Servicecheck.state" is-hardstate="Servicecheck.Servicecheck.is_hardstate"></servicestatusicon>
                                 </td>
                                 <td>
                                     {{ Servicecheck.Servicecheck.start_time }}
