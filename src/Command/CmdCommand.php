@@ -227,10 +227,10 @@ class CmdCommand extends Command {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         //Reconnect datasource to avoid "MySQL has gone away"
-        // Avoid "MySQL server has gone away"
-        $connection = $ServicesTable->getConnection();
-        $connection->disconnect();
-        $connection->connect();
+        // CakePHP has a ReconnectStrategy which should make this code obsolet.
+        //$connection = $ServicesTable->getConnection();
+        //$connection->getDriver()->disconnect();
+        //$connection->getDriver()->connect();
 
         $query = $ServicesTable->find();
         $query
