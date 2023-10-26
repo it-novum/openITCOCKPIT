@@ -41,6 +41,7 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Ldap\LdapClient;
 
@@ -177,10 +178,14 @@ class LdapGroupImportCommand extends Command implements CronjobInterface {
                 // Keep manually assigned user container roles
                 $data = [
                     'usercontainerroles'      => [],
-                    // For validation only
+                    // For validation only (always empty in the LdapGroupCommand bc this is part of the usercontainerroles array above)
                     'usercontainerroles_ldap' => [
-                        '_ids'
+                        '_ids' => []
                     ],
+                    // Add any containers for the validation (in case usercontainerroles is empty)
+                    'containers'              => [
+                        '_ids' => Hash::extract($user, 'containers.{n}.id')
+                    ]
                 ];
                 foreach ($user->usercontainerroles as $usercontainerrole) {
                     /** @var Usercontainerrole $usercontainerrole */
