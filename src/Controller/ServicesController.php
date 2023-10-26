@@ -249,6 +249,7 @@ class ServicesController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
+            ->isHardstate()
             ->isFlapping()
             ->lastStateChange()
             ->lastHardStateChange();
