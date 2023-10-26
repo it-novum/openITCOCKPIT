@@ -195,46 +195,47 @@
                         </div>
 
                         <div class="form-group required" ng-class="{'has-error': errors.evaluation}">
-                            <label class="control-label col-lg-12">
+                            <label class="control-label">
                                 <?php echo __('Evaluation'); ?>
                             </label>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input"
-                                       name="downtimeType"
-                                       id="InstantreportEvaluation1"
-                                       ng-model="post.Instantreport.evaluation"
-                                       ng-value="1">
-                                <label class="custom-control-label" for="InstantreportEvaluation1">
-                                    <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
-                                </label>
+                            <div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input"
+                                           name="downtimeType"
+                                           id="InstantreportEvaluation1"
+                                           ng-model="post.Instantreport.evaluation"
+                                           ng-value="1">
+                                    <label class="custom-control-label" for="InstantreportEvaluation1">
+                                        <i class="fa fa-desktop"></i> <?php echo __('Hosts'); ?>
+                                    </label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input"
+                                           name="downtimeType"
+                                           id="InstantreportEvaluation2"
+                                           ng-model="post.Instantreport.evaluation"
+                                           ng-value="2">
+                                    <label class="custom-control-label" for="InstantreportEvaluation2">
+                                        <i class="fa fa-cogs"></i> <?php echo __('Hosts and Services'); ?>
+                                    </label>
+                                </div>
+                                <div class="custom-control custom-radio custom-control-inline">
+                                    <input type="radio" class="custom-control-input"
+                                           name="downtimeType"
+                                           id="InstantreportEvaluation3"
+                                           ng-model="post.Instantreport.evaluation"
+                                           ng-value="3">
+                                    <label class="custom-control-label" for="InstantreportEvaluation3">
+                                        <i class="fa fa-cog"></i> <?php echo __('Service'); ?>
+                                    </label>
+                                </div>
                             </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input"
-                                       name="downtimeType"
-                                       id="InstantreportEvaluation2"
-                                       ng-model="post.Instantreport.evaluation"
-                                       ng-value="2">
-                                <label class="custom-control-label" for="InstantreportEvaluation2">
-                                    <i class="fa fa-cogs"></i> <?php echo __('Hosts and Services'); ?>
-                                </label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input"
-                                       name="downtimeType"
-                                       id="InstantreportEvaluation3"
-                                       ng-model="post.Instantreport.evaluation"
-                                       ng-value="3">
-                                <label class="custom-control-label" for="InstantreportEvaluation3">
-                                    <i class="fa fa-cog"></i> <?php echo __('Service'); ?>
-                                </label>
-                            </div>
+
                             <div ng-repeat="error in errors.evaluation">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
-                            <div class="col col-md-offset-2 col-md-10">
-                                <div class="help-block">
-                                    <?php echo __('Choose if <b><u>only</u></b> host, host and services or <b><u>only</u></b> services should be evaluated.'); ?>
-                                </div>
+                            <div class="help-block">
+                                <?php echo __('Choose if <b><u>only</u></b> host, host and services or <b><u>only</u></b> services should be evaluated.'); ?>
                             </div>
                         </div>
 

@@ -36,7 +36,6 @@ use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
-use App\Model\Entity\Servicetemplate;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\CommandargumentsTable;
 use App\Model\Table\CommandsTable;
@@ -67,6 +66,7 @@ use CustomalertModule\Model\Table\CustomalertsTable;
 use DistributeModule\Model\Table\SatellitesTable;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use GuzzleHttp\Exception\GuzzleException;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AcknowledgedServiceConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
@@ -988,6 +988,7 @@ class ServicesController extends AppController {
             $Cache = new KeyValueStore();
             $ServicetemplateCache = new KeyValueStore();
             $ServicetemplateEditCache = new KeyValueStore();
+            $ObjectsCacheChangelog = new ObjectsCache();
 
             $postData = $this->request->getData('data');
             $hostId = $this->request->getData('hostId');
@@ -1225,8 +1226,8 @@ class ServicesController extends AppController {
                             $host['Host']['container_id'],
                             $User->getId(),
                             $host['Host']['name'] . '/' . $servicename,
-                            array_merge($ServicesTable->resolveDataForChangelog($serviceData), $serviceData),
-                            array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog), $serviceForChangelog)
+                            array_merge($ServicesTable->resolveDataForChangelog($serviceData, $ObjectsCacheChangelog), $serviceData),
+                            array_merge($ServicesTable->resolveDataForChangelog($serviceForChangelog, $ObjectsCacheChangelog), $serviceForChangelog)
                         );
                     }
 
@@ -1732,7 +1733,7 @@ class ServicesController extends AppController {
 
         $downtime = [];
         if ($Servicestatus->isInDowntime()) {
-            $downtime = $DowntimehistoryServicesTable->byServiceUuid($serviceObj->getUuid());
+            $downtime = $DowntimehistoryServicesTable->byServiceUuid($serviceObj->getUuid(), true);
             if (!empty($downtime)) {
                 $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();
@@ -1769,7 +1770,7 @@ class ServicesController extends AppController {
 
         $hostDowntime = [];
         if ($Hoststatus->isInDowntime()) {
-            $hostDowntime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid());
+            $hostDowntime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid(), true);
             if (!empty($hostDowntime)) {
                 $DowntimeHost = new Downtime($hostDowntime, $allowEdit, $UserTime);
                 $hostDowntime = $DowntimeHost->toArray();

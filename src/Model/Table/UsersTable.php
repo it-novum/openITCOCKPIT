@@ -279,7 +279,34 @@ class UsersTable extends Table {
      * Custom validation rule for containers and or user container roles
      */
     public function validateHasContainerOrContainerUserRolePermissions($value, $context) {
-        return !empty($context['data']['containers']) || !empty($context['data']['usercontainerroles']['_ids']) || !empty($context['data']['usercontainerroles_ldap']['_ids']);
+        // return !empty($context['data']['containers']) || !empty($context['data']['usercontainerroles']['_ids']) || !empty($context['data']['usercontainerroles_ldap']['_ids']);
+
+        // ITC-3073
+        if (!empty($context['data']['containers'])) {
+            return true;
+        }
+
+        // Validation of POST request data (openITCOCKPIT Frontend)
+        if (!empty($context['data']['usercontainerroles']['_ids']) || !empty($context['data']['usercontainerroles_ldap']['_ids'])) {
+            return true;
+        }
+
+        // Validation of POST request data (openITCOCKPIT Frontend)
+        // _ids is set - so it is an empty array
+        // When it is a POST request from the openITCOCKPIT frontend we should never reach this code
+        if (isset($context['data']['usercontainerroles']['_ids']) || isset($context['data']['usercontainerroles_ldap']['_ids'])) {
+            return false;
+        }
+
+
+        // Validate LdapGroupImportCommand data
+        // The usercontainerroles array holds both manually assigned user container roles and those, which got assigned through LDAP
+        // This use a through_ldap (0 or 1) field in the linking table
+        if (!empty($context['data']['usercontainerroles'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -1338,6 +1365,7 @@ class UsersTable extends Table {
                     ]);
                     return $q;
                 },
+                'Containers'
             ])
             ->whereNotNull([
                 'samaccountname'

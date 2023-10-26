@@ -27,6 +27,9 @@
  * @var \App\View\AppView $this
  * @var \App\View\Helper\AclHelper $Acl
  */
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -53,6 +56,22 @@
                     <span class="fw-300"><i><?php echo __('overview'); ?></i></span>
                 </h2>
                 <div class="panel-toolbar">
+                    <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean" role="tablist">
+                        <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" ui-sref="ChangelogsIndex" role="tab">
+                                    <i class="fa-solid fa-timeline fa-rotate-90">&nbsp;</i> <?php echo __('Main overview'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                        <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('index', 'importchangelogs', 'ImportModule')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="ImportChangelogsIndex" role="tab">
+                                    <i class="fas fa-file-import">&nbsp;</i> <?php echo __('Import Module Changes'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
+                    </ul>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>

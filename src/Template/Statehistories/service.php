@@ -232,7 +232,7 @@
 
                                 <td class="text-center">
                                     <servicestatusicon
-                                        state="StatehistoryService.StatehistoryService.state"></servicestatusicon>
+                                        state="StatehistoryService.StatehistoryService.state" is-hardstate="StatehistoryService.StatehistoryService.is_hardstate"></servicestatusicon>
                                 </td>
                                 <td>
                                     {{ StatehistoryService.StatehistoryService.state_time }}

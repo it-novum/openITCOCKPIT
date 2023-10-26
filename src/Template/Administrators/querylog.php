@@ -58,7 +58,8 @@
                         ({{queryLog.length}}/15)
                     </div>
 
-                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="connectToQueryLogServer()" ng-if="!connected && connectionError && !manualReconnect">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="connectToQueryLogServer()"
+                            ng-if="!connected && connectionError && !manualReconnect">
                         <i class="fas fa-sync"></i> <?php echo __('Try manual reconnect'); ?>
                     </button>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="truncate()">
@@ -69,8 +70,21 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="frame-wrap">
+                        <div class="alert alert-info alert-block">
+                            <a href="javascript:void(0);" data-dismiss="alert" class="close">×</a><h5
+                                class="alert-heading"><i
+                                    class="fa fa-info-circle"></i> <?php echo __('Enable query logging'); ?></h5>
+                            <?php echo __(
+                                'It is very important to set {0} to {1} in the file',
+                                ' <code>log</code>',
+                                ' <code>true</code>'
+                            ); ?>
+                            <code>config/datasource.php</code>
+                        </div>
+
                         <div class="alert alert-danger alert-block" ng-show="connectionError">
-                            <a href="javascript:void(0);" data-dismiss="alert" class="close">×</a><h5 class="alert-heading"><i
+                            <a href="javascript:void(0);" data-dismiss="alert" class="close">×</a><h5
+                                class="alert-heading"><i
                                     class="fa fa-warning"></i> <?php echo __('Connection error'); ?></h5>
                             <?php echo __('Could not connect to Query Log WebSocket Server. Did you execute'); ?>
                             <code>oitc query_log --websocket-server --pretty --hide-acl</code>?

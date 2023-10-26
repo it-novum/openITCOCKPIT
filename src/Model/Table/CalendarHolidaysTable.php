@@ -23,8 +23,10 @@ use Cake\Validation\Validator;
  */
 class CalendarHolidaysTable extends Table {
 
-    public function _initializeSchema(TableSchemaInterface $schema): TableSchemaInterface {
-        return $schema->addColumn('date', 'string');
+    public function getSchema(): TableSchemaInterface {
+        $schema = parent::getSchema();
+        $schema->addColumn('date', 'string');
+        return $schema;
     }
 
     /**

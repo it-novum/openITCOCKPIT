@@ -520,7 +520,7 @@ class UsercontainerrolesTable extends Table {
      * @param array $MY_RIGHTS
      * @return array
      */
-    public function getContainerRoleByContainerIdExact( int $containerId, $type= 'all', $index = 'id', $MY_RIGHTS){
+    public function getContainerRoleByContainerIdExact( int $containerId, $type= 'all', $index = 'id', $MY_RIGHTS = []){
         $query = $this->find()
             ->select([
                 'Usercontainerroles.id',

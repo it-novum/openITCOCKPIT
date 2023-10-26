@@ -61,7 +61,7 @@ class ChangelogsController extends AppController {
 
 
         $showInherit = (bool) ($this->request->getQueryParams()['filter']['ShowServices'] ?? false);
-        $all_changes = $ChangelogsTable->getChangelogIndex($ChangelogsFilter, $PaginateOMat, $MY_RIGHTS, $includeUser, false, $showInherit);
+        $all_changes = $ChangelogsTable->getChangelogIndex($ChangelogsFilter, $PaginateOMat, $MY_RIGHTS, $includeUser, CORE,false, $showInherit);
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
