@@ -763,6 +763,7 @@ class HostgroupsController extends AppController {
                 // Traverse the hosts we have.
                 foreach ($hostIds as $hostId) {
                     $host = $HostsTable->getHostSharing($hostId);
+                    $hostTemplateId = (int)$host['Host']['hosttemplate_id'];
 
                     $currentHostGroups = $HostsTable->getHostgroupIds($host);
 
@@ -773,11 +774,10 @@ class HostgroupsController extends AppController {
                         }
                     }
 
-                    // COMPARE
-                    // Load the corresponding Hosttemplate.
+                    // Load the Hosttemplate for comparison.
                     /** @var $HosttemplatesTable HosttemplatesTable */
                     $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
-                    $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff((int)$host['Host']['hosttemplate_id']);
+                    $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hostTemplateId);
 
                     // Compare the Hosttemplate and the Host for the correct value to store.
                     $host['Host']['hostgroups']['_ids'] = $currentHostGroups;
@@ -785,16 +785,13 @@ class HostgroupsController extends AppController {
                     $currentHostGroups = $HostComparisonForSave->getDataForHostgroups();
 
                     $hostEntity = $HostsTable->get($hostId);
-                    $patch =
-                            [
-                                'name' => 'Das ist ein Test mit Irina',
-                            'hostgroups' => $currentHostGroups
+                    $patch = [
+                        'hostgroups' => $currentHostGroups
                     ];
 
                     $hostEntity = $HostsTable->patchEntity($hostEntity, $patch);
                     $HostsTable->save($hostEntity);
 
-                    continue;
                     // Changelog
                     if ($hostEntity->hasErrors()) {
                         $this->response = $this->response->withStatus(400);
@@ -802,8 +799,8 @@ class HostgroupsController extends AppController {
                         $this->viewBuilder()->setOption('serialize', ['error']);
                     } else {
                         $fakeRequest = [
-                            'Hostgroup' => [
-                                'hosts' => [
+                            'Host' => [
+                                'Hostgroups' => [
                                     '_ids' => $currentHostGroups
                                 ]
                             ]
@@ -817,12 +814,12 @@ class HostgroupsController extends AppController {
                             'edit',
                             'host',
                             $hostEntity->id,
-                            OBJECT_HOSTGROUP,
+                            OBJECT_HOST,
                             $hostgroup['Hostgroup']['container']['parent_id'],
                             $User->getId(),
-                            $hostgroup['Hostgroup']['container']['name'],
-                            array_merge($HostgroupsTable->resolveDataForChangelog($fakeRequest), $fakeRequest),
-                            array_merge($HostgroupsTable->resolveDataForChangelog($hostgroupForChangelog), $hostgroupForChangelog)
+                            $host['Host']['name'],
+                            array_merge($HostsTable->resolveDataForChangelog($patch), $patch),
+                            array_merge($HostsTable->resolveDataForChangelog($host), $host)
                         );
                         if ($changelog_data) {
                             /** @var Changelog $changelogEntry */
