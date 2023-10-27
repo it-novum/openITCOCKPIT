@@ -37,7 +37,8 @@ class HostgroupFilter extends Filter {
                 'Hostgroups.description'
             ],
             'equals' => [
-                'Hostgroups.id'
+                'Hostgroups.id',
+                'Containers.parent_id',
             ],
         ];
 
