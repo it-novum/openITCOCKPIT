@@ -241,8 +241,8 @@ class CronjobsCommand extends Command {
                 // This can happen if MySQL terminates the connection because the Job was running for too long
                 // Or if the MySQL Server got restarted
                 $connection = $CronschedulesTable->getConnection();
-                $connection->disconnect();
-                $connection->connect();
+                $connection->getDriver()->disconnect();
+                $connection->getDriver()->connect();
 
                 // Retry
                 $CronschedulesTable->save($scheduleEntity);

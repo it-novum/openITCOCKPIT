@@ -22,7 +22,7 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 ?>
-<a href="javascript:void(0);" class="btn btn-{{btnColor}} status-circle" ng-if="!isFlapping"></a>
+<a href="javascript:void(0);" class="btn btn-{{btnColor}} {{opacity}} status-circle" ng-if="!isFlapping" title="{{title}}"></a>
 <span class="flapping_airport stateClass" ng-if="isFlapping">
     <i class="{{flappingColor}}" ng-class="flappingState === 1 ? 'fa fa-circle' : 'far fa-circle'"></i>
     <i class="{{flappingColor}}" ng-class="flappingState === 0 ? 'fa fa-circle' : 'far fa-circle'"></i>

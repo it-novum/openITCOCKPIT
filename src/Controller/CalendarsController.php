@@ -230,11 +230,10 @@ class CalendarsController extends AppController {
 
         /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-        $query = $TimeperiodsTable->query();
         if ($CalendarsTable->delete($calendar)) {
             $timeperiods = $TimeperiodsTable->getTimeperiodByCalendarIdsAsList($id);
             foreach ($timeperiods as $timeperiodId => $timeperiodName) {
-                $query->update()
+                $TimeperiodsTable->updateQuery()
                     ->set(['calendar_id' => 0])
                     ->where(['id' => $timeperiodId])
                     ->execute();

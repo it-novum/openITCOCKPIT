@@ -298,9 +298,10 @@ class UsersTable extends Table {
             return false;
         }
 
+
         // Validate LdapGroupImportCommand data
-        // The usercontainerroles array holds both manually assigned user container roles and those, which got assigned through LDPA
-        // This is use a through_ldap (0 or 1) field in the linking table
+        // The usercontainerroles array holds both manually assigned user container roles and those, which got assigned through LDAP
+        // This use a through_ldap (0 or 1) field in the linking table
         if (!empty($context['data']['usercontainerroles'])) {
             return true;
         }
@@ -1364,6 +1365,7 @@ class UsersTable extends Table {
                     ]);
                     return $q;
                 },
+                'Containers'
             ])
             ->whereNotNull([
                 'samaccountname'
