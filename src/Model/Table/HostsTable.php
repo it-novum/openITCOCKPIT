@@ -1824,6 +1824,54 @@ class HostsTable extends Table {
         return $this->formatListAsCake2($query->toArray());
     }
 
+    /**#
+     * I will solely return the array of hostgroupIds the given $hostId is in.
+     * @param array $host
+     * @return int[]
+     */
+    public function getHostgroupIds(array $host): array {
+        // Prepare some Ids
+        $hostId         = (int)$host['Host']['id'];
+        $hosttemplateId = (int)$host['Host']['hosttemplate_id'];
+
+        // Check if the host has a custom setup.
+        $fromHost = $this->getHostgroupIdsFromHost($hostId);
+        if (!empty($fromHost)) {
+            return $fromHost;
+        }
+
+        // Load the corresponding Hosttemplate.
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+        return $HosttemplatesTable->getHostGroupIds($hosttemplateId);
+    }
+
+    /**
+     * I will solely return the array of HostgroupIDs specified EXPLICITLY for the given $hostId.
+     * I will NOT check the parent definition from HostTemplates!
+     * @param int $hostId
+     * @return int[]
+     */
+    public function getHostgroupIdsFromHost(int $hostId): array {
+        $hostGroupIds = [];
+
+        /** @var HostsToHostgroupsTable $HostsToHostGroupsTable */
+        $HostsToHostGroupsTable = TableRegistry::getTableLocator()->get('HostsToHostgroups');
+        $HostsToGroup = $HostsToHostGroupsTable
+            ->find()
+            ->where([
+                'host_id' => $hostId
+            ])
+            ->disableHydration()
+            ->toArray();
+
+        foreach ($HostsToGroup as $HostToGroup) {
+            $hostGroupIds[] = $HostToGroup['hostgroup_id'];
+        }
+
+        return $hostGroupIds;
+    }
+
     /**
      * @param int $id
      * @return array

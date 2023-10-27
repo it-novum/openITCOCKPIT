@@ -1486,4 +1486,25 @@ class HosttemplatesTable extends Table {
         return $entity;
     }
 
+
+
+    public function getHostGroupIds(int $hosttemplateId): array {
+        // Query for the HostGroups from the template.
+        /** @var HosttemplatesToHostgroupsTable $HostTemplatesToHostGroupsTable */
+
+        $HostTemplatesToHostGroupsTable = TableRegistry::getTableLocator()->get('HosttemplatesToHostgroups');
+        $HostTemplateToGroup = $HostTemplatesToHostGroupsTable
+            ->find()
+            ->where([
+                'hosttemplate_id' => $hosttemplateId
+            ])
+            ->disableHydration()
+            ->toArray();
+        $hostGroupIds = [];
+        foreach ($HostTemplateToGroup as $item) {
+            $hostGroupIds[] = (int)$item['hostgroup_id'];
+        }
+        return $hostGroupIds;
+    }
+
 }
