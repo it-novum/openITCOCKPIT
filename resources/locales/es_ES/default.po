@@ -1251,57 +1251,57 @@ msgstr "Determinar si se debería usar <a ui-sref=\"ProxyIndex\">configured prox
 #: .-modules/ServicenowModule/templates/ServicenowSettings/index.php:276
 #: .-modules/SlackModule/templates/SlackSettings/index.php:135
 msgid "Determine if the configured proxy should be used."
-msgstr "Determinar "
+msgstr "Determinar si se debería usar el proxy configurado"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:152
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:69
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:268
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:267
 msgid "Ignore SSL certificate"
-msgstr ""
+msgstr "Ignorar el certificado SSL"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:155
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:70
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:271
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:270
 msgid "Disable certificate validation to allow usage of self-signed certificates."
-msgstr ""
+msgstr "Desactivar la validación del certificado para permitir el uso de certificados autofirmados"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:162
 msgid "Dashboard Style"
-msgstr ""
+msgstr "Estilo de dashboard"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:170
 msgid "dark"
-msgstr ""
+msgstr "oscuro"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:171
 msgid "light"
-msgstr ""
+msgstr "claro"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:180
 #: ./src/Template/Hostgroups/pdf/list_to_pdf.php:57
 msgid "Hostgroups"
-msgstr ""
+msgstr "Grupos de host"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:195
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:216
 msgid "Only generate dashboards for hosts in the selected host groups. If empty the system will generate a dashboard for all hosts."
-msgstr ""
+msgstr "Generar únicamente dashboards para hosts en los grupos de host seleccionados. Si están vacíos, el sistema generará un dashboard para todos los hosts."
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:201
 msgid "Hostgroups (excluded)"
-msgstr ""
+msgstr "Grupos de host (excluídos)"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:227
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:328
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:327
 msgid "Connection established successfully."
-msgstr ""
+msgstr "Conexión establecida con éxito"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:235
 msgid "Check Grafana Connection"
-msgstr ""
+msgstr "Comprobar la conexión a Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:37
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:37
@@ -1311,7 +1311,7 @@ msgstr ""
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:37
 #: ./src/Template/Containers/show_details.php:233
 msgid "User dashboards"
-msgstr ""
+msgstr "Dashboards de usuario"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:41
 #: ./plugins/MapModule/templates/Maps/add.php:41
@@ -1372,29 +1372,29 @@ msgstr ""
 #: .-modules/ImportModule/templates/Importers/edit.php:1006
 #: .-modules/PrometheusModule/templates/PrometheusExporters/add.php:26
 msgid "Add"
-msgstr ""
+msgstr "Añadir"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:47
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:47
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:48
 msgid "No Grafana configuration found!"
-msgstr ""
+msgstr "¡No se ha encoontrado la configuración de Grafana!"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:49
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:49
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:50
 msgid "Grafana Configuration"
-msgstr ""
+msgstr "Configuración de Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:54
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:54
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:56
 msgid "A valid {0} is required, before this feature can be used."
-msgstr ""
+msgstr "Se requiere un {0} válido antes de que esta función se pueda usar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:63
 msgid "Create new user defined Grafana dashboard"
-msgstr ""
+msgstr "Crear un nuevo dashboard de Grafana definido por el usuario"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:69
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:57
@@ -1555,7 +1555,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/generate.php:48
 #: .-modules/SLAModule/templates/Slas/view_details.php:48
 msgid "Back"
-msgstr ""
+msgstr "Atrás"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:78
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:79
@@ -1618,7 +1618,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/add.php:50
 #: .-modules/SLAModule/templates/Slas/edit.php:50
 msgid "created successfully"
-msgstr ""
+msgstr "Creado con éxito"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:82
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:83
@@ -1730,7 +1730,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/view_details.php:99
 #: .-modules/SLAModule/templates/Slas/view_details.php:367
 msgid "Container"
-msgstr ""
+msgstr "Contenedor"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:93
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:94
@@ -1795,17 +1795,17 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/add.php:65
 #: .-modules/SLAModule/templates/Slas/edit.php:65
 msgid "Please select a container."
-msgstr ""
+msgstr "Por favor seleccione un contenedor"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:102
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:103
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:114
 msgid "User dashboard name"
-msgstr ""
+msgstr "Nombre de usuario de dashboard"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:118
 msgid "Create Grafana dashboard"
-msgstr ""
+msgstr "Crear dashboard de Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:121
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:101
@@ -1979,7 +1979,7 @@ msgstr ""
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:218
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:149
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:41
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:96
@@ -2095,70 +2095,70 @@ msgstr ""
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:57
 #: .-modules/SLAModule/templates/SlaAvailabilityStatusHostsLog/index.php:58
 msgid "Copy"
-msgstr ""
+msgstr "Copiar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:50
 #: ./src/Template/Automaps/copy.php:46
 msgid "Auto map"
-msgstr ""
+msgstr "Auto map"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:51
 msgid "Copy user defined Grafana dashboard/s"
-msgstr ""
+msgstr "Copiar el/los dasboard(s) de Grafana definido(s) por el usuario"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:67
 msgid "Source dashboard:"
-msgstr ""
+msgstr "Dashboard de origen"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:74
 msgid "Dashboard name"
-msgstr ""
+msgstr "Nombre de dashboard"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/copy.php:82
 msgid "Name of the new user defined Grafana dashboard"
-msgstr ""
+msgstr "Nombre del nuevo dashboard de Grafana definido por el usuario"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:63
 msgid "Edit user defined Grafana dashboard"
-msgstr ""
+msgstr "Editar el dashboard de Grafana definido por el usuario"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:119
 msgid "Update Grafana dashboard"
-msgstr ""
+msgstr "Actualizar el dashboard de Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:41
 msgid "Editor"
-msgstr ""
+msgstr "Editor"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:64
 msgid "Please make sure to synchronize your changes with Grafana after you have made modifications."
-msgstr ""
+msgstr "Por favor asegúrese de sincronizar sus cambios con Grafana después de hacer modificaciones"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:73
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:50
 #: ./src/Template/Dashboards/index.php:33
 #: ./src/Template/Dashboards/index.php:52
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:79
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:201
 #: ./plugins/MapModule/templates/Maps/index.php:181
 msgid "Edit settings"
-msgstr ""
+msgstr "Editar configuración"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:90
 msgid "Synchronize with Grafana"
-msgstr ""
+msgstr "Sincronizar con Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:107
 msgid "Add row"
-msgstr ""
+msgstr "Añadir fila"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:125
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:299
 msgid "Synchronize with Grafana Modal"
-msgstr ""
+msgstr ".Sincronizar con Modal Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/editor.php:151
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:202
@@ -2248,155 +2248,155 @@ msgstr ""
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1978
 #: .-modules/PrometheusModule/templates/element/promql_modal.php:108
 msgid "Close"
-msgstr ""
+msgstr "Cerrar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:22
 msgid "Add Metric"
-msgstr ""
+msgstr "Añadir métrica"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:26
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:217
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:383
 msgid "Panel options"
-msgstr ""
+msgstr "Opciones del panel"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:30
 msgid "Remove Panel"
-msgstr ""
+msgstr "Eliminar panel"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:69
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:281
 #: .-modules/AutoreportModule/templates/Autoreports/autoreport_widget.php:170
 msgid "Bar chart"
-msgstr ""
+msgstr "Gráfico de barras"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:72
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:290
 msgid "Stat"
-msgstr ""
+msgstr "Estadística"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:75
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:299
 msgid "Gauge"
-msgstr ""
+msgstr "Indicador"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:78
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:308
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:317
 msgid "Bar gauge"
-msgstr ""
+msgstr "Indicador de barras"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:81
 msgid "Bar gauge (Retro LCD)"
-msgstr ""
+msgstr "Indicador de barras (retro LCD)"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:84
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:272
 msgid "Time series"
-msgstr ""
+msgstr "Series de tiempo"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:99
 msgid "This panel is empty. Start by adding metrics."
-msgstr ""
+msgstr "Este panel está vacío. Empiece añadiendo métricas"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:115
 msgid "Add new metric"
-msgstr ""
+msgstr "Añadir métrica"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:118
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:199
 msgid "Update metric"
-msgstr ""
+msgstr "Actualizar métrica"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:129
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:789
 msgid "Select service"
-msgstr ""
+msgstr "Seleccionar servicio"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:146
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:839
 #: ./src/Template/Dashboards/tacho_widget.php:73
 msgid "Select metric"
-msgstr ""
+msgstr "Seleccionar métrica"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:196
 msgid "Add metric"
-msgstr ""
+msgstr "Añadir métrica"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:229
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:390
 msgid "Panel title"
-msgstr ""
+msgstr "Título del panel"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:241
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:408
 msgid "Panel unit"
-msgstr ""
+msgstr "Unidad del panel"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:263
 msgid "Visualization type"
-msgstr ""
+msgstr "Tipo de visualización"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:318
 msgid "Retro LCD"
-msgstr ""
+msgstr "Retro LCD"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:325
 msgid "Stack series"
-msgstr ""
+msgstr "Apilar las series"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:327
 msgid "only available for time series and bar charts"
-msgstr ""
+msgstr "Solo disponible para series de tiempo y gráficas de barras"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:337
 msgid "Off"
-msgstr ""
+msgstr "Off"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:347
 #: ./src/Template/Automaps/add.php:333
 #: ./src/Template/Automaps/edit.php:335
 msgid "Normal"
-msgstr ""
+msgstr "Normal"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:356
 msgid "100%"
-msgstr ""
+msgstr "100%"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:363
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_panel.php:439
 msgid "Changes will be saved automatically."
-msgstr ""
+msgstr "Los cambios se guardarán automáticamente"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_row.php:7
 msgid "Add Panel"
-msgstr ""
+msgstr "Añadir panel"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_row.php:12
 msgid "Remove Row"
-msgstr ""
+msgstr "Eliminar fila"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_timepicker.php:39
 #: ./src/Template/Services/browser.php:1405
 msgid "Auto refresh"
-msgstr ""
+msgstr "Actualizar automáticamente"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_timepicker.php:52
 msgid "Long term"
-msgstr ""
+msgstr "A largo plazo"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_timepicker.php:65
 msgid "Until now"
-msgstr ""
+msgstr "Hasta ahora"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_timepicker.php:78
 #: ./src/Model/Table/WidgetsTable.php:245
 msgid "Today"
-msgstr ""
+msgstr "Hoy"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_widget.php:52
 msgid "Select user defined Grafana dashboard"
-msgstr ""
+msgstr "Seleccionar dashboard de Grafana definido por el usuario"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:41
 #: ./plugins/MapModule/templates/Maps/index.php:41
@@ -2460,11 +2460,11 @@ msgstr ""
 #: .-modules/ImportModule/templates/Importers/index.php:62
 #: .-modules/PrometheusModule/templates/PrometheusExporters/index.php:35
 msgid "Overview"
-msgstr ""
+msgstr "Visión general"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:53
 msgid "User defined Grafana dashboards"
-msgstr ""
+msgstr "Dashboards de Grafana definidos por el usuario"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:54
 #: ./plugins/MapModule/templates/Maps/index.php:54
@@ -2528,7 +2528,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/index.php:31
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:54
 msgid "overview"
-msgstr ""
+msgstr "Visión general"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:58
 #: ./plugins/MapModule/templates/Maps/index.php:58
@@ -2639,7 +2639,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/view_details.php:57
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:58
 msgid "Refresh"
-msgstr ""
+msgstr "Actualizar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:62
 #: ./plugins/MapModule/templates/Maps/index.php:62
@@ -2703,7 +2703,7 @@ msgstr ""
 #: .-modules/PrometheusModule/templates/PrometheusExporters/index.php:44
 #: .-modules/SLAModule/templates/Slas/index.php:40
 msgid "New"
-msgstr ""
+msgstr "Nuevo"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:67
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:77
@@ -2882,7 +2882,7 @@ msgstr ""
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:61
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:71
 msgid "Filter"
-msgstr ""
+msgstr "Filtrar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:88
 #: ./src/Template/Changelogs/index.php:115
@@ -2893,7 +2893,7 @@ msgstr ""
 #: .-modules/AutoreportModule/templates/Autoreports/index.php:67
 #: .-modules/ImportModule/templates/ImportChangelogs/index.php:92
 msgid "Filter by name"
-msgstr ""
+msgstr "Filtrar por nombre"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:98
 #: ./plugins/MapModule/templates/Maps/index.php:111
@@ -2984,22 +2984,22 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/view_details.php:387
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:159
 msgid "Reset Filter"
-msgstr ""
+msgstr "Resetear filtro"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:144
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:153
 msgid "Not synchronized"
-msgstr ""
+msgstr "No sincronizado"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:185
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:58
 msgid "Open in Editor"
-msgstr ""
+msgstr "Abrir en editor"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:194
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:268
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:209
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:41
@@ -3019,7 +3019,7 @@ msgstr ""
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/view.php:22
 #: .-modules/ImportModule/templates/ImportedFiles/index.php:202
 msgid "View"
-msgstr ""
+msgstr "Ver"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:226
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:549
@@ -3140,7 +3140,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/index.php:310
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:254
 msgid "Delete"
-msgstr ""
+msgstr "Borrar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:237
 #: ./plugins/MapModule/templates/Maps/index.php:220
@@ -3259,7 +3259,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/view_details.php:581
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:266
 msgid "No entries match the selection"
-msgstr ""
+msgstr "No hay entradas que coincidan con su selección"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:247
 #: ./plugins/MapModule/templates/Maps/index.php:230
@@ -3348,7 +3348,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/index.php:331
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:277
 msgid "Select all"
-msgstr ""
+msgstr "Seleccionar todos"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:253
 #: ./plugins/MapModule/templates/Maps/index.php:236
@@ -3437,7 +3437,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/index.php:337
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:283
 msgid "Undo selection"
-msgstr ""
+msgstr "Deshacer selección"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:276
 #: ./plugins/MapModule/templates/Maps/index.php:251
@@ -3503,16 +3503,16 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/index.php:344
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:290
 msgid "Delete selected"
-msgstr ""
+msgstr "Borrar seleccionados"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:81
 #: ./src/Template/Angular/not_found.php:37
 msgid "404 Ooops..."
-msgstr ""
+msgstr "404...¡vaya!"
 
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:100
 msgid "Dashboard not found in Grafana"
-msgstr ""
+msgstr "No se ha encontrado el dashboard en Grafana"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:60
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:196
@@ -3520,14 +3520,14 @@ msgstr ""
 #: .-modules/DesignModule/src/Controller/UploadsController.php:27
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1455
 msgid "There is no file to store"
-msgstr ""
+msgstr "No hay archivo que guardar"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:84
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:216
 #: .-modules/ImportModule/src/Command/ImportCommand.php:253
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1482
 msgid "File extension \".{0}\" not supported!"
-msgstr ""
+msgstr "La extensión del archivo \".{0}\" no es compatible"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:96
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:232
@@ -3536,7 +3536,7 @@ msgstr ""
 #: .-modules/DesignModule/src/Controller/UploadsController.php:61
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1494
 msgid "Cannot move uploaded file"
-msgstr ""
+msgstr "No se puede mover el archivo subido"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:117
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:249
@@ -3545,63 +3545,63 @@ msgstr ""
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1515
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:392
 msgid "File uploaded successfully"
-msgstr ""
+msgstr "Archivo subido con éxito"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:123
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:255
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:489
 #: .-modules/ImportModule/src/Controller/ImportedHostsController.php:1523
 msgid "Upload failed: {0}"
-msgstr ""
+msgstr "La carga ha fallado: {0}"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:176
 msgid "Background deleted successfully."
-msgstr ""
+msgstr "Fondo borrado con éxito"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:186
 msgid "Error while deleting background."
-msgstr ""
+msgstr "Error al eliminar el fondo"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:288
 msgid "Icon deleted successfully."
-msgstr ""
+msgstr "Icono borrado con éxito"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:298
 msgid "Error while deleting icon."
-msgstr ""
+msgstr "Error al eliminar el icono"
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:333
 msgid "Iconsets needs to be packed as an .zip file."
-msgstr ""
+msgstr "Los conjuntos de iconos tienen que comprimirse como .zip file."
 
 #: ./plugins/MapModule/src/Controller/BackgroundUploadsController.php:355
 msgid "Could not open uploaded zip file."
-msgstr ""
+msgstr "No se ha podido abrir el zip file subido"
 
 #: ./plugins/MapModule/src/Controller/MapeditorsController.php:2123
 msgid "Mapeditor settings successfully updated"
-msgstr ""
+msgstr "La configuración del Mapeditor se ha actualizado con éxito"
 
 #: ./plugins/MapModule/src/Controller/MapsController.php:145
 msgid "Invalid map"
-msgstr ""
+msgstr "Mapa inválido"
 
 #: ./plugins/MapModule/src/Controller/MapsController.php:202
 msgid "Invalid Map"
-msgstr ""
+msgstr "Mapa inválido"
 
 #: ./plugins/MapModule/src/Controller/RotationsController.php:176
 #: ./plugins/MapModule/src/Controller/RotationsController.php:229
 msgid "Invalid Map rotation"
-msgstr ""
+msgstr "Rotación de mapa inválido"
 
 #: ./plugins/MapModule/src/Controller/RotationsController.php:245
 msgid "Map rotation deleted successfully"
-msgstr ""
+msgstr "Rotación de mapa eliminado con éxito"
 
 #: ./plugins/MapModule/src/Controller/RotationsController.php:251
 msgid "Could not delete map rotation"
-msgstr ""
+msgstr "No se ha podido eliminar la rotación del mapa"
 
 #: ./plugins/MapModule/src/Lib/Menu.php:43
 #: ./plugins/MapModule/src/Lib/Menu.php:46
@@ -3621,7 +3621,7 @@ msgstr ""
 #: ./src/itnovum/openITCOCKPIT/Core/Menu/Menu.php:79
 #: .-modules/OpenstreetmapModule/src/Lib/Menu.php:25
 msgid "Maps"
-msgstr ""
+msgstr "Mapas"
 
 #: ./plugins/MapModule/src/Lib/Menu.php:56
 #: ./plugins/MapModule/templates/Rotations/add.php:37
@@ -3629,7 +3629,7 @@ msgstr ""
 #: ./plugins/MapModule/templates/Rotations/index.php:37
 #: ./plugins/MapModule/templates/Rotations/index.php:53
 msgid "Rotations"
-msgstr ""
+msgstr "Rotaciones"
 
 #: ./plugins/MapModule/src/Lib/Widgets.php:54
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:333
@@ -3642,50 +3642,50 @@ msgstr ""
 #: ./src/Template/Hosts/browser.php:997
 #: ./src/Template/Services/browser.php:1174
 msgid "Map"
-msgstr ""
+msgstr "Mapa"
 
 #: ./plugins/MapModule/src/Model/Table/MapUploadsTable.php:225
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:399
 msgid "The uploaded file exceeds the upload_max_filesize directive in php.ini"
-msgstr ""
+msgstr "El archivo subido excede la directriz upload_max_filesize en php.ini"
 
 #: ./plugins/MapModule/src/Model/Table/MapUploadsTable.php:232
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:406
 msgid "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form"
-msgstr ""
+msgstr "El archivo subido excede la directriz MAX_FILE_SIZE que se especificó en el formulario HTML"
 
 #: ./plugins/MapModule/src/Model/Table/MapUploadsTable.php:239
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:413
 msgid "The uploaded file was only partially uploaded"
-msgstr ""
+msgstr "El archivo subido solo se ha subido parcialmente"
 
 #: ./plugins/MapModule/src/Model/Table/MapUploadsTable.php:246
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:420
 msgid "No file was uploaded"
-msgstr ""
+msgstr "No se ha subido ningún archivo"
 
 #: ./plugins/MapModule/src/Model/Table/MapUploadsTable.php:253
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:427
 msgid "Missing a temporary folder."
-msgstr ""
+msgstr "Falta una carpeta temporal"
 
 #: ./plugins/MapModule/src/Model/Table/MapUploadsTable.php:260
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:434
 msgid "Failed to write file to disk."
-msgstr ""
+msgstr "No se ha podido grabar el archivo en el disco"
 
 #: ./plugins/MapModule/src/Model/Table/MapUploadsTable.php:267
 #: .-modules/ImportModule/src/Model/Table/ImportedHostsTable.php:441
 msgid "A PHP extension stopped the file upload."
-msgstr ""
+msgstr "Una extensión PHP impidió la subida del archivo"
 
 #: ./plugins/MapModule/src/Model/Table/MapgadgetsTable.php:168
 msgid "Please select a metric."
-msgstr ""
+msgstr "Por favor seleccione una métrica"
 
 #: ./plugins/MapModule/src/Model/Table/MapgadgetsTable.php:175
 msgid "Please select an output type."
-msgstr ""
+msgstr "Por favor seleccione un tipo de salida"
 
 #: ./plugins/MapModule/src/Model/Table/MapsTable.php:211
 #: ./plugins/MapModule/src/Model/Table/MapsTable.php:215
@@ -3695,7 +3695,7 @@ msgstr ""
 #: ./src/Model/Table/ContactsTable.php:184
 #: ./src/Model/Table/ContactsTable.php:188
 msgid "You have to choose at least one option."
-msgstr ""
+msgstr "Tiene que elegir al menos una opción"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:33
 #: ./plugins/MapModule/templates/Mapeditors/view.php:33
@@ -3707,88 +3707,88 @@ msgstr ""
 #: ./plugins/MapModule/templates/Rotations/edit.php:33
 #: ./plugins/MapModule/templates/Rotations/index.php:33
 msgid "Map Module"
-msgstr ""
+msgstr "Módulo de Mapa"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:41
 msgid "Map editor"
-msgstr ""
+msgstr "Editor de Mapa"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:50
 #: ./plugins/MapModule/templates/Maps/edit.php:50
 msgid "Edit map:"
-msgstr ""
+msgstr "Editar mapa"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:59
 msgid "Show help lines"
-msgstr ""
+msgstr "Mostrar líneas de ayuda"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:66
 msgid "Help lines distance"
-msgstr ""
+msgstr "Ayudar a que las líneas se distancien"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:84
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:92
 msgid "Change size automatically"
-msgstr ""
+msgstr "Cambiar el tamaño automáticamente"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:100
 msgid "Enable grid"
-msgstr ""
+msgstr "Habilitar cuadrícula"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:104
 msgid "Grid size"
-msgstr ""
+msgstr "Tamaño de la cuadrícula"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:221
 msgid "Add item"
-msgstr ""
+msgstr "Añadir elemento"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:225
 msgid "Add line"
-msgstr ""
+msgstr "Añadir línea"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:229
 msgid "Add summary status item"
-msgstr ""
+msgstr "Añadir elemento de estado de resumen"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:236
 msgid "Add gadget"
-msgstr ""
+msgstr "Añadir dispositivo"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:242
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1059
 msgid "Change background image"
-msgstr ""
+msgstr "Cambiar la imagen de fondo"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:249
 msgid "Add stateless text"
-msgstr ""
+msgstr "Añadir texto sin estados previos"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:254
 msgid "Add stateless icon"
-msgstr ""
+msgstr "Añadir icono sin estados previos"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:273
 msgid "Click to hide layer"
-msgstr ""
+msgstr "Hacer click para ocultar capa"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:277
 msgid "Click to show layer"
-msgstr ""
+msgstr "Hacer click para mostrar capa"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:297
 msgid "Add or edit map item"
-msgstr ""
+msgstr "Añadir o editar elemento de mapa"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:302
 msgid "Upload iconset"
-msgstr ""
+msgstr "Subir conjunto de iconos"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:314
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:579
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1607
 msgid "Select object type"
-msgstr ""
+msgstr "Seleccionar tipo de objeto"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:322
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:587
@@ -3853,7 +3853,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/view_details.php:293
 #: .-modules/SLAModule/templates/Slas/view_details.php:401
 msgid "Host"
-msgstr ""
+msgstr "Host"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:325
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:590
@@ -3917,7 +3917,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:115
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:327
 msgid "Service"
-msgstr ""
+msgstr "Servicio"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:328
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:593
@@ -3925,24 +3925,24 @@ msgstr ""
 #: ./src/Template/Containers/index.php:95
 #: ./src/Template/Systemdowntimes/add.php:153
 msgid "Hostgroup"
-msgstr ""
+msgstr "Grupo de host"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:331
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:596
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1624
 #: ./src/Template/Containers/index.php:99
 msgid "Servicegroup"
-msgstr ""
+msgstr "Grupo de servicio"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:343
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:609
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1636
 msgid "Select object"
-msgstr ""
+msgstr "Seleccionar objeto"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:361
 msgid "Select iconset"
-msgstr ""
+msgstr "Seleccionar conjunto de iconos"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:388
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:901
@@ -3950,7 +3950,7 @@ msgstr ""
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1485
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1655
 msgid "Position X"
-msgstr ""
+msgstr "Posición X"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:400
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:421
@@ -3970,7 +3970,7 @@ msgstr ""
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1688
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1711
 msgid "0"
-msgstr ""
+msgstr "0"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:409
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:922
@@ -3978,7 +3978,7 @@ msgstr ""
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1506
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1676
 msgid "Position Y"
-msgstr ""
+msgstr "Posición Y"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:432
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:717
@@ -3987,7 +3987,7 @@ msgstr ""
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1529
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1725
 msgid "Select layer"
-msgstr ""
+msgstr "Seleccionar capa"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:445
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:730
@@ -3996,7 +3996,7 @@ msgstr ""
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1542
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1738
 msgid "Layers could be used to stack items on a map. Empty layers will be deleted automatically."
-msgstr ""
+msgstr "Las capas podrían usarse para amontonar elementos en un mapa. Las capas vacías se borrarán automáticamente"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:450
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:735
@@ -4005,7 +4005,7 @@ msgstr ""
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1547
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1743
 msgid "Add new layer"
-msgstr ""
+msgstr "Añadir nueva capa"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:465
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:750
@@ -4014,36 +4014,36 @@ msgstr ""
 #: ./src/Template/Automaps/add.php:277
 #: ./src/Template/Automaps/edit.php:279
 msgid "Show Label"
-msgstr ""
+msgstr "Mostrar etiqueta"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:473
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1764
 msgid "Label position"
-msgstr ""
+msgstr "Posición de la etiqueta"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:481
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1772
 msgid "Left"
-msgstr ""
+msgstr "Izquierda"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:487
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1778
 msgid "Top"
-msgstr ""
+msgstr "Arriba"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:493
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1784
 msgid "Bottom"
-msgstr ""
+msgstr "Abajo"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:499
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1790
 msgid "Right"
-msgstr ""
+msgstr "Derecha"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:508
 msgid "Upload new iconset (as .zip package)"
-msgstr ""
+msgstr "Subir nuevo conjunto de iconos (como archivo .zip)"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:512
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1148
@@ -4054,63 +4054,63 @@ msgstr ""
 #: .-modules/ImportModule/templates/Configurationitems/import.php:61
 #: .-modules/ImportModule/templates/ImportedHosts/index.php:1023
 msgid "Max allowed file size: "
-msgstr ""
+msgstr "Tamaño máximo de archivo permitido:"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:527
 msgid "To upload a own iconset, you need to compress all required icons into a .zip archive."
-msgstr ""
+msgstr "Para subir un conjunto de iconos propio, necesita comprimir todos los iconos en cuestión en un archivo .zip"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:529
 msgid "All icons needs to be PNG images. In addition you should follow the"
-msgstr ""
+msgstr "Todos los iconos tienen que ser imágenes PNG. Además, debería seguir el"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:531
 msgid "openITCOCKPIT color guidelines."
-msgstr ""
+msgstr "openITCOCKPIT indicaciones de color"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:535
 msgid "Required icons: "
-msgstr ""
+msgstr "Iconos necesarios:"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:542
 msgid "Go back to settings"
-msgstr ""
+msgstr "Volver a la configuración"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:569
 msgid "Add or edit line"
-msgstr ""
+msgstr "Añadir o editar línea"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:599
 msgid "Stateless line"
-msgstr ""
+msgstr "Líneas sin estados previos"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:629
 msgid "Start X"
-msgstr ""
+msgstr "Empezar X"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:650
 msgid "Start Y"
-msgstr ""
+msgstr "Empezar Y"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:673
 msgid "End X"
-msgstr ""
+msgstr "Terminar X"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:694
 msgid "End Y"
-msgstr ""
+msgstr "Terminar Y"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:778
 msgid "Add or edit gadget"
-msgstr ""
+msgstr "Añadir o editar dispositivo"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:809
 msgid "Select gadget type"
-msgstr ""
+msgstr "Seleccionar tipo de dispositivo"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:857
 msgid "Select output type"
-msgstr ""
+msgstr "Seleccionar tipo de salida"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:864
 #: ./src/Template/Dashboards/services_status_list_extended_widget.php:86
@@ -4124,12 +4124,12 @@ msgstr ""
 #: ./src/Template/Services/service_list.php:250
 #: ./src/Template/Statehistories/service.php:225
 msgid "Service output"
-msgstr ""
+msgstr "Salida de servicio"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:865
 #: ./src/Template/email/html/notification_service.php:171
 msgid "Service long output"
-msgstr ""
+msgstr "Salida larga de servicio"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:876
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1305
@@ -4138,60 +4138,60 @@ msgstr ""
 #: ./src/Template/MessagesOtd/edit.php:265
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:193
 msgid "Font size"
-msgstr ""
+msgstr "Tamaño de fuente"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:888
 msgid "13"
-msgstr ""
+msgstr "13"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:945
 msgid "Width"
-msgstr ""
+msgstr "Ancho"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:964
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:988
 msgid "Keep blank for default width"
-msgstr ""
+msgstr "Dejar en blanco para anchura predeterminada"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:969
 msgid "Height"
-msgstr ""
+msgstr "Altura"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1080
 msgid "Map background image is not available!"
-msgstr ""
+msgstr "La imagen de fondo del mapa no está disponible"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1083
 msgid "You can choose a new background or manually remove the orphaned link"
-msgstr ""
+msgstr "Puede elegir un fondo nuevo o eliminar el enlace huérfano manualmente"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1087
 msgid " Remove the orphaned link"
-msgstr ""
+msgstr "Eliminar el enlace huérfano"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1106
 msgid "Remove background from map!"
-msgstr ""
+msgstr "¡Eliminar el fondo del mapa!"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1109
 msgid "If no background image is desired, it can be removed here"
-msgstr ""
+msgstr "Si no desea imagen de fondo, puede quitarla aquí"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1113
 msgid " Remove background"
-msgstr ""
+msgstr "Eliminar fondo"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1122
 msgid "Choose background image"
-msgstr ""
+msgstr "Elegir imagen de fondo"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1144
 msgid "Upload new background image"
-msgstr ""
+msgstr "Subir una imagen de fondo nueva"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1179
 msgid "Add or edit stateless text"
-msgstr ""
+msgstr "Añadir o editar texto sin estados previos"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1193
 #: ./src/Template/Dashboards/website_widget.php:60
@@ -4205,32 +4205,32 @@ msgstr ""
 #: .-modules/ServicenowModule/templates/Elements/host_configuration.php:31
 #: .-modules/ServicenowModule/templates/Elements/service_configuration.php:31
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1209
 #: ./src/Template/Documentations/view.php:258
 #: ./src/Template/MessagesOtd/add.php:438
 #: ./src/Template/MessagesOtd/edit.php:432
 msgid "Description Text"
-msgstr ""
+msgstr "Texto de descripción"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1219
 #: ./src/Template/Documentations/view.php:268
 #: ./src/Template/MessagesOtd/add.php:448
 #: ./src/Template/MessagesOtd/edit.php:442
 msgid "Official page for openITCOCKPIT"
-msgstr ""
+msgstr "Página oficial para openITCOCKPIT"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1235
 #: ./src/Template/Documentations/view.php:281
 #: ./src/Template/MessagesOtd/add.php:461
 #: ./src/Template/MessagesOtd/edit.php:455
 msgid "Open in new tab"
-msgstr ""
+msgstr "Abrir en una nueva pestaña"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1249
 msgid "Insert link"
-msgstr ""
+msgstr "Insertar enlace"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1309
 #: ./src/Template/Automaps/add.php:330
@@ -4240,7 +4240,7 @@ msgstr ""
 #: ./src/Template/MessagesOtd/edit.php:270
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:197
 msgid "Smallest"
-msgstr ""
+msgstr "El más pequeño"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1311
 #: ./src/Template/Automaps/add.php:331
@@ -4250,7 +4250,7 @@ msgstr ""
 #: ./src/Template/MessagesOtd/edit.php:273
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:199
 msgid "Smaller"
-msgstr ""
+msgstr "Más pequeño"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1313
 #: ./src/Template/Automaps/add.php:332
@@ -4260,7 +4260,7 @@ msgstr ""
 #: ./src/Template/MessagesOtd/edit.php:276
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:201
 msgid "Small"
-msgstr ""
+msgstr "Pequeño"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1315
 #: ./src/Template/Automaps/add.php:334
@@ -4270,7 +4270,7 @@ msgstr ""
 #: ./src/Template/MessagesOtd/edit.php:279
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:203
 msgid "Big"
-msgstr ""
+msgstr "Grande"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1317
 #: ./src/Template/Automaps/add.php:335
@@ -4280,7 +4280,7 @@ msgstr ""
 #: ./src/Template/MessagesOtd/edit.php:282
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:205
 msgid "Bigger"
-msgstr ""
+msgstr "Más grande"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1319
 #: ./src/Template/Automaps/add.php:336
@@ -4290,40 +4290,40 @@ msgstr ""
 #: ./src/Template/MessagesOtd/edit.php:285
 #: .-modules/ChangecalendarModule/templates/Changecalendars/edit.php:207
 msgid "Biggest"
-msgstr ""
+msgstr "El más grande"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1448
 msgid "Add or edit stateless icon"
-msgstr ""
+msgstr "Añadir o editar icono sin estados previos"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1554
 msgid "Upload new icon"
-msgstr ""
+msgstr "Subir nuevo icono"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1596
 msgid "Add or edit summary state item"
-msgstr ""
+msgstr "Añadir o editar elemento de estado de resumen"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1699
 msgid "Radius"
-msgstr ""
+msgstr "Radio"
 
 #: ./plugins/MapModule/templates/Mapeditors/edit.php:1718
 msgid "Keep blank for default radius"
-msgstr ""
+msgstr "Dejar en blanco para radio predeterminado"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:38
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:216
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:20
 msgid " (DISABLED)"
-msgstr ""
+msgstr " (DESHABILITADO)"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:48
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:226
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:417
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:415
 msgid "Hostname"
-msgstr ""
+msgstr "Nombre del host"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:58
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:263
@@ -4478,7 +4478,7 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/sla_host_information.php:220
 #: .-modules/SLAModule/templates/Slas/sla_service_information.php:245
 msgid "Description"
-msgstr ""
+msgstr "Descripción"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:66
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:173
@@ -4522,7 +4522,7 @@ msgstr ""
 #: .-modules/ServicenowModule/templates/Elements/host_configuration.php:19
 #: .-modules/ServicenowModule/templates/Elements/service_configuration.php:19
 msgid "State"
-msgstr ""
+msgstr "Estado"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:77
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:197
@@ -4535,7 +4535,7 @@ msgstr ""
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:96
 #: .-modules/OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:115
 msgid "Not in monitoring"
-msgstr ""
+msgstr "No está en monitorización"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:84
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:176
@@ -4567,20 +4567,20 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:314
 #: .-modules/SLAModule/templates/Slas/pdf/generate.php:350
 msgid "Output"
-msgstr ""
+msgstr "Salida"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:93
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:299
 #: ./src/Template/Services/details.php:134
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:111
 msgid "Perfdata"
-msgstr ""
+msgstr "Perfdata"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:101
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:307
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:119
 msgid "Current attempt"
-msgstr ""
+msgstr "Intento actual"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:109
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:315
@@ -4609,7 +4609,7 @@ msgstr ""
 #: ./src/Template/Services/service_list.php:240
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:127
 msgid "Last check"
-msgstr ""
+msgstr "Última comprobación"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:117
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:323
@@ -4628,15 +4628,15 @@ msgstr ""
 #: ./src/Template/Services/service_list.php:245
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:135
 msgid "Next check"
-msgstr ""
+msgstr "Siguiente comprobación"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:126
 msgid "Summary State"
-msgstr ""
+msgstr "Estado de resumen"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:136
 msgid "Summary Output"
-msgstr ""
+msgstr "Salida de resumen"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:141
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:390
@@ -4644,13 +4644,13 @@ msgstr ""
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:659
 #: .-modules/OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:60
 msgid "Services: "
-msgstr ""
+msgstr "Servicios: "
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:236
 #: ./src/Template/Services/browser.php:641
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:45
 msgid "Host state"
-msgstr ""
+msgstr "Estado del host"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:331
 #: ./src/Template/Browsers/index.php:482
@@ -4667,7 +4667,7 @@ msgstr ""
 #: ./src/Template/Services/service_list.php:235
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/get_servicestatus.php:143
 msgid "Last state change"
-msgstr ""
+msgstr "Último cambio de estado"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:346
 #: ./src/Template/Hostgroups/add.php:62
@@ -4685,14 +4685,14 @@ msgstr ""
 #: ./src/Template/element/Systemdowntimes/tabs.php:46
 #: .-modules/DistributeModule/templates/Satellites/downtime.php:94
 msgid "Host group"
-msgstr ""
+msgstr "Grupo de host"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:355
 #: ./src/Template/Hostgroups/copy.php:70
 #: ./src/Template/Hostgroups/index.php:124
 #: ./src/Template/Systemdowntimes/hostgroup.php:234
 msgid "Host group name"
-msgstr ""
+msgstr "Nombre del grupo de host"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:373
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:516
@@ -4700,33 +4700,33 @@ msgstr ""
 #: .-modules/OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:37
 #: .-modules/OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:112
 msgid "Summary state"
-msgstr ""
+msgstr "Estado del resumen"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:384
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:532
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:653
 #: .-modules/OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:54
 msgid "Summary output"
-msgstr ""
+msgstr "Salida del resumen"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:387
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:656
 #: .-modules/OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:57
 msgid "Hosts: "
-msgstr ""
+msgstr "Hosts: "
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:396
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:664
 #: .-modules/OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:65
 msgid "Hosts overview"
-msgstr ""
+msgstr "Visión general de los hosts"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:418
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:540
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:687
 #: .-modules/OpenstreetmapModule/templates/Openstreetmap/openstreetmapsummary.php:86
 msgid "Services overview"
-msgstr ""
+msgstr "Visión general de los servicios"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:489
 #: ./src/Template/Servicegroups/add.php:34
@@ -4738,53 +4738,53 @@ msgstr ""
 #: ./src/Template/Servicegroups/extended.php:34
 #: ./src/Template/Servicegroups/extended.php:90
 msgid "Service group"
-msgstr ""
+msgstr "Grupo de servicio"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:498
 #: ./src/Template/Servicegroups/copy.php:70
 #: ./src/Template/Servicegroups/index.php:124
 msgid "Service group name"
-msgstr ""
+msgstr "Nombre del grupo de servicio"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:617
 #: ./plugins/MapModule/templates/Maps/copy.php:70
 #: ./plugins/MapModule/templates/Maps/index.php:127
 msgid "Map name"
-msgstr ""
+msgstr "Nombre del mapa"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:627
 #: ./plugins/MapModule/templates/Maps/copy.php:86
 #: ./plugins/MapModule/templates/Maps/index.php:131
 msgid "Map title"
-msgstr ""
+msgstr "Título del mapa"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:714
 msgid "Host and services are not in state UP/OK"
-msgstr ""
+msgstr "El host y los servicios no están en estado UP/OK"
 
 #: ./plugins/MapModule/templates/Mapeditors/mapsummary.php:718
 msgid " maximum 20"
-msgstr ""
+msgstr "Máximo 20"
 
 #: ./plugins/MapModule/templates/Mapeditors/view.php:50
 msgid "View map:"
-msgstr ""
+msgstr "Ver mapa:"
 
 #: ./plugins/MapModule/templates/Mapeditors/view.php:68
 msgid "Fullscreen"
-msgstr ""
+msgstr "Pantalla completa"
 
 #: ./plugins/MapModule/templates/Mapeditors/view.php:73
 msgid "Leave fullscreen"
-msgstr ""
+msgstr "Salir de pantalla completa"
 
 #: ./plugins/MapModule/templates/Mapeditors/view_directive.php:26
 msgid "{0} Map background image is not available!!!"
-msgstr ""
+msgstr "{0} La imagen de fondo del mapa no está disponible"
 
 #: ./plugins/MapModule/templates/Maps/add.php:51
 msgid "Create new map"
-msgstr ""
+msgstr "Crear mapa nuevo"
 
 #: ./plugins/MapModule/templates/Maps/add.php:89
 #: ./plugins/MapModule/templates/Maps/edit.php:89
@@ -4825,22 +4825,22 @@ msgstr ""
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:190
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:193
 msgid "Satellite"
-msgstr ""
+msgstr "Satélite"
 
 #: ./plugins/MapModule/templates/Maps/add.php:108
 #: ./plugins/MapModule/templates/Maps/edit.php:107
 msgid "Map Name"
-msgstr ""
+msgstr "Nombre del mapa"
 
 #: ./plugins/MapModule/templates/Maps/add.php:121
 #: ./plugins/MapModule/templates/Maps/edit.php:120
 msgid "Map Title"
-msgstr ""
+msgstr "Título del mapa"
 
 #: ./plugins/MapModule/templates/Maps/add.php:134
 #: ./plugins/MapModule/templates/Maps/edit.php:133
 msgid "Refresh interval"
-msgstr ""
+msgstr "Actualizar intervalo"
 
 #: ./plugins/MapModule/templates/Maps/add.php:151
 #: ./src/Template/Agentchecks/add.php:129
@@ -4877,35 +4877,35 @@ msgstr ""
 #: .-modules/ImportModule/templates/HostDefaults/add.php:773
 #: .-modules/PrometheusModule/templates/PrometheusExporters/add.php:223
 msgid "Create another"
-msgstr ""
+msgstr "Crear otro"
 
 #: ./plugins/MapModule/templates/Maps/add.php:154
 msgid "Create map"
-msgstr ""
+msgstr "Crear mapa"
 
 #: ./plugins/MapModule/templates/Maps/copy.php:49
 msgid "Copy map/s"
-msgstr ""
+msgstr "Copiar mapa(s)"
 
 #: ./plugins/MapModule/templates/Maps/copy.php:64
 msgid "Source map:"
-msgstr ""
+msgstr "Mapa de origen"
 
 #: ./plugins/MapModule/templates/Maps/copy.php:78
 msgid "Name of the new map"
-msgstr ""
+msgstr "Nombre del mapa nuevo"
 
 #: ./plugins/MapModule/templates/Maps/copy.php:94
 msgid "Title of the new map"
-msgstr ""
+msgstr "Título del mapa nuevo"
 
 #: ./plugins/MapModule/templates/Maps/copy.php:102
 msgid "Refresh Interval"
-msgstr ""
+msgstr "Actualizar intervalo"
 
 #: ./plugins/MapModule/templates/Maps/copy.php:110
 msgid "Automatic maps update interval in seconds"
-msgstr ""
+msgstr "Los mapas automáticos actualizan el intervalo en segundos"
 
 #: ./plugins/MapModule/templates/Maps/edit.php:64
 #: ./src/Template/Agentchecks/edit.php:67
@@ -4924,56 +4924,56 @@ msgstr ""
 #: .-modules/EventcorrelationModule/templates/Eventcorrelations/edit_correlation.php:137
 #: .-modules/PrometheusModule/templates/PrometheusExporters/edit.php:49
 msgid "saved successfully"
-msgstr ""
+msgstr "Guardado con éxito"
 
 #: ./plugins/MapModule/templates/Maps/edit.php:149
 msgid "Update map"
-msgstr ""
+msgstr "Actualizar mapa"
 
 #: ./plugins/MapModule/templates/Maps/index.php:88
 msgid "Filter by Map name"
-msgstr ""
+msgstr "Filtrar por nombre de mapa"
 
 #: ./plugins/MapModule/templates/Maps/index.php:101
 msgid "Filter by Map title"
-msgstr ""
+msgstr "Filtrar por título de mapa"
 
 #: ./plugins/MapModule/templates/Maps/index.php:175
 msgid "Edit in Map editor"
-msgstr ""
+msgstr "Editar en el editor de mapas"
 
 #: ./plugins/MapModule/templates/Maps/index.php:202
 #: ./plugins/MapModule/templates/Rotations/index.php:196
 msgid "View in fullscreen"
-msgstr ""
+msgstr "Ver en pantalla completa"
 
 #: ./plugins/MapModule/templates/Rotations/add.php:51
 msgid "Create new map rotation"
-msgstr ""
+msgstr "Crear nueva rotación de mapas"
 
 #: ./plugins/MapModule/templates/Rotations/add.php:64
 #: ./plugins/MapModule/templates/Rotations/edit.php:65
 msgid "Rotation"
-msgstr ""
+msgstr "Rotación"
 
 #: ./plugins/MapModule/templates/Rotations/add.php:88
 #: ./plugins/MapModule/templates/Rotations/edit.php:89
 msgid "Rotation Name"
-msgstr ""
+msgstr "Nombre de rotación"
 
 #: ./plugins/MapModule/templates/Rotations/add.php:101
 #: ./plugins/MapModule/templates/Rotations/edit.php:102
 #: ./plugins/MapModule/templates/Rotations/index.php:131
 msgid "Rotation interval"
-msgstr ""
+msgstr "Intervalo de rotación"
 
 #: ./plugins/MapModule/templates/Rotations/add.php:135
 msgid "Create rotation"
-msgstr ""
+msgstr "Crear rotación"
 
 #: ./plugins/MapModule/templates/Rotations/edit.php:51
 msgid "Edit map rotation:"
-msgstr ""
+msgstr "Editar mapa de rotación"
 
 #: ./plugins/MapModule/templates/Rotations/edit.php:65
 #: ./src/Template/Automaps/edit.php:64
@@ -4992,65 +4992,65 @@ msgstr ""
 #: .-modules/ImportModule/templates/ImportedHosts/edit.php:68
 #: .-modules/ImportModule/templates/Importers/edit.php:54
 msgid "updated successfully"
-msgstr ""
+msgstr "Actualizado con éxito"
 
 #: ./plugins/MapModule/templates/Rotations/edit.php:136
 msgid "Update map rotation"
-msgstr ""
+msgstr "Actualizar rotación de mapas"
 
 #: ./plugins/MapModule/templates/Rotations/index.php:88
 msgid "Filter by Rotation name"
-msgstr ""
+msgstr "Filtrar por nombre de rotación"
 
 #: ./plugins/MapModule/templates/Rotations/index.php:101
 msgid "Filter by Rotation Interval"
-msgstr ""
+msgstr "Filtrar por intervalo de rotación"
 
 #: ./plugins/MapModule/templates/Rotations/index.php:127
 msgid "Rotation name"
-msgstr ""
+msgstr "Nombre de rotación"
 
 #: ./plugins/MattermostModule/src/Controller/AcknowledgeController.php:76
 #: ./plugins/MattermostModule/src/Controller/AcknowledgeController.php:136
 msgid "Issue got acknowledged by {0} via Mattermost."
-msgstr ""
+msgstr "{0} reconoció el problema a través de Mattermost"
 
 #: ./plugins/MattermostModule/src/Controller/AcknowledgeController.php:83
 #: ./plugins/MattermostModule/src/Controller/AcknowledgeController.php:143
 msgid "Issue got acknowledged by **@{0}** via Mattermost."
-msgstr ""
+msgstr "**@{0}** reconoció el problema a través de Mattermost"
 
 #: ./plugins/MattermostModule/src/Lib/Menu.php:47
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:50
 msgid "Mattermost"
-msgstr ""
+msgstr "Mattermost"
 
 #: ./plugins/MattermostModule/src/Model/Table/MattermostSettingsTable.php:89
 msgid "For Two-way integration an API key is required."
-msgstr ""
+msgstr "Para la integración bidireccional, se requiere una API"
 
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:33
 msgid "Mattermost Module"
-msgstr ""
+msgstr "Módulo Mattermost"
 
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:59
 #: .-modules/PagerdutyModule/templates/Settings/edit.php:118
 #: .-modules/SlackModule/templates/SlackSettings/index.php:44
 msgid "Webhook URL"
-msgstr ""
+msgstr "Webhook URL"
 
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:70
 msgid "Mattermost Webhook URL."
-msgstr ""
+msgstr "Mattermost Webhook URL."
 
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:83
 msgid "Enable Two-way integration"
-msgstr ""
+msgstr "Habilitar la integración bidireccional"
 
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:90
 #: ./src/Template/Agentconnector/config.php:333
 msgid "openITCOCKPIT API Key"
-msgstr ""
+msgstr "clave de API de openITCOCKPIT"
 
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:102
 #: .-modules/DistributeModule/templates/Satellites/add.php:331
@@ -5060,81 +5060,81 @@ msgstr ""
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:190
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:189
 msgid "API Key"
-msgstr ""
+msgstr "clave de API"
 
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:104
 msgid "used by Mattermost for authentication against openITCOCKPIT."
-msgstr ""
+msgstr "usado por Mattermost para la autenticación contra openITCOCKPIT."
 
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:133
 #: ./src/Template/Proxy/index.php:110
 msgid "Save configuration"
-msgstr ""
+msgstr "Guardar configuración"
 
 #: ./plugins/NagiosModule/src/Controller/CmdController.php:97
 #: ./plugins/NagiosModule/src/Controller/CmdController.php:363
 #: .-modules/PagerdutyModule/src/Controller/AcknowledgeController.php:98
 #: .-modules/PagerdutyModule/src/Controller/AcknowledgeController.php:127
 msgid "Command added successfully to queue"
-msgstr ""
+msgstr "Comando añadido a la cola con éxito"
 
 #: ./plugins/NagiosModule/src/Controller/CmdController.php:173
 #: ./plugins/NagiosModule/src/Controller/CmdController.php:256
 msgid "Commands added successfully to queue"
-msgstr ""
+msgstr "Comandos añadidos a la cola con éxito"
 
 #: ./plugins/NagiosModule/src/Lib/Menu.php:44
 msgid "API"
-msgstr ""
+msgstr "API"
 
 #: ./plugins/NagiosModule/src/Lib/Menu.php:49
 #: ./plugins/NagiosModule/templates/Cmd/index.php:53
 msgid "External commands"
-msgstr ""
+msgstr "Comandos externos"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:40
 #: ./src/Template/Administrators/debug.php:142
 msgid "Monitoring Engine"
-msgstr ""
+msgstr "Motor de monitorización"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:44
 msgid "External Command"
-msgstr ""
+msgstr "Comando externo"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:64
 msgid "What is this API for?"
-msgstr ""
+msgstr "¿Para qué sirve esta API"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:65
 msgid "This API can be used by third party application to send commands to the monitoring backend."
-msgstr ""
+msgstr "Esta API se puede usar por una aplicación de terceros para enviar comandos a la monitorización de fondo."
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:67
 msgid "This could be useful to transfer passive check results or to acknowledge host or service states."
-msgstr ""
+msgstr "Esto podría ser útil para transferir resultados de verificación pasiva o para reconocer estados de host o servicio."
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:74
 #: ./src/Template/Commands/add.php:96
 #: ./src/Template/Commands/edit.php:101
 #: ./src/Template/Commands/index.php:166
 msgid "Command type"
-msgstr ""
+msgstr "Tipo de comando"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:98
 msgid "Parameter"
-msgstr ""
+msgstr "Parámetro"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:99
 msgid "Default value"
-msgstr ""
+msgstr "Valor predeterminado"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:110
 msgid "required"
-msgstr ""
+msgstr "Requerido"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:121
 msgid "No parameters"
-msgstr ""
+msgstr "No hay parámetros"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:162
 #: ./plugins/NagiosModule/templates/Cmd/index.php:170
@@ -5142,64 +5142,64 @@ msgstr ""
 #: .-modules/PagerdutyModule/templates/Settings/edit.php:127
 #: .-modules/SlackModule/templates/SlackSettings/index.php:109
 msgid "YOUR_API_KEY_HERE"
-msgstr ""
+msgstr "YOUR_API_KEY_HERE"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:221
 #: ./src/Template/Agentconnector/config.php:344
 msgid "You need to create an openITCOCKPIT user defined API key first."
-msgstr ""
+msgstr "Tiene que crear una clave API definida por el usuario de openITCOCKPIT."
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:222
 #: ./src/Template/Agentconnector/config.php:348
 #: .-modules/PagerdutyModule/templates/Settings/edit.php:132
 #: .-modules/SlackModule/templates/SlackSettings/index.php:114
 msgid "Click here for help"
-msgstr ""
+msgstr "Haga click aquí para obtener ayuda"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:227
 msgid "is not required in the URL and can be removed."
-msgstr ""
+msgstr "No es necesario en la URL y se puede eliminar"
 
 #: ./plugins/NagiosModule/templates/Cmd/index.php:234
 msgid "External documentation"
-msgstr ""
+msgstr "Documentación externa"
 
 #: ./src/Command/AcknowledgePerMailCommand.php:169
 #: ./src/Command/AcknowledgePerMailCommand.php:185
 msgid "Acknowledged per mail"
-msgstr ""
+msgstr "Reconocido por mail"
 
 #: ./src/Command/GearmanWorkerCommand.php:162
 msgid "GearmanWorker: Fork new worker child"
-msgstr ""
+msgstr "GearmanWorker: Fork new worker child"
 
 #: ./src/Command/GearmanWorkerCommand.php:1166
 msgid "Started refresh of monitoring configuration"
-msgstr ""
+msgstr "Empezó actualización de la configuración de monitorización"
 
 #: ./src/Command/GearmanWorkerCommand.php:1173
 msgid "Create Backup of current configuration"
-msgstr ""
+msgstr "Crear copia de seguridad de la configuración actual"
 
 #: ./src/Command/GearmanWorkerCommand.php:1205
 msgid "Create Backup of current Prometheus configuration"
-msgstr ""
+msgstr "Crear copia de seguridad de la configuración de Prometheus actual"
 
 #: ./src/Command/GearmanWorkerCommand.php:1248
 msgid "Delete old configuration"
-msgstr ""
+msgstr "Borrar configuración antigua"
 
 #: ./src/Command/GearmanWorkerCommand.php:1259
 msgid "Execute pre export tasks"
-msgstr ""
+msgstr "Ejecutar tareas previas a la exportación"
 
 #: ./src/Command/GearmanWorkerCommand.php:1271
 msgid "Create default configuration"
-msgstr ""
+msgstr "Crear configuración predeterminada"
 
 #: ./src/Command/GearmanWorkerCommand.php:1274
 msgid "Create hosttemplate configuration"
-msgstr ""
+msgstr "Crear configuración de la plantilla de host"
 
 #: ./src/Command/GearmanWorkerCommand.php:1277
 msgid "Create host configuration"
