@@ -24,15 +24,15 @@ msgstr "Para obtener información detallada, quite el comentario de la línea {0
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:167
 msgid "Invalid Userdashboard"
-msgstr "Panel de usuario no válido"
+msgstr "Dashboard de usuario no válido"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:396
 msgid "User defined Grafana dashboard successfully deleted"
-msgstr "El panel de control definido por el usuario de Grafana ha sido eliminado con éxito"
+msgstr "El dashboard definido por el usuario de Grafana ha sido eliminado con éxito"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:403
 msgid "Could not delete user defined Grafana dashboard"
-msgstr "No se ha podido eliminar el panel de control definido por el usuario de Grafana"
+msgstr "No se ha podido eliminar el dashboard definido por el usuario de Grafana"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:663
 msgid "Metric not found"
@@ -81,76 +81,76 @@ msgstr "En lo que va de semana"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1158
 msgid "This month so far"
-msgstr ""
+msgstr "En lo que va de mes"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1161
 msgid "Last 5 minutes"
-msgstr ""
+msgstr "Últimos 5 minutos"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1162
 msgid "Last 15 minutes"
-msgstr ""
+msgstr "Últimos 15 minutos"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1163
 msgid "Last 30 minutes"
-msgstr ""
+msgstr "Últimos 30 minutos"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1164
 msgid "Last 1 hour"
-msgstr ""
+msgstr "Última hora"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1165
 msgid "Last 3 hours"
-msgstr ""
+msgstr "Últimas 3 horas"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1166
 msgid "Last 6 hours"
-msgstr ""
+msgstr "Últimas 6 horas"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1167
 msgid "Last 12 hours"
-msgstr ""
+msgstr "Últimas 12 horas"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1168
 msgid "Last 24 hours"
-msgstr ""
+msgstr "Últimas 24 horas"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1172
 #: ./src/Controller/AngularController.php:1321
 msgid "Refresh every 5s"
-msgstr ""
+msgstr "Actualizar cada 5 segundos"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1173
 #: ./src/Controller/AngularController.php:1322
 msgid "Refresh every 10s"
-msgstr ""
+msgstr "Actualizar cada 10 segundos"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1174
 #: ./src/Controller/AngularController.php:1323
 msgid "Refresh every 30s"
-msgstr ""
+msgstr "Actualizar cada 30 segundos"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1175
 #: ./src/Controller/AngularController.php:1324
 msgid "Refresh every 1m"
-msgstr ""
+msgstr "Actualizar cada minuto"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1176
 #: ./src/Controller/AngularController.php:1326
 msgid "Refresh every 5m"
-msgstr ""
+msgstr "Actualizar cada 5 minutos"
 
 #: ./plugins/GrafanaModule/src/Controller/GrafanaUserdashboardsController.php:1177
 #: ./src/Controller/AngularController.php:1327
 msgid "Refresh every 15m"
-msgstr ""
+msgstr "Actualizar cada 15 minutos"
 
 #: ./plugins/GrafanaModule/src/Lib/Menu.php:45
 #: ./plugins/GrafanaModule/src/Lib/Menu.php:63
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:51
 #: ./src/Template/Hosts/browser.php:112
 msgid "Grafana"
-msgstr ""
+msgstr "Grafana"
 
 #: ./plugins/GrafanaModule/src/Lib/Menu.php:60
 #: ./plugins/MattermostModule/src/Lib/Menu.php:44
@@ -160,15 +160,15 @@ msgstr ""
 #: .-modules/ServicenowModule/src/Lib/Menu.php:43
 #: .-modules/SlackModule/src/Lib/Menu.php:43
 msgid "APIs"
-msgstr ""
+msgstr "APIs"
 
 #: ./plugins/GrafanaModule/src/Lib/Widgets.php:52
 msgid "Grafana (auto generated)"
-msgstr ""
+msgstr "Grafana (autogenerado)"
 
 #: ./plugins/GrafanaModule/src/Lib/Widgets.php:63
 msgid "Grafana (user defined)"
-msgstr ""
+msgstr "Grafana (definido por el usuario)"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/grafana_widget.php:38
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/grafana_widget.php:38
@@ -183,13 +183,13 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/sla_widget.php:20
 #: .-modules/SLAModule/templates/Slas/slas_summary_widget.php:20
 msgid "No element selected"
-msgstr ""
+msgstr "No se ha seleccionado un elemento"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/grafana_widget.php:52
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:78
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:79
 msgid "Grafana dashboard"
-msgstr ""
+msgstr "Grafana dashboard"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/grafana_widget.php:55
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:166
@@ -675,7 +675,7 @@ msgstr ""
 #: .-modules/ServicenowModule/templates/ServicenowSettings/index.php:140
 #: .-modules/ServicenowModule/templates/ServicenowSettings/index.php:168
 msgid "Please choose"
-msgstr ""
+msgstr "Por favor elija"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/grafana_widget.php:74
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:238
@@ -768,7 +768,7 @@ msgstr ""
 #: .-modules/SnmpTrapModule/templates/ConfigurationFiles/snmp_trap_cfgs_snmptrapd_conf.php:74
 #: .-modules/SnmpTrapModule/templates/ConfigurationFiles/snmp_trap_cfgs_snmptt_ini.php:76
 msgid "Save"
-msgstr ""
+msgstr "Guardar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:29
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:29
@@ -1061,7 +1061,7 @@ msgstr ""
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:29
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:11
 msgid "Home"
-msgstr ""
+msgstr "Inicio"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:33
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/add.php:33
@@ -1071,7 +1071,7 @@ msgstr ""
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/index.php:33
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/view.php:33
 msgid "Grafana Module"
-msgstr ""
+msgstr "Módulo Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:37
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:52
@@ -1083,7 +1083,7 @@ msgstr ""
 #: .-modules/EventcorrelationModule/templates/EventcorrelationSettings/index.php:19
 #: .-modules/SLAModule/templates/SlaSettings/index.php:19
 msgid "Configuration"
-msgstr ""
+msgstr "Configuración"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:41
 #: ./plugins/GrafanaModule/templates/GrafanaUserdashboards/edit.php:41
@@ -1205,25 +1205,25 @@ msgstr ""
 #: .-modules/SLAModule/templates/Slas/view_details.php:53
 #: .-modules/ServicenowModule/templates/ServicenowSettings/index.php:24
 msgid "Edit"
-msgstr ""
+msgstr "Editar"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:60
 msgid "Grafana URL"
-msgstr ""
+msgstr "URL de Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:74
 msgid "Grafana API Key"
-msgstr ""
+msgstr "Clave de la API"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:88
 msgid "Grafana Prefix"
-msgstr ""
+msgstr "Prefijo de Grafana"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:111
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:182
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:181
 msgid "Connect via HTTPS"
-msgstr ""
+msgstr "Conectarse a través de HTTPS"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:127
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:117
@@ -1232,14 +1232,14 @@ msgstr ""
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:243
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:242
 msgid "Use Proxy"
-msgstr ""
+msgstr "Usar Proxy"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:132
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:122
 #: .-modules/ImportModule/templates/ExternalSystems/add.php:248
 #: .-modules/ImportModule/templates/ExternalSystems/edit.php:247
 msgid "Determine if the <a ui-sref=\"ProxyIndex\">configured proxy</a> should be used."
-msgstr ""
+msgstr "Determinar si se debería usar <a ui-sref=\"ProxyIndex\">configured proxy</a>"
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:134
 #: ./plugins/MattermostModule/templates/MattermostSettings/index.php:124
@@ -1251,7 +1251,7 @@ msgstr ""
 #: .-modules/ServicenowModule/templates/ServicenowSettings/index.php:276
 #: .-modules/SlackModule/templates/SlackSettings/index.php:135
 msgid "Determine if the configured proxy should be used."
-msgstr ""
+msgstr "Determinar "
 
 #: ./plugins/GrafanaModule/templates/GrafanaConfiguration/index.php:152
 #: .-modules/ImportModule/src/Lib/DataSourceForms/IcingaExternalMonitoringJson.php:69
