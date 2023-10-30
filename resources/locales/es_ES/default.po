@@ -29509,236 +29509,236 @@ msgstr ""
 
 #: .-modules/SlackModule/templates/SlackSettings/index.php:115
 msgid "If you want to use the two-way integration, your openITCOCKPIT server requires a valid SSL certificate, as described in the "
-msgstr ""
+msgstr "Si desea utilizar la integración bidireccional, su servidor openITCOCKPIT necesita un certificado SSL válido, como se ha descrito en"
 
 #: .-modules/SlackModule/templates/SlackSettings/index.php:115
 msgid "Slack FAQ"
-msgstr ""
+msgstr "Preguntas frecuentes sobre Slack"
 
 #: .-modules/SnmpTrapModule/src/Controller/SnmpttListController.php:69
 msgid "Snmptt entry not found"
-msgstr ""
+msgstr "Entrada Snmptt no encontrada"
 
 #: .-modules/SnmpTrapModule/src/Lib/Menu.php:27
 msgid "Snmp Trap Logs"
-msgstr ""
+msgstr "Registros de Snmp trap"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:33
 msgid "Snmp Trap Module"
-msgstr ""
+msgstr "Modulo Snmp Trap"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:37
 msgid "SnmpttList"
-msgstr ""
+msgstr "SnmpttList"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:53
 msgid "Snmp trap logs"
-msgstr ""
+msgstr "Registros de Snmp trap"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:82
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:179
 msgid "Event name"
-msgstr ""
+msgstr "Nombre del evento"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:95
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:187
 msgid "Event ID"
-msgstr ""
+msgstr "Identificador del evento"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:109
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:191
 msgid "Trap OID"
-msgstr ""
+msgstr "Trap OID"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:122
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:199
 msgid "Format line"
-msgstr ""
+msgstr "Línea de formato"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:149
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:195
 msgid "Agent IP"
-msgstr ""
+msgstr "IP agente"
 
 #: .-modules/SnmpTrapModule/templates/SnmpttList/index.php:175
 msgid "Severity"
-msgstr ""
+msgstr "Severidad"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:81
 msgid "Welcome to the Template Export Shell."
-msgstr ""
+msgstr "Bienvenido al Template Export Shell."
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:82
 msgid "I will give you all the necessary data to get a valid file which can be imported in openITCOCKPIT to have awesome new monitoring possibilities :)"
-msgstr ""
+msgstr "Te daré todos los datos necesarios para obtener un archivo válido que puede ser importado en openITCOCKPIT para tener nuevas posibilidades de monitorización. :)"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:83
 msgid "Now please answer a few questions: "
-msgstr ""
+msgstr "Ahora, por favor, responda a algunas preguntas: "
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:86
 msgid "Would you like to export Hosttemplate data ?"
-msgstr ""
+msgstr "¿Desea exportar datos de Hosttemplate?"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:90
 msgid "Please enter the Hosttemplate wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Por favor, introduzca el comodín Servicetemplategroup en formato SQL (%sap% o algo así"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:91
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:104
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:114
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:130
 msgid "Do you want to add additional Filters ?"
-msgstr ""
+msgstr "¿Desea añadir filtros adicionales?"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:99
 msgid "Would you like to export Servicetemplate data ?"
-msgstr ""
+msgstr "¿Desea exportar datos de Servicetemplate?"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:103
 msgid "Please enter the Servicetemplate wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Por favor, introduzca el comodín Servicetemplategroup en formato SQL (%sap% o algo así"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:109
 msgid "Would you like to export Servicetemplategroup data too ?"
-msgstr ""
+msgstr "¿Desea exportar también los datos de Servicetemplategroup?"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:113
 msgid "Please enter the Servicetemplategroup wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Por favor, introduzca el comodín Servicetemplategroup en formato SQL (%sap% o algo así"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:125
 msgid "Would you like to export Macro data ?"
-msgstr ""
+msgstr "¿Desea exportar datos Macro?"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:129
 msgid "Please enter the Macro wildcard in SQL Format (%sap% or something like that"
-msgstr ""
+msgstr "Por favor, introduzca el comodín macro en formato SQL (%sap% o algo así"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:154
 msgid "You want to do nothing ? Okay bye bye :) "
-msgstr ""
+msgstr "¿No quieres hacer nada? Vale adiós :)"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:161
 msgid "No filters given"
-msgstr ""
+msgstr "Sin filtros"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:172
 msgid "Retrieving commands"
-msgstr ""
+msgstr "Recuperar comandos"
 
 #: .-modules/TemplateExportModule/src/Command/TemplateExportCommand.php:175
 msgid "Replacing Ids"
-msgstr ""
+msgstr "Sustitución de identificadores"
 
 #: .-modules/UPSModule/templates/Wizards/ups.php:20
 msgid "UPS"
-msgstr ""
+msgstr "UPS"
 
 #: .-modules/UPSModule/templates/Wizards/ups.php:29
 msgid "Configuration Wizard: UPS"
-msgstr ""
+msgstr "Asistente de configuración: UPS"
 
 #: .-modules/UPSModule/templates/Wizards/ups.php:43
 msgid "Configure SNMP for UPS Monitoring"
-msgstr ""
+msgstr "Configurar SNMP para la monitorización de UPS"
 
 #: .-modules/UPSModule/templates/Wizards/ups.php:192
 msgid "UPS services"
-msgstr ""
+msgstr "Servicios de UPS"
 
 #: .-modules/VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:29
 msgid "Configuration Wizard: VMware Horizon"
-msgstr ""
+msgstr "Asistente de configuración: VMware Horizon"
 
 #: .-modules/VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:52
 msgid "VMware Horizon Connection Server"
-msgstr ""
+msgstr "Servidor de conexión VMware Horizon"
 
 #: .-modules/VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:62
 msgid "VMware Horizon configuration help"
-msgstr ""
+msgstr "Ayuda sobre la configuración de VMware Horizon"
 
 #: .-modules/VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:79
 msgid "Please create a User within the Connection-Center with Administrator permission on {0}. Because only these Users will have permission to connect to the REST API."
-msgstr ""
+msgstr "Por favor, cree un Usuario dentro de la Central de Conexión con permiso de Administrador en {0}. Porque sólo estos usuarios tendrán permiso para conectarse a la API REST."
 
 #: .-modules/VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:85
 msgid "Please ensure to have a recent API version installed, because not all functions are included within old versions."
-msgstr ""
+msgstr "Asegúrese de tener instalada una versión reciente de la API, ya que no todas las funciones están incluidas en las versiones antiguas."
 
 #: .-modules/VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:121
 msgid "Domain"
-msgstr ""
+msgstr "Dominio"
 
 #: .-modules/VMWAREHORIZONModule/templates/Wizards/vmwarehorizon.php:135
 msgid "VMware Horizon services"
-msgstr ""
+msgstr "Servicios de VMware Horizon"
 
 #: .-modules/VMWAREModule/src/Lib/Wizards.php:39
 #: .-modules/VMWAREModule/src/Lib/Wizards.php:50
 msgid "Check everything regarding VMware. ESX Hosts, vCenter, virtual machines..."
-msgstr ""
+msgstr "Compruebe todo lo relacionado con VMware. Hosts ESX, vCenter, máquinas virtuales..."
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:38
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:65
 msgid "VMware"
-msgstr ""
+msgstr "VMware"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:47
 msgid "Configuration Wizard: VMware Server"
-msgstr ""
+msgstr "Asistente de configuración: VMware Server"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:49
 msgid "through vCenter"
-msgstr ""
+msgstr "mediante vCenter"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:52
 msgid "esx directly"
-msgstr ""
+msgstr "esx directamente"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:76
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:52
 msgid "VMware Server"
-msgstr ""
+msgstr "VMware Server"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:87
 msgid "VMware configuration help"
-msgstr ""
+msgstr "Ayuda sobre la configuración de VMware"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:100
 msgid "Check everything regarding VMware. ESX Hosts, vCenter, virtual machine"
-msgstr ""
+msgstr "Compruebe todo lo relacionado con VMware. Hosts ESX, vCenter, máquina virtual"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:104
 msgid "Download the VMware Perl SDK"
-msgstr ""
+msgstr "Descargue el SDK Perl de VMware"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:107
 msgid "here."
-msgstr ""
+msgstr "aquí."
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:113
 msgid "Add an read-only user to your vCenter host."
-msgstr ""
+msgstr "Añada un usuario de sólo lectura a su host vCenter."
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:124
 msgid "vCenter Address"
-msgstr ""
+msgstr "Dirección vCenter"
 
 #: .-modules/VMWAREModule/templates/Wizards/vmware.php:166
 msgid "VMware services"
-msgstr ""
+msgstr "Servicios de VMware"
 
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:29
 msgid "Configuration Wizard: VMware Snapshot"
-msgstr ""
+msgstr "Asistente de configuración: VMware Snapshot"
 
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:57
 msgid "VMware Host"
-msgstr ""
+msgstr "VM Host"
 
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:96
 msgid "VMware Snapshot services"
-msgstr ""
+msgstr "Servicios de VMware Snapshot"
 
