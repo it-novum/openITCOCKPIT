@@ -163,6 +163,10 @@ class HostgroupsController extends AppController {
 
             $requestData = $this->request->getData();
 
+            // Store HostIDs for later, remove them from the $requestdata.
+            $hostIds = $requestData['Hostgroup']['hosts']['_ids'];
+            unset($requestData['Hostgroup']['hosts']);
+
             $hostgroup = $HostgroupsTable->createHostgroup($hostgroup, $requestData, $User->getId());
 
             if ($hostgroup->hasErrors()) {
@@ -170,15 +174,16 @@ class HostgroupsController extends AppController {
                 $this->set('error', $hostgroup->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
-            } else {
-                //No errors
+            }
+            $hostgroupArray = $HostgroupsTable->getHostgroupForEdit($hostgroup->id);
+            $this->appendHostsToGroup($hostgroupArray, $hostIds);
+            //No errors
 
-                Cache::clear('permissions');
+            Cache::clear('permissions');
 
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($hostgroup); // REST API ID serialization
-                    return;
-                }
+            if ($this->isJsonRequest()) {
+                $this->serializeCake4Id($hostgroup); // REST API ID serialization
+                return;
             }
             $this->set('hostgroup', $hostgroup);
             $this->viewBuilder()->setOption('serialize', ['hostgroup']);
@@ -724,7 +729,7 @@ class HostgroupsController extends AppController {
                 return;
             }
 
-            $this->appendix($hostgroup, $hostIds);
+            $this->appendHostsToGroup($hostgroup, $hostIds);
 
             if ($this->isJsonRequest()) {
                 $this->serializeCake4Id($hostgroupEntity); // REST API ID serialization
@@ -736,7 +741,7 @@ class HostgroupsController extends AppController {
         }
     }
 
-    private function appendix(array $hostgroup, array $hostIds): void {
+    private function appendHostsToGroup(array $hostgroup, array $hostIds): void {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $HostsTable HostsTable */
