@@ -713,7 +713,7 @@ class HostgroupsController extends AppController {
                 throw new NotFoundException(__('Invalid Hostgroup'));
             }
 
-            $hostgroup = $HostgroupsTable->getHostgroupForEdit($id);
+            $hostgroup             = $HostgroupsTable->getHostgroupForEdit($id);
             $hostgroupForChangelog = $hostgroup;
             if (!$this->allowedByContainerId($hostgroup['Hostgroup']['container']['parent_id'])) {
                 $this->render403();
@@ -759,9 +759,12 @@ class HostgroupsController extends AppController {
 
             /// Traverse the hostgroups we have
             foreach ($newHostGroupIds as $hostGroupId) {
+                $hostgroupEntity = $HostgroupsTable->get($hostGroupId);
+                $hostgroupEntity->setAccess('uuid', false);
 
                 // Traverse the hosts we have.
                 foreach ($hostIds as $hostId) {
+                    $hostIdsToSave[] = $hostId;
                     $host = $HostsTable->getHostSharing($hostId);
                     $hostTemplateId = (int)$host['Host']['hosttemplate_id'];
 
@@ -791,53 +794,44 @@ class HostgroupsController extends AppController {
 
                     $hostEntity = $HostsTable->patchEntity($hostEntity, $patch);
                     $HostsTable->save($hostEntity);
+                }
 
-                    // Changelog
-                    if ($hostEntity->hasErrors()) {
-                        $this->response = $this->response->withStatus(400);
-                        $this->set('error', $hostEntity->getErrors());
-                        $this->viewBuilder()->setOption('serialize', ['error']);
-                    } else {
-                        $fakeRequest = [
-                            'Host' => [
-                                'Hostgroups' => [
-                                    '_ids' => $currentHostGroups
-                                ]
-                            ]
-                        ];
+                $fakeRequest = [
+                    'Hostgroup' => [
+                        'hosts' => [
+                            '_ids' => $hostIdsToSave
+                        ]
+                    ]
+                ];
 
-                        //No errors
-                        /** @var  ChangelogsTable $ChangelogsTable */
-                        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+                //No errors
+                /** @var  ChangelogsTable $ChangelogsTable */
+                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                        $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                            'edit',
-                            'host',
-                            $hostEntity->id,
-                            OBJECT_HOST,
-                            $hostgroup['Hostgroup']['container']['parent_id'],
-                            $User->getId(),
-                            $host['Host']['name'],
-                            array_merge($HostsTable->resolveDataForChangelog($patch), $patch),
-                            array_merge($HostsTable->resolveDataForChangelog($host), $host)
-                        );
-                        if ($changelog_data) {
-                            /** @var Changelog $changelogEntry */
-                            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                            $ChangelogsTable->save($changelogEntry);
-                        }
-
-                    }
+                $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                    'edit',
+                    'hostgroups',
+                    $hostGroupId,
+                    OBJECT_HOSTGROUP,
+                    $hostgroup['Hostgroup']['container']['parent_id'],
+                    $User->getId(),
+                    $hostgroup['Hostgroup']['container']['name'],
+                    array_merge($HostgroupsTable->resolveDataForChangelog($fakeRequest), $fakeRequest),
+                    array_merge($HostgroupsTable->resolveDataForChangelog($hostgroupForChangelog), $hostgroupForChangelog)
+                );
+                if ($changelog_data) {
+                    /** @var Changelog $changelogEntry */
+                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                    $ChangelogsTable->save($changelogEntry);
                 }
             }
-/*
+
             if ($this->isJsonRequest()) {
                 $this->serializeCake4Id($hostgroupEntity); // REST API ID serialization
                 return;
             }
 
             $this->set('hostgroup', $hostgroupEntity);
-*/
             $this->viewBuilder()->setOption('serialize', ['hostgroup']);
         }
     }
