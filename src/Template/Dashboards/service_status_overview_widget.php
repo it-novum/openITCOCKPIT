@@ -40,14 +40,14 @@
                     <a href="javascript:void(0);" ng-click="goToState()">
                         <div class="row text-center">
                             <div class="col col-lg-12 txt-color-white">
-                                {{ statusCount | number }}
+                                {{ statusCount }}
                             </div>
                         </div>
                     </a>
                 <?php else: ?>
                     <div class="row text-center">
                         <div class="col col-lg-12 txt-color-white">
-                            {{ statusCount | number }}
+                            {{ statusCount }}
                         </div>
                     </div>
                 <?php endif; ?>
