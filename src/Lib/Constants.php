@@ -150,7 +150,9 @@ class Constants {
             'OBJECT_EXTERNALMONITORING'        => 1 << 26,  // Changelog only
             'OBJECT_STARTIMPORTDATA'           => 1 << 27,  // Changelog only
             'OBJECT_SYNCHRONIZEWITHMONITORING' => 1 << 28,  // Changelog only
-            'OBJECT_AGENTCHECK'                => 1 << 29   // Changelog only
+            'OBJECT_AGENTCHECK'                => 1 << 29,  // Changelog only
+            'OBJECT_IMPORTEDHOSTGROUP'         => 1 << 30   // Changelog only
+
         ]);
     }
 
