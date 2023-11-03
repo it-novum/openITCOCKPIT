@@ -57,7 +57,7 @@ use Cake\Error\ExceptionTrap;
 // CakePHP 4.4.x (requires php 7.4)
 use Cake\Http\ServerRequest;
 use Cake\Log\Log;
-use Cake\Mailer\Email;
+use Cake\Mailer\Mailer;
 use Cake\Mailer\TransportFactory;
 use Cake\Routing\Router;
 use Cake\Utility\Security;
@@ -137,6 +137,15 @@ if (Configure::read('debug')) {
     Configure::write('Cache._cake_core_.duration', '+2 minutes');
     // disable router cache during development
     Configure::write('Cache._cake_routes_.duration', '+2 seconds');
+
+    /*
+    // Open a new Browser windows and navigate to /debug-kit
+    Configure::write('DebugKit.forceEnable', true);
+    // Ignore image paths
+    Configure::write('DebugKit.ignorePathsPattern', '/\.(jpg|png|gif)$/');
+    Configure::write('DebugKit.ignoreAuthorization', true);
+    Configure::write('DebugKit.includeSchemaReflection', true);
+    */
 }
 
 /*
@@ -209,7 +218,7 @@ unset($fullBaseUrl);
 Cache::setConfig(Configure::consume('Cache'));
 ConnectionManager::setConfig(Configure::consume('Datasources'));
 TransportFactory::setConfig(Configure::consume('EmailTransport'));
-Email::setConfig(Configure::consume('Email'));
+Mailer::setConfig(Configure::consume('Email'));
 Log::setConfig(Configure::consume('Log'));
 Security::setSalt(Configure::consume('Security.salt'));
 

@@ -442,6 +442,9 @@ class PrometheusExporter {
 
         // Add Gearman information
         foreach ($gearmanStatus as $queueName => $queueStats) {
+            // Prometheus does not like any special character
+            $queueName = preg_replace('/[^a-zA-Z0-9_]/', '_', $queueName);
+
             $gauge = $registry->registerGauge(
                 'gearman',
                 $queueName . '_jobs',

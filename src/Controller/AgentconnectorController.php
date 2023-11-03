@@ -52,6 +52,7 @@ use DistributeModule\Model\Table\SatelliteTasksTable;
 use itnovum\openITCOCKPIT\Agent\AgentConfiguration;
 use itnovum\openITCOCKPIT\Agent\AgentHttpClient;
 use itnovum\openITCOCKPIT\Agent\AgentResponseToServices;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
@@ -1090,6 +1091,9 @@ class AgentconnectorController extends AppController {
 
             $errors = [];
             $newServiceIds = [];
+
+            $ObjectsCacheChangelog = new ObjectsCache();
+
             foreach ($servicesPost as $servicePost) {
                 $servicetemplate = $ServicetemplatesTable->getServicetemplateForDiff($servicePost['servicetemplate_id']);
                 $servicename = $servicePost['name'];
@@ -1121,7 +1125,7 @@ class AgentconnectorController extends AppController {
                 } else {
                     //No errors
 
-                    $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData]);
+                    $extDataForChangelog = $ServicesTable->resolveDataForChangelog(['Service' => $serviceData], $ObjectsCacheChangelog);
                     /** @var  ChangelogsTable $ChangelogsTable */
                     $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
                     $changelog_data = $ChangelogsTable->parseDataForChangelog(

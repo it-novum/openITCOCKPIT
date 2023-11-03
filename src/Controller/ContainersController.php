@@ -347,9 +347,7 @@ class ContainersController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['nest']);
     }
 
-    /**
-     * THIS IS ONLY FOR ContainersIndex Action !!!
-     */
+
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

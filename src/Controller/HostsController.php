@@ -62,6 +62,7 @@ use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use ImportModule\Model\Table\ImportedHostsTable;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CommandArgReplacer;
@@ -1029,6 +1030,7 @@ class HostsController extends AppController {
             $HosttemplateCache = new KeyValueStore();
             $ContactCache = new KeyValueStore();
             $ContactgroupCache = new KeyValueStore();
+            $ObjectsCacheChangelog = new ObjectsCache();
             foreach ($hostIds as $hostId) {
 
                 $hostArray = $HostsTable->getHostByIdWithDetails($hostId);
@@ -1325,8 +1327,8 @@ class HostsController extends AppController {
                             $containerIdsForChangelog,
                             $User->getId(),
                             $hostObject->get('name'),
-                            array_merge($HostsTable->resolveDataForChangelog($mergedHostToSave), $mergedHostToSave),
-                            array_merge($HostsTable->resolveDataForChangelog($hostForChangelog), $hostForChangelog)
+                            array_merge($HostsTable->resolveDataForChangelog($mergedHostToSave, $ObjectsCacheChangelog), $mergedHostToSave),
+                            array_merge($HostsTable->resolveDataForChangelog($hostForChangelog, $ObjectsCacheChangelog), $hostForChangelog)
                         );
                         if ($changelog_data) {
                             $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
@@ -1675,6 +1677,7 @@ class HostsController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             //We want to save/validate the data and save it
             $postData = $this->request->getData('data');
+            $ObjectsCacheChangelog = new ObjectsCache();
             foreach ($postData as $index => $host2copyData) {
                 $action = 'copy';
                 $currentDataForChangelog = [];
@@ -1808,7 +1811,7 @@ class HostsController extends AppController {
                     $tmpHost->customvariables = $customvariables;
                     $HostMergerForView = new HostMergerForView(['Host' => $tmpHost->toArray()], $hosttemplate);
                     $mergedHost = $HostMergerForView->getDataForView();
-                    $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost);
+                    $extDataForChangelog = $HostsTable->resolveDataForChangelog($mergedHost, $ObjectsCacheChangelog);
                     $extDataForChangelog = array_merge($mergedHost, $extDataForChangelog);
 
                     $hostData = $tmpHost->toArray();
@@ -1970,7 +1973,7 @@ class HostsController extends AppController {
                                 //No errors
                                 /** @var  ChangelogsTable $ChangelogsTable */
                                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-                                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($sourceService);
+                                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($sourceService, $ObjectsCacheChangelog);
 
                                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                                     $action,
@@ -2129,6 +2132,7 @@ class HostsController extends AppController {
 
         $mergedHost['is_satellite_host'] = $hostObj->isSatelliteHost();
         $mergedHost['allowEdit'] = $allowEdit;
+        $mergedHost['showServices'] = $this->hasPermission('index', 'services');
 
         $replacePasswordInObjectMacros = false;
         try {
@@ -2262,7 +2266,7 @@ class HostsController extends AppController {
 
         $downtime = [];
         if ($Hoststatus->isInDowntime()) {
-            $downtime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid());
+            $downtime = $DowntimehistoryHostsTable->byHostUuid($hostObj->getUuid(), true);
             if (!empty($downtime)) {
                 $Downtime = new Downtime($downtime, $allowEdit, $UserTime);
                 $downtime = $Downtime->toArray();

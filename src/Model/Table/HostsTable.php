@@ -20,6 +20,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -1568,10 +1569,17 @@ class HostsTable extends Table {
     }
 
     /**
+     * This method will lookup the name of objects based on the given ID.
+     *
+     * Objects like ObjectsCache are passed by reference in php which is very good for performance
+     * The Cache is optional (to be backwards compatible) and should be used, whenever this method get's called in a look
+     * A good example for Caching is the Import Module for example
+     *
      * @param array $dataToParse
-     * @return array
+     * @param ObjectsCache|null $Cache
+     * @return array|array[]
      */
-    public function resolveDataForChangelog($dataToParse = []) {
+    public function resolveDataForChangelog(array $dataToParse, ?ObjectsCache $Cache = null) {
         $extDataForChangelog = [
             'Contact'      => [],
             'Contactgroup' => [],
@@ -1598,74 +1606,194 @@ class HostsTable extends Table {
 
 
         if (!empty($dataToParse['Host']['contacts']['_ids'])) {
-            foreach ($ContactsTable->getContactsAsList($dataToParse['Host']['contacts']['_ids']) as $contactId => $contactName) {
-                $extDataForChangelog['Contact'][] = [
-                    'id'   => $contactId,
-                    'name' => $contactName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($ContactsTable->getContactsAsList($dataToParse['Host']['contacts']['_ids']) as $contactId => $contactName) {
+                    $extDataForChangelog['Contact'][] = [
+                        'id'   => $contactId,
+                        'name' => $contactName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Host']['contacts']['_ids'] as $contactId) {
+                    if (!$Cache->has(OBJECT_CONTACT, $contactId)) {
+                        foreach ($ContactsTable->getContactsAsList($contactId) as $contactName) {
+                            $Cache->set(OBJECT_CONTACT, $contactId, [
+                                'id'   => $contactId,
+                                'name' => $contactName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Contact'][] = $Cache->get(OBJECT_CONTACT, $contactId);
+                }
             }
         }
 
         if (!empty($dataToParse['Host']['contactgroups']['_ids'])) {
-            foreach ($ContactgroupsTable->getContactgroupsAsList($dataToParse['Host']['contactgroups']['_ids']) as $contactgroupId => $contactgroupName) {
-                $extDataForChangelog['Contactgroup'][] = [
-                    'id'   => $contactgroupId,
-                    'name' => $contactgroupName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($ContactgroupsTable->getContactgroupsAsList($dataToParse['Host']['contactgroups']['_ids']) as $contactgroupId => $contactgroupName) {
+                    $extDataForChangelog['Contactgroup'][] = [
+                        'id'   => $contactgroupId,
+                        'name' => $contactgroupName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Host']['contactgroups']['_ids'] as $contactgroupId) {
+                    if (!$Cache->has(OBJECT_CONTACTGROUP, $contactgroupId)) {
+                        foreach ($ContactgroupsTable->getContactgroupsAsList($contactgroupId) as $contactgroupName) {
+                            $Cache->set(OBJECT_CONTACTGROUP, $contactgroupId, [
+                                'id'   => $contactgroupId,
+                                'name' => $contactgroupName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Contactgroup'][] = $Cache->get(OBJECT_CONTACTGROUP, $contactgroupId);
+                }
             }
         }
 
         if (!empty($dataToParse['Host']['check_period_id'])) {
-            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['check_period_id']) as $timeperiodId => $timeperiodName) {
-                $extDataForChangelog['CheckPeriod'] = [
-                    'id'   => $timeperiodId,
-                    'name' => $timeperiodName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['check_period_id']) as $timeperiodId => $timeperiodName) {
+                    $extDataForChangelog['CheckPeriod'] = [
+                        'id'   => $timeperiodId,
+                        'name' => $timeperiodName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                if (!$Cache->has(OBJECT_TIMEPERIOD, $dataToParse['Host']['check_period_id'])) {
+                    foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['check_period_id']) as $timeperiodId => $timeperiodName) {
+                        $Cache->set(OBJECT_TIMEPERIOD, $dataToParse['Host']['check_period_id'], [
+                            'id'   => $timeperiodId,
+                            'name' => $timeperiodName
+                        ]);
+                    }
+                }
+                $extDataForChangelog['CheckPeriod'] = $Cache->get(OBJECT_TIMEPERIOD, $dataToParse['Host']['check_period_id']);
             }
         }
 
         if (!empty($dataToParse['Host']['notify_period_id'])) {
-            foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['notify_period_id']) as $timeperiodId => $timeperiodName) {
-                $extDataForChangelog['NotifyPeriod'] = [
-                    'id'   => $timeperiodId,
-                    'name' => $timeperiodName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['notify_period_id']) as $timeperiodId => $timeperiodName) {
+                    $extDataForChangelog['NotifyPeriod'] = [
+                        'id'   => $timeperiodId,
+                        'name' => $timeperiodName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                if (!$Cache->has(OBJECT_TIMEPERIOD, $dataToParse['Host']['notify_period_id'])) {
+                    foreach ($TimeperiodsTable->getTimeperiodsAsList($dataToParse['Host']['notify_period_id']) as $timeperiodId => $timeperiodName) {
+                        $Cache->set(OBJECT_TIMEPERIOD, $dataToParse['Host']['notify_period_id'], [
+                            'id'   => $timeperiodId,
+                            'name' => $timeperiodName
+                        ]);
+                    }
+                }
+                $extDataForChangelog['NotifyPeriod'] = $Cache->get(OBJECT_TIMEPERIOD, $dataToParse['Host']['notify_period_id']);
             }
         }
 
         if (!empty($dataToParse['Host']['command_id'])) {
-            foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Host']['command_id']) as $commandId => $commandName) {
-                $extDataForChangelog['CheckCommand'] = [
-                    'id'   => $commandId,
-                    'name' => $commandName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Host']['command_id']) as $commandId => $commandName) {
+                    $extDataForChangelog['CheckCommand'] = [
+                        'id'   => $commandId,
+                        'name' => $commandName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                if (!$Cache->has(OBJECT_COMMAND, $dataToParse['Host']['command_id'])) {
+                    foreach ($CommandsTable->getCommandByIdAsList($dataToParse['Host']['command_id']) as $commandId => $commandName) {
+                        $Cache->set(OBJECT_COMMAND, $dataToParse['Host']['command_id'], [
+                            'id'   => $commandId,
+                            'name' => $commandName
+                        ]);
+                    }
+                }
+                $extDataForChangelog['CheckCommand'] = $Cache->get(OBJECT_COMMAND, $dataToParse['Host']['command_id']);
             }
         }
 
         if (!empty($dataToParse['Host']['hostgroups']['_ids'])) {
-            foreach ($HostgroupsTable->getHostgroupsAsList($dataToParse['Host']['hostgroups']['_ids']) as $hostgroupId => $hostgroupName) {
-                $extDataForChangelog['Hostgroup'][] = [
-                    'id'   => $hostgroupId,
-                    'name' => $hostgroupName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($HostgroupsTable->getHostgroupsAsList($dataToParse['Host']['hostgroups']['_ids']) as $hostgroupId => $hostgroupName) {
+                    $extDataForChangelog['Hostgroup'][] = [
+                        'id'   => $hostgroupId,
+                        'name' => $hostgroupName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Host']['hostgroups']['_ids'] as $hostgroupId) {
+                    if (!$Cache->has(OBJECT_HOSTGROUP, $hostgroupId)) {
+                        foreach ($HostgroupsTable->getHostgroupsAsList($hostgroupId) as $hostgroupName) {
+                            $Cache->set(OBJECT_HOSTGROUP, $hostgroupId, [
+                                'id'   => $hostgroupId,
+                                'name' => $hostgroupName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Hostgroup'][] = $Cache->get(OBJECT_HOSTGROUP, $hostgroupId);
+                }
             }
         }
 
         if (!empty($dataToParse['Host']['parenthosts']['_ids'])) {
-            foreach ($this->getHostsAsList($dataToParse['Host']['parenthosts']['_ids']) as $parentHostId => $parentHostName) {
-                $extDataForChangelog['Parenthost'][] = [
-                    'id'   => $parentHostId,
-                    'name' => $parentHostName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($this->getHostsAsList($dataToParse['Host']['parenthosts']['_ids']) as $parentHostId => $parentHostName) {
+                    $extDataForChangelog['Parenthost'][] = [
+                        'id'   => $parentHostId,
+                        'name' => $parentHostName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Host']['parenthosts']['_ids'] as $parentHostId) {
+                    if (!$Cache->has(OBJECT_HOST, $parentHostId)) {
+                        foreach ($this->getHostsAsList($parentHostId) as $parentHostName) {
+                            $Cache->set(OBJECT_HOST, $parentHostId, [
+                                'id'   => $parentHostId,
+                                'name' => $parentHostName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Parenthost'][] = $Cache->get(OBJECT_HOST, $parentHostId);
+                }
             }
         }
 
         if (!empty($dataToParse['Host']['hosttemplate_id'])) {
-            foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Host']['hosttemplate_id']) as $hosttemplateId => $hosttemplateName) {
-                $extDataForChangelog['Hosttemplate'][] = [
-                    'id'   => $hosttemplateId,
-                    'name' => $hosttemplateName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Host']['hosttemplate_id']) as $hosttemplateId => $hosttemplateName) {
+                    $extDataForChangelog['Hosttemplate'][] = [
+                        'id'   => $hosttemplateId,
+                        'name' => $hosttemplateName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                if (!$Cache->has(OBJECT_HOSTTEMPLATE, $dataToParse['Host']['hosttemplate_id'])) {
+                    foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Host']['hosttemplate_id']) as $hosttemplateId => $hosttemplateName) {
+                        $Cache->set(OBJECT_HOSTTEMPLATE, $dataToParse['Host']['hosttemplate_id'], [
+                            'id'   => $hosttemplateId,
+                            'name' => $hosttemplateName
+                        ]);
+                    }
+                }
+                $extDataForChangelog['Hosttemplate'][] = $Cache->get(OBJECT_HOSTTEMPLATE, $dataToParse['Host']['hosttemplate_id']);
             }
         }
 
