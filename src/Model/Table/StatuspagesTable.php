@@ -285,6 +285,7 @@ class StatuspagesTable extends Table
     /**
      * @param string|null $id
      * @param @param UserTime $userTime
+     * @param bool $isPublicCall
      * @return array
      */
     public function getStatuspageView ( $id, UserTime $UserTime, $isPublicCall = false){
@@ -353,9 +354,7 @@ class StatuspagesTable extends Table
                     }
                     if ($hostViewData['isInDowntime']) {
                         $downtime = $this->getHostDowntime($host['uuid'], $DowntimehistoryHostsTable, $UserTime);
-                      //  $downtime = $DowntimehistoryHostsTable->byHostUuid($host['uuid']);
                         if (!empty($downtime)) {
-                           // $Downtime = new Downtime($downtime, false, $UserTime);
                             $hostViewData['downtimeData'] = $downtime;
                         }
                     }
@@ -480,7 +479,6 @@ class StatuspagesTable extends Table
        // $itemsSortedState = Hash::sort($items, '{s}.type', 'desc');
         $itemsSortedState = Hash::sort($items, '{n}.cumulatedState', 'desc');
         $statuspageView['items'] = $itemsSortedState;
-
         return $statuspageView;
     }
 
@@ -621,7 +619,7 @@ class StatuspagesTable extends Table
     /*
     * @param ServicesTable $Service
     *  @param array $hostgroup
-    * @param ShostStatusTableInterface $HoststatusTable
+    * @param SHoststatusTableInterface $HoststatusTable
     * @param ServicestatusTableInterface $ServicestatusTable
     * @return array
     */
@@ -652,15 +650,14 @@ class StatuspagesTable extends Table
                 }
                 $problemsAcknowledged = $hostProblems - $hostProblemsNotAcknowledged;
                 if ($hostProblemsNotAcknowledged > 0) {
-                    $info['problemtext'] = "{$problemsAcknowledged} of {$hostProblems} problems in hostgroup acknowledged";
+                    $info['problemtext'] = "{$problemsAcknowledged} of {$hostProblems} problems  acknowledged";
                 }
                 if ($hostProblemsInDowntime > 0) {
-                    $info['problemtext_down'] = "{$hostProblemsInDowntime} of {$hostProblems} problems in hostgroup currently in a planned maintenance period";
+                    $info['problemtext_down'] = "{$hostProblemsInDowntime} of {$hostProblems} problems currently in a planned maintenance period";
                 }
             }
             return $info;
         }
-
 
         $hostIds = Hash::extract($hostgroup['hosts'], '{n}.id');
         $services = $Service->getActiveServicesByHostIds($hostIds, false);
@@ -693,10 +690,10 @@ class StatuspagesTable extends Table
             }
             $problemsAcknowledged = $serviceProblems- $problemsNotAcknowledged;
             if ($problemsNotAcknowledged > 0) {
-                $info['problemtext'] = "{$problemsAcknowledged} of {$serviceProblems}  problems of services acknowledged";
+                $info['problemtext'] = "{$problemsAcknowledged} of {$serviceProblems}  problems acknowledged";
             }
             if ($problemsInDowntime > 0) {
-                $info['problemtext_down'] = "{$problemsInDowntime} of {$serviceProblems} problems of services currently in a planned maintenance period";
+                $info['problemtext_down'] = "{$problemsInDowntime} of {$serviceProblems} problems currently in a planned maintenance period";
             }
         }
         return $info;

@@ -70,19 +70,43 @@
                         <div class="col no-padding" ng-repeat="item in Statuspage.items">
                             <div class="card mt-5 border-{{item.color}}">
                                 <div class="card-header bg-{{item.color}} txt-color-white border-bottom-0">
-                                    <h3>{{item.type}}</h3>
-                                    <h4>{{item.name}}</h4>
+                                    <!--<h3>{{item.type}}</h3>-->
+                                    <h4 ng-if="item.type === 'Host'" class="cursor-pointer">
+                                        <a ui-sref="HostsBrowser({id:item.id})" style="color:white;">
+                                            {{ item.name }}
+                                            <i class="fas fa-external-link-alt padding-left-5"></i>
+                                        </a>
+                                    </h4>
+                                    <h4 ng-if="item.type === 'Service'" class="cursor-pointer">
+                                        <a ui-sref="ServicesBrowser({id:item.id})" style="color:white;">
+                                            {{ item.name }}
+                                            <i class="fas fa-external-link-alt padding-left-5"></i>
+                                        </a>
+                                    </h4>
+                                    <h4 ng-if="item.type === 'Hostgroup'" class="cursor-pointer">
+                                        <a ui-sref="HostgroupsExtended({id: item.id})" style="color:white;">
+                                            {{ item.name }}
+                                            <i class="fas fa-external-link-alt padding-left-5"></i>
+                                        </a>
+                                    </h4>
+                                    <h4 ng-if="item.type === 'Servicegroup'" class="cursor-pointer">
+                                        <a ui-sref="ServicegroupsExtended({id: item.id})" style="color:white;">
+                                            {{ item.name }}
+                                            <i class="fas fa-external-link-alt padding-left-5"></i>
+                                        </a>
+                                    </h4>
                                 </div>
                                 <div class="card-body bg-{{item.color}}">
                                     <div class="txt-color-white">
                                         <div ng-if="item.currentState > 0 && !item.isAcknowledged && item.type != 'Servicegroup' && item.type != 'Hostgroup'"
                                              class="bg-{{item.color}}">
-                                            <h4><b><i class="far fa-user"></i> {{item.type}} <?php echo __('is not acknowledged!');?> </b>
-                                            </h4>
+                                            <!--<h4><b><i class="far fa-user"></i> {{item.type}} <?php echo __('is not acknowledged!');?> </b></h4>-->
+                                            <h4><b><i class="far fa-user"></i><?php echo __('State is not acknowledged!');?> </b></h4>
                                         </div>
                                         <div ng-if="item.currentState > 0 && item.isAcknowledged">
-                                            <h4 ng-if="item.type == 'Service'"><b><i class="fas fa-user"></i> <?php echo __('State of service is acknowledged'); ?></b></h4>
-                                            <h4 ng-if="item.type == 'Host'"><b><i class="fas fa-user"></i> <?php echo __('State of host is acknowledged'); ?></b></h4>
+                                            <!--<h4 ng-if="item.type == 'Service'"><b><i class="fas fa-user"></i> <?php echo __('State of service is acknowledged'); ?></b></h4>
+                                            <h4 ng-if="item.type == 'Host'"><b><i class="fas fa-user"></i> <?php echo __('State of host is acknowledged'); ?></b></h4>-->
+                                            <h4><b><?php echo __('State is acknowledged'); ?></b></h4>
                                         </div>
                                         <div ng-if="item.isAcknowledged">
                                             <b ng-if="Statuspage.statuspage.showComments"><?php echo __('Comment'); ?>:
@@ -94,8 +118,9 @@
                                         <div ng-if="item.isInDowntime && item.downtimeData" class="pt-3">
                                             <table class="table table-sm">
                                                 <tr>
-                                                    <div ng-if="item.type == 'Service'"><h4><i class="fa fa-power-off"></i> <?php echo __('The service is currently in a planned maintenance period');?></b></h4></div>
-                                                    <div ng-if="item.type == 'Host'"><h4><i class="fa fa-power-off"></i> <?php echo __('The host is currently in a planned maintenance period');?></b></h4></div>
+                                                    <!--<div ng-if="item.type == 'Service'"><h4><i class="fa fa-power-off"></i> <?php echo __('The service is currently in a planned maintenance period');?></b></h4></div>
+                                                    <div ng-if="item.type == 'Host'"><h4><i class="fa fa-power-off"></i> <?php echo __('The host is currently in a planned maintenance period');?></b></h4></div>-->
+                                                    <h4><i class="fa fa-power-off"></i> <?php echo __(' Is currently in a planned maintenance period');?></b></h4>
                                                 </tr>
                                                 <tr class="txt-color-white bg-{{item.color}}">
                                                     <td><div class="txt-color-white"><h5> <?php echo __('Start'); ?>: {{item.downtimeData.scheduledStartTime}}</h5></div></td>

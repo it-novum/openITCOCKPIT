@@ -26,10 +26,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Lib\Interfaces\HoststatusTableInterface;
-use App\Lib\Interfaces\ServicestatusTableInterface;
-use App\Model\Entity\Host;
-use App\Model\Entity\Service;
+
 use App\Model\Table\ContainersTable;
 use App\Model\Table\ServicesTable;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -37,12 +34,6 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
-use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\Hoststatus;
-use itnovum\openITCOCKPIT\Core\HoststatusFields;
-
-use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -55,7 +46,7 @@ use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use Cake\Event\EventInterface;
-
+use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 /**
  * Statuspages Controller
@@ -63,19 +54,18 @@ use Cake\Event\EventInterface;
  * @property StatuspagesTable $Statuspages
  * @method \App\Model\Entity\Statuspage[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
-class StatuspagesController extends AppController
-{
-    //https://discourse.cakephp.org/t/bypass-authentication/9197/3
+class StatuspagesController extends AppController {
+   //https://discourse.cakephp.org/t/bypass-authentication/9197/3
    public function beforeFilter(EventInterface $event) {
         parent::beforeFilter($event);
         $this->Authentication->addUnauthenticatedActions(['public']);
     }
 
-    /**
+   /**
      * Index method
      *
      * @return \Cake\Http\Response|null|void Renders view
-     */
+   */
     public function index()
     {
         if (!$this->isApiRequest()) {
@@ -153,6 +143,7 @@ class StatuspagesController extends AppController
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime, true);
 
+        $system = $this->getSystem();
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
@@ -331,9 +322,9 @@ class StatuspagesController extends AppController
         }
         $containerIds = array_unique($containerIds);
 
-        /*  if (!in_array(ROOT_CONTAINER, $containerIds)){
-               $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-           } */
+        if (!in_array(ROOT_CONTAINER, $containerIds)){
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
+       }
         $selected = $this->request->getQuery('selected');
 
         /** @var $HostsTable HostsTable */
@@ -496,5 +487,10 @@ class StatuspagesController extends AppController
 
     }
 
-
+    private function getSystem() {
+        $systemname = $this->getSystemname();
+        $logo = new Logo();
+        $logo = $logo->getHeaderLogoForHtml();
+        return ['system' => $systemname, 'logo' => $logo];
+    }
 }
