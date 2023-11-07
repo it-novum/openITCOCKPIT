@@ -15,8 +15,6 @@ angular.module('openITCOCKPIT')
 
         $scope.sparklines = {};
 
-        var reloadInterval = null;
-
         $scope.hasXdebugCookie = $.cookie('XDEBUG_TRIGGER') !== undefined;
 
         var initTooltip = function(){
@@ -155,7 +153,17 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        var reloadInterval = null,
+            gone = false;
+
         $scope.load = function(){
+            if(gone){
+                if(reloadInterval){
+                    $interval.cancel(reloadInterval);
+                }
+                reloadInterval = null;
+                return;
+            }
             $http.get("/Administrators/debug.json", {
                 params: {
                     'angular': true
@@ -293,10 +301,9 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.startReloadInterval = function(){
-            $scope.stop();
             reloadInterval = $interval(function(){
                 $scope.load();
-            }, 10000);
+            }, 1000);
         };
 
         $scope.stop = function(){
@@ -308,6 +315,7 @@ angular.module('openITCOCKPIT')
 
         //Disable status update interval, if the object gets removed from DOM.
         $scope.$on('$destroy', function(){
+            gone = true;
             $scope.stop();
         });
 
