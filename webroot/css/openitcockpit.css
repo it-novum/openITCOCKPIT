@@ -186,8 +186,8 @@ div.custom-control-right-badge .custom-control-label::after {
 }
 
 .bg-service-front-1:after {
-    content: "\f06a";
-    color: rgba(255, 217, 56, 0.1);
+    content: "\f071";
+    color: rgba(255, 255, 255, 0.1);
 }
 
 .bg-host-front-1:after, .bg-service-front-2:after {
@@ -196,7 +196,7 @@ div.custom-control-right-badge .custom-control-label::after {
 }
 
 .bg-host-front-2:after, .bg-service-front-3:after {
-    content: "\f06a";
+    content: "\f059";
     color: rgba(255, 255, 255, 0.1);
 }
 
