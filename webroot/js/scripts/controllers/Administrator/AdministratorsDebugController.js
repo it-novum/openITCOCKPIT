@@ -303,7 +303,7 @@ angular.module('openITCOCKPIT')
         $scope.startReloadInterval = function(){
             reloadInterval = $interval(function(){
                 $scope.load();
-            }, 1000);
+            }, 10000);
         };
 
         $scope.stop = function(){
