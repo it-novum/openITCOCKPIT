@@ -73,9 +73,8 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="containers"
-                                        multiple
                                         ng-options="container.key as container.value for container in containers"
-                                        ng-model="post.Statuspage.containers._ids">
+                                        ng-model="container_id">
                                 </select>
                                 <div ng-show="post.Statuspage.containers._ids.length === 0" class="warning-glow">
                                     <?php echo __('Please select a container.'); ?>
@@ -230,7 +229,7 @@
                                             chosen="services"
                                             callback="loadServices"
                                             multiple
-                                            ng-options="(service.value.Service.id) as service.value.Host.name + '/' +service.value.Service.servicename group by service.value.Host.name for service in services"
+                                            ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
                                             ng-model="post.Statuspage.services._ids">
                                     </select>
                                 </div>

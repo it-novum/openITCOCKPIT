@@ -246,6 +246,11 @@
                                                     <?php echo __('View'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <a href="/statuspages/public/{{statuspage.id}}" target="_blank"
+                                               class="dropdown-item" ng-show="statuspage.public">
+                                                <i class="fas fa-eye"></i>
+                                                <?php echo __('Public View'); ?>
+                                            </a>
                                             <?php if ($this->Acl->hasPermission('delete', 'statuspages')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a href="javascript:void(0);"

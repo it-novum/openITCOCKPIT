@@ -28,7 +28,6 @@ namespace App\Controller;
 
 
 use App\Model\Table\ContainersTable;
-use App\Model\Table\ServicesTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -37,14 +36,8 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\HostFilter;
-use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
-use itnovum\openITCOCKPIT\Filter\ServiceFilter;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Model\Table\StatuspagesTable;
-use itnovum\openITCOCKPIT\Core\HostConditions;
-use itnovum\openITCOCKPIT\Core\ServiceConditions;
-use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use Cake\Event\EventInterface;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
 
@@ -306,135 +299,8 @@ class StatuspagesController extends AppController {
     }
 
     /**
-     * @return void
-     */
-    public function loadHostsByContainerIds()
-    {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $containerIds = $this->request->getQuery('containerIds');
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        foreach ($containerIds as $containerId) {
-            $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-            $containerIds = array_merge($containerIds, $subIds);
-        }
-        $containerIds = array_unique($containerIds);
-
-        if (!in_array(ROOT_CONTAINER, $containerIds)){
-            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-       }
-        $selected = $this->request->getQuery('selected');
-
-        /** @var $HostsTable HostsTable */
-        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-        $HostFilter = new HostFilter($this->request);
-        $HostConditions = $HostFilter->ajaxFilter();
-        $HostCondition = new HostConditions($HostConditions);
-        $HostCondition->setContainerIds($containerIds);
-
-        $hosts = Api::makeItJavaScriptAble(
-            $HostsTable->getHostsForAngular($HostCondition, $selected)
-        );
-
-        $this->set('hosts', $hosts);
-        $this->viewBuilder()->setOption('serialize', ['hosts']);
-    }
-
-    /**
-     * @return void
-     */
-    public function loadServicesByContainerIds()
-    {
-        if (!$this->isAngularJsRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $selected = $this->request->getQuery('selected');
-        $containerIds = $this->request->getQuery('containerIds');
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        foreach ($containerIds as $containerId) {
-            $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-            $containerIds = array_merge($containerIds, $subIds);
-        }
-        $containerIds = array_unique($containerIds);
-
-        $ServiceFilter = new ServiceFilter($this->request);
-
-        $serviceConditions = $ServiceFilter->indexFilter();
-        //}
-        $ServiceCondition = new ServiceConditions($serviceConditions);
-        $ServiceCondition->setContainerIds($containerIds);
-
-        /** @var $ServicesTable ServicesTable */
-        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-
-        $services = Api::makeItJavaScriptAble(
-            $ServicesTable->getServicesForAngular($ServiceCondition, $selected)
-        );
-
-        $this->set('services', $services);
-        $this->viewBuilder()->setOption('serialize', ['services']);
-    }
-
-    /**
-     * @return void
-     */
-    public function loadServicegroupsByContainerIds()
-    {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
-
-        $containerIds = $this->request->getQuery('containerIds');
-        if (!in_array(ROOT_CONTAINER, $containerIds)) {
-            $containerIds = array_merge($containerIds, [ROOT_CONTAINER]);
-        }
-
-        $servicegroups = $ServicegroupsTable->getServicegroupsByContainerId($containerIds, 'list');
-        $servicegroups = Api::makeItJavaScriptAble($servicegroups);
-
-        $this->set('servicegroups', $servicegroups);
-        $this->viewBuilder()->setOption('serialize', ['servicegroups']);
-    }
-
-    /**
-     * @return void
-     */
-    public function loadHostgroupsByContainerIds()
-    {
-        if (!$this->isApiRequest()) {
-            throw new MethodNotAllowedException();
-        }
-
-        $containerIds = $this->request->getQuery('containerIds');
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        foreach ($containerIds as $containerId) {
-            $subIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-            $containerIds = array_merge($containerIds, $subIds);
-        }
-        $containerIds = array_unique($containerIds);
-        $HostgroupFilter = new HostgroupFilter($this->request);
-
-        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-
-
-        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
-        $HostgroupCondition->setContainerIds($containerIds);
-
-        $hostgroups = $HostgroupsTable->getHostgroupsByContainerIdNew($HostgroupCondition);
-        $hostgroups = Api::makeItJavaScriptAble($hostgroups);
-
-        $this->set('hostgroups', $hostgroups);
-        $this->viewBuilder()->setOption('serialize', ['hostgroups']);
-    }
-
-    /**
      *
-     * edit items
+     * set alias
      *
      * @param string|null $id Statuspage id.
      * @return \Cake\Http\Response|null|void Redirects to index.

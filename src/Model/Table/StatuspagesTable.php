@@ -105,7 +105,8 @@ class StatuspagesTable extends Table
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'container_id',
             'joinTable'        => 'statuspages_to_containers'
-        ]);
+        ])->setDependent(true);
+
 
 
         $this->belongsToMany('Hosts', [
@@ -193,7 +194,7 @@ class StatuspagesTable extends Table
         $query = $this->find('all');
         $query->contain(['Containers']);
         $query->where($StatuspagesFilter->indexFilter())
-            ->distinct('Statuspages.id');
+        ->distinct('Statuspages.id');
         ;
 
         $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {

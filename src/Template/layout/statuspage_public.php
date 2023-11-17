@@ -78,7 +78,7 @@ $logo = new Logo();
         <a class="navbar-brand"><img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="SmartAdmin WebApp" aria-roledescription="logo"><span></span> openItCOCKPIT</span></a>
     </nav>
 </div>
-<div class="container">
+<div class="container-fluid">
 <?= $this->fetch('content') ?>
 </div>
 

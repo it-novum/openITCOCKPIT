@@ -68,8 +68,7 @@
                                 class="form-control"
                                 chosen="containers"
                                 ng-options="container.key as container.value for container in containers"
-                                ng-model="post.Statuspage.containers._ids"
-                                multiple>
+                                ng-model="container_id">
                             </select>
                             <div ng-show="post.Statuspage.containers._ids.length === 0" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -143,18 +142,17 @@
                             <label class="control-label">
                                 <?php echo __('Host groups'); ?>
                             </label>
-                            <div class="input-group" style="width: 100%;">
+                            <!--<div class="input-group" style="width: 100%;">-->
                                 <select
                                     id="HostgroupsSelect"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="hostgroups"
-                                    callback="loadHostgroups"
                                     multiple
                                     ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
                                     ng-model="hostgroups_ids">
                                 </select>
-                            </div>
+                            <!--</div>-->
                             <div ng-repeat="error in errors.hostgroups">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -200,7 +198,6 @@
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="servicegroups"
-                                    callback="loadServicegroups"
                                     multiple
                                     ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
                                     ng-model="servicegroups_ids">
@@ -251,7 +248,6 @@
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="hosts"
-                                    callback="loadHosts"
                                     multiple
                                     ng-options="host.key as host.value for host in hosts"
                                     ng-model="hosts_ids">
@@ -304,9 +300,8 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="services"
-                                        callback="loadServices"
                                         multiple
-                                        ng-options="(service.value.Service.id) as service.value.Host.name + '/' +service.value.Service.servicename group by service.value.Host.name for service in services"
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
                                         ng-model="services_ids">
                                 </select>
                             </div>

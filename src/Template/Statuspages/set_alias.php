@@ -127,7 +127,7 @@
                         </tbody>
                     </table>
                 </span>
-
+                <hr>
                 <span ng-if="post.Statuspage.services.length > 0">
                     <table class="table">
                         <thead>

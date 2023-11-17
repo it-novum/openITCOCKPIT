@@ -47,18 +47,27 @@
 <div class="row">
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
-            <div class="panel-hdr">
-                <div class="margin-top-10 margin-bottom-10">
-                    <!--<div class="w-100 bg-{{Statuspage.items[0].color}} txt-color-white padding-bottom-2 margin-bottom-25"
-                         style="border: 1px solid rgba(0,0,0,.125);">-->
-                    <div class="w-100 padding-bottom-2 margin-bottom-25">
-                        <div>
-
+            <div class="panel">
+                <div class="mt-1 mr-3">
+                <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
+                   class="btn btn-default btn-xs shadow-0 float-right">
+                    <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
+                </a>
+                </div>
+            </div>
+            <div class="panel mr-3 ml-3 mb-0">
+                <div>
+                    <div class="w-100">
+                        <div class="alert w-100 bg-{{Statuspage.items[0].color}}" role="alert">
+                        </div>
+                        <div class="ml-2">
+                            Statuspage <br>
                             <h1>{{Statuspage.statuspage.name}}</h1>
                         </div>
                         <div ng-if="Statuspage.statuspage.description != ''">
-                            <!--<h5>Description</h5>-->
-                            <p class="lead">{{Statuspage.statuspage.description}}</p>
+                            <p class="ml-2">{{Statuspage.statuspage.description}}</p>
+                        </div>
+                        <div class="alert w-100 mb-0 bg-{{Statuspage.items[0].color}}" role="alert">
                         </div>
                     </div>
                 </div>
@@ -67,14 +76,13 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="margin-bottom-25">
-                        <div class="col no-padding" ng-repeat="item in Statuspage.items">
-
-                            <div class="d-flex flex-row min-h-50 mt-2 card">
+                        <div class="no-padding" ng-repeat="item in Statuspage.items">
+                            <div class="d-flex flex-row min-h-50 mt-2 card w-100">
                                 <div class="p-2">
                                     <div class="h-100 status-line bg-{{item.color}} shadow-{{item.color}}"></div>
                                 </div>
                                 <div>
-                                    <div class="min-width-0">
+                                    <div class="w-100">
                                         <div class="row p-2">
                                             <!--<h3>{{item.type}}</h3>-->
                                             <h4 ng-if="item.type === 'Host'" class="cursor-pointer">
@@ -104,8 +112,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
-                                        <div class="col-12">
+                                    <div class="p-2">
                                             <div>
                                                 <div ng-if="item.currentState > 0 && !item.isAcknowledged && item.type != 'Servicegroup' && item.type != 'Hostgroup'">
                                                     <!--<h4><b><i class="far fa-user"></i> {{item.type}} <?php echo __('is not acknowledged!');?> </b></h4>-->
@@ -123,8 +130,8 @@
                                                 </div>
                                             </div>
 
-                                            <div ng-if="item.isInDowntime && item.downtimeData" class="pt-3">
-                                                <table class="table table-sm">
+                                            <div ng-if="item.isInDowntime && item.downtimeData" class="pt-1">
+                                                <table class="table">
                                                     <tr>
                                                         <!--<div ng-if="item.type == 'Service'"><h4><i class="fa fa-power-off"></i> <?php echo __('The service is currently in a planned maintenance period');?></b></h4></div>
                                                     <div ng-if="item.type == 'Host'"><h4><i class="fa fa-power-off"></i> <?php echo __('The host is currently in a planned maintenance period');?></b></h4></div>-->
@@ -144,23 +151,23 @@
                                             <div ng-if="item.problemtext_down"><h4>
                                                     <b>{{item.problemtext_down}}</b></h4>
                                             </div>
-
-                                            <div ng-if="item.plannedDowntimes" class="table-responsive mt-1">
-                                                <table class="table table-bordered table-sm w-100">
-                                                    <tr> <div><h5><i class="fa fa-power-off"></i><?php echo __('Planned Downtimes for the next 10 days:'); ?></h5></div></tr>
+                                        <div class="d-flex justify-content-around">
+                                            <div ng-if="item.plannedDowntimes">
+                                                <table class="table table-sm w-100">
+                                                    <tr class="col-12"><h5><i class="fa fa-power-off"></i><?php echo __('Planned Downtimes for the next 10 days:'); ?></h5></tr>
                                                     <tr ng-repeat="downtime in item.plannedDowntimes">
-                                                        <td><div><h5><?php echo __('Start'); ?>:</h5></td><td> {{downtime.scheduledStartTime}}</div></td>
-                                                        <td><div><h5><?php echo __('End'); ?>:</h5></td><td> {{downtime.scheduledEndTime}}</div></td>
-                                                        <td><div><h5><?php echo __('Comment'); ?>:</h5></td><td> {{downtime.commentData}}</div></td>
+                                                        <td><h5><?php echo __('Start'); ?>:</h5></td>
+                                                        <td><h5> {{downtime.scheduledStartTime}}</h5></td>
+                                                        <td><h5><?php echo __('End'); ?>:</h5></td>
+                                                        <td><h5> {{downtime.scheduledEndTime}}</h5></td>
+                                                        <td><h5><?php echo __('Comment'); ?>:</h5></td>
+                                                        <td><h5>{{Statuspage.statuspage.showComments ? downtime.commentData : "work in progress" }}</h5></td>
                                                     </tr>
                                                 </table>
                                             </div>
-
                                         </div>
                                     </div>
-
                                 </div>
-
                                 <div class="p-2 flex-right">
                                     <div class="h-100 status-line bg-{{item.color}} shadow-{{item.color}}"></div>
                                 </div>
