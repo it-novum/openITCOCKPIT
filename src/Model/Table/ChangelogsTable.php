@@ -749,6 +749,9 @@ class ChangelogsTable extends Table {
                     if (empty($changes['before']) && !empty($changes['after'])) {
                         //All changes are new/added (fields where empty before)
                         foreach ($changes['after'] as $fieldName => $fieldValue) {
+                            if($fieldName === 'id'){
+                                continue;
+                            }
                             $diffs[$fieldName] = [
                                 'old' => '',
                                 'new' => is_array($fieldValue) ? Hash::remove($fieldValue, 'id') : $fieldValue,
@@ -770,8 +773,10 @@ class ChangelogsTable extends Table {
                     }
 
                     if (!empty($changes['before']) && !empty($changes['after'])) {
+
                         //Data got modified (e.g. rename or so)
                         if (!$isArray) {
+
                             foreach (Hash::diff($changes['after'], $changes['before']) as $fieldName => $fieldValue) {
                                 if ($fieldName === 'id' || $fieldName === 'container_id') {
                                     continue;
