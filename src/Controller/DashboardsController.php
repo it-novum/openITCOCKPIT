@@ -120,10 +120,9 @@ class DashboardsController extends AppController {
 
         /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
-        $tabIds          = $UsergroupsTable->getAllocatedTabsByUsergroupId($UserObject->usergroup_id);
+        $tabIds = $UsergroupsTable->getAllocatedTabsByUsergroupId($UserObject->usergroup_id);
 
         //
-
 
 
         //Check if a tab exists for the given user
@@ -1943,14 +1942,14 @@ class DashboardsController extends AppController {
 
     public function allocate() {
 
-        if (! $this->request->is('post')) {
+        if (!$this->request->is('post')) {
             $this->render403();
         }
 
         $dashboardTab = $this->request->getData('DashboardTab');
         $dashboardTab['name'] = "Fake 123!";
 
-        if (empty($dashboardTab['Usergroups']['_ids'])) {
+        if (empty($dashboardTab['usergroups']['_ids'])) {
             die('Keine Usergroup Ids');
         }
         if (empty($dashboardTab['Users']['_ids'])) {

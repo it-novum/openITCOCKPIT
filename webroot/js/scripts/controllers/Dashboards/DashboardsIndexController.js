@@ -475,10 +475,10 @@ angular.module('openITCOCKPIT')
                 {
                     DashboardTab : {
                         id: $scope.activeTab,
-                        Usergroups: {
+                        usergroups: {
                             _ids: $scope.data.Usergroup
                         },
-                        Users: {
+                        users: {
                             _ids: $scope.data.User
                         }
                     }
