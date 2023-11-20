@@ -91,6 +91,13 @@
                                             <?php echo __('Start sharing'); ?>
                                         </a>
                                     </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item"
+                                           ng-click="allocateDashboard(tab.id)">
+                                            <i class="fa fa-user"></i>
+                                            <?php echo __('Allocate Dashboard'); ?>
+                                        </a>
+                                    </li>
                                     <li ng-show="tab.shared">
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="stopSharing(tab.id)">
@@ -591,6 +598,74 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" ng-click="renameWidget()">
                     <?php echo __('Save widget Title'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<--- Allocate Dashboard Modal --->
+<div id="allocateDashboardModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-user"></i>
+                    <?php echo __('Allocate Dashboard'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Select Users -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group margin-top-20 padding-bottom-10">
+                            <label class="control-label">
+                                <?php echo __('Allocated Users'); ?>
+                            </label>
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="users"
+                                    ng-options="user.key as user.value for user in users"
+                                    ng-model="data.User"
+                                    multiple="multiple">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Select Roles -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group margin-top-20 padding-bottom-10">
+                            <label class="control-label">
+                                <?php echo __('Allocated Roles'); ?>
+                            </label>
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="usergroups"
+                                    ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
+                                    ng-model="data.Usergroup"
+                                    multiple="multiple">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="refreshAllocation()">
+                    <?php echo __('Refresh Allocation'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>

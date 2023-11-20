@@ -9,13 +9,17 @@ angular.module('openITCOCKPIT')
         $scope.errors = {};
         $scope.intervalText = 'disabled';
         $scope.dashboardIsLocked = false;
+        $scope.Usergroup = {};
+        $scope.User = {};
 
         $scope.data = {
             newTabName: '',
             createTabFromSharedTabId: null,
             viewTabRotateInterval: 0,
             renameTabName: '',
-            renameWidgetTitle: ''
+            renameWidgetTitle: '',
+            users : [],
+            usergroups : []
         };
 
         $scope.gridsterOpts = {
@@ -114,6 +118,8 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.activeTab = tabId;
+                $scope.data.User = result.data.widgets.User._ids || [];
+                $scope.data.Usergroup = result.data.widgets.Usergroup._ids || [];
 
                 for(var k in $scope.tabs){
                     if($scope.tabs[k].id === $scope.activeTab){
@@ -457,6 +463,56 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.allocateDashboard = function (tabId) {
+            $scope.loadUsergroups();
+            $scope.loadUsers();
+            $('#allocateDashboardModal').modal('show');
+            $scope.$apply();
+        }
+        $scope.refreshAllocation = function () {
+
+            $http.post("/dashboards/allocate.json?angular=true",
+                {
+                    DashboardTab : {
+                        id: $scope.activeTab,
+                        Usergroups: {
+                            _ids: $scope.data.Usergroup
+                        },
+                        Users: {
+                            _ids: $scope.data.User
+                        }
+                    }
+                }
+            ).then(function(result){
+                $scope.errors = {};
+                genericSuccess();
+                updateInterval();
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        }
+        $scope.loadUsers = function(){
+            $http.get("/users/loadUsersByContainerId.json", {
+                params: {
+                    'angular': true,
+                    'containerId': 1
+                }
+            }).then(function(result){
+                $scope.users = result.data.users;
+            });
+        };
+        $scope.loadUsergroups = function(){
+            $http.get("/usergroups/index.json", {
+                params: {
+                    'angular': true,
+                    'sort': 'Usergroups.name',
+                    'direction': 'asc'
+                }
+            }).then(function(result){
+                $scope.usergroups = result.data.allUsergroups;
+            });
+        };
 
         $scope.saveTabRotateInterval = function(){
             $http.post("/dashboards/saveTabRotateInterval.json?angular=true",

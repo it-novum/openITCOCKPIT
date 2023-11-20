@@ -124,8 +124,6 @@ class DashboardsController extends AppController {
 
         //
 
-        print_r($tabIds);
-        die();
 
 
         //Check if a tab exists for the given user
@@ -1941,5 +1939,35 @@ class DashboardsController extends AppController {
         $this->set('hoststatusSummary', $hoststatusSummary);
         $this->set('servicestatusSummary', $servicestatusSummary);
         $this->viewBuilder()->setOption('serialize', ['hoststatusSummary', 'servicestatusSummary']);
+    }
+
+    public function allocate() {
+
+        if (! $this->request->is('post')) {
+            $this->render403();
+        }
+
+        $dashboardTab = $this->request->getData('DashboardTab');
+        $dashboardTab['name'] = "Fake 123!";
+
+        if (empty($dashboardTab['Usergroups']['_ids'])) {
+            die('Keine Usergroup Ids');
+        }
+        if (empty($dashboardTab['Users']['_ids'])) {
+#            die('Keine User Ids');
+        }
+
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        // Fetch from DB
+        $Entity = $DashboardTabsTable->get($dashboardTab['id']);
+
+        // Patch with new IDs
+        $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
+
+        // Save
+        $DashboardTabsTable->save($Entity);
+
     }
 }

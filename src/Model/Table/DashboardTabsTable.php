@@ -301,6 +301,8 @@ class DashboardTabsTable extends Table {
                 ]);
                 return $query;
             })
+    #        ->contain('Users')
+            ->contain('Usergroups')
             ->where([
                 'DashboardTabs.id'      => $tabId,
                 'DashboardTabs.user_id' => $userId
@@ -312,7 +314,17 @@ class DashboardTabsTable extends Table {
             return [];
         }
 
-        return $this->formatFirstResultAsCake2($query);
+        $result = $this->formatFirstResultAsCake2($query);
+
+
+        $result['Usergroup'] = [
+            '_ids' => Hash::extract($result, 'Usergroup.{n}.id')
+        ];
+   #     $result['User'] = [
+   #         '_ids' => Hash::extract($result, 'User.{n}.id')
+   #     ];
+
+        return $result;
     }
 
     /**
