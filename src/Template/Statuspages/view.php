@@ -85,29 +85,46 @@
                                     <div class="w-100">
                                         <div class="row p-2">
                                             <!--<h3>{{item.type}}</h3>-->
-                                            <h4 ng-if="item.type === 'Host'" class="cursor-pointer">
+
+                                            <h4 ng-if="item.type === 'Host'">
+                                                <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                                 <a ui-sref="HostsBrowser({id:item.id})">
                                                     {{ item.name }}
                                                     <i class="fas fa-external-link-alt padding-left-5"></i>
                                                 </a>
+                                                <?php else: ?>
+                                                    {{ item.name }}
+                                                <?php endif; ?>
                                             </h4>
-                                            <h4 ng-if="item.type === 'Service'" class="cursor-pointer">
+                                            <h4 ng-if="item.type === 'Service'">
+                                                <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                                 <a ui-sref="ServicesBrowser({id:item.id})">
                                                     {{ item.name }}
                                                     <i class="fas fa-external-link-alt padding-left-5"></i>
                                                 </a>
+                                                <?php else: ?>
+                                                    {{ item.name }}
+                                                <?php endif; ?>
                                             </h4>
-                                            <h4 ng-if="item.type === 'Hostgroup'" class="cursor-pointer">
+                                            <h4 ng-if="item.type === 'Hostgroup'">
+                                                <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
                                                 <a ui-sref="HostgroupsExtended({id: item.id})">
                                                     {{ item.name }}
                                                     <i class="fas fa-external-link-alt padding-left-5"></i>
                                                 </a>
+                                                <?php else: ?>
+                                                    {{ item.name }}
+                                                <?php endif; ?>
                                             </h4>
-                                            <h4 ng-if="item.type === 'Servicegroup'" class="cursor-pointer">
+                                            <h4 ng-if="item.type === 'Servicegroup'">
+                                                <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
                                                 <a ui-sref="ServicegroupsExtended({id: item.id})">
                                                     {{ item.name }}
                                                     <i class="fas fa-external-link-alt padding-left-5"></i>
                                                 </a>
+                                                <?php else: ?>
+                                                    {{ item.name }}
+                                                <?php endif; ?>
                                             </h4>
                                         </div>
                                     </div>
