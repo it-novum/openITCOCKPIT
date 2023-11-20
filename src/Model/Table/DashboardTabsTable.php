@@ -10,6 +10,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * DashboardTabs Model
@@ -56,6 +57,14 @@ class DashboardTabsTable extends Table {
         $this->hasMany('Widgets', [
             'foreignKey' => 'dashboard_tab_id',
             'dependent'  => true
+        ]);
+        $this->belongsToMany('Usergroups', [
+            'className'        => 'Usergroups',
+            'joinTable'        => 'usergroups_to_dashboard_tabs',
+            'foreignKey'       => 'dashboard_tab_id',
+            'targetForeignKey' => 'usergroup_id',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
         ]);
     }
 

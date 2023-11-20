@@ -35,6 +35,7 @@ use App\Model\Table\ParenthostsTable;
 use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\ForbiddenException;
@@ -110,6 +111,21 @@ class DashboardsController extends AppController {
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        // Fetch the dashboards that were allocated to me.
+        $UserObject = $UsersTable->get($User->getId());
+
+        /** @var UsergroupsTable $UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+        $tabIds          = $UsergroupsTable->getAllocatedTabsByUsergroupId($UserObject->usergroup_id);
+
+        //
+
+        print_r($tabIds);
+        die();
 
 
         //Check if a tab exists for the given user

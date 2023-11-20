@@ -9,6 +9,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -64,6 +65,15 @@ class UsergroupsTable extends Table {
             'foreignKey'       => 'usergroup_id',
             'targetForeignKey' => 'ldapgroup_id',
             'saveStrategy'     => 'replace'
+        ]);
+
+        $this->belongsToMany('DashboardTabs', [
+            'className'        => 'DashboardTabs',
+            'joinTable'        => 'usergroups_to_dashboard_tabs',
+            'foreignKey'       => 'usergroup_id',
+            'targetForeignKey' => 'dashboard_tab_id',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
         ]);
     }
 
@@ -274,5 +284,16 @@ class UsergroupsTable extends Table {
         ];
 
         return $usergroup;
+    }
+
+    public function getAllocatedTabsByUsergroupId(int $usergroupId): array {
+        return $this
+            ->find()
+            ->contain(['DashboardTabs'])
+            ->where(['id' => $usergroupId])
+            ->disableHydration()
+            ->all()
+            ->toArray()
+        ;
     }
 }
