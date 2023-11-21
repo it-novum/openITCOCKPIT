@@ -50,6 +50,27 @@ class AllocatedDashboards extends AbstractMigration {
                 ])
                 ->create();
         }
+        if (!$this->hasTable('users_to_dashboard_tabs')) {
+            $this->table('users_to_dashboard_tabs')
+                ->addColumn('id', 'integer', [
+                    'autoIncrement' => true,
+                    'default'       => null,
+                    'limit'         => 11,
+                    'null'          => false,
+                ])
+                ->addPrimaryKey(['id'])
+                ->addColumn('user_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('dashboard_tab_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->create();
+        }
     }
 
     /**
@@ -60,6 +81,7 @@ class AllocatedDashboards extends AbstractMigration {
      * @return void
      */
     public function down(): void {
-        $this->table('dashboard_tabs_to_usergroups')->drop()->save();
+        $this->table('usergroups_to_dashboard_tabs')->drop()->save();
+        $this->table('users_to_dashboard_tabs')->drop()->save();
     }
 }
