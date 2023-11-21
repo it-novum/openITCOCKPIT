@@ -120,14 +120,8 @@ class DashboardsController extends AppController {
 
         /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
-        $tabIds = $UsergroupsTable->getAllocatedTabsByUsergroupId($UserObject->usergroup_id);
-        $tabIds = $UsersTable->getAllocatedTabsByUserId($user->id);
 
-
-        //
-
-
-        //Check if a tab exists for the given user
+        // If user has no tabs, copy the default tab & widgets.
         if ($DashboardTabsTable->hasUserATab($User->getId()) === false) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {
@@ -139,7 +133,39 @@ class DashboardsController extends AppController {
                 $DashboardTabsTable->save($entitiy);
             }
         }
+
         $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
+        foreach ($tabs as  $index => $tab) {
+            // Exclude all non-assigned tabs.
+            if (($tab['source'] ?? '') !== 'ASSIGNED') {
+                continue;
+            }
+            unset($tabs[$index]);
+
+            // Find Copy
+            $copy = $DashboardTabsTable
+                ->find()
+                ->where([
+                    'user_id' => $user->id,
+                    'source_tab_id' => $tab['id']
+                ])
+                ->disableHydration()
+                ->first();
+
+
+            // There's no copy yet. Copy it. After copy, we won't check for updates. Because... duh...
+            if (empty($copy)) {
+                $DashboardTabsTable->copyAllocatedTab($tab['id'], $user->id);
+                continue;
+            }
+
+            // Is there a newer version?
+            if ($copy['modified']->getTimestamp() <= $tab['modified']->getTimestamp()) {
+                $entity = $DashboardTabsTable->get($copy['id']);
+                $DashboardTabsTable->delete($entity);
+                $DashboardTabsTable->copyAllocatedTab($tab['id'], $user->id);
+            }
+        }
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
 

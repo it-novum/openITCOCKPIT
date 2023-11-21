@@ -8,6 +8,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
@@ -138,6 +139,11 @@ class DashboardTabsTable extends Table {
         return $this->exists(['DashboardTabs.id' => $id]);
     }
 
+    public function copyTab(int $original, int $userId) : void
+    {
+
+    }
+
     /**
      * @param int $userId
      * @param array $options
@@ -209,6 +215,63 @@ class DashboardTabsTable extends Table {
      * @return array|null
      */
     public function getAllTabsByUserId($userId) {
+        $forJs = [];
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $User = $UsersTable->get($userId);
+
+        // By Usergroup
+        /** @var UsergroupsTable $UsergroupsTable */
+        $UsergroupsTable  = TableRegistry::getTableLocator()->get('Usergroups');
+        $tabsForUsergroup = $UsergroupsTable->getAllocatedTabsByUsergroupId($User->usergroup_id);
+
+        // By Userid
+        $tabsForUser = $UsersTable->getAllocatedTabsByUserId($userId);
+
+        $tabIds = [];
+
+        foreach ($tabsForUsergroup[0]['dashboard_tabs'] as $row) {
+            $tabId = (int)$row['id'];
+
+            if (in_array($tabId, $tabIds, true)) {
+                continue;
+            }
+            $tabIds [] =$tabId;
+            $forJs[] = [
+                'id'                => $tabId,
+                'position'          => (int)$row['position'],
+                'name'              => $row['name'],
+                'shared'            => true,
+                'source_tab_id'     => (int)$row['source_tab_id'],
+                'check_for_updates' => (bool)$row['check_for_updates'],
+                'last_update'       => (int)$row['last_update'],
+                'locked'            => true,
+                'source'            => 'ASSIGNED',
+                'modified'          => $row['modified']
+            ];
+        }
+
+        foreach ($tabsForUser[0]['dashboard_tabs'] as $row) {
+            $tabId = (int)$row['id'];
+
+            if (in_array($tabId, $tabIds, true)) {
+                continue;
+            }
+            $tabIds [] =$tabId;
+            $forJs[] = [
+                'id'                => $tabId,
+                'position'          => (int)$row['position'],
+                'name'              => $row['name'],
+                'shared'            => true,
+                'source_tab_id'     => (int)$row['source_tab_id'],
+                'check_for_updates' => (bool)$row['check_for_updates'],
+                'last_update'       => (int)$row['last_update'],
+                'locked'            => true,
+                'source'            => 'ASSIGNED'
+            ];
+        }
+
         $result = $this->find()
             ->where([
                 'DashboardTabs.user_id' => $userId
@@ -219,10 +282,15 @@ class DashboardTabsTable extends Table {
             ->disableHydration()
             ->all();
 
-        $forJs = [];
         foreach ($result as $row) {
+            $tabId = (int)$row['id'];
+
+            if (in_array($tabId, $tabIds, true)) {
+                continue;
+            }
+            $tabIds [] =$tabId;
             $forJs[] = [
-                'id'                => (int)$row['id'],
+                'id'                => $tabId,
                 'position'          => (int)$row['position'],
                 'name'              => $row['name'],
                 'shared'            => (bool)$row['shared'],
@@ -395,6 +463,58 @@ class DashboardTabsTable extends Table {
             'position'          => $this->getNextPosition($userId),
             'shared'            => 0,
             'source_tab_id'     => $id,
+            'check_for_updates' => 1,
+            'last_update'       => time(),
+            'widgets'           => $widgets
+        ]);
+
+        $this->save($newTab);
+        return $newTab;
+    }
+
+
+    /**
+     * @param int $id
+     * @param int $userId
+     * @return \App\Model\Entity\DashboardTab
+     * @throws RecordNotFoundException
+     */
+    public function copyAllocatedTab(int $tabId, int $userId) {
+        $sourceTab = $this->find()
+            ->where([
+                'DashboardTabs.id'     => $tabId,
+            ])
+            ->contain([
+                'Widgets'
+            ])
+            ->firstOrFail();
+
+        $widgets = [];
+        foreach ($sourceTab->get('widgets') as $widget) {
+            $widgets[] = [
+                'type_id'    => $widget->get('type_id'),
+                'host_id'    => $widget->get('host_id'),
+                'service_id' => $widget->get('service_id'),
+                'row'        => $widget->get('row'),
+                'col'        => $widget->get('col'),
+                'width'      => $widget->get('width'),
+                'height'     => $widget->get('height'),
+                'title'      => $widget->get('title'),
+                'color'      => $widget->get('color'),
+                'directive'  => $widget->get('directive'),
+                'icon'       => $widget->get('icon'),
+                'json_data'  => $widget->get('json_data')
+            ];
+        }
+
+        $newTab = $this->newEntity([
+            'name'   => $sourceTab->get('name'),
+            'locked' => $sourceTab->get('locked'),
+
+            'user_id'           => $userId,
+            'position'          => $this->getNextPosition($userId),
+            'shared'            => 0,
+            'source_tab_id'     => $tabId,
             'check_for_updates' => 1,
             'last_update'       => time(),
             'widgets'           => $widgets

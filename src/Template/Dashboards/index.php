@@ -69,6 +69,7 @@
                                    data-toggle="dropdown"
                                    aria-expanded="false"
                                    ng-if="activeTab === tab.id"
+                                   ng-hide="tab.source === 'ALLOCATED'"
                                    ng-class="{ 'text-primary': tab.shared}">
                                     <span class="text"
                                           ng-class="{ 'text-primary': tab.shared === true}">
@@ -608,7 +609,7 @@
 </div>
 
 
-<--- Allocate Dashboard Modal --->
+<!--- Allocate Dashboard Modal --->
 <div id="allocateDashboardModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
