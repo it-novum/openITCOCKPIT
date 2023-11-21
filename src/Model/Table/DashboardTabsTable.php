@@ -66,6 +66,14 @@ class DashboardTabsTable extends Table {
             'saveStrategy'     => 'replace',
             'dependent'        => true
         ]);
+        $this->belongsToMany('AllocatedUsers', [
+            'className'        => 'Users',
+            'joinTable'        => 'users_to_dashboard_tabs',
+            'foreignKey'       => 'dashboard_tab_id',
+            'targetForeignKey' => 'user_id',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
+        ]);
     }
 
     /**
@@ -301,7 +309,7 @@ class DashboardTabsTable extends Table {
                 ]);
                 return $query;
             })
-    #        ->contain('Users')
+            ->contain('AllocatedUsers')
             ->contain('Usergroups')
             ->where([
                 'DashboardTabs.id'      => $tabId,
@@ -320,9 +328,11 @@ class DashboardTabsTable extends Table {
         $result['Usergroup'] = [
             '_ids' => Hash::extract($result, 'Usergroup.{n}.id')
         ];
-   #     $result['User'] = [
-   #         '_ids' => Hash::extract($result, 'User.{n}.id')
-   #     ];
+        $result['allocated_users'] = [
+            '_ids' => Hash::extract($result, 'DashboardTab.allocated_users.{n}.id')
+        ];
+
+        unset($result['DashboardTab']['allocated_users']);
 
         return $result;
     }
