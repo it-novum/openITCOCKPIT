@@ -118,7 +118,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.activeTab = tabId;
-                $scope.data.User = result.data.widgets.User._ids || [];
+                $scope.data.User = result.data.widgets.allocated_users._ids || [];
                 $scope.data.Usergroup = result.data.widgets.Usergroup._ids || [];
 
                 for(var k in $scope.tabs){
@@ -478,7 +478,7 @@ angular.module('openITCOCKPIT')
                         usergroups: {
                             _ids: $scope.data.Usergroup
                         },
-                        users: {
+                        AllocatedUsers: {
                             _ids: $scope.data.User
                         }
                     }
