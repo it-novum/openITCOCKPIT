@@ -1423,7 +1423,6 @@ class UsersTable extends Table {
             ->where(['id' => $userId])
             ->disableHydration()
             ->all()
-            ->toArray()
-            ;
+            ->toArray();
     }
 }
