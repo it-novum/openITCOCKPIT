@@ -93,6 +93,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
 
                 $scope.tabs = result.data.tabs;
+                console.log($scope.tabs);
                 if($scope.activeTab === null){
                     $scope.activeTab = $scope.tabs[0].id;
                 }

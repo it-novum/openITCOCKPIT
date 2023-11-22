@@ -268,7 +268,8 @@ class DashboardTabsTable extends Table {
                 'check_for_updates' => (bool)$row['check_for_updates'],
                 'last_update'       => (int)$row['last_update'],
                 'locked'            => true,
-                'source'            => 'ASSIGNED'
+                'source'            => 'ASSIGNED',
+                'modified'          => $row['modified']
             ];
         }
 
@@ -297,7 +298,8 @@ class DashboardTabsTable extends Table {
                 'source_tab_id'     => (int)$row['source_tab_id'],
                 'check_for_updates' => (bool)$row['check_for_updates'],
                 'last_update'       => (int)$row['last_update'],
-                'locked'            => (bool)$row['locked']
+                'locked'            => (bool)$row['locked'],
+                'modified'          => $row['modified']
             ];
         }
 
@@ -510,12 +512,11 @@ class DashboardTabsTable extends Table {
         $newTab = $this->newEntity([
             'name'   => $sourceTab->get('name'),
             'locked' => $sourceTab->get('locked'),
-
             'user_id'           => $userId,
             'position'          => $this->getNextPosition($userId),
             'shared'            => 0,
             'source_tab_id'     => $tabId,
-            'check_for_updates' => 1,
+            'check_for_updates' => 0,
             'last_update'       => time(),
             'widgets'           => $widgets
         ]);

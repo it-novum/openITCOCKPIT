@@ -65,6 +65,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use Microsoft\Graph\Model\PrintTaskTrigger;
 use ParsedownExtra;
 use RuntimeException;
 use Statusengine\PerfdataParser;
@@ -135,12 +136,13 @@ class DashboardsController extends AppController {
         }
 
         $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
-        foreach ($tabs as  $index => $tab) {
+        $newTabs = [];
+        foreach ($tabs as $index => $tab) {
             // Exclude all non-assigned tabs.
             if (($tab['source'] ?? '') !== 'ASSIGNED') {
+                $newTabs[] = $tab;
                 continue;
             }
-            unset($tabs[$index]);
 
             // Find Copy
             $copy = $DashboardTabsTable
@@ -160,7 +162,8 @@ class DashboardsController extends AppController {
             }
 
             // Is there a newer version?
-            if ($copy['modified']->getTimestamp() <= $tab['modified']->getTimestamp()) {
+            if ($copy['modified']->getTimestamp()
+                <= $tab['modified']->getTimestamp()) {
                 $entity = $DashboardTabsTable->get($copy['id']);
                 $DashboardTabsTable->delete($entity);
                 $DashboardTabsTable->copyAllocatedTab($tab['id'], $user->id);
@@ -169,7 +172,7 @@ class DashboardsController extends AppController {
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
 
-        $this->set('tabs', $tabs);
+        $this->set('tabs', $newTabs);
         $this->set('widgets', $widgets);
         $this->set('tabRotationInterval', $tabRotationInterval);
         $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp']);
