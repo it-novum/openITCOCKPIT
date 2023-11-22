@@ -166,7 +166,7 @@ class DashboardsController extends AppController {
                 <= $tab['modified']->getTimestamp()) {
                 $entity = $DashboardTabsTable->get($copy['id']);
                 $DashboardTabsTable->delete($entity);
-                $DashboardTabsTable->copyAllocatedTab($tab['id'], $user->id);
+                $DashboardTabsTable->updateAllocatedTab($tab['id'], $copy['id']);
             }
         }
 

@@ -524,4 +524,57 @@ class DashboardTabsTable extends Table {
         $this->save($newTab);
         return $newTab;
     }
+
+
+    /**
+     * @param int $id
+     * @param int $copyId
+     * @return \App\Model\Entity\DashboardTab
+     * @throws RecordNotFoundException
+     */
+    public function updateAllocatedTab(int $tabId, int $copyId) {
+        $sourceTab = $this->find()
+            ->where([
+                'DashboardTabs.id'     => $tabId,
+            ])
+            ->contain([
+                'Widgets'
+            ])
+            ->firstOrFail();
+
+        $widgets = [];
+        foreach ($sourceTab->get('widgets') as $widget) {
+            $widgets[] = [
+                'type_id'    => $widget->get('type_id'),
+                'host_id'    => $widget->get('host_id'),
+                'service_id' => $widget->get('service_id'),
+                'row'        => $widget->get('row'),
+                'col'        => $widget->get('col'),
+                'width'      => $widget->get('width'),
+                'height'     => $widget->get('height'),
+                'title'      => $widget->get('title'),
+                'color'      => $widget->get('color'),
+                'directive'  => $widget->get('directive'),
+                'icon'       => $widget->get('icon'),
+                'json_data'  => $widget->get('json_data')
+            ];
+        }
+
+        $Entity = $this->get($copyId);
+
+        $patch = [
+            'name'   => $sourceTab->get('name'),
+            'locked' => $sourceTab->get('locked'),
+            'shared'            => 0,
+            'source_tab_id'     => $tabId,
+            'check_for_updates' => 0,
+            'last_update'       => time(),
+            'widgets'           => $widgets
+        ];
+
+        $Entity= $this->patchEntity($Entity, $patch);
+
+        $this->save($Entity);
+        return $newTab;
+    }
 }
