@@ -139,8 +139,7 @@ class DashboardTabsTable extends Table {
         return $this->exists(['DashboardTabs.id' => $id]);
     }
 
-    public function copyTab(int $original, int $userId) : void
-    {
+    public function copyTab(int $original, int $userId): void {
 
     }
 
@@ -202,9 +201,31 @@ class DashboardTabsTable extends Table {
                 ->where([
                     'DashboardTabs.user_id' => $userId,
                 ])
-                ->firstOrFail();
+                ->first();
+            if (!empty($result)) {
+                return true;
+            }
 
-            return true;
+            // Check for allocated Dashboards!
+            /** @var UsersTable $UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+            // User has an allocated dashboard?
+            $result = $UsersTable->getAllocatedTabsByUserId($userId);
+            if (!empty($result)) {
+                return true;
+            }
+            $User = $UsersTable->get($userId);
+
+
+            // Usergroup has an allocated dashboard?
+            /** @var UsergroupsTable $UsergroupsTable */
+            $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+            $result = $UsergroupsTable->getAllocatedTabsByUsergroupId($User->usergroup_id);
+
+            if (!empty ($result)) {
+                return true;
+            }
         } catch (RecordNotFoundException $e) {
             return false;
         }
@@ -223,7 +244,7 @@ class DashboardTabsTable extends Table {
 
         // By Usergroup
         /** @var UsergroupsTable $UsergroupsTable */
-        $UsergroupsTable  = TableRegistry::getTableLocator()->get('Usergroups');
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
         $tabsForUsergroup = $UsergroupsTable->getAllocatedTabsByUsergroupId($User->usergroup_id);
 
         // By Userid
@@ -237,7 +258,7 @@ class DashboardTabsTable extends Table {
             if (in_array($tabId, $tabIds, true)) {
                 continue;
             }
-            $tabIds [] =$tabId;
+            $tabIds [] = $tabId;
             $forJs[] = [
                 'id'                => $tabId,
                 'position'          => (int)$row['position'],
@@ -258,7 +279,7 @@ class DashboardTabsTable extends Table {
             if (in_array($tabId, $tabIds, true)) {
                 continue;
             }
-            $tabIds [] =$tabId;
+            $tabIds [] = $tabId;
             $forJs[] = [
                 'id'                => $tabId,
                 'position'          => (int)$row['position'],
@@ -289,7 +310,7 @@ class DashboardTabsTable extends Table {
             if (in_array($tabId, $tabIds, true)) {
                 continue;
             }
-            $tabIds [] =$tabId;
+            $tabIds [] = $tabId;
             $forJs[] = [
                 'id'                => $tabId,
                 'position'          => (int)$row['position'],
@@ -484,7 +505,7 @@ class DashboardTabsTable extends Table {
     public function copyAllocatedTab(int $tabId, int $userId) {
         $sourceTab = $this->find()
             ->where([
-                'DashboardTabs.id'     => $tabId,
+                'DashboardTabs.id' => $tabId,
             ])
             ->contain([
                 'Widgets'
@@ -510,8 +531,8 @@ class DashboardTabsTable extends Table {
         }
 
         $newTab = $this->newEntity([
-            'name'   => $sourceTab->get('name'),
-            'locked' => $sourceTab->get('locked'),
+            'name'              => $sourceTab->get('name'),
+            'locked'            => $sourceTab->get('locked'),
             'user_id'           => $userId,
             'position'          => $this->getNextPosition($userId),
             'shared'            => 0,
@@ -535,7 +556,7 @@ class DashboardTabsTable extends Table {
     public function updateAllocatedTab(int $tabId, int $copyId) {
         $sourceTab = $this->find()
             ->where([
-                'DashboardTabs.id'     => $tabId,
+                'DashboardTabs.id' => $tabId,
             ])
             ->contain([
                 'Widgets'
@@ -563,8 +584,8 @@ class DashboardTabsTable extends Table {
         $Entity = $this->get($copyId);
 
         $patch = [
-            'name'   => $sourceTab->get('name'),
-            'locked' => $sourceTab->get('locked'),
+            'name'              => $sourceTab->get('name'),
+            'locked'            => $sourceTab->get('locked'),
             'shared'            => 0,
             'source_tab_id'     => $tabId,
             'check_for_updates' => 0,
@@ -572,7 +593,7 @@ class DashboardTabsTable extends Table {
             'widgets'           => $widgets
         ];
 
-        $Entity= $this->patchEntity($Entity, $patch);
+        $Entity = $this->patchEntity($Entity, $patch);
 
         $this->save($Entity);
         return $newTab;

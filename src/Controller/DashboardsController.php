@@ -123,7 +123,7 @@ class DashboardsController extends AppController {
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
         // If user has no tabs, copy the default tab & widgets.
-        if ($DashboardTabsTable->hasUserATab($User->getId()) === false) {
+        if (! $DashboardTabsTable->hasUserATab($User->getId())) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {
                 //Create default widgets
