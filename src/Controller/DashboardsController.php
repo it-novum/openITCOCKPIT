@@ -122,7 +122,7 @@ class DashboardsController extends AppController {
         /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
-        // If user has no tabs, copy the default tab & widgets.
+        // If user has neither OWN or allocated tabs, create the default tab.
         if (! $DashboardTabsTable->hasUserATab($User->getId())) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {
@@ -137,8 +137,10 @@ class DashboardsController extends AppController {
 
         $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
         $newTabs = [];
-        foreach ($tabs as $index => $tab) {
-            // Exclude all non-assigned tabs.
+
+        // neue function
+        foreach ($tabs as $tab) {
+            // If this tab is allocated, call different logic.
             if (($tab['source'] ?? '') !== 'ASSIGNED') {
                 $newTabs[] = $tab;
                 continue;
@@ -154,10 +156,10 @@ class DashboardsController extends AppController {
                 ->disableHydration()
                 ->first();
 
-
-            // There's no copy yet. Copy it. After copy, we won't check for updates. Because... duh...
+            // Create new copy
             if (empty($copy)) {
                 $DashboardTabsTable->copyAllocatedTab($tab['id'], $user->id);
+                // There shouln't be any updates here, duh...
                 continue;
             }
 
