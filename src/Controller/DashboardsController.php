@@ -170,7 +170,6 @@ class DashboardsController extends AppController {
             if ($copy['modified']->getTimestamp()
                 <= $tab['modified']->getTimestamp()) {
                 $entity = $DashboardTabsTable->get($copy['id']);
-                $DashboardTabsTable->delete($entity);
                 $DashboardTabsTable->updateAllocatedTab($tab['id'], $copy['id']);
             }
         }

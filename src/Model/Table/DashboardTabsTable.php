@@ -548,15 +548,15 @@ class DashboardTabsTable extends Table {
 
 
     /**
-     * @param int $id
-     * @param int $copyId
+     * @param int $originalTabId
+     * @param int $copyTabId
      * @return \App\Model\Entity\DashboardTab
      * @throws RecordNotFoundException
      */
-    public function updateAllocatedTab(int $tabId, int $copyId) {
+    public function updateAllocatedTab(int $originalTabId, int $copyTabId) {
         $sourceTab = $this->find()
             ->where([
-                'DashboardTabs.id' => $tabId,
+                'DashboardTabs.id' => $originalTabId,
             ])
             ->contain([
                 'Widgets'
@@ -581,21 +581,31 @@ class DashboardTabsTable extends Table {
             ];
         }
 
-        $Entity = $this->get($copyId);
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('widgets');
+        $WidgetsTable->deleteAll(['dashboard_tab_id' => $copyTabId]);
+
+        $Entity = $this->get($copyTabId);
 
         $patch = [
             'name'              => $sourceTab->get('name'),
             'locked'            => $sourceTab->get('locked'),
             'shared'            => 0,
-            'source_tab_id'     => $tabId,
+            'source_tab_id'     => $originalTabId,
             'check_for_updates' => 0,
             'last_update'       => time(),
+            'widgets'           => null
+        ];
+
+        $Entity = $this->patchEntity($Entity, $patch);
+
+        $patch = [
             'widgets'           => $widgets
         ];
 
         $Entity = $this->patchEntity($Entity, $patch);
 
         $this->save($Entity);
-        return $newTab;
+        return $Entity;
     }
 }
