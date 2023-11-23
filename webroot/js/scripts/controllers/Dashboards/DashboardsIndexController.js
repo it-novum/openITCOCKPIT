@@ -11,6 +11,7 @@ angular.module('openITCOCKPIT')
         $scope.dashboardIsLocked = false;
         $scope.Usergroup = {};
         $scope.User = {};
+        $scope.hideModifications = false;
 
         $scope.data = {
             newTabName: '',
@@ -121,6 +122,7 @@ angular.module('openITCOCKPIT')
                 $scope.activeTab = tabId;
                 $scope.data.User = result.data.widgets.allocated_users._ids || [];
                 $scope.data.Usergroup = result.data.widgets.Usergroup._ids || [];
+                $scope.hideModifications = false;
 
                 for(var k in $scope.tabs){
                     if($scope.tabs[k].id === $scope.activeTab){
@@ -132,6 +134,12 @@ angular.module('openITCOCKPIT')
                             $scope.dashboardIsLocked = false;
                             $scope.gridsterOpts.resizable.enabled = true;
                             $scope.gridsterOpts.draggable.enabled = true;
+                        }
+                        if (($scope.tabs[k].source || '') === 'ALLOCATED') {
+                            $scope.hideModifications = true;
+                            $scope.dashboardIsLocked = true;
+                            $scope.gridsterOpts.resizable.enabled = false;
+                            $scope.gridsterOpts.draggable.enabled = false;
                         }
                         break;
                     }

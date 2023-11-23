@@ -127,6 +127,7 @@
                         </button>
                         <button class="btn btn-xs mr-1 shadow-0"
                                 ng-class="{ 'btn-danger': dashboardIsLocked, 'btn-primary': !dashboardIsLocked }"
+                                ng-hide="hideModifications"
                                 title="<?php echo __('Lock for edit'); ?>"
                                 ng-click="lockOrUnlockDashboard()">
                             <i class="fa fa-lock"
@@ -134,7 +135,8 @@
                         </button>
 
 
-                        <div class="btn-group btn-group-xs margin-right-5">
+                        <div class="btn-group btn-group-xs margin-right-5"
+                             ng-hide="hideModifications">
                             <button class="btn btn-success dropdown-toggle waves-effect waves-themed" type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                                     ng-disabled="dashboardIsLocked">
