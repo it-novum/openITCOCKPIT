@@ -137,14 +137,17 @@ class DashboardsController extends AppController {
 
         $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
         $newTabs = [];
+        $allocatedTabIds = [];
 
         // neue function
         foreach ($tabs as $tab) {
             // If this tab is allocated, call different logic.
-            if (($tab['source'] ?? '') !== 'ASSIGNED') {
+            if (($tab['source'] ?? '') !== 'ALLOCATED') {
                 $newTabs[] = $tab;
                 continue;
             }
+
+            $allocatedTabIds[] = $tab['id'];
 
             // Find Copy
             $copy = $DashboardTabsTable
@@ -170,6 +173,15 @@ class DashboardsController extends AppController {
                 $DashboardTabsTable->delete($entity);
                 $DashboardTabsTable->updateAllocatedTab($tab['id'], $copy['id']);
             }
+        }
+
+        // Find all the allocated tabs and mark them as... ALLOCATED. Duh.
+        foreach ($newTabs as $tabIndex => $tab) {
+            if (!in_array($tab['source_tab_id'] , $allocatedTabIds, true)) {
+                continue;
+            }
+
+            $newTabs[$tabIndex]['source'] = 'ALLOCATED';
         }
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);

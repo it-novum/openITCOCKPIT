@@ -268,7 +268,7 @@ class DashboardTabsTable extends Table {
                 'check_for_updates' => (bool)$row['check_for_updates'],
                 'last_update'       => (int)$row['last_update'],
                 'locked'            => true,
-                'source'            => 'ASSIGNED',
+                'source'            => 'ALLOCATED',
                 'modified'          => $row['modified']
             ];
         }
@@ -289,7 +289,7 @@ class DashboardTabsTable extends Table {
                 'check_for_updates' => (bool)$row['check_for_updates'],
                 'last_update'       => (int)$row['last_update'],
                 'locked'            => true,
-                'source'            => 'ASSIGNED',
+                'source'            => 'ALLOCATED',
                 'modified'          => $row['modified']
             ];
         }

@@ -65,19 +65,20 @@
                                 </a>
 
                                 <a href="javascript:void(0);"
-                                   class="dropdown-toggle nav-link active"
+                                   class="nav-link active"
                                    data-toggle="dropdown"
                                    aria-expanded="false"
                                    ng-if="activeTab === tab.id"
-                                   ng-hide="tab.source === 'ALLOCATED'"
-                                   ng-class="{ 'text-primary': tab.shared}">
+                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.source !== 'ALLOCATED'}"
+                                >
                                     <span class="text"
                                           ng-class="{ 'text-primary': tab.shared === true}">
                                         {{tab.name}}
                                     </span>
                                     <b class="caret"></b>
                                 </a>
-                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
+                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}"
+                                    ng-hide="tab.source === 'ALLOCATED'">
                                     <li>
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="triggerRenameTabModal(tab.name)">
