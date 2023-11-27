@@ -31,7 +31,7 @@ namespace itnovum\openITCOCKPIT\Cache;
  *
  * Would we pass a simple array parameter, and we change the data in the array, php would need to create a copy of the array
  * (copy-on-write).
- * If we do not change the array and only read from it, this is not requered as php only has to copy the variable if we modify it.
+ * If we do not change the array and only read from it, this is not required as php only has to copy the variable if we modify it.
  * Alternative we could pass the variable as reference (&cache)
  *
  * See this example code: https://gist.github.com/nook24/77781fea5b6959ecfc7fb1caaa7d67eb
@@ -39,7 +39,7 @@ namespace itnovum\openITCOCKPIT\Cache;
  * ---
  * This is more or less the same as \itnovum\openITCOCKPIT\Core\KeyValueStore,
  * but it can hold multiple type of objects.
- * This class gt build to speed up the Changelog of openITCOCKPIT.
+ * This class got build to speed up the Changelog of openITCOCKPIT.
  */
 class ObjectsCache {
 
