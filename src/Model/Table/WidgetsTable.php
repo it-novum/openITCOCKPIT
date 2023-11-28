@@ -5,6 +5,8 @@ namespace App\Model\Table;
 
 use App\Lib\PluginManager;
 use App\Lib\Traits\Cake2ResultTableTrait;
+use ArrayObject;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -473,5 +475,25 @@ class WidgetsTable extends Table {
             ->disableHydration()
             ->first();
         return $this->formatFirstResultAsCake2($result);
+    }
+
+    /**
+     * I will refresh the modification date of the corellated dashboard_tab entry of this widget.
+     * This fixes an issue where updates to dashboard-widgets are not noticed by sharing and allocating the dashboards.
+     *
+     * @param EntityInterface $entity
+     * @param ArrayObject $options
+     * @return bool
+     */
+    public function _onSaveSuccess(EntityInterface $entity, ArrayObject $options): bool {
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        $DashboardTab = $DashboardTabsTable->get($entity->dashboard_tab_id);
+        $patch = [
+            'modified' => new \DateTime()
+        ];
+        $DashboardTabsTable->patchEntity($DashboardTab, $patch);
+        $DashboardTabsTable->save($DashboardTab);
+
+        return parent::_onSaveSuccess($entity, $options);
     }
 }

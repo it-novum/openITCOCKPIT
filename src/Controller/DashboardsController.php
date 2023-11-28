@@ -113,15 +113,6 @@ class DashboardsController extends AppController {
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
-        /** @var UsersTable $UsersTable */
-        $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
-        // Fetch the dashboards that were allocated to me.
-        $UserObject = $UsersTable->get($User->getId());
-
-        /** @var UsergroupsTable $UsergroupsTable */
-        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
-
         // If user has neither OWN or allocated tabs, create the default tab.
         if (! $DashboardTabsTable->hasUserATab($User->getId())) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
@@ -1998,6 +1989,18 @@ class DashboardsController extends AppController {
         $Entity = $DashboardTabsTable->get($dashboardTab['id']);
 
         // Patch with new IDs
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('users');
+
+        foreach ($dashboardTab['AllocatedUsers']['_ids'] as $userId) {
+            $UserEntity = $UsersTable->get($userId);
+            $UserEntity = $UsersTable->patchEntity($UserEntity, [
+                'dashboard_tabs' => [
+                    '_ids' => [$dashboardTab['id']]
+                ]
+            ]);
+            $UsersTable->save($UserEntity);
+        }
         $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
 
         // Save
