@@ -276,6 +276,7 @@ class AclDependencies {
             ->allow('Users', 'getLocaleOptions')
             ->allow('Users', 'getUserPermissions');
 
+
         ///////////////////////////////
         //    Add dependencies       //
         //////////////////////////////
@@ -554,6 +555,13 @@ class AclDependencies {
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadCommandArguments')
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadEventhandlerCommandArguments')
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadElementsByContainerId');
+
+        $this
+            ->dependency('Statuspages', 'index', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'view', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'add', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'setAlias')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'loadContainers');
 
         $this
             ->dependency('Users', 'index', 'Users', 'view')

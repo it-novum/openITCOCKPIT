@@ -506,6 +506,35 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "StatisticsIndexController"
             })
 
+            .state('StatuspagesIndex', {
+                url: '/statuspages/index',
+                templateUrl: "/statuspages/index.html",
+                controller: "StatuspagesIndexController"
+            })
+
+            .state('StatuspagesAdd', {
+                url: '/statuspages/add',
+                templateUrl: "/statuspages/add.html",
+                controller: "StatuspagesAddController"
+            })
+
+            .state('StatuspagesView', {
+                url: '/statuspages/view/:id',
+                templateUrl: "/statuspages/view.html",
+                controller: "StatuspagesViewController"
+            })
+
+            .state('StatuspagesEdit', {
+                url: '/statuspages/edit/:id',
+                templateUrl: "/statuspages/edit.html",
+                controller: "StatuspagesEditController"
+            })
+            .state('StatuspagesAlias', {
+                url: '/statuspages/setAlias/:id',
+                templateUrl: "/statuspages/setAlias.html",
+                controller: "StatuspagesSetAliasController"
+            })
+
             .state('StatusmapsIndex', {
                 url: '/statusmaps/index',
                 templateUrl: "/statusmaps/index.html",
