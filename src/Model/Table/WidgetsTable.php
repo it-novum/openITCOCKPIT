@@ -486,6 +486,7 @@ class WidgetsTable extends Table {
      * @return bool
      */
     public function _onSaveSuccess(EntityInterface $entity, ArrayObject $options): bool {
+        // @todo check in dashboard -> widget[] save (Looped / Multiple call?)
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         $DashboardTab = $DashboardTabsTable->get($entity->dashboard_tab_id);
         $patch = [

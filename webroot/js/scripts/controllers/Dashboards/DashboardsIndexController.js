@@ -672,6 +672,7 @@ angular.module('openITCOCKPIT')
 
             tabSortCreated = true;
             $('.nav-tabs').sortable({
+                items: "> .ui-sortable-handle",
                 update: function(){
                     var $tabbar = $(this);
                     var $tabs = $tabbar.children();

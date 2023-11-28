@@ -52,14 +52,19 @@
                                     <?php echo __('Dashboard'); ?>
                                 </h2>
                             </li>
-                            <li class="nav-item ui-sortable-handle" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
-                                ng-class="{'active':activeTab === tab.id}">
+                            <li class="nav-item" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
+                                ng-class="{'active':activeTab === tab.id, 'ui-sortable-handle':  tab.source !== 'ALLOCATED'}">
                                 <a class="nav-link"
                                    href="javascript:void(0);"
                                    ng-if="activeTab !== tab.id"
+                                   ng-click="loadTabContent(tab.id)"
+                                   ng-class="{ 'bg-primary': tab.source === 'ALLOCATED',  'text-warning': tab.source === 'ALLOCATED'}"
                                    role="tab">
-                                <span class="text" ng-click="loadTabContent(tab.id)"
+                                <span class="text"
                                       ng-class="{ 'text-primary': tab.shared === true}">
+                                    <span ng-show="tab.source === 'ALLOCATED'">
+                                        <i class="fa fa-lock"></i>
+                                    </span>
                                     {{tab.name}}
                                 </span>
                                 </a>
@@ -69,10 +74,13 @@
                                    data-toggle="dropdown"
                                    aria-expanded="false"
                                    ng-if="activeTab === tab.id"
-                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.source !== 'ALLOCATED'}"
+                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.source !== 'ALLOCATED',  'bg-primary': tab.source === 'ALLOCATED',  'text-light': tab.source === 'ALLOCATED'}"
                                 >
                                     <span class="text"
                                           ng-class="{ 'text-primary': tab.shared === true}">
+                                    <span ng-show="tab.source === 'ALLOCATED'">
+                                        <i class="fa fa-lock"></i>
+                                    </span>
                                         {{tab.name}}
                                     </span>
                                     <b class="caret"></b>
@@ -661,6 +669,43 @@
                                     ng-model="data.Usergroup"
                                     multiple="multiple">
                             </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Is Readonly? -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group margin-top-20 padding-bottom-10">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="readonly"
+                                       ng-model="data.readonly">
+                                <label class="custom-control-label" for="readonly">
+                                    <?php echo __('Read only'); ?>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Is Primary -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group margin-top-20 padding-bottom-10">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="primary"
+                                       ng-model="data.primary">
+                                <label class="custom-control-label" for="primary">
+                                    <?php echo __('Primary'); ?>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                            Currently, dashboard <i>Fake 123</i> is set up as pimary. This will be removed now.
                         </div>
                     </div>
                 </div>
