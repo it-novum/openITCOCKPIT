@@ -64,16 +64,6 @@ class Menu {
                 1
             ))
             ->addLink(new MenuLink(
-                __('Status pages'),
-                'StatuspagesIndex',
-                'statuspages',
-                'index',
-                '',
-                'fas fa-info-circle',
-                [],
-                2
-            ))
-            ->addLink(new MenuLink(
                 __('Browser'),
                 'BrowsersIndex',
                 'browsers',
@@ -119,6 +109,7 @@ class Menu {
                     4,
                     'fa fa-file-invoice'
                 ))
+
                     ->addLink(new MenuLink(
                         __('Instant reports'),
                         'InstantreportsIndex',
@@ -149,7 +140,7 @@ class Menu {
                         [],
                         3
                     ))
-                 /*   ->addLink(new MenuLink(
+                    ->addLink(new MenuLink(
                         __('Status pages'),
                         'StatuspagesIndex',
                         'statuspages',
@@ -157,8 +148,8 @@ class Menu {
                         '',
                         'fas fa-info-circle',
                         [],
-                        4
-                    ))*/
+                        3
+                    ))
             )
             ->addCategory(
                 (new MenuCategory(

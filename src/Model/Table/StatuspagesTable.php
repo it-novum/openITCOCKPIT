@@ -40,7 +40,6 @@ use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
@@ -56,6 +55,8 @@ use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+
 
 /**
  * Statuspages Model
@@ -186,7 +187,7 @@ class StatuspagesTable extends Table
 
     /**
      * @param StatuspagesFilter $StatuspagesFilter
-     * @param $PaginateOMat
+     * @param $PaginateOMat | null
      * @param $MY_RIGHTS
      * @return array
      */
@@ -226,9 +227,6 @@ class StatuspagesTable extends Table
      * @return array|void
      */
     public function getStatuspageObjects($id) {
-        if (!$this->existsById($id)) {
-            return;
-        }
 
         $conditions = array_merge(['Statuspages.id' => $id]);
 
@@ -290,9 +288,7 @@ class StatuspagesTable extends Table
      * @return array
      */
     public function getStatuspageView ( $id, UserTime $UserTime, $isPublicCall = false){
-        if (!$this->existsById($id)) {
-            return;
-        }
+
         $allhosts = [];
         $allservices = [];
         $DbBackend = new DbBackend();
@@ -307,6 +303,7 @@ class StatuspagesTable extends Table
                 'description' => $statuspage['description'],
                 'public' => $statuspage['public'],
                 'showComments' => $statuspage['show_comments'],
+                'background' => 'bg-primary'
             ],
             'hosts' => [],
             'services' => [],
@@ -345,6 +342,7 @@ class StatuspagesTable extends Table
                     $plannedDowntimes = $this->getPlannedHostDowntimes($host['uuid'], $DowntimehistoryHostsTable, $UserTime);
                     if(count($plannedDowntimes) > 0) {
                         $hostViewData['plannedDowntimes'] = $this->getPlannedHostDowntimes($host['uuid'], $DowntimehistoryHostsTable, $UserTime);
+                        $hostViewData['plannedDowntimesCount'] = count($plannedDowntimes);
                     }
                     if ($hostViewData['isAcknowledged']) {
                         $acknowledgement = $AcknowledgementHostsTable->byhostUuid($host['uuid']);
@@ -387,6 +385,7 @@ class StatuspagesTable extends Table
                     $plannedDowntimes = $this->getPlannedServiceDowntimes($service['uuid'], $DowntimehistoryServicesTable, $UserTime);
                     if (count($plannedDowntimes) > 0 ) {
                         $serviceViewData['plannedDowntimes'] = $this->getPlannedServiceDowntimes($service['uuid'], $DowntimehistoryServicesTable, $UserTime);
+                        $serviceViewData['plannedDowntimesCount'] = count($plannedDowntimes);
                     }
                     if ($serviceViewData['isAcknowledged'] && $statuspageView['statuspage']['showComments']) {
                         $acknowledgement = $AcknowledgementServicesTable->byServiceUuid($service['uuid']);
@@ -480,6 +479,7 @@ class StatuspagesTable extends Table
        // $itemsSortedState = Hash::sort($items, '{s}.type', 'desc');
         $itemsSortedState = Hash::sort($items, '{n}.cumulatedState', 'desc');
         $statuspageView['items'] = $itemsSortedState;
+        $statuspageView['statuspage']['background'] = $statuspageView['items'][0]['background'];
         return $statuspageView;
     }
 
@@ -503,6 +503,7 @@ class StatuspagesTable extends Table
         $info['currentState'] = $hoststatus->currentState();
         $info['cumulatedState'] = $hoststatus->currentState();
         $info['color'] = $hoststatus->HostStatusColor();
+        $info['background'] = 'bg-' . $info['color'];
         $info['isAcknowledged'] = $hoststatus->isAcknowledged();
         $info['isInDowntime'] = $hoststatus->isInDowntime();
         if ($info['currentState'] == 1) {
@@ -528,6 +529,7 @@ class StatuspagesTable extends Table
                     Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
                 );
                 $info['color'] = $this->getServiceStatusColor($worstServiceState[0]['Servicestatus']['current_state']);
+                $info['background'] = 'bg-' . $info['color'];
                 $info['cumulatedState'] = $worstServiceState[0]['Servicestatus']['current_state'];
                 $problems = count($servicestatus);
                 $problemsNotAcknowledged = 0;
@@ -539,6 +541,7 @@ class StatuspagesTable extends Table
                 $problemsAcknowledged = $problems - $problemsNotAcknowledged;
                 if ($problemsNotAcknowledged > 0) {
                     $info['problemtext'] = "{$problemsAcknowledged} of {$problems} problems acknowledged";
+                    $info['problemtextValues'] = [ 'problems' => $problems, 'acknowledged' =>  $problemsAcknowledged];
                 }
             }
         }
@@ -576,6 +579,7 @@ class StatuspagesTable extends Table
     private function getServicegroupInformation(ServicesTable $Service, ServicestatusTableInterface $Servicestatus, $servicegroup = []) {
         $info = [];
         $info['color'] = $this->getServiceStatusColor(0);
+        $info['background'] = 'bg-' . $info['color'];
         $info['cumulatedState'] = 0;
         $ServicestatusFields = new ServicestatusFields(new DbBackend());
         $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
@@ -594,6 +598,7 @@ class StatuspagesTable extends Table
             );
             $servicestatus = new Servicestatus($worstServiceState[0]['Servicestatus']);
             $info['color'] = $servicestatus->ServiceStatusColor();
+            $info['background'] = 'bg-' . $info['color'];
             $info['cumulatedState'] = $worstServiceState[0]['Servicestatus']['current_state'];
             $problems = count($servicestatusProblems);
             $problemsNotAcknowledged = 0;
@@ -609,9 +614,12 @@ class StatuspagesTable extends Table
             $problemsAcknowledged = $problems - $problemsNotAcknowledged;
             if ($problemsNotAcknowledged > 0) {
                 $info['problemtext'] = "{$problemsAcknowledged} of {$problems} problems acknowledged";
+                $info['problemtextValues'] = [ 'problems' => $problems, 'acknowledged' =>  $problemsAcknowledged];
+
             }
             if ($problemsInDowntime > 0) {
                 $info['problemtext_down'] = "{$problemsInDowntime} of {$problems} problems currently in a planned maintenance period";
+                $info['problemtextDownValues'] = [ 'problems' => $problems, 'downs' =>  $problemsInDowntime];
             }
         }
         return $info;
@@ -639,6 +647,7 @@ class StatuspagesTable extends Table
             );
             $info['cumulatedState'] = $worstHostState[0]['Hoststatus']['current_state'] + 1;
             $info['color'] = $this->getServiceStatusColor($info['cumulatedState']);
+            $info['background'] = 'bg-' . $info['color'];
             $hostProblems = count($hoststatusProblems);
             $hostProblemsNotAcknowledged = 0;
             $hostProblemsInDowntime = 0;
@@ -651,10 +660,12 @@ class StatuspagesTable extends Table
                 }
                 $problemsAcknowledged = $hostProblems - $hostProblemsNotAcknowledged;
                 if ($hostProblemsNotAcknowledged > 0) {
-                    $info['problemtext'] = "{$problemsAcknowledged} of {$hostProblems} problems  acknowledged";
+                    $info['problemtext'] = "{$problemsAcknowledged} of {$hostProblems} problems acknowledged";
+                    $info['problemtextValues'] = [ 'problems' => $hostProblems, 'acknowledged' =>  $problemsAcknowledged];
                 }
                 if ($hostProblemsInDowntime > 0) {
                     $info['problemtext_down'] = "{$hostProblemsInDowntime} of {$hostProblems} problems currently in a planned maintenance period";
+                    $info['problemtextDownValues'] = [ 'problems' => $hostProblems, 'downs' =>  $hostProblemsInDowntime];
                 }
             }
             return $info;
@@ -678,6 +689,7 @@ class StatuspagesTable extends Table
             );
             $info['cumulatedState'] = $worstServiceState[0]['Servicestatus']['current_state'];
             $info['color'] = $this->getServiceStatusColor($info['cumulatedState']);
+            $info['background'] = 'bg-' . $info['color'];
             $serviceProblems = count($servicestatus);
             $problemsNotAcknowledged = 0;
             $problemsInDowntime = 0;
@@ -692,9 +704,11 @@ class StatuspagesTable extends Table
             $problemsAcknowledged = $serviceProblems- $problemsNotAcknowledged;
             if ($problemsNotAcknowledged > 0) {
                 $info['problemtext'] = "{$problemsAcknowledged} of {$serviceProblems}  problems acknowledged";
+                $info['problemtextValues'] = [ 'problems' => $serviceProblems, 'acknowledged' =>  $problemsAcknowledged];
             }
             if ($problemsInDowntime > 0) {
                 $info['problemtext_down'] = "{$problemsInDowntime} of {$serviceProblems} problems currently in a planned maintenance period";
+                $info['problemtextDownValues'] = [ 'problems' => $serviceProblems, 'downs' =>  $problemsInDowntime];
             }
         }
         return $info;

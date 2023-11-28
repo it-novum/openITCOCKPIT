@@ -59,12 +59,15 @@ class StatuspagesController extends AppController {
      *
      * @return \Cake\Http\Response|null|void Renders view
    */
-    public function index()
+    public function index($withState = false)
     {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
         }
+
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
 
         /** @var $StatuspagesTable StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
@@ -78,7 +81,11 @@ class StatuspagesController extends AppController {
             foreach ($statuspage['containers'] as $container) {
                 $statuspagesWithContainers[$statuspage['id']][] = $container['id'];
             }
-
+            if($withState) {
+                $statuspageViewData = $StatuspagesTable->getStatuspageView($statuspage['id'], $UserTime);
+                $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['items'][0]['cumulatedState'];
+                $all_statuspages[$key]['color'] = "bg-{$statuspageViewData['items'][0]['color']}";
+            }
             $all_statuspages[$key]['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {
                 $all_statuspages[$key]['allow_edit'] = false;
