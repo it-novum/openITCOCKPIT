@@ -48,19 +48,18 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
  * @method \App\Model\Entity\Statuspage[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class StatuspagesController extends AppController {
-   //https://discourse.cakephp.org/t/bypass-authentication/9197/3
-   public function beforeFilter(EventInterface $event) {
+    //https://discourse.cakephp.org/t/bypass-authentication/9197/3
+    public function beforeFilter(EventInterface $event) {
         parent::beforeFilter($event);
         $this->Authentication->addUnauthenticatedActions(['public']);
     }
 
-   /**
+    /**
      * Index method
      *
      * @return \Cake\Http\Response|null|void Renders view
-   */
-    public function index($withState = false)
-    {
+     */
+    public function index($withState = false) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -81,7 +80,7 @@ class StatuspagesController extends AppController {
             foreach ($statuspage['containers'] as $container) {
                 $statuspagesWithContainers[$statuspage['id']][] = $container['id'];
             }
-            if($withState) {
+            if ($withState) {
                 $statuspageViewData = $StatuspagesTable->getStatuspageView($statuspage['id'], $UserTime);
                 $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['items'][0]['cumulatedState'];
                 $all_statuspages[$key]['color'] = "bg-{$statuspageViewData['items'][0]['color']}";
@@ -107,8 +106,7 @@ class StatuspagesController extends AppController {
      * @return \Cake\Http\Response|null|void Renders view
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function view($id = null)
-    {
+    public function view($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -122,26 +120,26 @@ class StatuspagesController extends AppController {
         //$UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-        $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime);
+        $statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime);
 
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
-    public function public ($id = null) {
-        if(empty($id)){
+    public function public($id = null) {
+        if (empty($id)) {
             throw new NotFoundException('Statuspage not found');
         }
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
-        if(!$StatuspagesTable->isPublic($id)){
+        if (!$StatuspagesTable->isPublic($id)) {
             throw new  MethodNotAllowedException('Statuspage not public');
         }
         $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
-        $statuspageViewData = $StatuspagesTable->getStatuspageView( $id, $UserTime, true);
+        $statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime, true);
 
         $system = $this->getSystem();
         $this->set('Statuspage', $statuspageViewData);
@@ -153,8 +151,7 @@ class StatuspagesController extends AppController {
      *
      * @return \Cake\Http\Response|null|void Redirects on successful add, renders view otherwise.
      */
-    public function add()
-    {
+    public function add() {
         if (!$this->isApiRequest()) {
             //Only ship template for AngularJs
             return;
@@ -191,8 +188,7 @@ class StatuspagesController extends AppController {
      * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function edit($id = null)
-    {
+    public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -264,8 +260,7 @@ class StatuspagesController extends AppController {
      * @return \Cake\Http\Response|null|void Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function delete($id = null)
-    {
+    public function delete($id = null) {
         $this->request->allowMethod(['post', 'delete']);
         $statuspage = $this->Statuspages->get($id);
 
@@ -285,8 +280,7 @@ class StatuspagesController extends AppController {
     /**
      * @return void
      */
-    public function loadContainers()
-    {
+    public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
@@ -313,8 +307,7 @@ class StatuspagesController extends AppController {
      * @return \Cake\Http\Response|null|void Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function setAlias($id = null)
-    {
+    public function setAlias($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;

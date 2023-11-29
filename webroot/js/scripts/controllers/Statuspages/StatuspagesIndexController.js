@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('StatuspagesIndexController', function($scope, $rootScope, $stateParams, $http, SortService, QueryStringService, MassChangeService){
+    .controller('StatuspagesIndexController', function($scope, $rootScope, $stateParams, $http, SortService, QueryStringService, MassChangeService) {
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Statuspages.name'));
@@ -9,14 +9,14 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
 
         /*** Filter Settings ***/
-        var defaultFilter = function(){
+        var defaultFilter = function() {
             $scope.filter = {
                 Statuspages: {
                     id: QueryStringService.getStateValue($stateParams, 'id', []),
                     name: '',
                     description: '',
-                    is_public:QueryStringService.getStateValue($stateParams, 'is_public', false) == '1',
-                    is_not_public:QueryStringService.getStateValue($stateParams, 'is_not_public', false) == '1',
+                    is_public: QueryStringService.getStateValue($stateParams, 'is_public', false) == '1',
+                    is_not_public: QueryStringService.getStateValue($stateParams, 'is_not_public', false) == '1',
                 }
             };
         };
@@ -28,9 +28,9 @@ angular.module('openITCOCKPIT')
         $scope.init = true;
         $scope.showFilter = false;
 
-        $scope.load = function(){
+        $scope.load = function() {
             var isPublic = '';
-            if($scope.filter.Statuspages.is_public ^ $scope.filter.Statuspages.is_not_public){
+            if ($scope.filter.Statuspages.is_public ^ $scope.filter.Statuspages.is_not_public) {
                 isPublic = $scope.filter.Statuspages.is_public == true;
             }
             var params = {
@@ -47,7 +47,7 @@ angular.module('openITCOCKPIT')
 
             $http.get("/statuspages/index.json", {
                 params: params
-            }).then(function(result){
+            }).then(function(result) {
                 $scope.statuspages = result.data.all_statuspages;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
@@ -55,20 +55,20 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.triggerFilter = function(){
+        $scope.triggerFilter = function() {
             $scope.showFilter = !$scope.showFilter === true;
         };
 
-        $scope.resetFilter = function(){
+        $scope.resetFilter = function() {
             defaultFilter();
             $scope.undoSelection();
         };
 
 
-        $scope.selectAll = function(){
-            if($scope.statuspages){
-                for(var key in $scope.statuspages){
-                    if($scope.statuspages[key].allow_edit === true){
+        $scope.selectAll = function() {
+            if ($scope.statuspages) {
+                for (var key in $scope.statuspages) {
+                    if ($scope.statuspages[key].allow_edit === true) {
                         var id = $scope.statuspages[key].id;
                         $scope.massChange[id] = true;
                     }
@@ -76,25 +76,25 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.undoSelection = function(){
+        $scope.undoSelection = function() {
             MassChangeService.clearSelection();
             $scope.massChange = MassChangeService.getSelected();
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(statuspage){
+        $scope.getObjectForDelete = function(statuspage) {
             var object = {};
             object[statuspage.id] = statuspage.name;
             return object;
         };
 
-        $scope.getObjectsForDelete = function(){
+        $scope.getObjectsForDelete = function() {
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.statuspages){
-                for(var id in selectedObjects){
-                    if(id == $scope.statuspages[key].id){
-                        if($scope.statuspages[key].allow_edit === true){
+            for (var key in $scope.statuspages) {
+                for (var id in selectedObjects) {
+                    if (id == $scope.statuspages[key].id) {
+                        if ($scope.statuspages[key].allow_edit === true) {
                             objects[id] = $scope.statuspages[key].name;
                         }
                     }
@@ -108,20 +108,20 @@ angular.module('openITCOCKPIT')
         $scope.load();
         SortService.setCallback($scope.load);
 
-        $scope.$watch('filter', function(){
-            if($scope.init === false){
+        $scope.$watch('filter', function() {
+            if ($scope.init === false) {
                 $scope.currentPage = 1;
                 $scope.undoSelection();
                 $scope.load();
             }
         }, true);
 
-        $scope.$watch('massChange', function(){
+        $scope.$watch('massChange', function() {
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
-        $scope.changeMode = function(val){
+        $scope.changeMode = function(val) {
             $scope.useScroll = val;
             $scope.load();
         };

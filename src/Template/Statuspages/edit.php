@@ -41,116 +41,116 @@
 
 <div class="row">
     <!--<div class="col-xl-12">-->
-        <div class="col-xl-12">
-            <div id="panel-1" class="panel">
-                <div class="panel-hdr">
-                    <h2>
-                        <?php echo __('Edit status page'); ?>
-                        <span class="fw-300"><i>{{post.Statuspage.name }}</i></span>
-                    </h2>
-                    <div class="panel-toolbar">
-                        <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
-                            <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
-                               class="btn btn-default btn-xs mr-1 shadow-0">
-                                <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
-                            </a>
-                        <?php endif; ?>
-                    </div>
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Edit status page'); ?>
+                    <span class="fw-300"><i>{{post.Statuspage.name }}</i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
+                        <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
+                        </a>
+                    <?php endif; ?>
                 </div>
+            </div>
 
-                <div class="panel-container show">
-                    <div class="panel-content">
-                        <form ng-submit="submit();" class="form-horizontal"
-                              ng-init="successMessage=
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="submit();" class="form-horizontal"
+                          ng-init="successMessage=
                             {objectName : '<?php echo __('Statuspage'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
-                            <div class="form-group required" ng-class="{'has-error': errors.containers}">
-                                <label class="control-label" for="ContactContainers">
-                                    <?php echo __('Container'); ?>
+                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                            <label class="control-label" for="ContactContainers">
+                                <?php echo __('Container'); ?>
+                            </label>
+                            <select
+                                    id="ContactContainers"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="container_id">
+                            </select>
+                            <div ng-show="post.Statuspage.containers._ids.length === 0" class="warning-glow">
+                                <?php echo __('Please select a container.'); ?>
+                            </div>
+                            <div ng-repeat="error in errors.containers">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group required" ng-class="{'has-error': errors.name}">
+                            <label class="control-label">
+                                <?php echo __('Name'); ?>
+                            </label>
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Statuspage.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.description}">
+                            <label class="control-label">
+                                <?php echo __('Description'); ?>
+                            </label>
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Statuspage.description">
+                            <div ng-repeat="error in errors.description">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.public}">
+                            <div class="custom-control custom-checkbox margin-bottom-10"
+                                 ng-class="{'has-error': errors.public}">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="public"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.Statuspage.public">
+                                <label class="custom-control-label" for="public">
+                                    <?php echo __('Public'); ?>
                                 </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.show_comments}">
+                            <div class="custom-control custom-checkbox margin-bottom-10"
+                                 ng-class="{'has-error': errors.show_comments}">
+
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="showComments"
+                                       ng-true-value="1"
+                                       ng-false-value="0"
+                                       ng-model="post.Statuspage.show_comments">
+                                <label class="custom-control-label" for="showComments">
+                                    <?php echo __('Show comments'); ?>
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group"
+                             ng-class="{'has-error': errors.hostgroups}">
+                            <label class="control-label">
+                                <?php echo __('Hostgroups'); ?>
+                            </label>
+                            <div class="input-group" style="width: 100%;">
                                 <select
-                                        id="ContactContainers"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="containers"
-                                        ng-options="container.key as container.value for container in containers"
-                                        ng-model="container_id">
-                                </select>
-                                <div ng-show="post.Statuspage.containers._ids.length === 0" class="warning-glow">
-                                    <?php echo __('Please select a container.'); ?>
-                                </div>
-                                <div ng-repeat="error in errors.containers">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-
-                            <div class="form-group required" ng-class="{'has-error': errors.name}">
-                                <label class="control-label">
-                                    <?php echo __('Name'); ?>
-                                </label>
-                                <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="post.Statuspage.name">
-                                <div ng-repeat="error in errors.name">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.description}">
-                                <label class="control-label">
-                                    <?php echo __('Description'); ?>
-                                </label>
-                                <input
-                                        class="form-control"
-                                        type="text"
-                                        ng-model="post.Statuspage.description">
-                                <div ng-repeat="error in errors.description">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.public}">
-                                <div class="custom-control custom-checkbox margin-bottom-10"
-                                     ng-class="{'has-error': errors.public}">
-
-                                    <input type="checkbox"
-                                           class="custom-control-input"
-                                           id="public"
-                                           ng-true-value="1"
-                                           ng-false-value="0"
-                                           ng-model="post.Statuspage.public">
-                                    <label class="custom-control-label" for="public">
-                                        <?php echo __('Public'); ?>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="form-group" ng-class="{'has-error': errors.show_comments}">
-                                <div class="custom-control custom-checkbox margin-bottom-10"
-                                     ng-class="{'has-error': errors.show_comments}">
-
-                                    <input type="checkbox"
-                                           class="custom-control-input"
-                                           id="showComments"
-                                           ng-true-value="1"
-                                           ng-false-value="0"
-                                           ng-model="post.Statuspage.show_comments">
-                                    <label class="custom-control-label" for="showComments">
-                                        <?php echo __('Show comments'); ?>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <div class="form-group"
-                                 ng-class="{'has-error': errors.hostgroups}">
-                                <label class="control-label">
-                                    <?php echo __('Hostgroups'); ?>
-                                </label>
-                                <div class="input-group" style="width: 100%;">
-                                    <select
                                         id="HostgroupsSelect"
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
@@ -159,22 +159,22 @@
                                         multiple
                                         ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
                                         ng-model="post.Statuspage.hostgroups._ids">
-                                    </select>
-                                </div>
-                                <div ng-repeat="error in errors.hostgroups">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
+                                </select>
                             </div>
+                            <div ng-repeat="error in errors.hostgroups">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
 
-                            <hr>
+                        <hr>
 
-                            <div class="form-group"
-                                 ng-class="{'has-error': errors.servicegroups}">
-                                <label class="control-label">
-                                    <?php echo __('servicegroups'); ?>
-                                </label>
-                                <div class="input-group" style="width: 100%;">
-                                    <select
+                        <div class="form-group"
+                             ng-class="{'has-error': errors.servicegroups}">
+                            <label class="control-label">
+                                <?php echo __('servicegroups'); ?>
+                            </label>
+                            <div class="input-group" style="width: 100%;">
+                                <select
                                         id="ServicegroupsSelect"
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
@@ -183,82 +183,82 @@
                                         multiple
                                         ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
                                         ng-model="post.Statuspage.servicegroups._ids">
-                                    </select>
-                                </div>
-                                <div ng-repeat="error in errors.servicegroups">
-                                    <div class="help-block text-danger">{{ error }}</div>
+                                </select>
+                            </div>
+                            <div ng-repeat="error in errors.servicegroups">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group"
+                             ng-class="{'has-error': errors.hosts}">
+                            <label class="control-label">
+                                <?php echo __('Hosts'); ?>
+                            </label>
+                            <div class="input-group" style="width: 100%;">
+                                <select
+                                        id="HostsSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosts"
+                                        callback="loadHosts"
+                                        multiple
+                                        ng-options="host.key as host.value for host in hosts"
+                                        ng-model="post.Statuspage.hosts._ids">
+                                </select>
+                            </div>
+                            <div ng-repeat="error in errors.hosts">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group"
+                             ng-class="{'has-error': errors.services}">
+                            <label class="control-label">
+                                <?php echo __('Services'); ?>
+                            </label>
+                            <div class="input-group" style="width: 100%;">
+                                <select
+                                        id="ServicesSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="services"
+                                        callback="loadServices"
+                                        multiple
+                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                        ng-model="post.Statuspage.services._ids">
+                                </select>
+                            </div>
+                            <div ng-repeat="error in errors.services">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+                        <hr>
+
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <?php if ($this->Acl->hasPermission('edit', 'statuspages')): ?>
+                                        <button class="btn btn-primary" type="submit">
+                                            <?php echo __('Update'); ?>
+                                        </button>
+                                    <?php endif; ?>
+                                    <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?>
+                                    </a>
                                 </div>
                             </div>
-
-                            <hr>
-
-                            <div class="form-group"
-                                 ng-class="{'has-error': errors.hosts}">
-                                <label class="control-label">
-                                    <?php echo __('Hosts'); ?>
-                                </label>
-                                <div class="input-group" style="width: 100%;">
-                                    <select
-                                            id="HostsSelect"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="hosts"
-                                            callback="loadHosts"
-                                            multiple
-                                            ng-options="host.key as host.value for host in hosts"
-                                            ng-model="post.Statuspage.hosts._ids">
-                                    </select>
-                                </div>
-                                <div ng-repeat="error in errors.hosts">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-
-                            <hr>
-
-                            <div class="form-group"
-                                 ng-class="{'has-error': errors.services}">
-                                <label class="control-label">
-                                    <?php echo __('Services'); ?>
-                                </label>
-                                <div class="input-group" style="width: 100%;">
-                                    <select
-                                            id="ServicesSelect"
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="services"
-                                            callback="loadServices"
-                                            multiple
-                                            ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
-                                            ng-model="post.Statuspage.services._ids">
-                                    </select>
-                                </div>
-                                <div ng-repeat="error in errors.services">
-                                    <div class="help-block text-danger">{{ error }}</div>
-                                </div>
-                            </div>
-                            <hr>
-
-                            <div class="card margin-top-10">
-                                <div class="card-body">
-                                    <div class="float-right">
-                                        <?php if ($this->Acl->hasPermission('edit', 'statuspages')): ?>
-                                            <button class="btn btn-primary" type="submit">
-                                                <?php echo __('Update'); ?>
-                                            </button>
-                                        <?php endif; ?>
-                                        <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
-                                           class="btn btn-default"><?php echo __('Cancel'); ?>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
+                        </div>
+                    </form>
                 </div>
-
             </div>
+
         </div>
+    </div>
     <!--</div>-->
 </div>
 

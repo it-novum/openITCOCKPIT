@@ -42,19 +42,19 @@
     <div class="col-xl-12">
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
-            <h2>
-                <?php echo __('Status page'); ?>
-                <span class="fw-300"><i><?php echo __('Set alias names'); ?> </i></span>
-            </h2>
-            <div class="panel-toolbar">
-                <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
-                    <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
-                       class="btn btn-default btn-xs mr-1 shadow-0">
-                        <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
-                    </a>
-                <?php endif; ?>
+                <h2>
+                    <?php echo __('Status page'); ?>
+                    <span class="fw-300"><i><?php echo __('Set alias names'); ?> </i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
+                        <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
-        </div>
             <form ng-submit="submit();" class="form-horizontal"
                   ng-init="successMessage=
                         {objectName : '<?php echo __('Statuspage'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
@@ -96,9 +96,9 @@
                             <td class="col-5">{{servicegroup.name}}</td>
                             <td class="col-7">
                                 <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="servicegroup._joinData.display_alias">
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="servicegroup._joinData.display_alias">
                             </td>
                         </tr>
                         </tbody>
@@ -119,9 +119,9 @@
                             <td class="col-5">{{host.name}}</td>
                             <td class="col-7">
                                 <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="host._joinData.display_alias">
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="host._joinData.display_alias">
                             </td>
                         </tr>
                         </tbody>
@@ -143,28 +143,28 @@
                             <td class="col-2">{{service.hostname}}</td>
                             <td class="col-7">
                                 <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="service._joinData.display_alias">
+                                        class="form-control"
+                                        type="text"
+                                        ng-model="service._joinData.display_alias">
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </span>
-                    <hr>
+                <hr>
                 <div class="card margin-top-10">
                     <div class="card-body">
 
-                    <div class="float-right">
-                        <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
-                           class="btn btn-default"><?php echo __('Cancel'); ?>
-                        </a>
-                        <?php if ($this->Acl->hasPermission('add', 'statuspages')): ?>
-                            <button class="btn btn-primary" type="submit">
-                                <?php echo __('Save'); ?>
-                            </button>
-                        <?php endif; ?>
-                    </div>
+                        <div class="float-right">
+                            <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
+                               class="btn btn-default"><?php echo __('Cancel'); ?>
+                            </a>
+                            <?php if ($this->Acl->hasPermission('add', 'statuspages')): ?>
+                                <button class="btn btn-primary" type="submit">
+                                    <?php echo __('Save'); ?>
+                                </button>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
             </form>
