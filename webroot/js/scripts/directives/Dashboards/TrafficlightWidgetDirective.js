@@ -141,7 +141,7 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
 
                 if($scope.Service.isEVCService){
                     if($scope.ACL.evc.view){
-                        return '/eventcorrelation_module/eventcorrelations/view/' + $scope.Host.id
+                        return '/#!/eventcorrelation_module/eventcorrelations/view/' + $scope.Host.id
                     }
 
                     if($scope.ACL.services.index){
