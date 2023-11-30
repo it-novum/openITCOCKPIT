@@ -12,6 +12,11 @@ angular.module('openITCOCKPIT')
         $scope.Usergroup = {};
         $scope.User = {};
         $scope.hideModifications = false;
+        $scope.isPinned = false;
+
+        $scope.flags = {
+            exists: 1 << 0,
+        };
 
         $scope.data = {
             newTabName: '',
@@ -19,9 +24,18 @@ angular.module('openITCOCKPIT')
             viewTabRotateInterval: 0,
             renameTabName: '',
             renameWidgetTitle: '',
-            users : [],
-            usergroups : []
+            users: [],
+            usergroups: [],
+            flags: 0
         };
+
+        $scope.$watch('isPinned', function(val) {
+            if(val) {
+                $scope.data.flags |= 1;
+                return;
+            }
+            $scope.data.flags ^= 1;
+        });
 
         $scope.gridsterOpts = {
             minRows: 2, // the minimum height of the grid, in rows
@@ -94,7 +108,6 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
 
                 $scope.tabs = result.data.tabs;
-                console.log($scope.tabs);
                 if($scope.activeTab === null){
                     $scope.activeTab = $scope.tabs[0].id;
                 }
@@ -122,6 +135,10 @@ angular.module('openITCOCKPIT')
                 $scope.activeTab = tabId;
                 $scope.data.User = result.data.widgets.allocated_users._ids || [];
                 $scope.data.Usergroup = result.data.widgets.Usergroup._ids || [];
+
+                // ITC-3037
+                $scope.isReadonly = result.data.isReadonly ? 1 : 0;
+                $scope.isPinned = false;
                 $scope.hideModifications = false;
 
                 for(var k in $scope.tabs){
@@ -135,7 +152,7 @@ angular.module('openITCOCKPIT')
                             $scope.gridsterOpts.resizable.enabled = true;
                             $scope.gridsterOpts.draggable.enabled = true;
                         }
-                        if (($scope.tabs[k].source || '') === 'ALLOCATED') {
+                        if(($scope.tabs[k].source || '') === 'ALLOCATED'){
                             $scope.hideModifications = true;
                             $scope.dashboardIsLocked = true;
                             $scope.gridsterOpts.resizable.enabled = false;
@@ -157,7 +174,8 @@ angular.module('openITCOCKPIT')
                         icon: result.data.widgets.Widget[i].icon,
                         title: result.data.widgets.Widget[i].title,
                         color: result.data.widgets.Widget[i].color,
-                        directive: result.data.widgets.Widget[i].directive
+                        directive: result.data.widgets.Widget[i].directive,
+                        isReadonly: $scope.isReadonly
                     });
                 }
 
@@ -472,24 +490,24 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.allocateDashboard = function (tabId) {
+        $scope.allocateDashboard = function(tabId){
             $scope.loadUsergroups();
             $scope.loadUsers();
             $('#allocateDashboardModal').modal('show');
             $scope.$apply();
         }
-        $scope.refreshAllocation = function () {
-
+        $scope.refreshAllocation = function(){
             $http.post("/dashboards/allocate.json?angular=true",
                 {
-                    DashboardTab : {
+                    DashboardTab: {
                         id: $scope.activeTab,
                         usergroups: {
                             _ids: $scope.data.Usergroup
                         },
                         AllocatedUsers: {
                             _ids: $scope.data.User
-                        }
+                        },
+                        flags: $scope.data.flags
                     }
                 }
             ).then(function(result){
@@ -794,7 +812,6 @@ angular.module('openITCOCKPIT')
         });
 
         $scope.$watch('activeWidgets', function(){
-            //console.log(disableWatch);
             if($scope.init === true || disableWatch === true){
                 return;
             }

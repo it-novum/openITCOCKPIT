@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Model\Entity\DashboardTab;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -600,12 +601,26 @@ class DashboardTabsTable extends Table {
         $Entity = $this->patchEntity($Entity, $patch);
 
         $patch = [
-            'widgets'           => $widgets
+            'widgets' => $widgets
         ];
 
         $Entity = $this->patchEntity($Entity, $patch);
 
         $this->save($Entity);
         return $Entity;
+    }
+
+    /**
+     * @param DashboardTab $tab
+     * @return bool
+     */
+    public function isAllocated(DashboardTab $tab): bool {
+        // If not allocated, fine then.
+        if (empty($tab->source_tab_id)) {
+            return false;
+        }
+
+        // ITC-3037 MAKE DYNAMIC
+        return true;
     }
 }

@@ -18,7 +18,10 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
 
             /** private vars **/
             var $widget = $('#widget-' + $scope.widget.id);
+            // ITC-3037
             var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
+
             var timer = {
                 red: null,
                 yellow: null,

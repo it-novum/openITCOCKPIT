@@ -53,16 +53,16 @@
                                 </h2>
                             </li>
                             <li class="nav-item" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
-                                ng-class="{'active':activeTab === tab.id, 'ui-sortable-handle':  tab.source !== 'ALLOCATED'}">
+                                ng-click="loadTabContent(tab.id)"
+                                ng-class="{'active':activeTab === tab.id, 'ui-sortable-handle':  !tab.isPinned}">
                                 <a class="nav-link"
                                    href="javascript:void(0);"
                                    ng-if="activeTab !== tab.id"
-                                   ng-click="loadTabContent(tab.id)"
                                    ng-class="{ 'bg-primary': tab.source === 'ALLOCATED',  'text-warning': tab.source === 'ALLOCATED'}"
                                    role="tab">
                                 <span class="text"
                                       ng-class="{ 'text-primary': tab.shared === true}">
-                                    <span ng-show="tab.source === 'ALLOCATED'">
+                                    <span ng-show="tab.isPinned">
                                         <i class="fa fa-lock"></i>
                                     </span>
                                     {{tab.name}}
@@ -78,7 +78,7 @@
                                 >
                                     <span class="text"
                                           ng-class="{ 'text-primary': tab.shared === true}">
-                                    <span ng-show="tab.source === 'ALLOCATED'">
+                                    <span ng-show="tab.isPinned">
                                         <i class="fa fa-lock"></i>
                                     </span>
                                         {{tab.name}}
@@ -101,18 +101,18 @@
                                             <?php echo __('Start sharing'); ?>
                                         </a>
                                     </li>
-                                    <li>
-                                        <a href="javascript:void(0);" class="dropdown-item"
-                                           ng-click="allocateDashboard(tab.id)">
-                                            <i class="fa fa-user"></i>
-                                            <?php echo __('Allocate Dashboard'); ?>
-                                        </a>
-                                    </li>
                                     <li ng-show="tab.shared">
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="stopSharing(tab.id)">
                                             <i class="fa fa-code-fork"></i>
                                             <?php echo __('Stop sharing'); ?>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item"
+                                           ng-click="allocateDashboard(tab.id)">
+                                            <i class="fa fa-user"></i>
+                                            <?php echo __('Allocate Dashboard'); ?>
                                         </a>
                                     </li>
                                     <div class="dropdown-divider"></div>
@@ -310,9 +310,10 @@
                                     </div>
                                     <!-- Loading used AngularJs directives dynamically -->
                                     <div role="content" id="widget-content-{{widget.id}}"
+                                         data-readonly="{{widget.isReadonly}}"
                                          style="height:100%; overflow: auto;" class="card-body">
                                         <ng-include
-                                            src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
+                                                src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
                                     </div>
                                 </div>
                                 <div ng-if="$last" ng-init="$last?enableWatch():null"></div>
@@ -388,9 +389,9 @@
                                 <?php echo __('Tab name'); ?>
                             </label>
                             <input
-                                class="form-control"
-                                type="text"
-                                ng-model="data.newTabName">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="data.newTabName">
                         </div>
                     </div>
                 </div>
@@ -415,11 +416,11 @@
                                 <?php echo __('Select shared tab'); ?>
                             </label>
                             <select
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="sharedTabs"
-                                ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
-                                ng-model="data.createTabFromSharedTabId">
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="sharedTabs"
+                                    ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
+                                    ng-model="data.createTabFromSharedTabId">
                             </select>
                         </div>
                     </div>
@@ -673,36 +674,20 @@
                     </div>
                 </div>
 
-                <!-- Is Readonly? -->
+                <!-- pinDashboard -->
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="form-group margin-top-20 padding-bottom-10">
                             <div class="custom-control custom-checkbox">
                                 <input type="checkbox"
                                        class="custom-control-input"
-                                       id="readonly"
-                                       ng-model="data.readonly">
-                                <label class="custom-control-label" for="readonly">
-                                    <?php echo __('Read only'); ?>
+                                       id="pinDashboard"
+                                       ng-model="isPinned">
+                                <label class="custom-control-label" for="pinDashboard">
+                                    <?php echo __('Pin Dashboard'); ?>
                                 </label>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Is Primary -->
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="form-group margin-top-20 padding-bottom-10">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       id="primary"
-                                       ng-model="data.primary">
-                                <label class="custom-control-label" for="primary">
-                                    <?php echo __('Primary'); ?>
-                                </label>
-                            </div>
+                            <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
                         </div>
                         <div class="alert alert-warning" role="alert">
                             Currently, dashboard <i>Fake 123</i> is set up as pimary. This will be removed now.

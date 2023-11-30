@@ -21,7 +21,9 @@ angular.module('openITCOCKPIT').directive('automapWidget', function($http, $root
             $scope.automapTimeout = null;
             $scope.currentPage = 1;
 
-
+            // ITC-3037
+            var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
             var loadWidgetConfig = function(){
                 $http.get("/automaps/automapWidget.json?angular=true&widgetId=" + $scope.widget.id).then(function(result){
                     $scope.useScroll = result.data.config.useScroll || true;

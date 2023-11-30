@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Entity\DashboardTab;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
@@ -114,7 +115,7 @@ class DashboardsController extends AppController {
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
         // If user has neither OWN or allocated tabs, create the default tab.
-        if (! $DashboardTabsTable->hasUserATab($User->getId())) {
+        if (!$DashboardTabsTable->hasUserATab($User->getId())) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {
                 //Create default widgets
@@ -144,7 +145,7 @@ class DashboardsController extends AppController {
             $copy = $DashboardTabsTable
                 ->find()
                 ->where([
-                    'user_id' => $user->id,
+                    'user_id'       => $user->id,
                     'source_tab_id' => $tab['id']
                 ])
                 ->disableHydration()
@@ -167,11 +168,16 @@ class DashboardsController extends AppController {
 
         // Find all the allocated tabs and mark them as... ALLOCATED. Duh.
         foreach ($newTabs as $tabIndex => $tab) {
-            if (!in_array($tab['source_tab_id'] , $allocatedTabIds, true)) {
+            if (!in_array($tab['source_tab_id'], $allocatedTabIds, true)) {
+                $newTabs[$tabIndex]['isPinned'] = false;
+                $newTabs[$tabIndex]['isReadonly'] = false;
                 continue;
             }
 
+            $sourceTab = $DashboardTabsTable->get($newTabs[$tabIndex]['source_tab_id']);
             $newTabs[$tabIndex]['source'] = 'ALLOCATED';
+            $newTabs[$tabIndex]['isPinned'] = (bool)($sourceTab->flags & DashboardTab::TAB_PINNED);
+            $newTabs[$tabIndex]['isReadonly'] = true;
         }
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
@@ -201,8 +207,14 @@ class DashboardsController extends AppController {
         $User = new User($this->getUser());
         $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
 
+        $Entity = $DashboardTabsTable->get($tabId);
+
+        // ITC-3037
+        $isReadonly = $DashboardTabsTable->isAllocated($Entity);
+
         $this->set('widgets', $widgets);
-        $this->viewBuilder()->setOption('serialize', ['widgets']);
+        $this->set('isReadonly', $isReadonly);
+        $this->viewBuilder()->setOption('serialize', ['widgets', 'isReadonly']);
     }
 
     public function dynamicDirective() {
@@ -2001,6 +2013,7 @@ class DashboardsController extends AppController {
             ]);
             $UsersTable->save($UserEntity);
         }
+
         $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
 
         // Save

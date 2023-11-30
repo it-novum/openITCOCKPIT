@@ -71,6 +71,15 @@ class AllocatedDashboards extends AbstractMigration {
                 ])
                 ->create();
         }
+        if ($this->hasTable('dashboard_tabs')) {
+            $this->table('dashboard_tabs')
+                ->addColumn('flags', 'integer', [
+                    'default'       => 1,
+                    'limit'         => 11,
+                    'null'          => false,
+                ])
+                ->save();
+        }
     }
 
     /**

@@ -14,6 +14,10 @@ angular.module('openITCOCKPIT').directive('todayWidget', function($http){
 
             $scope.calendarTimeout = null;
 
+            // ITC-3037
+            var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
+
             $scope.load = function(){
                 $http.get("/dashboards/todayWidget.json", {
                     params: {

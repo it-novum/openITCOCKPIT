@@ -19,12 +19,17 @@ use Cake\ORM\Entity;
  * @property bool $locked
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
+ * @property int $flags
+ *
  *
  * @property \App\Model\Entity\User $user
  * @property \App\Model\Entity\SourceTab $source_tab
  * @property \App\Model\Entity\Widget[] $widgets
  */
 class DashboardTab extends Entity {
+
+    public const TAB_PINNED = 1 << 0;                 // 1
+
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -49,5 +54,6 @@ class DashboardTab extends Entity {
         'source_tab'        => true,
         'widgets'           => true,
         'usergroups'        => true,
+        'flags'             => true
     ];
 }
