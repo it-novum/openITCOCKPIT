@@ -26,6 +26,7 @@
 namespace MapModule\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
@@ -231,6 +232,7 @@ class MapeditorsController extends AppController {
 
         $properties = [];
         $allowView = false;
+        $MY_RIGHTS = $this->hasRootPrivileges ? [] : $this->MY_RIGHTS;
 
         switch ($type) {
             case 'host':
@@ -277,12 +279,19 @@ class MapeditorsController extends AppController {
                 try {
                     /** @var HostgroupsTable $HostgroupsTable */
                     $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-                    $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, []);
+
+                    $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, $MY_RIGHTS);
+                    if(!isset($hostgroup['hosts'])){
+                        $hostgroup['hosts'] = [];
+                    }
+
                     $hostgroup['hosts'] = array_merge(
                         $hostgroup['hosts'],
                         Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}')
                     );
                     if ($this->hasRootPrivileges === false) {
+                        // We are only display an icon at this point
+                        // As long as the user has access to at least one container, we can display the icon
                         if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
@@ -304,12 +313,17 @@ class MapeditorsController extends AppController {
                 /** @var ServicegroupsTable $ServicegroupsTable */
                 $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
                 try {
-                    $servicegroup = $ServicegroupsTable->getServicegroupsByServicegroupForMaps($objectId, []);
+                    $servicegroup = $ServicegroupsTable->getServicegroupsByServicegroupForMaps($objectId, $MY_RIGHTS);
+                    if(!isset($servicegroup['services'] )){
+                        $servicegroup['services']  = [];
+                    }
                     $servicegroup['services'] = array_merge(
                         $servicegroup['services'],
                         Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}')
                     );
                     if ($this->hasRootPrivileges === false) {
+                        // We are only display an icon at this point
+                        // As long as the user has access to at least one container, we can display the icon
                         if (!$this->allowedByContainerId(array_unique(Hash::extract($servicegroup, 'services.{n}.host.hosts_to_containers_sharing.{n}.id')), false)) {
                             $allowView = false;
                             break;
@@ -357,7 +371,7 @@ class MapeditorsController extends AppController {
                         /** @var ServicegroupsTable $ServicegroupsTable */
                         $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS, false);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $MY_RIGHTS, false);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
@@ -374,20 +388,14 @@ class MapeditorsController extends AppController {
                             $dependentMapsIds,
                             $HostgroupsTable,
                             $ServicegroupsTable,
-                            $this->hasRootPrivileges ? [] : $this->MY_RIGHTS
+                            $MY_RIGHTS
                         );
                         $hosts = [];
                         $services = [];
                         if (!empty($allDependentMapElements['hostIds'])) {
-                            $hosts = $HostsTable->getHostsWithServicesByIdsForMapeditor($allDependentMapElements['hostIds'], false);
+                            $hosts = $HostsTable->getHostsWithServicesByIdsForMapeditor($allDependentMapElements['hostIds'], $MY_RIGHTS, false);
 
                             if (!empty($hosts)) {
-                                if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.hosts_to_containers_sharing.{n}.id'), false)) {
-                                        $allowView = false;
-                                        break;
-                                    }
-                                }
                                 foreach ($hosts as $host) {
                                     foreach ($host['services'] as $serviceData) {
                                         $services[$serviceData['id']] = [
@@ -398,15 +406,9 @@ class MapeditorsController extends AppController {
                             }
                         }
                         if (!empty($allDependentMapElements['serviceIds'])) {
-                            $dependentServices = $ServicesTable->getServicesByIdsForMapeditor($allDependentMapElements['serviceIds']);
+                            $dependentServices = $ServicesTable->getServicesByIdsForMapeditor($allDependentMapElements['serviceIds'], $MY_RIGHTS);
 
                             if (!empty($dependentServices)) {
-                                if ($this->hasRootPrivileges === false) {
-                                    if (!$this->allowedByContainerId(Hash::extract($dependentServices, '{n}.HostsToContainers.container_id'), false)) {
-                                        $allowView = false;
-                                        break;
-                                    }
-                                }
                                 foreach ($dependentServices as $service) {
                                     $hosts[$service['Hosts']['id']] = ['Host' => $service['Hosts']];
                                     $services[$service['id']] = [
@@ -521,12 +523,14 @@ class MapeditorsController extends AppController {
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
+        $MY_RIGHTS = $this->hasRootPrivileges ? [] : $this->MY_RIGHTS;
+
         switch ($this->request->getQuery('type')) {
             case 'host':
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $host = $HostsTable->getHostsWithServicesByIdsForMapeditor($objectId);
+                $host = $HostsTable->getHostsWithServicesByIdsForMapeditor($objectId, $MY_RIGHTS, true);
 
                 if (!empty($host) && isset($host[0])) {
                     if ($this->hasRootPrivileges === false) {
@@ -574,14 +578,20 @@ class MapeditorsController extends AppController {
                 /** @var HostgroupsTable $HostgroupsTable */
                 $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
-                $hostgroup = $HostgroupsTable->getHostgroupByIdForMapeditor($objectId);
+                $hostgroup = $HostgroupsTable->getHostgroupByIdForMapeditor($objectId, $MY_RIGHTS);
+                if(!isset($hostgroup['hosts'])){
+                    $hostgroup['hosts'] = [];
+                }
                 $hostgroup['hosts'] = array_merge(
                     $hostgroup['hosts'],
                     Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}')
                 );
 
+
                 if (!empty($hostgroup)) {
-                    if ($this->hasRootPrivileges !== false) {
+                    if ($this->hasRootPrivileges === false) {
+                        // We are only display an icon at this point
+                        // As long as the user has access to at least one container, we can display the icon
                         if (!$this->allowedByContainerId(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
@@ -602,13 +612,19 @@ class MapeditorsController extends AppController {
                 /** @var ServicegroupsTable $ServicegroupsTable */
                 $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-                $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId);
+                $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId, $MY_RIGHTS);
+                if(!isset($servicegroup['services'])){
+                    $servicegroup['services'] = [];
+                }
                 $servicegroup['services'] = array_merge(
                     $servicegroup['services'],
                     Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}')
                 );
+
                 if (!empty($servicegroup)) {
                     if ($this->hasRootPrivileges === false) {
+                        // We are only display an icon at this point
+                        // As long as the user has access to at least one container, we can display the icon
                         if (!$this->allowedByContainerId(Hash::extract($servicegroup, 'services.{n}.host.hosts_to_containers_sharing.{n}.id'), false)) {
                             $allowView = false;
                             break;
@@ -650,7 +666,7 @@ class MapeditorsController extends AppController {
                     //fetch all dependent map items after permissions check
                     $mapSummaryItemToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map['id'], $mapId);
                     if (!empty($mapSummaryItemToResolve)) {
-                        $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $MY_RIGHTS);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
@@ -667,7 +683,7 @@ class MapeditorsController extends AppController {
                             $dependentMapsIds,
                             $HostgroupsTable,
                             $ServicegroupsTable,
-                            $this->hasRootPrivileges ? [] : $this->MY_RIGHTS
+                            $MY_RIGHTS
                         );
                     }
 
@@ -675,7 +691,7 @@ class MapeditorsController extends AppController {
                     $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($objectId, $mapId);
 
                     if (!empty($mapItemToResolve)) {
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $MY_RIGHTS);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
@@ -693,7 +709,7 @@ class MapeditorsController extends AppController {
                             $dependentMapsIds,
                             $HostgroupsTable,
                             $ServicegroupsTable,
-                            $this->hasRootPrivileges ? [] : $this->MY_RIGHTS
+                            $MY_RIGHTS
                         );
                     }
 
@@ -710,15 +726,9 @@ class MapeditorsController extends AppController {
                     $hosts = [];
                     $services = [];
                     if (!empty($hostIds)) {
-                        $hostsById = $HostsTable->getHostsWithServicesByIdsForMapeditor($hostIds, false);
+                        $hostsById = $HostsTable->getHostsWithServicesByIdsForMapeditor($hostIds, $MY_RIGHTS, false);
 
                         if (!empty($hostsById)) {
-                            if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($hostsById, '{n}.hosts_to_containers_sharing.{n}.id'), false)) {
-                                    $allowView = false;
-                                    break;
-                                }
-                            }
                             foreach ($hostsById as $host) {
                                 $hosts[$host['id']] = [
                                     'Host' => $host
@@ -735,16 +745,9 @@ class MapeditorsController extends AppController {
                     if (!empty($serviceIds)) {
                         $serviceIds = array_unique($serviceIds);
 
-
-                        $dependentServices = $ServicesTable->getServicesByIdsForMapeditor($serviceIds);
+                        $dependentServices = $ServicesTable->getServicesByIdsForMapeditor($serviceIds, $MY_RIGHTS);
 
                         if (!empty($dependentServices)) {
-                            if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($dependentServices, '{n}.HostsToContainers.container_id'), false)) {
-                                    $allowView = false;
-                                    break;
-                                }
-                            }
                             foreach ($dependentServices as $service) {
                                 $hosts[$service['Hosts']['id']] = ['Host' => $service['Hosts']];
                                 $services[$service['id']] = [
@@ -786,7 +789,8 @@ class MapeditorsController extends AppController {
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
         $serviceId = (int)$this->request->getQuery('serviceId');
-        $service = $ServicesTable->getServicesByIdsForMapsumary($serviceId);
+        $MY_RIGHTS = $this->hasRootPrivileges ? [] : $this->MY_RIGHTS;
+        $service = $ServicesTable->getServicesByIdsForMapsumary($serviceId, $MY_RIGHTS);
 
         if (empty($service) || !isset($service[0])) {
             throw new NotFoundException('Service not found!');
@@ -856,6 +860,7 @@ class MapeditorsController extends AppController {
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
+        $MY_RIGHTS = $this->hasRootPrivileges ? [] : $this->MY_RIGHTS;
         switch ($this->request->getQuery('type')) {
             case 'host':
                 /** @var HostsTable $HostsTable */
@@ -948,23 +953,15 @@ class MapeditorsController extends AppController {
                 break;
             case 'hostgroup':
                 try {
-                    $MY_RIGHTS = [];
-                    if (!$this->hasRootPrivileges) {
-                        $MY_RIGHTS = $this->MY_RIGHTS;
-                    }
                     $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, $MY_RIGHTS);
+                    if(!isset($hostgroup['hosts'])){
+                        $hostgroup['hosts'] = [];
+                    }
                     $hostgroup['hosts'] = array_merge(
                         $hostgroup['hosts'],
                         Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}')
                     );
 
-                    if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(
-                            array_unique(Hash::extract($hostgroup, 'hosts.{n}.hosts_to_containers_sharing.{n}.id'), false))) {
-                            $this->render403();
-                            return;
-                        }
-                    }
                     $summary = $MapsTable->getHostgroupSummary(
                         $HostsTable,
                         $ServicesTable,
@@ -981,18 +978,15 @@ class MapeditorsController extends AppController {
                 }
                 break;
             case 'servicegroup':
-                $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId, $MY_RIGHTS);
+                if(!isset($servicegroup['services'])){
+                    $servicegroup['services'] = [];
+                }
                 $servicegroup['services'] = array_merge(
                     $servicegroup['services'],
                     Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}')
                 );
                 if (!empty($servicegroup)) {
-                    if ($this->hasRootPrivileges === false) {
-                        if (!$this->allowedByContainerId(array_unique(Hash::extract($servicegroup, 'services.{n}.host.hosts_to_containers_sharing.{n}.id')), false)) {
-                            $this->render403();
-                            return;
-                        }
-                    }
 
                     $summary = $MapsTable->getServicegroupSummary(
                         $ServicesTable,
@@ -1030,7 +1024,7 @@ class MapeditorsController extends AppController {
                     //fetch all dependent map items after permissions check
                     $mapSummaryItemToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map['id'], $mapId);
                     if (!empty($mapSummaryItemToResolve)) {
-                        $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $MY_RIGHTS);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
                             '{n}.object_id',
@@ -1053,7 +1047,7 @@ class MapeditorsController extends AppController {
                     //fetch all dependent map items after permissions check SIMPLE STATE ITEMS (TYPE MAP)
                     $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($objectId, $mapId);
                     if (!empty($mapItemToResolve)) {
-                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+                        $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $MY_RIGHTS);
 
                         $mapItemIdToResolve = $mapItemToResolve['object_id'];
                         $mapIdGroupByMapId = Hash::combine(
@@ -1088,14 +1082,9 @@ class MapeditorsController extends AppController {
                     $services = [];
 
                     if (!empty($hostIds)) {
-                        $hosts = $HostsTable->getHostsWithServicesByIdsForMapsumary($hostIds, false);
+                        $hosts = $HostsTable->getHostsWithServicesByIdsForMapsumary($hostIds, $MY_RIGHTS, false);
 
                         if (!empty($hosts)) {
-                            if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($hosts, '{n}.hosts_to_containers_sharing.{n}.id'), false)) {
-                                    break;
-                                }
-                            }
                             foreach ($hosts as $host) {
                                 foreach ($host['services'] as $serviceData) {
                                     $services[$serviceData['id']] = [
@@ -1110,14 +1099,9 @@ class MapeditorsController extends AppController {
                     }
 
                     if (!empty($serviceIds)) {
-                        $servicesToMerge = $ServicesTable->getServicesByIdsForMapsumary($serviceIds);
+                        $servicesToMerge = $ServicesTable->getServicesByIdsForMapsumary($serviceIds, $MY_RIGHTS);
 
                         if (!empty($servicesToMerge)) {
-                            if ($this->hasRootPrivileges === false) {
-                                if (!$this->allowedByContainerId(Hash::extract($servicesToMerge, '{n}.HostsToContainers.container_id'), false)) {
-                                    break;
-                                }
-                            }
                             foreach ($servicesToMerge as $service) {
                                 $hosts[$service['Hosts']['id']] = $service['Hosts'];
                                 $services[$service['id']]['Service'] = $service;

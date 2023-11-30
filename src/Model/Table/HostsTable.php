@@ -553,10 +553,11 @@ class HostsTable extends Table {
 
     /**
      * @param string $uuid
+     * @param array $MY_RIGHTS
      * @param bool $enableHydration
      * @return array|Host
      */
-    public function getHostsWithServicesByIdsForMapeditor($ids, $enableHydration = true) {
+    public function getHostsWithServicesByIdsForMapeditor($ids, array $MY_RIGHTS = [], $enableHydration = true) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -572,8 +573,18 @@ class HostsTable extends Table {
                         'Services.disabled' => 0
                     ]);
                 }
-            ])
-            ->enableHydration($enableHydration);
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->enableHydration($enableHydration);
 
         $result = $query->all();
         if (empty($result)) {
@@ -584,10 +595,11 @@ class HostsTable extends Table {
 
     /**
      * @param string $uuid
+     * @param array $MY_RIGHTS
      * @param bool $enableHydration
      * @return array|Host
      */
-    public function getHostsWithServicesByIdsForMapsumary($ids, $enableHydration = true) {
+    public function getHostsWithServicesByIdsForMapsumary($ids, $MY_RIGHTS = [], $enableHydration = true) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -595,35 +607,46 @@ class HostsTable extends Table {
             ->where([
                 'Hosts.id IN'    => $ids,
                 'Hosts.disabled' => 0,
-            ])
-            ->contain([
-                'HostsToContainersSharing',
-                'Services' => function (Query $q) {
-                    return $q
-                        ->join([
-                            [
-                                'table'      => 'servicetemplates',
-                                'type'       => 'INNER',
-                                'alias'      => 'Servicetemplates',
-                                'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
-                            ],
-                        ])
-                        ->select([
-                            'Services.id',
-                            'Services.name',
-                            'Services.uuid',
-                            'Services.host_id',
-                            'Servicetemplates.name'
-                        ])
-                        ->where([
-                            'Services.disabled' => 0
-                        ]);
-                }
-            ])
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->contain([
+            'HostsToContainersSharing',
+            'Services' => function (Query $q) {
+                return $q
+                    ->join([
+                        [
+                            'table'      => 'servicetemplates',
+                            'type'       => 'INNER',
+                            'alias'      => 'Servicetemplates',
+                            'conditions' => 'Servicetemplates.id = Services.servicetemplate_id',
+                        ],
+                    ])
+                    ->select([
+                        'Services.id',
+                        'Services.name',
+                        'Services.uuid',
+                        'Services.host_id',
+                        'Servicetemplates.name'
+                    ])
+                    ->where([
+                        'Services.disabled' => 0
+                    ]);
+            }
+        ])
             ->select([
                 'Hosts.id',
                 'Hosts.uuid',
                 'Hosts.name'
+            ])
+            ->group([
+                'Hosts.id'
             ])
             ->enableHydration($enableHydration);
 
