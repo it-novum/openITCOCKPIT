@@ -20,17 +20,13 @@ angular.module('openITCOCKPIT')
         $scope.services_ids = [];
         $scope.hostgroups_ids = [];
         $scope.servicegroups_ids = [];
-
-
         $scope.selectedHosts = [];
         $scope.selectedServices = [];
         $scope.selectedHostgroups = [];
         $scope.selectedServicegroups = [];
         $scope.init = true;
-        // $scope.showHostAliasButton = false;
         $scope.showHostAlias = false;
         $scope.showHostgroupAlias = true;
-        // $scope.showServiceAliasButton = true;
         $scope.showServiceAlias = false;
         $scope.showServicegroupAlias = false;
 
