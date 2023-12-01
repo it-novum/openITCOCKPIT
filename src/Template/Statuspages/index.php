@@ -246,7 +246,7 @@
                                                     <?php echo __('View'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <a href="/statuspages/public/{{statuspage.id}}" target="_blank"
+                                            <a href="/statuspages/publicView/{{statuspage.id}}" target="_blank"
                                                class="dropdown-item" ng-show="statuspage.public">
                                                 <i class="fas fa-eye"></i>
                                                 <?php echo __('Public View'); ?>

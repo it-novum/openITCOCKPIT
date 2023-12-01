@@ -26,12 +26,9 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
-use App\Model\Table\ServicesTable;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
-use Cake\ORM\Association\HasMany;
 use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
@@ -55,7 +52,6 @@ use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
 
 /**
@@ -77,8 +73,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  *
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
-class StatuspagesTable extends Table
-{
+class StatuspagesTable extends Table {
     use PaginationAndScrollIndexTrait;
 
     private $public = false;
@@ -91,8 +86,7 @@ class StatuspagesTable extends Table
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config): void
-    {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('statuspages');
@@ -102,38 +96,23 @@ class StatuspagesTable extends Table
         $this->addBehavior('Timestamp');
 
         $this->belongsToMany('Containers', [
-            'className'        => 'Containers',
-            'foreignKey'       => 'statuspage_id',
-            'targetForeignKey' => 'container_id',
-            'joinTable'        => 'statuspages_to_containers'
+            'className' => 'Containers', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'container_id', 'joinTable' => 'statuspages_to_containers'
         ])->setDependent(true);
 
 
         $this->belongsToMany('Hosts', [
-            'className'        => 'Hosts',
-            'foreignKey'       => 'statuspage_id',
-            'targetForeignKey' => 'host_id',
-            'joinTable'        => 'statuspages_to_hosts'
+            'className' => 'Hosts', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'host_id', 'joinTable' => 'statuspages_to_hosts'
         ])->setDependent(true);
 
         $this->belongsToMany('Services', [
-            'className'        => 'Services',
-            'foreignKey'       => 'statuspage_id',
-            'targetForeignKey' => 'service_id',
-            'joinTable'        => 'statuspages_to_services'
+            'className' => 'Services', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'service_id', 'joinTable' => 'statuspages_to_services'
         ])->setDependent(true);
 
         $this->belongsToMany('Hostgroups', [
-            'className'        => 'Hostgroups',
-            'foreignKey'       => 'statuspage_id',
-            'targetForeignKey' => 'hostgroup_id',
-            'joinTable'        => 'statuspages_to_hostgroups'
+            'className' => 'Hostgroups', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'hostgroup_id', 'joinTable' => 'statuspages_to_hostgroups'
         ])->setDependent(true);
         $this->belongsToMany('Servicegroups', [
-            'className'        => 'Servicegroups',
-            'foreignKey'       => 'statuspage_id',
-            'targetForeignKey' => 'servicegroup_id',
-            'joinTable'        => 'statuspages_to_servicegroups'
+            'className' => 'Servicegroups', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'servicegroup_id', 'joinTable' => 'statuspages_to_servicegroups'
         ])->setDependent(true);
 
     }
@@ -144,33 +123,18 @@ class StatuspagesTable extends Table
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator): Validator
-    {
-        $validator
-            ->requirePresence('containers', true, __('You have to choose at least one option.'))
-            ->allowEmptyString('containers', null, false)
-            ->multipleOptions('containers', [
+    public function validationDefault(Validator $validator): Validator {
+        $validator->requirePresence('containers', true, __('You have to choose at least one option.'))->allowEmptyString('containers', null, false)->multipleOptions('containers', [
                 'min' => 1
             ], __('You have to choose at least one option.'));
 
-        $validator
-            ->scalar('name')
-            ->maxLength('name', 255)
-            ->requirePresence('name', 'create')
-            ->notEmptyString('name');
+        $validator->scalar('name')->maxLength('name', 255)->requirePresence('name', 'create')->notEmptyString('name');
 
-        $validator
-            ->scalar('description')
-            ->maxLength('description', 1000)
-            ->allowEmptyString('description');
+        $validator->scalar('description')->maxLength('description', 1000)->allowEmptyString('description');
 
-        $validator
-            ->boolean('public')
-            ->notEmptyString('public');
+        $validator->boolean('public')->notEmptyString('public');
 
-        $validator
-            ->boolean('show_comments')
-            ->notEmptyString('show_comments');
+        $validator->boolean('show_comments')->notEmptyString('show_comments');
 
         return $validator;
     }
@@ -179,8 +143,7 @@ class StatuspagesTable extends Table
      * @param Validator $validator
      * @return Validator
      */
-    public function validationAlias(Validator $validator): Validator
-    {
+    public function validationAlias(Validator $validator): Validator {
 
         return $validator;
     }
@@ -191,12 +154,10 @@ class StatuspagesTable extends Table
      * @param $MY_RIGHTS
      * @return array
      */
-    public function getStatuspagesIndex(StatuspagesFilter $StatuspagesFilter, $PaginateOMat = null, $MY_RIGHTS = [])
-    {
+    public function getStatuspagesIndex(StatuspagesFilter $StatuspagesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all');
         $query->contain(['Containers']);
-        $query->where($StatuspagesFilter->indexFilter())
-            ->distinct('Statuspages.id');;
+        $query->where($StatuspagesFilter->indexFilter())->distinct('Statuspages.id');;
 
         $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
@@ -226,59 +187,64 @@ class StatuspagesTable extends Table
      * @param $id
      * @return array|void
      */
-    public function getStatuspageObjects($id)
-    {
+    public function getStatuspageObjects($id) {
 
         $conditions = array_merge(['Statuspages.id' => $id]);
 
-        $query = $this->find()
-            ->contain('Hosts', function (Query $q) {
-                return $q
-                    ->select(['id', 'uuid', 'name']);
-            })
-            ->contain('Services', function (Query $q) {
-                return $q
-                    ->select([
-                        'id',
-                        'uuid',
-                        'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
-                        'hostname'    => 'host.name'
+        $query = $this->find()->contain('Hosts', function (Query $q) {
+                return $q->select(['id', 'uuid', 'name']);
+            })->contain('Services', function (Query $q) {
+                return $q->select([
+                        'id', 'uuid', 'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'), 'hostname' => 'host.name'
 
                     ])->innerJoin(['host' => 'hosts'], [
                         'host.id = Services.host_id'
-                    ])
-                    ->innerJoin(['Servicetemplates' => 'servicetemplates'], [
+                    ])->innerJoin(['Servicetemplates' => 'servicetemplates'], [
                         'Servicetemplates.id = Services.servicetemplate_id'
                     ]);
-            })
-            ->contain('Hostgroups', function (Query $q) {
-                return $q
-                    ->select([
-                        'id',
-                        'uuid',
-                        'name' => 'Containers.name'
-                    ])
-                    ->innerJoin(['Containers' => 'containers'], [
-                        'Containers.id = Hostgroups.container_id',
-                        'Containers.containertype_id' => CT_HOSTGROUP
+            })->contain('Hostgroups', function (Query $q) {
+                return $q->select([
+                        'id', 'uuid', 'name' => 'Containers.name'
+                    ])->innerJoin(['Containers' => 'containers'], [
+                        'Containers.id = Hostgroups.container_id', 'Containers.containertype_id' => CT_HOSTGROUP
                     ]);
-            })
-            ->contain('Servicegroups', function (Query $q) {
-                return $q
-                    ->select([
-                        'id',
-                        'uuid',
-                        'name' => 'Containers.name'
-                    ])
-                    ->innerJoin(['Containers' => 'containers'], [
-                        'Containers.id = Servicegroups.container_id',
-                        'Containers.containertype_id' => CT_SERVICEGROUP
+            })->contain('Servicegroups', function (Query $q) {
+                return $q->select([
+                        'id', 'uuid', 'name' => 'Containers.name'
+                    ])->innerJoin(['Containers' => 'containers'], [
+                        'Containers.id = Servicegroups.container_id', 'Containers.containertype_id' => CT_SERVICEGROUP
                     ]);
-            })
-            ->where($conditions)
-            ->firstOrFail();
+            })->where($conditions)->firstOrFail();
         $statuspage = $query->toArray();
 
+        return $statuspage;
+    }
+
+    /**
+     * @param $id
+     * @return \App\Model\Entity\Statuspage|void
+     */
+    public function getEditData($id) {
+        $statuspage = $this->get($id, [
+            'contain' => [
+                'Containers', 'Hosts', 'Services', 'Hostgroups', 'Servicegroups'
+            ]
+        ]);
+        $statuspage['containers'] = [
+            '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
+        ];
+        $statuspage['hosts'] = [
+            '_ids' => Hash::extract($statuspage, 'hosts.{n}.id')
+        ];
+        $statuspage['hostgroups'] = [
+            '_ids' => Hash::extract($statuspage, 'hostgroups.{n}.id')
+        ];
+        $statuspage['services'] = [
+            '_ids' => Hash::extract($statuspage, 'services.{n}.id')
+        ];
+        $statuspage['servicegroups'] = [
+            '_ids' => Hash::extract($statuspage, 'servicegroups.{n}.id')
+        ];
         return $statuspage;
     }
 
@@ -288,8 +254,7 @@ class StatuspagesTable extends Table
      * @param bool $isPublicCall
      * @return array
      */
-    public function getStatuspageView($id, UserTime $UserTime, $isPublicCall = false)
-    {
+    public function getStatuspageView($id, UserTime $UserTime, $isPublicCall = false) {
 
         $allhosts = [];
         $allservices = [];
@@ -300,17 +265,9 @@ class StatuspagesTable extends Table
         $this->publicCall = $isPublicCall;
 
         $statuspageView = [
-            'statuspage'    => [
-                'name'         => $statuspage['name'],
-                'description'  => $statuspage['description'],
-                'public'       => $statuspage['public'],
-                'showComments' => $statuspage['show_comments'],
-                'background'   => 'bg-primary'
-            ],
-            'hosts'         => [],
-            'services'      => [],
-            'hostgroups'    => [],
-            'servicegroups' => []
+            'statuspage' => [
+                'name' => $statuspage['name'], 'description' => $statuspage['description'], 'public' => $statuspage['public'], 'showComments' => $statuspage['show_comments'], 'background' => 'bg-primary'
+            ], 'hosts'   => [], 'services' => [], 'hostgroups' => [], 'servicegroups' => []
         ];
 
         foreach ($statuspage as $key => $objectData) {
@@ -320,7 +277,7 @@ class StatuspagesTable extends Table
                 $HoststatusTable = $DbBackend->getHoststatusTable();
                 $AcknowledgementHostsTable = $DbBackend->getAcknowledgementHostsTable();
                 $DowntimehistoryHostsTable = $DbBackend->getDowntimehistoryHostsTable();
-                $ServicesTable = TableRegistry::getTableLocator()->get(alias: 'Services');
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
                 /** @var ServicesTable $ServicesTable */
                 $ServicestatusTable = $DbBackend->getServicestatusTable();
                 $hosts = $objectData;
@@ -423,15 +380,8 @@ class StatuspagesTable extends Table
                     }
                     $servicegroupViewData['name'] = ($servicegroup['_joinData']['display_alias'] !== null && $servicegroup['_joinData']['display_alias'] !== '') ? $servicegroup['_joinData']['display_alias'] : $servicegroup['name'];
                     $servicegroupProperties = $ServicegroupsTable->getServicegroupsByServicegroupForMaps($servicegroup['id']);
-                    $servicegroupProperties['services'] = array_merge(
-                        $servicegroupProperties['services'],
-                        Hash::extract($servicegroupProperties, 'servicetemplates.{n}.services.{n}')
-                    );
-                    $properties = $this->getServicegroupInformation(
-                        $ServicesTable,
-                        $ServicestatusTable,
-                        $servicegroupProperties
-                    );
+                    $servicegroupProperties['services'] = array_merge($servicegroupProperties['services'], Hash::extract($servicegroupProperties, 'servicetemplates.{n}.services.{n}'));
+                    $properties = $this->getServicegroupInformation($ServicesTable, $ServicestatusTable, $servicegroupProperties);
                     $servicegroupViewData = array_merge($servicegroupViewData, $properties);
                     $servicegroupViewData['currentState'] = $servicegroupViewData['cumulatedState'];
                     $servicegroupViewData['isAcknowledged'] = false;
@@ -458,15 +408,8 @@ class StatuspagesTable extends Table
                     }
                     $hostgroupViewData['name'] = ($hostgroup['_joinData']['display_alias'] !== null && $hostgroup['_joinData']['display_alias'] !== '') ? $hostgroup['_joinData']['display_alias'] : $hostgroup['name'];
                     $hostgroupProperties = $HostgroupsTable->getHostsByHostgroupForMaps($hostgroup['id']);
-                    $hostgroupProperties['hosts'] = array_merge(
-                        $hostgroupProperties['hosts'],
-                        Hash::extract($hostgroupProperties, 'hosttemplates.{n}.hosts.{n}')
-                    );
-                    $properties = $this->getHostgroupInformation(
-                        $ServicesTable,
-                        $hostgroupProperties,
-                        $HoststatusTable,
-                        $ServicestatusTable);
+                    $hostgroupProperties['hosts'] = array_merge($hostgroupProperties['hosts'], Hash::extract($hostgroupProperties, 'hosttemplates.{n}.hosts.{n}'));
+                    $properties = $this->getHostgroupInformation($ServicesTable, $hostgroupProperties, $HoststatusTable, $ServicestatusTable);
                     $hostgroupViewData = array_merge($hostgroupViewData, $properties);
                     $hostgroupViewData['currentState'] = $hostgroupViewData['cumulatedState'];
                     $hostgroupViewData['isAcknowledged'] = false;
@@ -492,8 +435,7 @@ class StatuspagesTable extends Table
      * @param Host $host
      * @return array
      */
-    private function getHostInformation(ServicesTable $Service, HoststatusTableInterface $Hoststatus, ServicestatusTableInterface $Servicestatus, Host $host): array
-    {
+    private function getHostInformation(ServicesTable $Service, HoststatusTableInterface $Hoststatus, ServicestatusTableInterface $Servicestatus, Host $host): array {
         $info = [];
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
@@ -527,9 +469,7 @@ class StatuspagesTable extends Table
                 $servicestatus = $Servicestatus->byUuid($serviceUuids, $ServicestatusFieds, $ServicestatusConditions);
             }
             if (!empty($servicestatus)) {
-                $worstServiceState = array_values(
-                    Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
-                );
+                $worstServiceState = array_values(Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc'));
                 $info['color'] = $this->getServiceStatusColor($worstServiceState[0]['Servicestatus']['current_state']);
                 $info['background'] = 'bg-' . $info['color'];
                 $info['cumulatedState'] = $worstServiceState[0]['Servicestatus']['current_state'];
@@ -542,7 +482,7 @@ class StatuspagesTable extends Table
                 }
                 $problemsAcknowledged = $problems - $problemsNotAcknowledged;
                 if ($problemsNotAcknowledged > 0) {
-                    $info['problemtext'] = "{$problemsAcknowledged} of {$problems} problems acknowledged";
+                    $info['problemtext'] = sprintf("%u of %u problems acknowledged",$problemsAcknowledged,$problems);
                     $info['problemtextValues'] = ['problems' => $problems, 'acknowledged' => $problemsAcknowledged];
                 }
             }
@@ -555,8 +495,7 @@ class StatuspagesTable extends Table
      * @param ServicestatusTableInterface $Servicestatus
      * @return array
      */
-    private function getServiceInformation(ServicestatusTableInterface $Servicestatus, Service $service, $includeServiceOutput = false)
-    {
+    private function getServiceInformation(ServicestatusTableInterface $Servicestatus, Service $service, $includeServiceOutput = false) {
         $ServicestatusFields = new ServicestatusFields(new DbBackend());
         $ServicestatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
         $serviceArray = $service->toArray();
@@ -564,12 +503,7 @@ class StatuspagesTable extends Table
         $servicestatus = new Servicestatus($servicestatus['Servicestatus']);
         $tmpServicestatus = $servicestatus->toArray();
         return [
-            'currentState'   => $tmpServicestatus['currentState'],
-            'cumulatedState' => $tmpServicestatus['currentState'],
-            'isAcknowledged' => $servicestatus->isAcknowledged(),
-            'isInDowntime'   => $servicestatus->isInDowntime(),
-            'color'          => $servicestatus->ServiceStatusColor(),
-            'background'     => $servicestatus->ServiceStatusBackgroundColor(),
+            'currentState' => $tmpServicestatus['currentState'], 'cumulatedState' => $tmpServicestatus['currentState'], 'isAcknowledged' => $servicestatus->isAcknowledged(), 'isInDowntime' => $servicestatus->isInDowntime(), 'color' => $servicestatus->ServiceStatusColor(), 'background' => $servicestatus->ServiceStatusBackgroundColor(),
         ];
     }
 
@@ -579,8 +513,7 @@ class StatuspagesTable extends Table
     * @param array $servicegroup
     * @return array
     */
-    private function getServicegroupInformation(ServicesTable $Service, ServicestatusTableInterface $Servicestatus, $servicegroup = [])
-    {
+    private function getServicegroupInformation(ServicesTable $Service, ServicestatusTableInterface $Servicestatus, $servicegroup = []) {
         $info = [];
         $info['color'] = $this->getServiceStatusColor(0);
         $info['background'] = 'bg-' . $info['color'];
@@ -597,9 +530,7 @@ class StatuspagesTable extends Table
             $servicestatusProblems = $Servicestatus->byUuid($serviceUuids, $ServicestatusFieds, $ServicestatusConditions);
         }
         if (!empty($servicestatusProblems)) {
-            $worstServiceState = array_values(
-                Hash::sort($servicestatusProblems, '{s}.Servicestatus.current_state', 'desc')
-            );
+            $worstServiceState = array_values(Hash::sort($servicestatusProblems, '{s}.Servicestatus.current_state', 'desc'));
             $servicestatus = new Servicestatus($worstServiceState[0]['Servicestatus']);
             $info['color'] = $servicestatus->ServiceStatusColor();
             $info['background'] = 'bg-' . $info['color'];
@@ -617,12 +548,12 @@ class StatuspagesTable extends Table
             }
             $problemsAcknowledged = $problems - $problemsNotAcknowledged;
             if ($problemsNotAcknowledged > 0) {
-                $info['problemtext'] = "{$problemsAcknowledged} of {$problems} problems acknowledged";
+                $info['problemtext'] = sprintf("%u of %u problems acknowledged",$problemsAcknowledged,$problems);
                 $info['problemtextValues'] = ['problems' => $problems, 'acknowledged' => $problemsAcknowledged];
 
             }
             if ($problemsInDowntime > 0) {
-                $info['problemtext_down'] = "{$problemsInDowntime} of {$problems} problems currently in a planned maintenance period";
+                $info['problemtext_down'] = sprintf("%u of %u problems currently in a planned maintenance period",$problemsInDowntime,$problems);
                 $info['problemtextDownValues'] = ['problems' => $problems, 'downs' => $problemsInDowntime];
             }
         }
@@ -636,8 +567,7 @@ class StatuspagesTable extends Table
     * @param ServicestatusTableInterface $ServicestatusTable
     * @return array
     */
-    private function getHostgroupInformation(ServicesTable $Service, array $hostgroup, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable)
-    {
+    private function getHostgroupInformation(ServicesTable $Service, array $hostgroup, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable) {
         $info = [];
         $HoststatusFields = new HoststatusFields(new DbBackend());
         $HoststatusFields->currentState()->scheduledDowntimeDepth()->problemHasBeenAcknowledged();
@@ -646,9 +576,7 @@ class StatuspagesTable extends Table
         $HoststatusConditions->hostsDownAndUnreachable();
         $hoststatusProblems = $HoststatusTable->byUuid($hostUuids, $HoststatusFields, $HoststatusConditions);
         if (!empty($hoststatusProblems)) {
-            $worstHostState = array_values(
-                Hash::sort($hoststatusProblems, '{s}.Hoststatus.current_state', 'desc')
-            );
+            $worstHostState = array_values(Hash::sort($hoststatusProblems, '{s}.Hoststatus.current_state', 'desc'));
             $info['cumulatedState'] = $worstHostState[0]['Hoststatus']['current_state'] + 1;
             $info['color'] = $this->getServiceStatusColor($info['cumulatedState']);
             $info['background'] = 'bg-' . $info['color'];
@@ -664,11 +592,11 @@ class StatuspagesTable extends Table
                 }
                 $problemsAcknowledged = $hostProblems - $hostProblemsNotAcknowledged;
                 if ($hostProblemsNotAcknowledged > 0) {
-                    $info['problemtext'] = "{$problemsAcknowledged} of {$hostProblems} problems acknowledged";
+                    $info['problemtext'] = sprintf("%u of %u problems acknowledged", $problemsAcknowledged, $hostProblems);
                     $info['problemtextValues'] = ['problems' => $hostProblems, 'acknowledged' => $problemsAcknowledged];
                 }
                 if ($hostProblemsInDowntime > 0) {
-                    $info['problemtext_down'] = "{$hostProblemsInDowntime} of {$hostProblems} problems currently in a planned maintenance period";
+                    $info['problemtext_down'] = sprintf("%u of %u problems currently in a planned maintenance period", $hostProblemsInDowntime, $hostProblems);
                     $info['problemtextDownValues'] = ['problems' => $hostProblems, 'downs' => $hostProblemsInDowntime];
                 }
             }
@@ -688,9 +616,7 @@ class StatuspagesTable extends Table
         }
 
         if (!empty($servicestatus)) {
-            $worstServiceState = array_values(
-                Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc')
-            );
+            $worstServiceState = array_values(Hash::sort($servicestatus, '{s}.Servicestatus.current_state', 'desc'));
             $info['cumulatedState'] = $worstServiceState[0]['Servicestatus']['current_state'];
             $info['color'] = $this->getServiceStatusColor($info['cumulatedState']);
             $info['background'] = 'bg-' . $info['color'];
@@ -707,11 +633,11 @@ class StatuspagesTable extends Table
             }
             $problemsAcknowledged = $serviceProblems - $problemsNotAcknowledged;
             if ($problemsNotAcknowledged > 0) {
-                $info['problemtext'] = "{$problemsAcknowledged} of {$serviceProblems}  problems acknowledged";
+                $info['problemtext'] = sprintf("%u of %u problems acknowledged", $problemsAcknowledged, $serviceProblems);
                 $info['problemtextValues'] = ['problems' => $serviceProblems, 'acknowledged' => $problemsAcknowledged];
             }
             if ($problemsInDowntime > 0) {
-                $info['problemtext_down'] = "{$problemsInDowntime} of {$serviceProblems} problems currently in a planned maintenance period";
+                $info['problemtext_down'] = sprintf("%u of %u problems currently in a planned maintenance period", $problemsInDowntime, $serviceProblems);
                 $info['problemtextDownValues'] = ['problems' => $serviceProblems, 'downs' => $problemsInDowntime];
             }
         }
@@ -722,8 +648,7 @@ class StatuspagesTable extends Table
      * @param int $id
      * @return bool
      */
-    public function existsById($id)
-    {
+    public function existsById($id) {
         return $this->exists(['Statuspages.id' => $id]);
     }
 
@@ -731,11 +656,9 @@ class StatuspagesTable extends Table
      * @param int $id
      * @return bool
      */
-    public function isPublic($id)
-    {
+    public function isPublic($id) {
         $conditions = ['Statuspages.id' => $id, 'Statuspages.public' => 1];
-        $query = $this->find()->where($conditions)
-            ->first();
+        $query = $this->find()->where($conditions)->first();
         if (empty($query)) {
             return false;
         }
@@ -746,8 +669,7 @@ class StatuspagesTable extends Table
      * @param int $id |null
      * @return bool
      */
-    private function getServiceStatusColor($state = null)
-    {
+    private function getServiceStatusColor($state = null) {
         if ($state === null) {
             return 'text-primary';
         }
@@ -772,8 +694,7 @@ class StatuspagesTable extends Table
      * @param DowntimehistoryServicesTableInterface $table
      * @return array
      */
-    private function getServiceDowntime($uuid, DowntimehistoryServicesTableInterface $table, $userTime, $isRunning = true)
-    {
+    private function getServiceDowntime($uuid, DowntimehistoryServicesTableInterface $table, $userTime, $isRunning = true) {
         $downtime = $table->byServiceUuid($uuid, $isRunning);
         $downtime = new Downtime($downtime->toArray(), true, $userTime);
         $downtime = $downtime->toArray();
@@ -782,9 +703,7 @@ class StatuspagesTable extends Table
             $comment = $downtime['commentData'];
         }
         return [
-            'scheduledStartTime' => $downtime['scheduledStartTime'],
-            'scheduledEndTime'   => $downtime['scheduledEndTime'],
-            'commentData'        => $comment
+            'scheduledStartTime' => $downtime['scheduledStartTime'], 'scheduledEndTime' => $downtime['scheduledEndTime'], 'commentData' => $comment
         ];
     }
 
@@ -794,8 +713,7 @@ class StatuspagesTable extends Table
      * @param $userTime
      * $return array
      */
-    private function getHostDowntime($uuid, DowntimehistoryHostsTableInterface $table, $userTime, $isRunning = true)
-    {
+    private function getHostDowntime($uuid, DowntimehistoryHostsTableInterface $table, $userTime, $isRunning = true) {
         $downtime = $table->byHostUuid($uuid, $isRunning);
         $downtime = new Downtime($downtime->toArray(), true, $userTime);
         $downtime = $downtime->toArray();
@@ -804,9 +722,7 @@ class StatuspagesTable extends Table
             $comment = $downtime['commentData'];
         }
         return [
-            'scheduledStartTime' => $downtime['scheduledStartTime'],
-            'scheduledEndTime'   => $downtime['scheduledEndTime'],
-            'commentData'        => $comment
+            'scheduledStartTime' => $downtime['scheduledStartTime'], 'scheduledEndTime' => $downtime['scheduledEndTime'], 'commentData' => $comment
         ];
     }
 
@@ -816,17 +732,14 @@ class StatuspagesTable extends Table
      * @param $usertime
      * $return array
      */
-    private function getPlannedHostDowntimes($uuid, DowntimehistoryHostsTableInterface $table, $userTime)
-    {
+    private function getPlannedHostDowntimes($uuid, DowntimehistoryHostsTableInterface $table, $userTime) {
         $planned = [];
         $DowntimeHostConditions = new DowntimeHostConditions();
         $DowntimeHostConditions->setFrom(time());
         $DowntimeHostConditions->setTo(time() + (3600 * 24 * 10));
         $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => "asc"]);
         $DowntimeHostConditions->setConditions([
-            'DowntimeHosts.hostname IN'   => [$uuid],
-            'DowntimeHosts.was_started'   => 0,
-            'DowntimeHosts.was_cancelled' => 0
+            'DowntimeHosts.hostname IN' => [$uuid], 'DowntimeHosts.was_started' => 0, 'DowntimeHosts.was_cancelled' => 0
         ]);
         $hostDowntimes = $table->getDowntimes($DowntimeHostConditions);
         if (!empty($hostDowntimes)) {
@@ -838,9 +751,7 @@ class StatuspagesTable extends Table
                     $comment = $downtimeArray['commentData'];
                 }
                 $planned[] = [
-                    'scheduledStartTime' => $downtimeArray['scheduledStartTime'],
-                    'scheduledEndTime'   => $downtimeArray['scheduledEndTime'],
-                    'commentData'        => $comment
+                    'scheduledStartTime' => $downtimeArray['scheduledStartTime'], 'scheduledEndTime' => $downtimeArray['scheduledEndTime'], 'commentData' => $comment
                 ];
             }
         }
@@ -853,17 +764,14 @@ class StatuspagesTable extends Table
      * @param $usertime
      * $return array
      */
-    private function getPlannedServiceDowntimes($uuid, DowntimehistoryServicesTableInterface $table, $userTime)
-    {
+    private function getPlannedServiceDowntimes($uuid, DowntimehistoryServicesTableInterface $table, $userTime) {
         $planned = [];
         $DowntimeServiceConditions = new DowntimeServiceConditions();
         $DowntimeServiceConditions->setFrom(time());
         $DowntimeServiceConditions->setTo(time() + (3600 * 24 * 10));
         $DowntimeServiceConditions->setOrder(['DowntimeServices.scheduled_start_time' => "asc"]);
         $DowntimeServiceConditions->setConditions([
-            'DowntimeServices.service_description IN' => [$uuid],
-            'DowntimeServices.was_started'            => 0,
-            'DowntimeServices.was_cancelled'          => 0
+            'DowntimeServices.service_description IN' => [$uuid], 'DowntimeServices.was_started' => 0, 'DowntimeServices.was_cancelled' => 0
         ]);
         $serviceDowntimes = $table->getDowntimes($DowntimeServiceConditions);
         if (!empty($serviceDowntimes)) {
@@ -875,9 +783,7 @@ class StatuspagesTable extends Table
                     $comment = $downtimeArray['commentData'];
                 }
                 $planned[] = [
-                    'scheduledStartTime' => $downtimeArray['scheduledStartTime'],
-                    'scheduledEndTime'   => $downtimeArray['scheduledEndTime'],
-                    'commentData'        => $comment
+                    'scheduledStartTime' => $downtimeArray['scheduledStartTime'], 'scheduledEndTime' => $downtimeArray['scheduledEndTime'], 'commentData' => $comment
                 ];
             }
         }

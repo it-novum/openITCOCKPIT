@@ -31,7 +31,6 @@ use App\Model\Table\ContainersTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -39,7 +38,6 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Model\Table\StatuspagesTable;
 use Cake\Event\EventInterface;
-use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 /**
  * Statuspages Controller
@@ -82,8 +80,13 @@ class StatuspagesController extends AppController {
             }
             if ($withState) {
                 $statuspageViewData = $StatuspagesTable->getStatuspageView($statuspage['id'], $UserTime);
-                $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['items'][0]['cumulatedState'];
-                $all_statuspages[$key]['color'] = "bg-{$statuspageViewData['items'][0]['color']}";
+                if (count($statuspageViewData['items']) > 0) {
+                    $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['items'][0]['cumulatedState'];
+                    $all_statuspages[$key]['color'] = "bg-{$statuspageViewData['items'][0]['color']}";
+                } else {
+                    $all_statuspages[$key]['cumulatedState'] = 1;
+                    $all_statuspages[$key]['color'] = "bg-primary";
+                }
             }
             $all_statuspages[$key]['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {
@@ -92,7 +95,6 @@ class StatuspagesController extends AppController {
                     $all_statuspages[$key]['allow_edit'] = true;
                 }
             }
-
         }
 
         $this->set('all_statuspages', $all_statuspages);
@@ -112,12 +114,10 @@ class StatuspagesController extends AppController {
             return;
         }
 
-        $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
-        //$UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
         $statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime);
@@ -126,7 +126,7 @@ class StatuspagesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
-    public function public($id = null) {
+    public function publicView($id = null) {
         if (empty($id)) {
             throw new NotFoundException('Statuspage not found');
         }
@@ -140,8 +140,6 @@ class StatuspagesController extends AppController {
         $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime, true);
-
-        $system = $this->getSystem();
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
@@ -170,7 +168,7 @@ class StatuspagesController extends AppController {
                 return;
             } else {
                 if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($statuspage); // REST API ID serialization
+                    $this->serializeCake4Id($statuspage);
                     return;
                 }
 
@@ -199,37 +197,13 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
 
-        $statuspage = $StatuspagesTable->get($id, [
-            'contain' => [
-                'Containers',
-                'Hosts',
-                'Services',
-                'Hostgroups',
-                'Servicegroups'
-            ]
-        ]);
+        $statuspage = $this->Statuspages->getEditData($id);
 
 
-        $statuspage['containers'] = [
-            '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
-        ];
-
-        $statuspage['hosts'] = [
-            '_ids' => Hash::extract($statuspage, 'hosts.{n}.id')
-        ];
-
-        $statuspage['hostgroups'] = [
-            '_ids' => Hash::extract($statuspage, 'hostgroups.{n}.id')
-        ];
-
-        $statuspage['services'] = [
-            '_ids' => Hash::extract($statuspage, 'services.{n}.id')
-        ];
-
-        $statuspage['servicegroups'] = [
-            '_ids' => Hash::extract($statuspage, 'servicegroups.{n}.id')
-        ];
-
+        if (!$this->isWritableContainer($statuspage['containers']['_ids'][0])) {
+            $this->render403();
+            return;
+        }
 
         if ($this->request->is('post')) {
             $statuspageData = $this->request->getData();
@@ -261,8 +235,24 @@ class StatuspagesController extends AppController {
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
     public function delete($id = null) {
-        $this->request->allowMethod(['post', 'delete']);
-        $statuspage = $this->Statuspages->get($id);
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+        if (!$this->Statuspages->existsById($id)) {
+            throw new NotFoundException('Statuspage not found');
+        }
+
+        $statuspage = $this->Statuspages->get($id, [
+            'contain' => [
+                'Containers'
+            ]
+        ]);
+
+
+        if (!$this->isWritableContainer($statuspage['containers'][0]['id'])) {
+            $this->render403();
+            return;
+        }
 
         if ($this->Statuspages->delete($statuspage)) {
             $this->set('success', true);
@@ -293,8 +283,6 @@ class StatuspagesController extends AppController {
             $containers = $ContainersTable->easyPath($this->getWriteContainers(), CT_TENANT, [], true);
         }
         $containers = Api::makeItJavaScriptAble($containers);
-
-
         $this->set('containers', $containers);
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
@@ -323,13 +311,14 @@ class StatuspagesController extends AppController {
         if ($this->request->is('post')) {
             $statuspage = $StatuspagesTable->get($id, [
                 'contain' => [
-                    'Containers',
-                    'Hosts',
-                    'Services',
-                    'Hostgroups',
-                    'Servicegroups'
+                    'Containers', 'Hosts', 'Services', 'Hostgroups', 'Servicegroups'
                 ]
             ]);
+            if (!$this->isWritableContainer($statuspage['containers'][0]['id'])) {
+                $this->render403();
+                return;
+            }
+
             $statuspageData = $this->request->getData()['Statuspage'];
             $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData, [
                 'validate' => 'alias'
@@ -353,10 +342,4 @@ class StatuspagesController extends AppController {
 
     }
 
-    private function getSystem() {
-        $systemname = $this->getSystemname();
-        $logo = new Logo();
-        $logo = $logo->getHeaderLogoForHtml();
-        return ['system' => $systemname, 'logo' => $logo];
-    }
 }
