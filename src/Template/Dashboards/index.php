@@ -200,7 +200,8 @@
                                      style="width:100%;" id="widget-{{widget.id}}">
                                     <div role="heading"
                                          class="ui-sortable-handle card-header d-flex"
-                                         style="cursor: move;">
+                                         style="cursor: move;"
+                                         ng-style="{'cursor': widget.isReadonly || dashboardIsLocked ? '' : 'move'}">
                                         <div class="card-title mr-auto padding-top-0_2-rem">
                                             <i class="{{widget.icon}}"></i>
                                             {{widget.title}}
