@@ -39,12 +39,12 @@ angular.module('openITCOCKPIT')
                 'angular': true
             };
 
-           /* $http.get("/containers/loadContainersForAngular.json", {
-                params: params
-            }).then(function(result){
-                $scope.containers = result.data.containers;
-                $scope.init = false;
-            }); */
+            /* $http.get("/containers/loadContainersForAngular.json", {
+                 params: params
+             }).then(function(result){
+                 $scope.containers = result.data.containers;
+                 $scope.init = false;
+             }); */
             $http.get("/statuspages/loadContainers.json", {
                 params: params
             }).then(function(result){
@@ -142,7 +142,7 @@ angular.module('openITCOCKPIT')
                 });
 
                 $state.go('StatuspagesIndex').then(function(){
-                   // NotyService.scrollTop();
+                    // NotyService.scrollTop();
                 });
 
             }, function errorCallback(result){
@@ -173,12 +173,12 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-                $scope.post.Statuspage.containers._ids = [],
+            $scope.post.Statuspage.containers._ids = [],
                 $scope.post.Statuspage.containers._ids.push($scope.container_id);
-                $scope.loadHosts('');
-                $scope.loadServices('');
-                $scope.loadHostgroups('');
-                $scope.loadServicegroups('');
+            $scope.loadHosts('');
+            $scope.loadServices('');
+            $scope.loadHostgroups('');
+            $scope.loadServicegroups('');
 
 
         }, true);

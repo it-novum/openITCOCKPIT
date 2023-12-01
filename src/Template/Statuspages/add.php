@@ -48,7 +48,8 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex' class="btn btn-default btn-xs mr-1 shadow-0">
+                        <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -63,12 +64,12 @@
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                id="ContainersSelect"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-options="container.key as container.value for container in containers"
-                                ng-model="container_id">
+                                    id="ContainersSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="container_id">
                             </select>
                             <div ng-show="post.Statuspage.containers._ids.length === 0" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
@@ -83,9 +84,9 @@
                                 <?php echo __('Name'); ?>
                             </label>
                             <input
-                                class="form-control"
-                                type="text"
-                                ng-model="post.Statuspage.name">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Statuspage.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -96,9 +97,9 @@
                                 <?php echo __('Description'); ?>
                             </label>
                             <input
-                                class="form-control"
-                                type="text"
-                                ng-model="post.Statuspage.description">
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Statuspage.description">
                             <div ng-repeat="error in errors.description">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -143,7 +144,7 @@
                                 <?php echo __('Host groups'); ?>
                             </label>
                             <!--<div class="input-group" style="width: 100%;">-->
-                                <select
+                            <select
                                     id="HostgroupsSelect"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
@@ -151,7 +152,7 @@
                                     multiple
                                     ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
                                     ng-model="hostgroups_ids">
-                                </select>
+                            </select>
                             <!--</div>-->
                             <div ng-repeat="error in errors.hostgroups">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -175,9 +176,9 @@
                                     <td class="col-5">{{hostgroup.name}}</td>
                                     <td class="col-7">
                                         <input
-                                            class="form-control"
-                                            type="text"
-                                            ng-model="hostgroup.display_alias">
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="hostgroup.display_alias">
                                     </td>
                                 </tr>
                                 </tbody>
@@ -194,13 +195,13 @@
                             </label>
                             <div class="input-group" style="width: 100%;">
                                 <select
-                                    id="ServicegroupsSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="servicegroups"
-                                    multiple
-                                    ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
-                                    ng-model="servicegroups_ids">
+                                        id="ServicegroupsSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="servicegroups"
+                                        multiple
+                                        ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
+                                        ng-model="servicegroups_ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.servicegroups">
@@ -225,9 +226,9 @@
                                     <td class="col-5">{{servicegroup.name}}</td>
                                     <td class="col-7">
                                         <input
-                                            class="form-control"
-                                            type="text"
-                                            ng-model="servicegroup.display_alias">
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="servicegroup.display_alias">
                                     </td>
                                 </tr>
                                 </tbody>
@@ -244,13 +245,13 @@
                             </label>
                             <div class="input-group" style="width: 100%;">
                                 <select
-                                    id="HostsSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="hosts"
-                                    multiple
-                                    ng-options="host.key as host.value for host in hosts"
-                                    ng-model="hosts_ids">
+                                        id="HostsSelect"
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="hosts"
+                                        multiple
+                                        ng-options="host.key as host.value for host in hosts"
+                                        ng-model="hosts_ids">
                                 </select>
                             </div>
                             <div ng-repeat="error in errors.hosts">
