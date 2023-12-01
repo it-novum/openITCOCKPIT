@@ -223,7 +223,6 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('services_ids', function() {
-            console.log($scope.services_ids)
             if ($scope.services_ids.length > 0) {
                 let filter = [];
                 for (let index in $scope.services_ids) {
@@ -261,7 +260,6 @@ angular.module('openITCOCKPIT')
         }, true);
 
         $scope.$watch('servicegroups_ids', function() {
-            //console.log($scope.servicegroups_ids);
             if ($scope.servicegroups_ids.length > 0) {
                 let filter = [];
                 for (let index in $scope.servicegroups_ids) {

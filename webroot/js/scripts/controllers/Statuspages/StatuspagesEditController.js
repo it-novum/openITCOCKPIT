@@ -16,7 +16,6 @@ angular.module('openITCOCKPIT')
             $http.get("/statuspages/edit/" + $scope.id + ".json", {
                 params: params
             }).then(function(result){
-                console.log(result.data.Statuspage);
                 $scope.post.Statuspage = result.data.Statuspage;
                 $scope.post.Statuspage.public = +result.data.Statuspage.public;
                 $scope.post.Statuspage.show_comments = +result.data.Statuspage.show_comments;

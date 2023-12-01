@@ -197,7 +197,7 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
 
-        $statuspage = $this->Statuspages->getEditData($id);
+        $statuspage = $StatuspagesTable->getEditData($id);
 
 
         if (!$this->isWritableContainer($statuspage['containers']['_ids'][0])) {
@@ -238,11 +238,12 @@ class StatuspagesController extends AppController {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Statuspages->existsById($id)) {
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
 
-        $statuspage = $this->Statuspages->get($id, [
+        $statuspage = $StatuspagesTable->get($id, [
             'contain' => [
                 'Containers'
             ]
@@ -254,7 +255,7 @@ class StatuspagesController extends AppController {
             return;
         }
 
-        if ($this->Statuspages->delete($statuspage)) {
+        if ($StatuspagesTable->delete($statuspage)) {
             $this->set('success', true);
             $this->set('id', $id);
             $this->viewBuilder()->setOption('serialize', ['success', 'id']);
