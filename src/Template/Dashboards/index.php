@@ -108,13 +108,15 @@
                                             <?php echo __('Stop sharing'); ?>
                                         </a>
                                     </li>
-                                    <li>
-                                        <a href="javascript:void(0);" class="dropdown-item"
-                                           ng-click="allocateDashboard(tab.id)">
-                                            <i class="fa fa-user"></i>
-                                            <?php echo __('Allocate Dashboard'); ?>
-                                        </a>
-                                    </li>
+                                    <?php if ($this->Acl->hasPermission('allocate', 'dashboards')) { ?>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item"
+                                               ng-click="allocateDashboard(tab.id)">
+                                                <i class="fa fa-user"></i>
+                                                <?php echo __('Allocate Dashboard'); ?>
+                                            </a>
+                                        </li>
+                                    <?php } ?>
                                     <div class="dropdown-divider"></div>
                                     <li>
                                         <a href="javascript:void(0);" class="dropdown-item txt-color-red"

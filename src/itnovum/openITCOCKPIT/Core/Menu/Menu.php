@@ -459,7 +459,7 @@ class Menu {
                 ))
                 ->addLink(new MenuLink(
                     __('Dashboard Allocation'),
-                    'UserDashboards',
+                    'DashboardAllocation',
                     'dashboards',
                     'allocationManager',
                     '',
