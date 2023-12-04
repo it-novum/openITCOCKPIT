@@ -221,7 +221,6 @@
                             <label class="control-label">
                                 <?php echo __('Services'); ?>
                             </label>
-                            <div class="input-group" style="width: 100%;">
                                 <select
                                         id="ServicesSelect"
                                         data-placeholder="<?php echo __('Please choose'); ?>"
@@ -232,7 +231,6 @@
                                         ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
                                         ng-model="post.Statuspage.services._ids">
                                 </select>
-                            </div>
                             <div ng-repeat="error in errors.services">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>

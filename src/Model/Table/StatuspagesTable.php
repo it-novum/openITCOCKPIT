@@ -470,11 +470,14 @@ class StatuspagesTable extends Table {
         $info['background'] = 'bg-' . $info['color'];
         $info['isAcknowledged'] = $hoststatus->isAcknowledged();
         $info['isInDowntime'] = $hoststatus->isInDowntime();
-        if ($info['currentState'] == 1) {
+        /* if ($info['currentState'] == 1) {
             $info['cumulatedState'] = 2;
         }
         if ($info['currentState'] == 2) {
             $info['cumulatedState'] = 3;
+        } */
+        if(in_array($info['currentState'], [1,2], true)){
+            $info['cumulatedState'] = $info['currentState'] + 1;
         }
         if ($info['currentState'] == 0) {
             $services = $Service->getActiveServicesByHostId($host->get('id'), false);
