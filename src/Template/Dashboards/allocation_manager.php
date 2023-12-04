@@ -1,0 +1,242 @@
+<?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//	This program is free software: you can redistribute it and/or modify
+//	it under the terms of the GNU General Public License as published by
+//	the Free Software Foundation, version 3 of the License.
+//
+//	This program is distributed in the hope that it will be useful,
+//	but WITHOUT ANY WARRANTY; without even the implied warranty of
+//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//	GNU General Public License for more details.
+//
+//	You should have received a copy of the GNU General Public License
+//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+
+// 2.
+//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//	License agreement and license key will be shipped with the order
+//	confirmation.
+
+?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="UsersIndex">
+            <i class="fa fa-table"></i> <?php echo __('Users'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-table"></i> <?php echo __('Dashboard Allocation'); ?>
+    </li>
+</ol>
+
+<div class="row">
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <?php echo __('Dashboards'); ?>
+                    <span class="fw-300"><i><?php echo __('Allocation'); ?></i></span>
+                </h2>
+                <div class="panel-toolbar">
+                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                        <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
+                    </button>
+                    <?php if ($this->Acl->hasPermission('add', 'users')): ?>
+                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="UsersAdd">
+                            <i class="fas fa-plus"></i> <?php echo __('New local user'); ?>
+                        </button>
+                    <?php endif; ?>
+
+                    <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
+                        <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
+                    </button>
+                </div>
+            </div>
+            <div class="panel-container show">
+                <div class="panel-content">
+
+                    <!-- Start Filter -->
+                    <div class="list-filter card margin-bottom-10" ng-show="showFilter">
+                        <div class="card-header">
+                            <i class="fa fa-filter"></i> <?php echo __('Filter'); ?>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by full name'); ?>"
+                                                   ng-model="filter.full_name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by email'); ?>"
+                                                   ng-model="filter.Users.email"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-phone"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by phone'); ?>"
+                                                   ng-model="filter.Users.phone"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-building"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by company'); ?>"
+                                                   ng-model="filter.Users.company"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xs-12 col-md-12 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group input-group-sm">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-users"></i></span>
+                                            </div>
+                                            <select
+                                                    id="UserRoles"
+                                                    data-placeholder="<?php echo __('Filter by user role'); ?>"
+                                                    class="form-control"
+                                                    chosen="usergroups"
+                                                    multiple
+                                                    ng-model="filter.Users.usergroup_id"
+                                                    ng-options="usergroup.key as usergroup.value for usergroup in usergroups">
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="float-right">
+                                <button type="button" ng-click="resetFilter()"
+                                        class="btn btn-xs btn-danger">
+                                    <?php echo __('Reset Filter'); ?>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Filter End -->
+
+                    <div class="frame-wrap">
+                        <table class="table table-striped m-0 table-bordered table-hover table-sm">
+                            <thead>
+                                <tr>
+                                    <th class="no-sort width-15">
+                                        <i class="fa fa-check-square"></i>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('name')">
+                                        <i class="fa" ng-class="getSortClass('name')"></i>
+                                        <?php echo __('Name'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('usergroups')">
+                                        <i class="fa" ng-class="getSortClass('usergroups')"></i>
+                                        <?php echo __('Usergroups'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Users')">
+                                        <i class="fa" ng-class="getSortClass('Users')"></i>
+                                        <?php echo __('Users'); ?>
+                                    </th>
+                                    <th class="no-sort" ng-click="orderBy('Pinned')">
+                                        <i class="fa" ng-class="getSortClass('Pinned')"></i>
+                                        <?php echo __('Pinned'); ?>
+                                    </th>
+                                    <th class="no-sort text-center">
+                                        <i class="fa fa-cog"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="dashboardTab in dashboardTabs">
+                                    <td class="text-center" class="width-15">
+                                        <input type="checkbox"
+                                               ng-model="massChange[dashboardTab.id]">
+                                    </td>
+                                    <td>{{dashboardTab.name}}</td>
+                                    <td>{{dashboardTab.usergroups_count}}</td>
+                                    <td>{{dashboardTab.allocated_users_count}}</td>
+                                    <td>
+                                        <i class="fa fa-lock" ng-show="dashboardTab.locked"></i>
+                                    </td>
+                                    <td>
+                                        ⚙
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="margin-top-10" ng-show="dashboardTabs.length == 0">
+                            <div class="text-center text-danger italic">
+                                <?php echo __('No entries match the selection'); ?>
+                            </div>
+                        </div>
+                        <div class="row margin-top-10 margin-bottom-10">
+                            <div class="col-xs-12 col-md-2 text-muted text-center">
+                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="selectAll()" class="pointer">
+                                    <i class="fas fa-lg fa-check-square"></i>
+                                    <?php echo __('Select all'); ?>
+                                </span>
+                            </div>
+                            <div class="col-xs-12 col-md-2">
+                                <span ng-click="undoSelection()" class="pointer">
+                                    <i class="fas fa-lg fa-square"></i>
+                                    <?php echo __('Undo selection'); ?>
+                                </span>
+                            </div>
+                            <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
+                                <div class="col-xs-12 col-md-2 txt-color-red">
+                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                        <i class="fas fa-trash"></i>
+                                        <?php echo __('Delete selected'); ?>
+                                    </span>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
+                        <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
+                        <?php echo $this->element('paginator_or_scroll'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

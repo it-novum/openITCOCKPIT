@@ -1075,6 +1075,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "UsersIndexController"
             })
 
+            .state('UserDashboards', {
+                url: '/dashboards/allocationManager',
+                templateUrl: "/dashboards/allocationManager.html",
+                controller: "DashboardsAllocationManager"
+            })
+
             .state('UsersAdd', {
                 url: '/users/add',
                 templateUrl: "/users/add.html",

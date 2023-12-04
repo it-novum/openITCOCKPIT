@@ -2018,6 +2018,41 @@ class DashboardsController extends AppController {
 
         // Save
         $DashboardTabsTable->save($Entity);
+    }
+
+    /**
+     * I will solely provide the list of dashboards on the instance including the allocated users and usergroups.^
+     * @return void
+     */
+    public function allocationManager(): void {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        // Fetch them all (not allocated ones, tho...)
+        $dashboardTabs = $DashboardTabsTable->find()
+            ->where(['source_tab_id IS' => null])
+            ->contain('Usergroups')
+            ->contain('AllocatedUsers')
+            ->disableHydration()
+            ->toArray();
+
+        // Clean up the mess surrounding the allocation info.
+        foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
+            // Condense the users
+            $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
+            $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
+            // Condense the usergroups
+            $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
+            $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+        }
+
+        $this->set('dashboardTabs', $dashboardTabs);
+        $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
 
     }
 }
