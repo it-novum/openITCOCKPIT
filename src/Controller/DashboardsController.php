@@ -2044,14 +2044,17 @@ class DashboardsController extends AppController {
         // Clean up the mess surrounding the allocation info.
         foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
             // Condense the users
+            $dashboardTabs[$dashboardTabIndex]['allocated_users_names'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.firstname');
             $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
             $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
             // Condense the usergroups
+            $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
             $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
             $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
         }
 
         $this->set('dashboardTabs', $dashboardTabs);
         $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
+
     }
 }

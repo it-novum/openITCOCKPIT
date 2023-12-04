@@ -88,8 +88,15 @@ angular.module('openITCOCKPIT')
         // I will store the allocation details.
         $scope.saveAllocation = function () {
             $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function (result) {
+                // Yes it worked.
                 $scope.errors = {};
                 genericSuccess();
+
+                // Reload table.
+                $scope.load();
+
+                // Hide the form.
+                $('#allocateDashboardModal').modal('hide');
             }, function errorCallback(result) {
                 $scope.errors = result.data.error;
                 genericError();

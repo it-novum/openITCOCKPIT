@@ -52,11 +52,6 @@
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
-                    <?php if ($this->Acl->hasPermission('add', 'users')): ?>
-                        <button class="btn btn-xs btn-success mr-1 shadow-0" ui-sref="UsersAdd">
-                            <i class="fas fa-plus"></i> <?php echo __('New local user'); ?>
-                        </button>
-                    <?php endif; ?>
 
                     <button class="btn btn-xs btn-primary shadow-0" ng-click="triggerFilter()">
                         <i class="fas fa-filter"></i> <?php echo __('Filter'); ?>
@@ -189,8 +184,18 @@
                                                ng-model="massChange[dashboardTab.id]">
                                     </td>
                                     <td>{{dashboardTab.name}}</td>
-                                    <td>{{dashboardTab.usergroups_count}}</td>
-                                    <td>{{dashboardTab.allocated_users_count}}</td>
+                                    <td>
+                                        {{dashboardTab.usergroups_count}}
+                                        <span class="badge badge-primary" ng-repeat="name in dashboardTab.usergroups_names">
+                                            {{name}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {{dashboardTab.allocated_users_count}}
+                                        <span class="badge badge-primary" ng-repeat="name in dashboardTab.allocated_users_names">
+                                            {{name}}
+                                        </span>
+                                    </td>
                                     <td>
                                         <i class="fa fa-lock" ng-show="dashboardTab.locked"></i>
                                     </td>
