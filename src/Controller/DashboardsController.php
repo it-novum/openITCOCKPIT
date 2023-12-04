@@ -2053,6 +2053,5 @@ class DashboardsController extends AppController {
 
         $this->set('dashboardTabs', $dashboardTabs);
         $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
-
     }
 }

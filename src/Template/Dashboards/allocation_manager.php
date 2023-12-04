@@ -195,7 +195,10 @@
                                         <i class="fa fa-lock" ng-show="dashboardTab.locked"></i>
                                     </td>
                                     <td>
-                                        ⚙
+                                        <a data-did="{{dashboardTab.id}}" ng-click="manageAllocation(dashboardTab.id)"
+                                           class="btn btn-sm btn-default">
+                                            <i class="fa fa-cog"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -240,3 +243,91 @@
     </div>
 </div>
 
+
+<!--- Allocate Dashboard Modal --->
+<div id="allocateDashboardModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-user"></i>
+                    <?php echo __('Allocate Dashboard'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Select Users -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group margin-top-20 padding-bottom-10">
+                            <label class="control-label">
+                                <?php echo __('Allocated Users'); ?>
+                            </label>
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="users"
+                                    ng-options="user.key as user.value for user in users"
+                                    ng-model="allocation.DashboardTab.AllocatedUsers._ids"
+                                    multiple="multiple">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Select Roles -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group margin-top-20 padding-bottom-10">
+                            <label class="control-label">
+                                <?php echo __('Allocated Roles'); ?>
+                            </label>
+                            <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="usergroups"
+                                    ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
+                                    ng-model="allocation.DashboardTab.usergroups._ids"
+                                    multiple="multiple">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- pinDashboard -->
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group margin-top-20 padding-bottom-10">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox"
+                                       class="custom-control-input"
+                                       id="pinDashboard"
+                                       ng-model="allocation.DashboardTab.flags">
+                                <label class="custom-control-label" for="pinDashboard">
+                                    <?php echo __('Pin Dashboard'); ?>
+                                </label>
+                            </div>
+                            <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
+                        </div>
+                        <div class="alert alert-warning" role="alert">
+                            Currently, dashboard <i>Fake 123</i> is set up as pimary. This will be removed now.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" ng-click="saveAllocation()">
+                    <?php echo __('Refresh Allocation'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
