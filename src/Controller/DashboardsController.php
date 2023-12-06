@@ -1987,7 +1987,7 @@ class DashboardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hoststatusSummary', 'servicestatusSummary']);
     }
 
-    public function allocate() {
+    public function allocate($id = null) {
         if (!$this->isApiRequest()) {
             return;
         }
@@ -1998,7 +1998,7 @@ class DashboardsController extends AppController {
 
             // Fetch them all (not allocated ones, tho...)
             $dashboardTabs = $DashboardTabsTable->find()
-                ->where(['id' => 66])
+                ->where(['id' => $id])
                 ->contain('Usergroups')
                 ->contain('AllocatedUsers')
                 ->disableHydration()

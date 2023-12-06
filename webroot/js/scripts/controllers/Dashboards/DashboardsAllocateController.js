@@ -1,5 +1,8 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsAllocateController', function($scope, $http) {
+    .controller('DashboardsAllocateController', function($scope, $http, $stateParams) {
+        // I am the ID that will be allocated.
+        $scope.id = $stateParams.id;
+
         // I am the array of available dashboardTabs.
         $scope.dashboardTabs = [];
 
@@ -32,7 +35,7 @@ angular.module('openITCOCKPIT')
             $scope.loadUsers();
 
             // Fetch the desired Dashboard.
-            $http.get("/dashboards/allocate.json?angular=true&id=66").then(function(result) {
+            $http.get("/dashboards/allocate/" + $scope.id + ".json?angular=true&id=").then(function(result) {
                 $scope.allocation.DashboardTab.id = result.data.dashboardTabs[0].id;
                 $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
                 $scope.allocation.DashboardTab.AllocatedUsers._ids = result.data.dashboardTabs[0].allocated_users;
