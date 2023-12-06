@@ -1988,36 +1988,68 @@ class DashboardsController extends AppController {
     }
 
     public function allocate() {
-        if (!$this->request->is('post')) {
-            $this->render403();
+        if (!$this->isApiRequest()) {
+            return;
+        }
+        if ($this->request->is('get')) {
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            // Fetch them all (not allocated ones, tho...)
+            $dashboardTabs = $DashboardTabsTable->find()
+                ->where(['id' => 66])
+                ->contain('Usergroups')
+                ->contain('AllocatedUsers')
+                ->disableHydration()
+                ->toArray();
+
+            // Clean up the mess surrounding the allocation info.
+            foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
+                // Condense the users
+                $dashboardTabs[$dashboardTabIndex]['allocated_users_names'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.firstname');
+                $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
+                $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
+                // Condense the usergroups
+                $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
+                $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
+                $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+            }
+
+            $this->set('dashboardTabs', $dashboardTabs);
+            $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
+
+            return;
+        }
+        if ($this->request->is('post')) {
+            $dashboardTab = $this->request->getData('DashboardTab');
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            // Fetch from DB
+            $Entity = $DashboardTabsTable->get($dashboardTab['id']);
+
+            // Patch with new IDs
+            /** @var UsersTable $UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('users');
+
+            foreach ($dashboardTab['AllocatedUsers']['_ids'] as $userId) {
+                $UserEntity = $UsersTable->get($userId);
+                $UserEntity = $UsersTable->patchEntity($UserEntity, [
+                    'dashboard_tabs' => [
+                        '_ids' => [$dashboardTab['id']]
+                    ]
+                ]);
+                $UsersTable->save($UserEntity);
+            }
+
+            $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
+
+            // Save
+            $DashboardTabsTable->save($Entity);
         }
 
-        $dashboardTab = $this->request->getData('DashboardTab');
-
-        /** @var DashboardTabsTable $DashboardTabsTable */
-        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-
-        // Fetch from DB
-        $Entity = $DashboardTabsTable->get($dashboardTab['id']);
-
-        // Patch with new IDs
-        /** @var UsersTable $UsersTable */
-        $UsersTable = TableRegistry::getTableLocator()->get('users');
-
-        foreach ($dashboardTab['AllocatedUsers']['_ids'] as $userId) {
-            $UserEntity = $UsersTable->get($userId);
-            $UserEntity = $UsersTable->patchEntity($UserEntity, [
-                'dashboard_tabs' => [
-                    '_ids' => [$dashboardTab['id']]
-                ]
-            ]);
-            $UsersTable->save($UserEntity);
-        }
-
-        $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
-
-        // Save
-        $DashboardTabsTable->save($Entity);
     }
 
     /**

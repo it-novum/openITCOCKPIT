@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsAllocationManager', function ($scope, $http) {
+    .controller('DashboardsAllocationManagerController', function ($scope, $http) {
         // I am the array of available dashboardTabs.
         $scope.dashboardTabs = [];
 
