@@ -494,7 +494,6 @@ angular.module('openITCOCKPIT')
             $scope.loadUsergroups();
             $scope.loadUsers();
             $('#allocateDashboardModal').modal('show');
-            $scope.$apply();
         }
         $scope.refreshAllocation = function(){
             $http.post("/dashboards/allocate.json?angular=true",
