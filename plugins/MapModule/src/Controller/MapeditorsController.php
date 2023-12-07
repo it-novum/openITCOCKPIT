@@ -342,6 +342,9 @@ class MapeditorsController extends AppController {
                 break;
             case 'map':
                 $map = $MapsTable->getMapsForMaps($objectId, $mapId, false);
+                if(empty($map)){
+                    $map = $MapsTable->getMapsForMapsummaryitems($objectId, $mapId, false);
+                }
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}.id'), false)) {
@@ -351,6 +354,39 @@ class MapeditorsController extends AppController {
                     }
                     /** @var MapitemsTable $MapitemsTable */
                     $MapitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapitems');
+
+                    /** @var MapsummaryitemsTable $MapsummaryitemsTable */
+                    $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
+
+                    /** @var HostgroupsTable $HostgroupsTable */
+                    $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+                    /** @var ServicegroupsTable $ServicegroupsTable */
+                    $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+                    //fetch all dependent map items after permissions check
+                    $mapSummaryItemToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map['id'], $mapId);
+
+                    if (!empty($mapSummaryItemToResolve)) {
+                        $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $MY_RIGHTS);
+                        $mapIdGroupByMapId = Hash::combine(
+                            $allVisibleItems,
+                            '{n}.object_id',
+                            '{n}.object_id',
+                            '{n}.map_id'
+                        );
+                        if (isset($mapIdGroupByMapId[$objectId])) {
+                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $objectId);
+                        }
+                        $dependentMapsIds[] = $objectId;
+
+                        // resolve all Elements (host and/or services of dependent map)
+                        $allDependentMapElementsFromSubMaps['mapsummaryitem'] = $MapsTable->getAllDependentMapsElements(
+                            $dependentMapsIds,
+                            $HostgroupsTable,
+                            $ServicegroupsTable,
+                            $MY_RIGHTS
+                        );
+                    }
 
                     //fetch all dependent map items after permissions check
                     $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map['id'], $mapId);
@@ -366,11 +402,6 @@ class MapeditorsController extends AppController {
                         );
                     }
                     if (!empty($mapItemToResolve)) {
-                        /** @var HostgroupsTable $HostgroupsTable */
-                        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-                        /** @var ServicegroupsTable $ServicegroupsTable */
-                        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
-
                         $allVisibleItems = $MapitemsTable->allVisibleMapItems($mapId, $MY_RIGHTS, false);
                         $mapIdGroupByMapId = Hash::combine(
                             $allVisibleItems,
@@ -384,19 +415,32 @@ class MapeditorsController extends AppController {
                         $dependentMapsIds[] = $objectId;
 
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElements = $MapsTable->getAllDependentMapsElements(
+                        $allDependentMapElementsFromSubMaps['mapitem']  = $MapsTable->getAllDependentMapsElements(
                             $dependentMapsIds,
                             $HostgroupsTable,
                             $ServicegroupsTable,
                             $MY_RIGHTS
                         );
+
+                        //simple item (host/hostgroup/service/servicegroup)
+                        $allDependentMapElementsFromSubMaps['item'] = $MapsTable->getAllDependentMapsElements(
+                            $map['id'],
+                            $HostgroupsTable,
+                            $ServicegroupsTable,
+                            $MY_RIGHTS
+                        );
+
+                        $hostIds = Hash::extract($allDependentMapElementsFromSubMaps, '{s}.hostIds.{n}');
+                        $serviceIds = Hash::extract($allDependentMapElementsFromSubMaps, '{s}.serviceIds.{n}');
+
+
                         $hosts = [];
                         $services = [];
-                        if (!empty($allDependentMapElements['hostIds'])) {
-                            $hosts = $HostsTable->getHostsWithServicesByIdsForMapeditor($allDependentMapElements['hostIds'], $MY_RIGHTS, false);
+                        if (!empty($hostIds)) {
+                            $hostsById = $HostsTable->getHostsWithServicesByIdsForMapeditor($hostIds, $MY_RIGHTS, false);
 
-                            if (!empty($hosts)) {
-                                foreach ($hosts as $host) {
+                            if (!empty($hostsById)) {
+                                foreach ($hostsById as $host) {
                                     foreach ($host['services'] as $serviceData) {
                                         $services[$serviceData['id']] = [
                                             'Service' => $serviceData
@@ -405,8 +449,9 @@ class MapeditorsController extends AppController {
                                 }
                             }
                         }
-                        if (!empty($allDependentMapElements['serviceIds'])) {
-                            $dependentServices = $ServicesTable->getServicesByIdsForMapeditor($allDependentMapElements['serviceIds'], $MY_RIGHTS);
+                        if (!empty($serviceIds)) {
+                            $serviceIds = array_unique($serviceIds);
+                            $dependentServices = $ServicesTable->getServicesByIdsForMapeditor($serviceIds, $MY_RIGHTS);
 
                             if (!empty($dependentServices)) {
                                 foreach ($dependentServices as $service) {
@@ -717,7 +762,8 @@ class MapeditorsController extends AppController {
                     $allDependentMapElementsFromSubMaps['item'] = $MapsTable->getAllDependentMapsElements(
                         $map['id'],
                         $HostgroupsTable,
-                        $ServicegroupsTable
+                        $ServicegroupsTable,
+                        $MY_RIGHTS
                     );
 
                     $hostIds = Hash::extract($allDependentMapElementsFromSubMaps, '{s}.hostIds.{n}');
