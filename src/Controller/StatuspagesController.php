@@ -114,12 +114,18 @@ class StatuspagesController extends AppController {
             return;
         }
 
+        $id = (int)$id;
+
+        /** @var StatuspagesTable $StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+        //$StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, true);
+        //die('OLD');
+
         $statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime);
 
         $this->set('Statuspage', $statuspageViewData);

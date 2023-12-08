@@ -125,8 +125,8 @@ class StatuspagesTable extends Table {
      */
     public function validationDefault(Validator $validator): Validator {
         $validator->requirePresence('containers', true, __('You have to choose at least one option.'))->allowEmptyString('containers', null, false)->multipleOptions('containers', [
-                'min' => 1
-            ], __('You have to choose at least one option.'));
+            'min' => 1
+        ], __('You have to choose at least one option.'));
 
         $validator->scalar('name')->maxLength('name', 255)->requirePresence('name', 'create')->notEmptyString('name');
 
@@ -192,29 +192,29 @@ class StatuspagesTable extends Table {
         $conditions = array_merge(['Statuspages.id' => $id]);
 
         $query = $this->find()->contain('Hosts', function (Query $q) {
-                return $q->select(['id', 'uuid', 'name']);
-            })->contain('Services', function (Query $q) {
-                return $q->select([
-                        'id', 'uuid', 'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'), 'hostname' => 'host.name'
+            return $q->select(['id', 'uuid', 'name']);
+        })->contain('Services', function (Query $q) {
+            return $q->select([
+                'id', 'uuid', 'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'), 'hostname' => 'host.name'
 
-                    ])->innerJoin(['host' => 'hosts'], [
-                        'host.id = Services.host_id'
-                    ])->innerJoin(['Servicetemplates' => 'servicetemplates'], [
-                        'Servicetemplates.id = Services.servicetemplate_id'
-                    ]);
-            })->contain('Hostgroups', function (Query $q) {
-                return $q->select([
-                        'id', 'uuid', 'name' => 'Containers.name'
-                    ])->innerJoin(['Containers' => 'containers'], [
-                        'Containers.id = Hostgroups.container_id', 'Containers.containertype_id' => CT_HOSTGROUP
-                    ]);
-            })->contain('Servicegroups', function (Query $q) {
-                return $q->select([
-                        'id', 'uuid', 'name' => 'Containers.name'
-                    ])->innerJoin(['Containers' => 'containers'], [
-                        'Containers.id = Servicegroups.container_id', 'Containers.containertype_id' => CT_SERVICEGROUP
-                    ]);
-            })->where($conditions)->firstOrFail();
+            ])->innerJoin(['host' => 'hosts'], [
+                'host.id = Services.host_id'
+            ])->innerJoin(['Servicetemplates' => 'servicetemplates'], [
+                'Servicetemplates.id = Services.servicetemplate_id'
+            ]);
+        })->contain('Hostgroups', function (Query $q) {
+            return $q->select([
+                'id', 'uuid', 'name' => 'Containers.name'
+            ])->innerJoin(['Containers' => 'containers'], [
+                'Containers.id = Hostgroups.container_id', 'Containers.containertype_id' => CT_HOSTGROUP
+            ]);
+        })->contain('Servicegroups', function (Query $q) {
+            return $q->select([
+                'id', 'uuid', 'name' => 'Containers.name'
+            ])->innerJoin(['Containers' => 'containers'], [
+                'Containers.id = Servicegroups.container_id', 'Containers.containertype_id' => CT_SERVICEGROUP
+            ]);
+        })->where($conditions)->firstOrFail();
         $statuspage = $query->toArray();
 
         return $statuspage;
@@ -482,7 +482,7 @@ class StatuspagesTable extends Table {
                 }
                 $problemsAcknowledged = $problems - $problemsNotAcknowledged;
                 if ($problemsNotAcknowledged > 0) {
-                    $info['problemtext'] = sprintf("%u of %u problems acknowledged",$problemsAcknowledged,$problems);
+                    $info['problemtext'] = sprintf("%u of %u problems acknowledged", $problemsAcknowledged, $problems);
                     $info['problemtextValues'] = ['problems' => $problems, 'acknowledged' => $problemsAcknowledged];
                 }
             }
@@ -548,12 +548,12 @@ class StatuspagesTable extends Table {
             }
             $problemsAcknowledged = $problems - $problemsNotAcknowledged;
             if ($problemsNotAcknowledged > 0) {
-                $info['problemtext'] = sprintf("%u of %u problems acknowledged",$problemsAcknowledged,$problems);
+                $info['problemtext'] = sprintf("%u of %u problems acknowledged", $problemsAcknowledged, $problems);
                 $info['problemtextValues'] = ['problems' => $problems, 'acknowledged' => $problemsAcknowledged];
 
             }
             if ($problemsInDowntime > 0) {
-                $info['problemtext_down'] = sprintf("%u of %u problems currently in a planned maintenance period",$problemsInDowntime,$problems);
+                $info['problemtext_down'] = sprintf("%u of %u problems currently in a planned maintenance period", $problemsInDowntime, $problems);
                 $info['problemtextDownValues'] = ['problems' => $problems, 'downs' => $problemsInDowntime];
             }
         }
@@ -790,5 +790,400 @@ class StatuspagesTable extends Table {
         return $planned;
     }
 
+    public function getStatuspageForView(int $id, array $MY_RIGHTS, bool $includeComments) {
+        $statuspage = $this->getStatuspageWithAllObjects($id, $MY_RIGHTS);
+
+        // Merge all host and service uuids to select the host and service status
+        $hostUuids = [];
+        $serviceUuids = [];
+        foreach ($statuspage['hosts'] as $host) {
+            $hostUuids[$host['id']] = $host['uuid'];
+            foreach ($host['services'] as $service) {
+                $serviceUuids[$service['id']] = $service['uuid'];
+            }
+        }
+        foreach ($statuspage['services'] as $service) {
+            $serviceUuids[$service['id']] = $service['uuid'];
+            $hostUuids[$service['host']['id']] = $service['host']['uuid'];
+        }
+        foreach ($statuspage['hostgroups'] as $key => $hostgroup) {
+            $statuspage['hostgroups'][$key]['host_uuids'] = [];
+            $statuspage['hostgroups'][$key]['service_uuids'] = [];
+            foreach ($hostgroup['hosts'] as $host) {
+                $hostUuids[$host['id']] = $host['uuid']; // Store all host uuids for the status query
+                $statuspage['hostgroups'][$key]['host_uuids'][$host['uuid']] = null; // store the status of the host in here to determine the worst host status
+                foreach ($host['services'] as $service) {
+                    $serviceUuids[$service['id']] = $service['uuid'];
+                    $statuspage['hostgroups'][$key]['service_uuids'][$service['uuid']] = null;
+                }
+            }
+
+            foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
+                foreach ($hosttemplate['hosts'] as $host) {
+                    $hostUuids[$host['id']] = $host['uuid'];
+                    $statuspage['hostgroups'][$key]['host_uuids'][$host['uuid']] = null;
+                    foreach ($host['services'] as $service) {
+                        $serviceUuids[$service['id']] = $service['uuid'];
+                        $statuspage['hostgroups'][$key]['service_uuids'][$service['uuid']] = null;
+                    }
+                }
+            }
+        }
+
+        foreach ($statuspage['servicegroups'] as $key => $servicegroup) {
+            $statuspage['servicegroups'][$key]['host_uuids'] = [];
+            $statuspage['servicegroups'][$key]['service_uuids'] = [];
+            foreach ($servicegroup['services'] as $service) {
+                $serviceUuids[$service['id']] = $service['uuid'];
+                $statuspage['servicegroups'][$key]['service_uuids'][$service['uuid']] = null;
+                $hostUuids[$service['host']['id']] = $service['host']['uuid'];
+                $statuspage['servicegroups'][$key]['host_uuids'][$host['uuid']] = null;
+            }
+
+            foreach ($servicegroup['servicetemplates'] as $servicetemplate) {
+                foreach ($servicetemplate['services'] as $service) {
+                    $serviceUuids[$service['id']] = $service['uuid'];
+                    $statuspage['servicegroups'][$key]['service_uuids'][$service['uuid']] = null;
+                    $hostUuids[$service['host']['id']] = $service['host']['uuid'];
+                    $statuspage['servicegroups'][$key]['host_uuids'][$host['uuid']] = null;
+                }
+            }
+        }
+
+        // Query host and service status for all objects in two queries
+        $DbBackend = new DbBackend();
+        $HoststatusTable = $DbBackend->getHoststatusTable();
+        $ServicestatusTable = $DbBackend->getServicestatusTable();
+
+        $HoststatusFields = new HoststatusFields($DbBackend);
+        $HoststatusFields
+            ->currentState()
+            ->isHardstate()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth();
+
+        $ServicestatusFields = new ServicestatusFields($DbBackend);
+        $ServicestatusFields
+            ->currentState()
+            ->isHardstate()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth();
+
+        $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
+        $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+
+        debug($statuspage);
+        foreach ($statuspage['hosts'] as $host) {
+            $hostUuids[$host['id']] = $host['uuid'];
+            foreach ($host['services'] as $service) {
+                $serviceUuids[$service['id']] = $service['uuid'];
+            }
+        }
+        foreach ($statuspage['services'] as $service) {
+            $serviceUuids[$service['id']] = $service['uuid'];
+            $hostUuids[$service['host']['id']] = $service['host']['uuid'];
+        }
+
+        // Calculate worst state per object
+
+    }
+
+    /**
+     * @param int $id
+     * @param array $MY_RIGHTS
+     * @return array|\Cake\Datasource\EntityInterface
+     */
+    public function getStatuspageWithAllObjects(int $id, array $MY_RIGHTS = []) {
+        $query = $this->find()
+            ->contain('Hosts', function (Query $q) use ($MY_RIGHTS) {
+                $q
+                    ->select([
+                        'Hosts.id',
+                        'Hosts.uuid',
+                        'Hosts.name'
+                    ]);
+                if (!empty($MY_RIGHTS)) {
+                    $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                        'HostsToContainersSharing.host_id = Hosts.id'
+                    ]);
+                    $q->where([
+                        'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                    ]);
+                }
+                $q->contain([
+                    'HostsToContainersSharing',
+                    'Services' => function (Query $q) {
+                        return $q->where([
+                            'Services.disabled' => 0
+                        ])
+                            ->select([
+                                'Services.id',
+                                'Services.uuid',
+                                'Services.host_id'
+                            ]);
+                    }
+                ])->where([
+                    'Hosts.disabled' => 0
+                ]);
+
+                return $q;
+            })
+            ->contain('Services', function (Query $q) use ($MY_RIGHTS) {
+                return $q
+                    ->select([
+                        'Services.id',
+                        'Services.uuid',
+                        'Services.host_id',
+                        'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                    ])
+                    ->contain([
+                        'Servicetemplates' => function (Query $q) {
+                            return $q->select([
+                                'Servicetemplates.id',
+                                'Servicetemplates.name'
+                            ]);
+                        },
+                        'Hosts'            => function (Query $q) {
+                            return $q->select([
+                                'Hosts.id',
+                                'Hosts.uuid',
+                                'Hosts.name'
+                            ])
+                                ->contain([
+                                    'HostsToContainersSharing'
+                                ]);
+                        }
+
+                    ])
+                    ->innerJoinWith('Hosts')
+                    ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                        if (!empty($MY_RIGHTS)) {
+                            $q->where([
+                                'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                            ]);
+                        }
+                        return $q;
+                    })
+                    ->where([
+                        'Services.disabled' => 0
+                    ]);
+            })
+            ->contain('Hostgroups', function (Query $q) use ($MY_RIGHTS) {
+                return $q
+                    ->select([
+                        'Hostgroups.id',
+                        'Hostgroups.uuid',
+                        'Containers.name',
+                        'name' => 'Containers.name'
+                    ])
+                    ->contain([
+                        'Containers'    => function (Query $q) {
+                            return $q->select([
+                                'Containers.id',
+                                'Containers.name'
+                            ]);
+                        },
+                        'Hosts'         => function (Query $q) use ($MY_RIGHTS) {
+                            $q->select([
+                                'Hosts.id',
+                                'Hosts.uuid',
+                                'Hosts.name'
+                            ]);
+                            if (!empty($MY_RIGHTS)) {
+                                $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                    'HostsToContainersSharing.host_id = Hosts.id'
+                                ]);
+                                $q->where([
+                                    'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                ]);
+                            }
+                            $q->contain([
+                                'HostsToContainersSharing',
+                                'Services' => function (Query $q) {
+                                    return $q->where([
+                                        'Services.disabled' => 0
+                                    ])
+                                        ->select([
+                                            'Services.id',
+                                            'Services.uuid',
+                                            'Services.host_id'
+                                        ]);
+                                }
+                            ])->where([
+                                'Hosts.disabled' => 0
+                            ]);
+                            return $q;
+                        },
+                        'Hosttemplates' => function (Query $q) use ($MY_RIGHTS) {
+                            return $q->enableAutoFields(false)
+                                ->select([
+                                    'id'
+                                ])
+                                ->contain([
+                                    'Hosts' => function (Query $query) use ($MY_RIGHTS) {
+                                        $query->select([
+                                            'Hosts.id',
+                                            'Hosts.uuid',
+                                            'Hosts.name'
+                                        ]);
+
+                                        if (!empty($MY_RIGHTS)) {
+                                            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                                'HostsToContainersSharing.host_id = Hosts.id'
+                                            ]);
+                                            $query->where([
+                                                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                            ]);
+                                        }
+
+                                        $query
+                                            ->disableAutoFields()
+                                            ->select([
+                                                'Hosts.id',
+                                                'Hosts.uuid',
+                                                'Hosts.name',
+                                                'Hosts.hosttemplate_id'
+                                            ])
+                                            ->contain([
+                                                'HostsToContainersSharing',
+                                                'Services' => function (Query $q) {
+                                                    return $q->select([
+                                                        'Services.id',
+                                                        'Services.uuid',
+                                                        'Services.host_id'
+                                                    ]);
+                                                }
+                                            ]);
+                                        $query
+                                            ->leftJoinWith('Hostgroups')
+                                            ->whereNull('Hostgroups.id');
+                                        return $query;
+                                    }
+                                ]);
+                        }
+                    ]);
+            })
+            ->contain('Servicegroups', function (Query $q) use ($MY_RIGHTS) {
+                return $q
+                    ->select([
+                        'Servicegroups.id',
+                        'Servicegroups.uuid',
+                        'Containers.name',
+                        'name' => 'Containers.name'
+                    ])
+                    ->contain([
+                        'Containers'       => function (Query $q) use ($MY_RIGHTS) {
+                            $q->select([
+                                'Containers.id',
+                                'Containers.name'
+                            ]);
+                            if (!empty($MY_RIGHTS)) {
+                                return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
+                            }
+                            return $q;
+                        },
+                        'Services'         => function (Query $q) use ($MY_RIGHTS) {
+                            $q->select([
+                                'Services.id',
+                                'Services.uuid',
+                                'Services.name',
+                                'Services.host_id'
+                            ])
+                                ->contain([
+                                    'Servicetemplates' => function (Query $q) {
+                                        return $q->select([
+                                            'Servicetemplates.id',
+                                            'Servicetemplates.name'
+                                        ]);
+                                    },
+                                    'Hosts'            => function (Query $q) {
+                                        return $q->select([
+                                            'Hosts.id',
+                                            'Hosts.uuid',
+                                            'Hosts.name'
+                                        ])
+                                            ->contain([
+                                                'HostsToContainersSharing'
+                                            ]);
+                                    }
+
+                                ])
+                                ->innerJoinWith('Hosts')
+                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                                    if (!empty($MY_RIGHTS)) {
+                                        $q->where([
+                                            'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                                        ]);
+                                    }
+                                    return $q;
+                                })
+                                ->where([
+                                    'Services.disabled' => 0
+                                ]);
+                            return $q;
+                        },
+                        'Servicetemplates' => function (Query $q) use ($MY_RIGHTS) {
+                            return $q->enableAutoFields(false)
+                                ->select([
+                                    'id'
+                                ])
+                                ->contain([
+                                    'Services' => function (Query $query) use ($MY_RIGHTS) {
+                                        $query
+                                            ->disableAutoFields()
+                                            ->select([
+                                                'Services.id',
+                                                'Services.servicetemplate_id',
+                                                'Services.uuid',
+                                                'Services.name',
+                                                'Services.host_id'
+                                            ])
+                                            ->contain([
+                                                'Servicetemplates' => function (Query $q) {
+                                                    return $q->select([
+                                                        'Servicetemplates.id',
+                                                        'Servicetemplates.name'
+                                                    ]);
+                                                },
+                                                'Hosts'            => function (Query $q) {
+                                                    return $q->select([
+                                                        'Hosts.id',
+                                                        'Hosts.uuid',
+                                                        'Hosts.name'
+                                                    ])
+                                                        ->contain([
+                                                            'HostsToContainersSharing'
+                                                        ]);
+                                                }
+                                            ])
+                                            ->innerJoinWith('Hosts')
+                                            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                                                if (!empty($MY_RIGHTS)) {
+                                                    $q->where([
+                                                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
+                                                    ]);
+                                                }
+                                                return $q;
+                                            })
+                                            ->where([
+                                                'Services.disabled' => 0,
+                                                'Hosts.disabled'    => 0
+                                            ]);
+                                        $query
+                                            ->leftJoinWith('Servicegroups')
+                                            ->whereNull('Servicegroups.id');
+                                        return $query;
+                                    }
+                                ]);
+                        }
+                    ]);
+            })
+            ->where([
+                'Statuspages.id' => $id
+            ])
+            ->disableHydration();
+
+        return $query->firstOrFail();
+    }
 
 }
