@@ -26,7 +26,6 @@
 namespace MapModule\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
-use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
@@ -281,7 +280,7 @@ class MapeditorsController extends AppController {
                     $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
                     $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, $MY_RIGHTS);
-                    if(!isset($hostgroup['hosts'])){
+                    if (!isset($hostgroup['hosts'])) {
                         $hostgroup['hosts'] = [];
                     }
 
@@ -314,8 +313,8 @@ class MapeditorsController extends AppController {
                 $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
                 try {
                     $servicegroup = $ServicegroupsTable->getServicegroupsByServicegroupForMaps($objectId, $MY_RIGHTS);
-                    if(!isset($servicegroup['services'] )){
-                        $servicegroup['services']  = [];
+                    if (!isset($servicegroup['services'])) {
+                        $servicegroup['services'] = [];
                     }
                     $servicegroup['services'] = array_merge(
                         $servicegroup['services'],
@@ -342,9 +341,6 @@ class MapeditorsController extends AppController {
                 break;
             case 'map':
                 $map = $MapsTable->getMapsForMaps($objectId, $mapId, false);
-                if(empty($map)){
-                    $map = $MapsTable->getMapsForMapsummaryitems($objectId, $mapId, false);
-                }
                 if (!empty($map)) {
                     if ($this->hasRootPrivileges === false) {
                         if (!$this->allowedByContainerId(Hash::extract($map, 'containers.{n}.id'), false)) {
@@ -362,32 +358,6 @@ class MapeditorsController extends AppController {
                     $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
                     /** @var ServicegroupsTable $ServicegroupsTable */
                     $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
-
-                    //fetch all dependent map items after permissions check
-                    $mapSummaryItemToResolve = $MapsummaryitemsTable->getMapsummaryitemsForMaps($map['id'], $mapId);
-
-                    if (!empty($mapSummaryItemToResolve)) {
-                        $allVisibleItems = $MapsummaryitemsTable->allVisibleMapsummaryitems($mapId, $MY_RIGHTS);
-                        $mapIdGroupByMapId = Hash::combine(
-                            $allVisibleItems,
-                            '{n}.object_id',
-                            '{n}.object_id',
-                            '{n}.map_id'
-                        );
-                        if (isset($mapIdGroupByMapId[$objectId])) {
-                            $dependentMapsIds = $this->getDependendMaps($mapIdGroupByMapId, $objectId);
-                        }
-                        $dependentMapsIds[] = $objectId;
-
-                        // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElementsFromSubMaps['mapsummaryitem'] = $MapsTable->getAllDependentMapsElements(
-                            $dependentMapsIds,
-                            $HostgroupsTable,
-                            $ServicegroupsTable,
-                            $MY_RIGHTS
-                        );
-                    }
-
                     //fetch all dependent map items after permissions check
                     $mapItemToResolve = $MapitemsTable->getMapitemsForMaps($map['id'], $mapId);
                     if (empty($mapItemToResolve)) {
@@ -415,7 +385,7 @@ class MapeditorsController extends AppController {
                         $dependentMapsIds[] = $objectId;
 
                         // resolve all Elements (host and/or services of dependent map)
-                        $allDependentMapElementsFromSubMaps['mapitem']  = $MapsTable->getAllDependentMapsElements(
+                        $allDependentMapElementsFromSubMaps['mapitem'] = $MapsTable->getAllDependentMapsElements(
                             $dependentMapsIds,
                             $HostgroupsTable,
                             $ServicegroupsTable,
@@ -624,7 +594,7 @@ class MapeditorsController extends AppController {
                 $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
                 $hostgroup = $HostgroupsTable->getHostgroupByIdForMapeditor($objectId, $MY_RIGHTS);
-                if(!isset($hostgroup['hosts'])){
+                if (!isset($hostgroup['hosts'])) {
                     $hostgroup['hosts'] = [];
                 }
                 $hostgroup['hosts'] = array_merge(
@@ -658,7 +628,7 @@ class MapeditorsController extends AppController {
                 $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
                 $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId, $MY_RIGHTS);
-                if(!isset($servicegroup['services'])){
+                if (!isset($servicegroup['services'])) {
                     $servicegroup['services'] = [];
                 }
                 $servicegroup['services'] = array_merge(
@@ -1000,7 +970,7 @@ class MapeditorsController extends AppController {
             case 'hostgroup':
                 try {
                     $hostgroup = $HostgroupsTable->getHostsByHostgroupForMaps($objectId, $MY_RIGHTS);
-                    if(!isset($hostgroup['hosts'])){
+                    if (!isset($hostgroup['hosts'])) {
                         $hostgroup['hosts'] = [];
                     }
                     $hostgroup['hosts'] = array_merge(
@@ -1025,7 +995,7 @@ class MapeditorsController extends AppController {
                 break;
             case 'servicegroup':
                 $servicegroup = $ServicegroupsTable->getServicegroupByIdForMapeditor($objectId, $MY_RIGHTS);
-                if(!isset($servicegroup['services'])){
+                if (!isset($servicegroup['services'])) {
                     $servicegroup['services'] = [];
                 }
                 $servicegroup['services'] = array_merge(
