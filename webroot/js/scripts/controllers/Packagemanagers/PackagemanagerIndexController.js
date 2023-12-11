@@ -77,7 +77,7 @@ angular.module('openITCOCKPIT')
         $scope.clipboardCommand = function(){
             // If you change this command please make also sure to change the command in the index.php template !!
 
-            var command = 'sudo apt-get update && apt-get dist-upgrade && apt-get install ';
+            var command = 'sudo apt-get update && sudo apt-get dist-upgrade && sudo apt-get install ';
             command += $scope.modulesToInstall.join(' ');
             command += ' && echo "#########################################" && echo "Installation done. Please reload your openITCOCKPIT web interface."';
 
