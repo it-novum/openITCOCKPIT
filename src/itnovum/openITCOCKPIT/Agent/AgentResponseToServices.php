@@ -143,9 +143,15 @@ class AgentResponseToServices {
                     }
                     break;
                 case 'disks':
-                    $disksServices = $this->getServiceStructForDisks();
+                    $disksServices = $this->getServiceStructForDisks(); // Space used
                     if ($disksServices) {
                         $services['disks'] = $disksServices;
+                    }
+
+                    // "disks_free" is only a Virtual JSON key bc it does not exist in the Agent output
+                    $disksFreeSpaceServices = $this->getServiceStructForDisks(true); // Space free
+                    if ($disksFreeSpaceServices) {
+                        $services['disks_free'] = $disksFreeSpaceServices;
                     }
                     break;
                 case 'net_io':
@@ -372,10 +378,16 @@ class AgentResponseToServices {
     }
 
     /**
-     * @return array|bool
+     * @param bool $monitorDiskFreeSpace
+     * @return array|false
      */
-    private function getServiceStructForDisks() {
-        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('disks');
+    private function getServiceStructForDisks(bool $monitorDiskFreeSpace = false) {
+        $virtualJsonKey = 'disks'; // To monitor used disk space
+        if ($monitorDiskFreeSpace === true) {
+            $virtualJsonKey = 'disks_free'; // To monitor free disk space
+        }
+
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName($virtualJsonKey);
         if (empty($agentcheck)) {
             return false;
         }
@@ -386,9 +398,14 @@ class AgentResponseToServices {
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($device['disk']['mountpoint'])])) {
                     $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($device['disk']['mountpoint']); // / or C:
 
+                    $serviceDesc = 'Disk usage of';
+                    if ($monitorDiskFreeSpace === true) {
+                        $serviceDesc = 'Disk free space of';
+                    }
+
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        sprintf('Disk usage of: %s (%s)', $device['disk']['mountpoint'], $device['disk']['device']),
+                        sprintf('%s: %s (%s)', $serviceDesc, $device['disk']['mountpoint'], $device['disk']['device']),
                         $servicetemplatecommandargumentvalues
                     );
                 }
