@@ -519,6 +519,26 @@ class ContainersTable extends Table {
     }
 
     /**
+     * @param int|array $containerIds
+     * @param array $MY_RIGHTS_LEVEL
+     * @param bool $resolveRoot
+     * @param array $includeContainerTypes
+     * @return array
+     */
+    public function resolveWritableChildrenOfContainerIds($containerIdsToResolve, array $MY_RIGHTS_LEVEL, $resolveRoot = false, $includeContainerTypes = []) {
+        $resolvedContainers = $this->resolveChildrenOfContainerIds($containerIdsToResolve, $resolveRoot, $includeContainerTypes);
+
+        $containers = [];
+        foreach ($resolvedContainers as $containerId) {
+            if (isset($MY_RIGHTS_LEVEL[$containerId]) && $MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT) {
+                $containers[] = $containerId;
+            }
+        }
+
+        return $containers;
+    }
+
+    /**
      * Remove the ROOT_CONTAINER from a given array with container ids as value
      *
      * @param array $containerIds
@@ -893,7 +913,7 @@ class ContainersTable extends Table {
                     $containers[$index]['childsElements']['contactgroups'] = $ContactgroupsTable->getContactgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
 
                     $containers[$index]['childsElements']['users'] = $UsersTable->getUsersByContainerIdExact($container['id'], 'list');
-                    $containers[$index]['childsElements']['usercontainerroles'] = $UserContainerRolesTable->getContainerRoleByContainerIdExact($container['id'], 'list','id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['usercontainerroles'] = $UserContainerRolesTable->getContainerRoleByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     // label Type_#Id
                     $containers[$index]['childsElements']['hostdependencies'] = $HostdependenciesTable->getHostdependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['hostescalations'] = $HostescalationsTable->getHostescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
@@ -1039,7 +1059,7 @@ class ContainersTable extends Table {
             'timeperiods'            => __('Time periods'),
             'grafana_userdashboards' => __('Grafana user dashboards'),
             'users'                  => __('Users'),
-            'usercontainerroles'    =>  __('User container roles')
+            'usercontainerroles'     => __('User container roles')
         ];
 
 

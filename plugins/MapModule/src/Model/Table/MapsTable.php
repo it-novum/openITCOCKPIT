@@ -1051,6 +1051,7 @@ class MapsTable extends Table {
 
         }
 
+
         if (!empty($mapElementsByCategory['servicegroup'])) {
             foreach ($mapElementsByCategory['servicegroup'] as $servicegroupId) {
                 $serviceIds = array_merge(

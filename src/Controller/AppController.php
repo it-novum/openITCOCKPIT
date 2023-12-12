@@ -154,8 +154,7 @@ class AppController extends Controller {
             return false;
         }
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $rights = $this->MY_RIGHTS;
 
         if (is_array($containerIds)) {

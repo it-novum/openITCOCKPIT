@@ -14,6 +14,11 @@ angular.module('openITCOCKPIT').directive('mapItem', function($http, $interval, 
             var interval = null;
 
             var updateCallback = function(result){
+                if(!result.data.allowView){
+                    $scope.allowView = false;
+                    return;
+                }
+
                 $scope.icon = result.data.data.icon;
                 $scope.icon_property = result.data.data.icon_property;
                 $scope.allowView = result.data.allowView;

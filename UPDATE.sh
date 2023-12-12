@@ -403,6 +403,12 @@ mkdir -p /opt/openitc/var/prometheus
 chown nagios:nagios /opt/openitc/var/prometheus
 mkdir -p /opt/openitc/var/prometheus/victoria-metrics
 
+# ITC-3125 Fix file permissions after an (possible) update of Nginx
+if [[ "$OS_BASE" == "RHEL" ]]; then
+    chown www-data:root /var/lib/nginx -R
+    chown www-data:root /var/lib/nginx/tmp -R
+fi
+
 if [[ -d /opt/openitc/frontend/plugins/MapModule/webroot/img/ ]]; then
     chown -R www-data:www-data /opt/openitc/frontend/plugins/MapModule/webroot/img/
 fi

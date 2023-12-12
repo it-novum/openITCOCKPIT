@@ -289,7 +289,6 @@ class UsersTable extends Table {
      */
     public function validateHasContainerOrContainerUserRolePermissions($value, $context) {
         // return !empty($context['data']['containers']) || !empty($context['data']['usercontainerroles']['_ids']) || !empty($context['data']['usercontainerroles_ldap']['_ids']);
-
         // ITC-3073
         if (!empty($context['data']['containers'])) {
             return true;
@@ -297,6 +296,11 @@ class UsersTable extends Table {
 
         // Validation of POST request data (openITCOCKPIT Frontend)
         if (!empty($context['data']['usercontainerroles']['_ids']) || !empty($context['data']['usercontainerroles_ldap']['_ids'])) {
+            return true;
+        }
+
+        // Validation of POST request data with through join data convert(openITCOCKPIT Frontend)
+        if ((!empty($context['data']['usercontainerroles']) && !isset($context['data']['usercontainerroles']['_ids'])) || !empty($context['data']['usercontainerroles_ldap']['_ids'])) {
             return true;
         }
 

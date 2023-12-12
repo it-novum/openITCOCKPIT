@@ -3535,10 +3535,11 @@ class ServicesTable extends Table {
 
     /**
      * @param $ids
+     * @param array $MY_RIGHTS
      * @param bool $enableHydration
      * @return array
      */
-    public function getServicesByIdsForMapeditor($ids, $enableHydration = false) {
+    public function getServicesByIdsForMapeditor($ids, array $MY_RIGHTS = [], $enableHydration = false) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -3547,7 +3548,7 @@ class ServicesTable extends Table {
                 [
                     'table'      => 'hosts',
                     'alias'      => 'Hosts',
-                    'type'       => 'LEFT',
+                    'type'       => 'INNER',
                     'conditions' => [
                         'Hosts.id = Services.host_id',
                     ],
@@ -3555,7 +3556,7 @@ class ServicesTable extends Table {
                 [
                     'table'      => 'hosts_to_containers',
                     'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
+                    'type'       => 'INNER',
                     'conditions' => [
                         'HostsToContainers.host_id = Hosts.id',
                     ],
@@ -3570,7 +3571,15 @@ class ServicesTable extends Table {
             ])->where([
                 'Services.id IN'    => $ids,
                 'Services.disabled' => 0
-            ])->enableHydration($enableHydration);
+            ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'HostsToContainers.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->enableHydration($enableHydration);
 
         $result = $query->toArray();
         if (empty($result)) {
@@ -3582,9 +3591,10 @@ class ServicesTable extends Table {
     /**
      * @param $ids
      * @param bool $enableHydration
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getServicesByIdsForMapsumary($ids, $enableHydration = false) {
+    public function getServicesByIdsForMapsumary($ids, $MY_RIGHTS = [], $enableHydration = false) {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
@@ -3593,7 +3603,7 @@ class ServicesTable extends Table {
                 [
                     'table'      => 'hosts',
                     'alias'      => 'Hosts',
-                    'type'       => 'LEFT',
+                    'type'       => 'INNER',
                     'conditions' => [
                         'Hosts.id = Services.host_id',
                     ],
@@ -3601,7 +3611,7 @@ class ServicesTable extends Table {
                 [
                     'table'      => 'hosts_to_containers',
                     'alias'      => 'HostsToContainers',
-                    'type'       => 'LEFT',
+                    'type'       => 'INNER',
                     'conditions' => [
                         'HostsToContainers.host_id = Hosts.id',
                     ],
@@ -3626,7 +3636,16 @@ class ServicesTable extends Table {
         ])->where([
             'Services.id IN'    => $ids,
             'Services.disabled' => 0
-        ])->enableHydration($enableHydration);
+        ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'HostsToContainers.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $query->group([
+            'Services.id'
+        ]);
+        $query->enableHydration($enableHydration);
 
         $result = $query->toArray();
         if (empty($result)) {
