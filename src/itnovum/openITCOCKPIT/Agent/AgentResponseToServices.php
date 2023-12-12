@@ -102,6 +102,12 @@ class AgentResponseToServices {
         $services = [];
         foreach ($this->agentResponse as $mainKey => $items) {
             switch ($mainKey) {
+                case 'agent':
+                    $systemUptime = $this->getServiceStructByName('agent.system_uptime', 'Uptime');
+                    if ($systemUptime) {
+                        $services['system_uptime'] = $systemUptime;
+                    }
+                    break;
                 case 'memory':
                     $memoryService = $this->getServiceStructByName('memory', 'Memory usage percentage');
                     if ($memoryService) {
