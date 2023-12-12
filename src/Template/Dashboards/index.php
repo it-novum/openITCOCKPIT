@@ -639,6 +639,25 @@
             </div>
             <div class="modal-body">
 
+
+                <!-- Select Container -->
+                <div class="form-group" ng-class="{'has-error': errors.containers}">
+                    <label class="control-label hintmark" for="UserContainers">
+                        <?php echo __('Container'); ?>
+                    </label>
+                    <select
+                            id="UserContainers"
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="containers"
+                            ng-options="container.key as container.value for container in containers"
+                            ng-model="data.Container._ids">
+                    </select>
+                    <div ng-repeat="error in errors.containers">
+                        <div class="help-block text-danger">{{ error }}</div>
+                    </div>
+                </div>
+
                 <!-- Select Users -->
                 <div class="row">
                     <div class="col-lg-12">
@@ -691,12 +710,13 @@
                                 </label>
                             </div>
                             <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
-                        </div>
-                        <div class="alert alert-warning" role="alert">
-                            Currently, dashboard <i>Fake 123</i> is set up as pimary. This will be removed now.
+                            <div class="help-block text-danger" ng-show="data.flags == 1">
+                                There can only be one pinned dashboard. A different dashboard may be unpinned upon saving.
+                            </div>
                         </div>
                     </div>
                 </div>
+
             </div>
 
 

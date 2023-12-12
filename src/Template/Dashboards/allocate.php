@@ -24,65 +24,122 @@
 //	confirmation.
 
 ?>
-<!-- Select Users -->
-<div class="row">
-    <div class="col-lg-12">
-        <div class="form-group margin-top-20 padding-bottom-10">
-            <label class="control-label">
-                <?php echo __('Allocated Users'); ?>
-            </label>
-            <select
-                    data-placeholder="<?php echo __('Please choose'); ?>"
-                    class="form-control"
-                    chosen="users"
-                    ng-options="user.key as user.value for user in users"
-                    ng-model="allocation.DashboardTab.AllocatedUsers._ids"
-                    multiple="multiple">
-            </select>
-        </div>
-    </div>
-</div>
 
-<!-- Select Roles -->
 <div class="row">
-    <div class="col-lg-12">
-        <div class="form-group margin-top-20 padding-bottom-10">
-            <label class="control-label">
-                <?php echo __('Allocated Roles'); ?>
-            </label>
-            <select
-                    data-placeholder="<?php echo __('Please choose'); ?>"
-                    class="form-control"
-                    chosen="usergroups"
-                    ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
-                    ng-model="allocation.DashboardTab.usergroups._ids"
-                    multiple="multiple">
-            </select>
-        </div>
-    </div>
-</div>
-
-<!-- pinDashboard -->
-<div class="row">
-    <div class="col-lg-12">
-        <div class="form-group margin-top-20 padding-bottom-10">
-            <div class="custom-control custom-checkbox">
-                <input type="checkbox"
-                       class="custom-control-input"
-                       id="pinDashboard"
-                       ng-model="allocation.DashboardTab.flags">
-                <label class="custom-control-label" for="pinDashboard">
-                    <?php echo __('Pin Dashboard'); ?>
-                </label>
+    <div class="col-xl-12">
+        <div id="panel-1" class="panel">
+            <div class="panel-hdr">
+                <h2>
+                    <span><?= __('Allocate Dashboard') ?>:</span>
+                    <!-- ngIf: isLdapUser -->
+                    <span class="fw-300">
+                        {{dashboard.name}}
+                    </span>
+                </h2>
+                <div class="panel-toolbar">
+                    <?php if ($this->Acl->hasPermission('allocationManager', 'dashboards')): ?>
+                        <a back-button href="javascript:void(0);" fallback-state='DashboardAllocation'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
+                        </a>
+                    <?php endif; ?>
+                </div>
             </div>
-            <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
-        </div>
-        <div class="alert alert-warning" role="alert">
-            Currently, dashboard <i>Fake 123</i> is set up as pimary. This will be removed now.
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <form ng-submit="saveAllocation();" class="form-horizontal">
+
+                        <!-- Select Container -->
+                        <div class="form-group" ng-class="{'has-error': errors.containers}">
+                            <label class="control-label hintmark" for="UserContainers">
+                                <?php echo __('Container'); ?>
+                            </label>
+                            <select
+                                    id="UserContainers"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="containers"
+                                    ng-options="container.key as container.value for container in containers"
+                                    ng-model="allocation.DashboardTab.Container._ids">
+                            </select>
+                            <div ng-repeat="error in errors.containers">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Select Users -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group margin-top-20 padding-bottom-10">
+                                    <label class="control-label">
+                                        <?php echo __('Allocated Users'); ?>
+                                    </label>
+                                    <select
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="users"
+                                            ng-options="user.key as user.value for user in users"
+                                            ng-model="allocation.DashboardTab.AllocatedUsers._ids"
+                                            multiple="multiple">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Select Roles -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group margin-top-20 padding-bottom-10">
+                                    <label class="control-label">
+                                        <?php echo __('Allocated Roles'); ?>
+                                    </label>
+                                    <select
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="usergroups"
+                                            ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
+                                            ng-model="allocation.DashboardTab.usergroups._ids"
+                                            multiple="multiple">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- pinDashboard -->
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="form-group margin-top-20 padding-bottom-10">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="pinDashboard"
+                                               ng-model="isPinned">
+                                        <label class="custom-control-label" for="pinDashboard">
+                                            <?php echo __('Pin Dashboard'); ?>
+                                        </label>
+                                    </div>
+                                    <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
+                                    <div class="help-block text-danger" ng-show="allocation.DashboardTab.flags == 1">
+                                        There can only be one pinned dashboard. A different dashboard may be unpinned upon saving.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card margin-top-10">
+                            <div class="card-body">
+                                <div class="float-right">
+                                    <button class="btn btn-primary"
+                                            type="submit"><?php echo __('Refresh Allocation'); ?></button>
+                                    <a back-button href="javascript:void(0);" fallback-state='DashboardAllocation'
+                                       class="btn btn-default"><?php echo __('Cancel'); ?></a>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-
-<button type="button" class="btn btn-success" ng-click="saveAllocation()">
-    <?php echo __('Refresh Allocation'); ?>
-</button>

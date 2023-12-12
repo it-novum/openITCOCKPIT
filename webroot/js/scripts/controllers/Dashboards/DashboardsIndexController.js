@@ -26,7 +26,10 @@ angular.module('openITCOCKPIT')
             renameWidgetTitle: '',
             users: [],
             usergroups: [],
-            flags: 0
+            flags: 0,
+            Container: {
+                _ids:[]
+            }
         };
 
         $scope.$watch('isPinned', function(val) {
@@ -36,6 +39,17 @@ angular.module('openITCOCKPIT')
             }
             $scope.data.flags ^= 1;
         });
+
+        // I will load all containers.
+        $scope.loadContainer = function() {
+            return $http.get("/users/loadContainersForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result) {
+                $scope.containers = result.data.containers;
+            });
+        };
 
         $scope.gridsterOpts = {
             minRows: 2, // the minimum height of the grid, in rows
@@ -137,7 +151,6 @@ angular.module('openITCOCKPIT')
                 $scope.data.Usergroup = result.data.widgets.Usergroup._ids || [];
 
                 // ITC-3037
-                $scope.isReadonly = result.data.isReadonly ? 1 : 0;
                 $scope.isPinned = false;
                 $scope.hideModifications = false;
 
@@ -175,7 +188,6 @@ angular.module('openITCOCKPIT')
                         title: result.data.widgets.Widget[i].title,
                         color: result.data.widgets.Widget[i].color,
                         directive: result.data.widgets.Widget[i].directive,
-                        isReadonly: $scope.isReadonly
                     });
                 }
 
@@ -491,8 +503,16 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.allocateDashboard = function(tabId){
+            // Fetch Containers.
+            $scope.loadContainer();
+
+            // Fetch UserGroups.
             $scope.loadUsergroups();
+
+            // Fetch Users.
             $scope.loadUsers();
+
+            // Show the modal.
             $('#allocateDashboardModal').modal('show');
         }
         $scope.refreshAllocation = function(){

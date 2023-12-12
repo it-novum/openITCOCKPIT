@@ -623,4 +623,9 @@ class DashboardTabsTable extends Table {
         // ITC-3037 MAKE DYNAMIC
         return true;
     }
+
+    public function getPinnedDashboard()
+    {
+        return ['name' => 'Fake 456', 'id' => 42];
+    }
 }

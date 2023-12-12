@@ -2017,7 +2017,8 @@ class DashboardsController extends AppController {
             }
 
             $this->set('dashboardTabs', $dashboardTabs);
-            $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
+            $this->set('pinnedDashboard', $DashboardTabsTable->getPinnedDashboard());
+            $this->viewBuilder()->setOption('serialize', ['dashboardTabs', 'pinnedDashboard']);
 
             return;
         }
