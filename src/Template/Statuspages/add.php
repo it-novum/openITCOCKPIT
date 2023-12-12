@@ -308,9 +308,7 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                        <!--<div class="form-group">
-                            <button class="btn btn-primary btn-sm" type="button" ng-click="toggleServiceAlias()" ng-show="showServiceAliasButton">Set service alias</button>
-                        </div>-->
+
                         <div class="form-group" ng-show="showServiceAlias">
                             <label class="control-label">
                                 <?php echo __('Service alias'); ?>

@@ -560,7 +560,6 @@ class AclDependencies {
             ->dependency('Statuspages', 'index', 'Statuspages', 'loadContainers')
             ->dependency('Statuspages', 'view', 'Statuspages', 'loadContainers')
             ->dependency('Statuspages', 'add', 'Statuspages', 'loadContainers')
-            ->dependency('Statuspages', 'edit', 'Statuspages', 'setAlias')
             ->dependency('Statuspages', 'edit', 'Statuspages', 'loadContainers');
 
         $this

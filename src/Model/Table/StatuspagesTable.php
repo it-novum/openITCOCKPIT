@@ -206,34 +206,6 @@ class StatuspagesTable extends Table {
     }
 
     /**
-     * @param $id
-     * @return \App\Model\Entity\Statuspage|void
-     */
-    public function getEditData($id) {
-        $statuspage = $this->get($id, [
-            'contain' => [
-                'Containers', 'Hosts', 'Services', 'Hostgroups', 'Servicegroups'
-            ]
-        ]);
-        $statuspage['containers'] = [
-            '_ids' => Hash::extract($statuspage, 'containers.{n}.id')
-        ];
-        $statuspage['hosts'] = [
-            '_ids' => Hash::extract($statuspage, 'hosts.{n}.id')
-        ];
-        $statuspage['hostgroups'] = [
-            '_ids' => Hash::extract($statuspage, 'hostgroups.{n}.id')
-        ];
-        $statuspage['services'] = [
-            '_ids' => Hash::extract($statuspage, 'services.{n}.id')
-        ];
-        $statuspage['servicegroups'] = [
-            '_ids' => Hash::extract($statuspage, 'servicegroups.{n}.id')
-        ];
-        return $statuspage;
-    }
-
-    /**
      * @param string|null $id
      * @param @param UserTime $userTime
      * @param bool $isPublicCall
@@ -419,9 +391,14 @@ class StatuspagesTable extends Table {
 
         $conditions = array_merge(['Statuspages.id' => $id]);
 
-        $query = $this->find()->contain('Hosts', function (Query $q) {
+        $query = $this->find()
+            ->contain('Containers', function (Query $q) {
+                return $q->select(['id', 'name']);
+            })
+            ->contain('Hosts', function (Query $q) {
             return $q->select(['id', 'uuid', 'name']);
-        })->contain('Services', function (Query $q) {
+        })
+            ->contain('Services', function (Query $q) {
             return $q->select([
                 'id', 'uuid', 'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'), 'hostname' => 'host.name'
 
@@ -430,19 +407,22 @@ class StatuspagesTable extends Table {
             ])->innerJoin(['Servicetemplates' => 'servicetemplates'], [
                 'Servicetemplates.id = Services.servicetemplate_id'
             ]);
-        })->contain('Hostgroups', function (Query $q) {
+        })
+            ->contain('Hostgroups', function (Query $q) {
             return $q->select([
                 'id', 'uuid', 'name' => 'Containers.name'
             ])->innerJoin(['Containers' => 'containers'], [
                 'Containers.id = Hostgroups.container_id', 'Containers.containertype_id' => CT_HOSTGROUP
             ]);
-        })->contain('Servicegroups', function (Query $q) {
+        })
+            ->contain('Servicegroups', function (Query $q) {
             return $q->select([
                 'id', 'uuid', 'name' => 'Containers.name'
             ])->innerJoin(['Containers' => 'containers'], [
                 'Containers.id = Servicegroups.container_id', 'Containers.containertype_id' => CT_SERVICEGROUP
             ]);
-        })->where($conditions)->firstOrFail();
+        })
+            ->where($conditions)->firstOrFail();
         $statuspage = $query->toArray();
 
         return $statuspage;
