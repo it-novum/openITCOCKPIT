@@ -135,9 +135,12 @@ class StatuspagesTable extends Table {
      * @return \Cake\Validation\Validator
      */
     public function validationDefault(Validator $validator): Validator {
-        $validator->requirePresence('containers', true, __('You have to choose at least one option.'))->allowEmptyString('containers', null, false)->multipleOptions('containers', [
-            'min' => 1
-        ], __('You have to choose at least one option.'));
+        $validator
+            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->allowEmptyString('containers', null, false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one option.'));
 
         $validator
             ->scalar('name')

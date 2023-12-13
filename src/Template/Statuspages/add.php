@@ -158,7 +158,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-show="showHostgroupAlias">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Hostgroup alias'); ?>
                             </label>

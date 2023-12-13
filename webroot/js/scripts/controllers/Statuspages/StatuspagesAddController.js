@@ -40,7 +40,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadHosts = function(searchString) {
+        $scope.loadHosts = function(searchString, selected = true) {
             if ($scope.init) {
                 return;
             }
@@ -50,8 +50,7 @@ angular.module('openITCOCKPIT')
                         'angular': true,
                         'containerId': $scope.container_id,
                         'filter[Hosts.name]': searchString,
-                        'selected[]': $scope.hosts_ids,
-                       // 'resolveContainerIds': true
+                        'selected[]': selected ? $scope.hosts_ids  : [],
                     }
                 }).then(function(result) {
                     $scope.hosts = result.data.hosts;
@@ -59,7 +58,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadServices = function(searchString) {
+        $scope.loadServices = function(searchString, selected = true) {
             if ($scope.init) {
                 return;
             }
@@ -70,7 +69,7 @@ angular.module('openITCOCKPIT')
                     'filter': {
                         'servicename': searchString,
                     },
-                    'selected': $scope.services_ids
+                    'selected': selected ? $scope.services_ids : []
                 };
 
                 $http.get("/services/loadServicesByStringCake4.json", {
@@ -81,7 +80,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadHostgroups = function(searchString) {
+        $scope.loadHostgroups = function(searchString, selected = true) {
             if ($scope.init) {
                 return;
             }
@@ -90,7 +89,7 @@ angular.module('openITCOCKPIT')
                         params: {
                             'angular': true,
                             'filter[Containers.name]': searchString,
-                            'selected[]': $scope.hostgroups_ids,
+                            'selected[]': selected ? $scope.hostgroups_ids : [],
                             'containerId': $scope.container_id,
                         }
                 }).then(function(result) {
@@ -99,7 +98,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.loadServicegroups = function(searchString) {
+        $scope.loadServicegroups = function(searchString, selected = true) {
             if ($scope.init) {
                 return;
             }
@@ -108,7 +107,7 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'filter[Containers.name]': searchString,
-                        'selected[]': $scope.servicegroups_ids,
+                        'selected[]': selected ? $scope.servicegroups_ids: [],
                         'containerId': $scope.container_id,
                     }
                 }).then(function(result) {
@@ -117,13 +116,6 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.toggleHostAlias = function() {
-            $scope.showHostAlias = !$scope.showHostAlias;
-        };
-
-        $scope.toggleServiceAlias = function() {
-            $scope.showServiceAlias = !$scope.showServiceAlias;
-        };
 
         $scope.submit = function() {
             let hostgroupsub = $scope.transform('hostgroups');
@@ -181,24 +173,53 @@ angular.module('openITCOCKPIT')
                 typeconv.push(typeObject);
             }
             return typeconv;
-        }
+        };
+
+        $scope.proofSelected = function() {
+            if ($scope.hostgroups_ids.length > 0) {
+                let tmp = [];
+                for (let index in $scope.hostgroups_ids) {
+                    let id = $scope.hostgroups_ids[index];
+                    if( $scope.hostgroups.find(elem => elem.key === id)) {
+                        tmp.push(id);
+                    }
+                }
+                $scope.hostgroups_ids = tmp;
+            }
+
+            if ($scope.servicegroups_ids.length > 0) {
+                let tmp = [];
+                for (let index in $scope.servicegroups_ids) {
+                    let id = $scope.servicegroups_ids[index];
+                    if( $scope.servicegroups.find(elem => elem.key === id)) {
+                        tmp.push(id);
+                    }
+                }
+                $scope.servicegroups_ids = tmp;
+            }
+
+            if ($scope.hosts_ids.length > 0) {
+                let tmp = [];
+                for (let index in $scope.hosts_ids) {
+                    let id = $scope.hosts_ids[index];
+                    if( $scope.hosts.find(elem => elem.key === id)) {
+                        tmp.push(id);
+                    }
+                }
+                $scope.hosts_ids = tmp;
+            }
+        };
 
         $scope.$watch('container_id', function() {
+            if ($scope.init) {
+                return;
+            }
             if ($scope.container_id !== null) {
-
-                $scope.hosts_ids = [];
-                $scope.hosts = [];
-                $scope.services_ids = [];
-                $scope.services = [];
-                $scope.hostgroups_ids = [];
-                $scope.hostgroups = [];
-                $scope.servicegroups_ids = [];
-                $scope.servicegroups = [];
-
+                $scope.loadHostgroups('', false);
                 $scope.loadHosts('');
                 $scope.loadServices('');
-                $scope.loadHostgroups('');
                 $scope.loadServicegroups('');
+                $scope.proofSelected();
             }
              else {
                 $scope.hosts_ids = [];
@@ -224,6 +245,8 @@ angular.module('openITCOCKPIT')
                     filter.push(object);
                 }
                 $scope.selectedHosts = filter;
+            } else {
+                $scope.selectedHosts = [];
             }
         }, true);
 
@@ -239,6 +262,8 @@ angular.module('openITCOCKPIT')
                     filter.push(object);
                 }
                 $scope.selectedServices = filter;
+            } else {
+                $scope.selectedServices = [];
             }
         }, true);
 
@@ -253,6 +278,8 @@ angular.module('openITCOCKPIT')
                     filter.push(object);
                 }
                 $scope.selectedHostgroups = filter;
+            } else {
+                $scope.selectedHostgroups = [];
             }
         }, true);
 
@@ -267,6 +294,8 @@ angular.module('openITCOCKPIT')
                     filter.push(object);
                 }
                 $scope.selectedServicegroups = filter;
+            } else {
+                $scope.selectedServicegroups = [];
             }
         }, true);
 
