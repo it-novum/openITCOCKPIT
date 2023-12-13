@@ -1087,4 +1087,31 @@ class ServicegroupsController extends AppController {
         $this->set('servicegroups', $servicegroups);
         $this->viewBuilder()->setOption('serialize', ['servicegroups']);
     }
+
+    public function loadServicegroupsByStringAndContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        $selected = $this->request->getQuery('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $containerIds = [ROOT_CONTAINER];
+        if($containerId !== ROOT_CONTAINER && in_array($containerId, $this->MY_RIGHTS)) {
+            $containerIds = [ROOT_CONTAINER, $containerId];
+        }
+
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
+
+        $ServicegroupConditions = new ServicegroupConditions($ServicegroupFilter->indexFilter());
+        $ServicegroupConditions->setContainerIds($containerIds);
+
+        $servicegroups = Api::makeItJavaScriptAble(
+            $ServicegroupsTable->getServicegroupsForAngular($ServicegroupConditions, $selected)
+        );
+
+        $this->set('servicegroups', $servicegroups);
+        $this->viewBuilder()->setOption('serialize', ['servicegroups']);
+    }
 }

@@ -77,6 +77,8 @@ angular.module('openITCOCKPIT')
                 $scope.aliasServices = $scope.post.Statuspage.services.map($scope.createAliasArray);
                 $scope.aliasHostgroups = $scope.post.Statuspage.hostgroups.map($scope.createAliasArray);
                 $scope.aliasServicegroups = $scope.post.Statuspage.servicegroups.map($scope.createAliasArray);
+                $scope.loadContainers();
+
             },
                 function errorCallback(result) {
                 if (result.status === 403) {
@@ -104,12 +106,12 @@ angular.module('openITCOCKPIT')
 
         $scope.loadHostgroups = function(searchString){
             if($scope.container_id !== null){
-                $http.get("/hostgroups/loadHostgroupsByString.json", {
+                $http.get("/hostgroups/loadHostgroupsByStringAndContainers.json", {
                     params: {
                         'angular': true,
                         'filter[Containers.name]': searchString,
                         'selected[]': $scope.hostgroups_ids,
-                        'resolveContainerIds': true
+                        'containerId': $scope.container_id,
                     }
                 }).then(function(result){
                     $scope.hostgroups = result.data.hostgroups;
@@ -119,11 +121,12 @@ angular.module('openITCOCKPIT')
 
         $scope.loadServicegroups = function(searchString) {
             if ($scope.container_id) {
-                $http.get("/servicegroups/loadServicegroupsByString.json", {
+                $http.get("/servicegroups/loadServicegroupsByStringAndContainers.json", {
                     params: {
                         'angular': true,
                         'filter[Containers.name]': searchString,
-                        'selected[]': $scope.servicegroups_ids
+                        'selected[]': $scope.servicegroups_ids,
+                        'containerId': $scope.container_id,
                     }
                 }).then(function(result) {
                     $scope.servicegroups = result.data.servicegroups;

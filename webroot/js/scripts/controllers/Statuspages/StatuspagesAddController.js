@@ -25,10 +25,6 @@ angular.module('openITCOCKPIT')
         $scope.selectedHostgroups = [];
         $scope.selectedServicegroups = [];
         $scope.init = true;
-        $scope.showHostAlias = false;
-        $scope.showHostgroupAlias = true;
-        $scope.showServiceAlias = false;
-        $scope.showServicegroupAlias = false;
 
 
         $scope.loadContainers = function() {
@@ -90,11 +86,12 @@ angular.module('openITCOCKPIT')
                 return;
             }
             if ($scope.container_id) {
-                $http.get("/hostgroups/loadHostgroupsByString.json", {
+                $http.get("/hostgroups/loadHostgroupsByStringAndContainers.json", {
                         params: {
                             'angular': true,
                             'filter[Containers.name]': searchString,
-                            'selected[]': $scope.hostgroups_ids
+                            'selected[]': $scope.hostgroups_ids,
+                            'containerId': $scope.container_id,
                         }
                 }).then(function(result) {
                     $scope.hostgroups = result.data.hostgroups;
@@ -107,11 +104,12 @@ angular.module('openITCOCKPIT')
                 return;
             }
             if ($scope.container_id) {
-                $http.get("/servicegroups/loadServicegroupsByString.json", {
+                $http.get("/servicegroups/loadServicegroupsByStringAndContainers.json", {
                     params: {
                         'angular': true,
                         'filter[Containers.name]': searchString,
-                        'selected[]': $scope.servicegroups_ids
+                        'selected[]': $scope.servicegroups_ids,
+                        'containerId': $scope.container_id,
                     }
                 }).then(function(result) {
                     $scope.servicegroups = result.data.servicegroups;
@@ -188,6 +186,15 @@ angular.module('openITCOCKPIT')
         $scope.$watch('container_id', function() {
             if ($scope.container_id !== null) {
 
+                $scope.hosts_ids = [];
+                $scope.hosts = [];
+                $scope.services_ids = [];
+                $scope.services = [];
+                $scope.hostgroups_ids = [];
+                $scope.hostgroups = [];
+                $scope.servicegroups_ids = [];
+                $scope.servicegroups = [];
+
                 $scope.loadHosts('');
                 $scope.loadServices('');
                 $scope.loadHostgroups('');
@@ -217,10 +224,6 @@ angular.module('openITCOCKPIT')
                     filter.push(object);
                 }
                 $scope.selectedHosts = filter;
-                $scope.showHostAlias = true;
-            } else {
-                // $scope.showHostAliasButton = false;
-                $scope.showHostAlias = false;
             }
         }, true);
 
@@ -235,12 +238,7 @@ angular.module('openITCOCKPIT')
                     object.display_alias = ($scope.selectedServices.find(x => x.id === object.id) !== undefined) ? $scope.selectedServices.find(x => x.id === object.id).display_alias : null;
                     filter.push(object);
                 }
-
                 $scope.selectedServices = filter;
-                $scope.showServiceAlias = true;
-            } else {
-                // $scope.showServiceAliasButton = false;
-                $scope.showServiceAlias = false;
             }
         }, true);
 
@@ -255,9 +253,6 @@ angular.module('openITCOCKPIT')
                     filter.push(object);
                 }
                 $scope.selectedHostgroups = filter;
-                $scope.showHostgroupAlias = true;
-            } else {
-                $scope.showHostgroupAlias = false;
             }
         }, true);
 
@@ -272,9 +267,6 @@ angular.module('openITCOCKPIT')
                     filter.push(object);
                 }
                 $scope.selectedServicegroups = filter;
-                $scope.showServicegroupAlias = true;
-            } else {
-                $scope.showServicegroupAlias = false;
             }
         }, true);
 

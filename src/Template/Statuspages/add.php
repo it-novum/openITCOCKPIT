@@ -209,7 +209,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-show="showServicegroupAlias">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Servicegroup alias'); ?>
                             </label>
@@ -260,7 +260,7 @@
                         <!--<div class="form-group">
                             <button class="btn btn-primary btn-sm" type="button" ng-click="toggleHostAlias()" ng-show="showHostAliasButton">Set host alias</button>
                         </div>-->
-                        <div class="form-group" ng-show="showHostAlias">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Host alias'); ?>
                             </label>
@@ -309,7 +309,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-show="showServiceAlias">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Service alias'); ?>
                             </label>
