@@ -54,6 +54,7 @@ class DashboardTab extends Entity {
         'source_tab'        => true,
         'widgets'           => true,
         'usergroups'        => true,
-        'flags'             => true
+        'flags'             => true,
+        'containers'        => true,
     ];
 }

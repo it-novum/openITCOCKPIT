@@ -58,6 +58,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TacticalOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\WebsiteJson;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -2001,6 +2002,7 @@ class DashboardsController extends AppController {
                 ->where(['id' => $id])
                 ->contain('Usergroups')
                 ->contain('AllocatedUsers')
+                ->contain('Containers')
                 ->disableHydration()
                 ->toArray();
 
@@ -2014,6 +2016,9 @@ class DashboardsController extends AppController {
                 $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
                 $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
                 $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+                // Condense the containers
+                $dashboardTabs[$dashboardTabIndex]['container_name'] = Hash::extract($dashboardTab['containers'] ?? [], '{n}.name');
+                $dashboardTabs[$dashboardTabIndex]['containers'] = Hash::extract($dashboardTab['containers'] ?? [], '{n}.id');
             }
 
             $this->set('dashboardTabs', $dashboardTabs);
@@ -2045,6 +2050,7 @@ class DashboardsController extends AppController {
                 $UsersTable->save($UserEntity);
             }
 
+            $dashboardTab['containers']['_ids'] = [$dashboardTab['containers']['_ids']];
             $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
 
             // Save

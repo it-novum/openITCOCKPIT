@@ -68,6 +68,14 @@ class DashboardTabsTable extends Table {
             'saveStrategy'     => 'replace',
             'dependent'        => true
         ]);
+        $this->belongsToMany('Containers', [
+            'className'        => 'Containers',
+            'joinTable'        => 'containers_to_dashboard_tabs',
+            'foreignKey'       => 'dashboard_tab_id',
+            'targetForeignKey' => 'container_id',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
+        ]);
         $this->belongsToMany('AllocatedUsers', [
             'className'        => 'Users',
             'joinTable'        => 'users_to_dashboard_tabs',
@@ -626,6 +634,6 @@ class DashboardTabsTable extends Table {
 
     public function getPinnedDashboard()
     {
-        return ['name' => 'Fake 456', 'id' => 42];
+        return ['name' => 'Fake 456', 'id' => 94];
     }
 }

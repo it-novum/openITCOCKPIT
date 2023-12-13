@@ -60,7 +60,7 @@
                                     class="form-control"
                                     chosen="containers"
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="allocation.DashboardTab.Container._ids">
+                                    ng-model="allocation.DashboardTab.containers._ids">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -119,7 +119,7 @@
                                         </label>
                                     </div>
                                     <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
-                                    <div class="help-block text-danger" ng-show="allocation.DashboardTab.flags == 1">
+                                    <div class="help-block text-danger" ng-show="allocation.DashboardTab.flags == 1 && pinnedDashboard.id !== allocation.DashboardTab.id">
                                         There can only be one pinned dashboard. A different dashboard may be unpinned upon saving.
                                     </div>
                                 </div>
