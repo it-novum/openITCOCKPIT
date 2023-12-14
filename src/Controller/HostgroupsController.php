@@ -1087,7 +1087,7 @@ class HostgroupsController extends AppController {
             if ($container_id != ROOT_CONTAINER) {
                 // Get contaier id of the tenant container
                 // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
-                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerId');
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerIdAjax');
 
                 // Tenant host groups are available for all users of a tenant (oITC V2 legacy)
                 $tenantContainerIds[] = $path[1]['id'];
