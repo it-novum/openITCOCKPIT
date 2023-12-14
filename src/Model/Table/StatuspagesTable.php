@@ -996,7 +996,7 @@ class StatuspagesTable extends Table {
                 ];
 
                 foreach ($objectGroup['host_uuids'] as $hostUuid => $v) {
-                    if(isset($AllPlannedHostDowntimes[$hostUuid])){
+                    if (isset($AllPlannedHostDowntimes[$hostUuid])) {
                         $statuspage[$objectType][$index]['state_summary']['hosts']['planned_downtime_details'] = array_merge(
                             $statuspage[$objectType][$index]['state_summary']['hosts']['planned_downtime_details'],
                             $AllPlannedHostDowntimes[$hostUuid]
@@ -1019,6 +1019,7 @@ class StatuspagesTable extends Table {
                     if ($Hoststatus->isAcknowledged()) {
                         $statuspage[$objectType][$index]['state_summary']['hosts']['acknowledgements']++;
                         if (isset($AllHostAcknowledgemens[$hostUuid])) {
+                            // todo add option to hide acknowledgement comment?
                             $statuspage[$objectType][$index]['state_summary']['hosts']['acknowledgement_details'][] = (new AcknowledgementHost(
                                 $AllHostAcknowledgemens[$hostUuid]
                             ))->toArray();
@@ -1027,6 +1028,7 @@ class StatuspagesTable extends Table {
                     if ($Hoststatus->isInDowntime()) {
                         $statuspage[$objectType][$index]['state_summary']['hosts']['downtimes']++;
                         if (isset($AllHostDowntimes[$hostUuid])) {
+                            // todo add option to hide downtime comment?
                             $statuspage[$objectType][$index]['state_summary']['hosts']['downtime_details'][] = (new Downtime(
                                 $AllHostDowntimes[$hostUuid]
                             ))->toArray();
@@ -1035,7 +1037,7 @@ class StatuspagesTable extends Table {
                 }
 
                 foreach ($objectGroup['service_uuids'] as $serviceUuid => $v) {
-                    if(isset($AllPlannedServiceDowntimes[$serviceUuid])) {
+                    if (isset($AllPlannedServiceDowntimes[$serviceUuid])) {
                         $statuspage[$objectType][$index]['state_summary']['services']['planned_downtime_details'] = array_merge(
                             $statuspage[$objectType][$index]['state_summary']['services']['planned_downtime_details'],
                             $AllPlannedServiceDowntimes[$serviceUuid]
@@ -1108,6 +1110,12 @@ class StatuspagesTable extends Table {
             }
         }
 
+        // Create total summary state of the complete Status page
+        foreach (['hosts', 'services', 'hostgroups', 'servicegroups'] as $objectType) {
+            // todo implement me
+            $statuspage['cumulatedStateId'] = 1337;
+            $statuspage['cumulatedStateName'] = "Not so toll";
+        }
         debug($statuspage);
 
         return $statuspage;
