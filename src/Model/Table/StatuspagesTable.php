@@ -92,38 +92,38 @@ class StatuspagesTable extends Table {
         $this->addBehavior('Timestamp');
 
         $this->belongsToMany('Containers', [
-            'className' => 'Containers',
-            'foreignKey' => 'statuspage_id',
+            'className'        => 'Containers',
+            'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'container_id',
-            'joinTable' => 'statuspages_to_containers'
+            'joinTable'        => 'statuspages_to_containers'
         ])->setDependent(true);
 
 
         $this->belongsToMany('Hosts', [
-            'className' => 'Hosts',
-            'foreignKey' => 'statuspage_id',
+            'className'        => 'Hosts',
+            'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'host_id',
-            'joinTable' => 'statuspages_to_hosts'
+            'joinTable'        => 'statuspages_to_hosts'
         ])->setDependent(true);
 
         $this->belongsToMany('Services', [
-            'className' => 'Services',
-            'foreignKey' => 'statuspage_id',
+            'className'        => 'Services',
+            'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'service_id',
-            'joinTable' => 'statuspages_to_services'
+            'joinTable'        => 'statuspages_to_services'
         ])->setDependent(true);
 
         $this->belongsToMany('Hostgroups', [
-            'className' => 'Hostgroups',
-            'foreignKey' => 'statuspage_id',
+            'className'        => 'Hostgroups',
+            'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'hostgroup_id',
-            'joinTable' => 'statuspages_to_hostgroups'
+            'joinTable'        => 'statuspages_to_hostgroups'
         ])->setDependent(true);
         $this->belongsToMany('Servicegroups', [
-            'className' => 'Servicegroups',
-            'foreignKey' => 'statuspage_id',
+            'className'        => 'Servicegroups',
+            'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'servicegroup_id',
-            'joinTable' => 'statuspages_to_servicegroups'
+            'joinTable'        => 'statuspages_to_servicegroups'
         ])->setDependent(true);
 
     }
@@ -479,7 +479,7 @@ class StatuspagesTable extends Table {
         if ($info['currentState'] == 2) {
             $info['cumulatedState'] = 3;
         } */
-        if(in_array($info['currentState'], [1,2], true)){
+        if (in_array($info['currentState'], [1, 2], true)) {
             $info['cumulatedState'] = $info['currentState'] + 1;
         }
         if ($info['currentState'] == 0) {
@@ -829,16 +829,31 @@ class StatuspagesTable extends Table {
         // Merge all host and service uuids to select the host and service status
         $hostUuids = [];
         $serviceUuids = [];
-        foreach ($statuspage['hosts'] as $host) {
+        foreach ($statuspage['hosts'] as $key => $host) {
             $hostUuids[$host['id']] = $host['uuid'];
+            $statuspage['hosts'][$key]['host_uuids'] = [
+                $host['uuid'] => null // We make this to have the same code for hosts, host groups, service groups and services
+            ];
+            $statuspage['hosts'][$key]['service_uuids'] = [];
             foreach ($host['services'] as $service) {
                 $serviceUuids[$service['id']] = $service['uuid'];
+                $statuspage['hosts'][$key]['service_uuids'][$service['uuid']] = null;
             }
         }
-        foreach ($statuspage['services'] as $service) {
+
+        foreach ($statuspage['services'] as $key => $service) {
             $serviceUuids[$service['id']] = $service['uuid'];
             $hostUuids[$service['host']['id']] = $service['host']['uuid'];
+
+            // We make this to have the same code for hosts, host groups, service groups and services
+            $statuspage['services'][$key]['host_uuids'] = [
+                $service['host']['uuid'] => null
+            ];
+            $statuspage['services'][$key]['service_uuids'] = [
+                $service['uuid'] => null
+            ];
         }
+
         foreach ($statuspage['hostgroups'] as $key => $hostgroup) {
             $statuspage['hostgroups'][$key]['host_uuids'] = [];
             $statuspage['hostgroups'][$key]['service_uuids'] = [];
@@ -902,10 +917,11 @@ class StatuspagesTable extends Table {
             ->problemHasBeenAcknowledged()
             ->scheduledDowntimeDepth();
 
-        $hoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
-        $servicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+        // todo add host and service downtime comments ?
+        $AllHoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
+        $AllServicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
 
-        debug($statuspage);
+        //debug($statuspage);
         foreach ($statuspage['hosts'] as $host) {
             $hostUuids[$host['id']] = $host['uuid'];
             foreach ($host['services'] as $service) {
@@ -918,6 +934,109 @@ class StatuspagesTable extends Table {
         }
 
         // Calculate worst state per object
+        // Cumulate all object types
+        foreach (['hosts', 'services', 'hostgroups', 'servicegroups'] as $objectType) {
+            foreach ($statuspage[$objectType] as $index => $objectGroup) {
+                $statuspage[$objectType][$index]['state_summary'] = [
+                    'hosts'    => [
+                        'state'              => [
+                            0 => 0, // Up
+                            1 => 0, // Down
+                            2 => 0, // Unreachable
+                        ],
+                        'acknowledgements'   => 0,
+                        'downtimes'          => 0,
+                        'total'              => 0, // Total amount of hosts
+                        'cumulatedStateId'   => 0,
+                        'cumulatedStateName' => __('Operational'),
+                    ],
+                    'services' => [
+                        'state'              => [
+                            0 => 0, // OK
+                            1 => 0, // Warning
+                            2 => 0, // Critical
+                            3 => 0, // Unknown
+                        ],
+                        'acknowledgements'   => 0,
+                        'downtimes'          => 0,
+                        'total'              => 0, // Total amount of services
+                        'cumulatedStateId'   => 0,
+                        'cumulatedStateName' => __('Operational'),
+                    ]
+                ];
+
+                foreach ($objectGroup['host_uuids'] as $hostUuid => $v) {
+                    if (!isset($AllHoststatus[$hostUuid]['Hoststatus'])) {
+                        continue;
+                    }
+
+                    $Hoststatus = new Hoststatus($AllHoststatus[$hostUuid]['Hoststatus']);
+                    $statuspage[$objectType][$index]['state_summary']['hosts']['total']++;
+
+                    $statuspage[$objectType][$index]['state_summary']['hosts']['state'][$Hoststatus->currentState()]++;
+                    if ($Hoststatus->isAcknowledged()) {
+                        $statuspage[$objectType][$index]['state_summary']['hosts']['acknowledgements']++;
+                    }
+                    if ($Hoststatus->isInDowntime()) {
+                        $statuspage[$objectType][$index]['state_summary']['hosts']['downtimes']++;
+                    }
+                }
+
+                foreach ($objectGroup['service_uuids'] as $serviceUuid => $v) {
+                    if (!isset($AllServicestatus[$serviceUuid]['Servicestatus'])) {
+                        continue;
+                    }
+
+                    $Servicestatus = new Servicestatus($AllServicestatus[$serviceUuid]['Servicestatus']);
+                    $statuspage[$objectType][$index]['state_summary']['services']['total']++;
+
+                    $statuspage[$objectType][$index]['state_summary']['services']['state'][$Servicestatus->currentState()]++;
+                    if ($Servicestatus->isAcknowledged()) {
+                        $statuspage[$objectType][$index]['state_summary']['services']['acknowledgements']++;
+                    }
+                    if ($Servicestatus->isInDowntime()) {
+                        $statuspage[$objectType][$index]['state_summary']['services']['downtimes']++;
+                    }
+                }
+            }
+        }
+
+        // Set cumulatedState state
+        foreach (['hosts', 'services', 'hostgroups', 'servicegroups'] as $objectType) {
+            foreach ($statuspage[$objectType] as $index => $objectGroup) {
+                if ($objectGroup['state_summary']['hosts']['state'][1] > 0) {
+                    // Host is down
+                    $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] = 1;
+                    $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateName'] = __('Major Outage');
+                }
+                if ($objectGroup['state_summary']['hosts']['state'][2] > 0) {
+                    // Host is unreachable
+                    $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] = 2;
+                    $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateName'] = __('Unknown');
+                }
+
+
+                if ($objectGroup['state_summary']['services']['state'][1] > 0) {
+                    // Services is warning
+                    $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] = 1;
+                    $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateName'] = __('Performance Issues');
+                }
+                if ($objectGroup['state_summary']['services']['state'][2] > 0) {
+                    // Services is critical
+                    $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] = 2;
+                    $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateName'] = __('Major Outage');
+                }
+                if ($objectGroup['state_summary']['services']['state'][3] > 0) {
+                    // Services is unknown
+                    $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] = 3;
+                    $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateName'] = __('Unknown');
+                }
+
+            }
+        }
+
+        debug($statuspage);
+
 
     }
 

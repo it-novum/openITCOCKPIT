@@ -123,8 +123,8 @@ class StatuspagesController extends AppController {
         }
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-        //$StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, true);
-        //die('OLD');
+        $StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, true);
+        die('OLD');
 
         $statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime);
 
