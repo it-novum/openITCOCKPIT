@@ -48,4 +48,10 @@ interface AcknowledgementHostsTableInterface {
      * @return array
      */
     public function byUuid($uuid);
+
+    /**
+     * @param array $uuids
+     * @return array
+     */
+    public function byUuids($uuids);
 }

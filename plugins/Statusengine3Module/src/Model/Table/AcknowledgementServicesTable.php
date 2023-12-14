@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace Statusengine3Module\Model\Table;
 
+use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -53,7 +54,7 @@ use Statusengine3Module\Model\Entity\AcknowledgementService;
  * @method \Statusengine3Module\Model\Entity\AcknowledgementService[]|\Cake\Datasource\ResultSetInterface|false deleteMany(iterable $entities, $options = [])
  * @method \Statusengine3Module\Model\Entity\AcknowledgementService[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  */
-class AcknowledgementServicesTable extends Table {
+class AcknowledgementServicesTable extends Table implements AcknowledgementServicesTableInterface {
 
     /*****************************************************/
     /*                         !!!                       */
@@ -146,6 +147,39 @@ class AcknowledgementServicesTable extends Table {
             } else {
                 $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
             }
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * @param $uuids
+     * @return array
+     */
+    public function byUuids($uuids) {
+        if(empty($uuids)){
+            return [];
+        }
+
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $query = $this->find()
+            ->where([
+                'service_description IN' => $uuids
+            ])
+            ->order([
+                'entry_time' => 'DESC',
+            ])
+            ->disableHydration()
+            ->all();
+
+        $acks = $query->toArray();
+        $result = [];
+        foreach ($acks as $ack) {
+            $result[$ack['service_description']] = $ack;
         }
 
         return $result;

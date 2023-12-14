@@ -151,4 +151,37 @@ class AcknowledgementHostsTable extends Table implements AcknowledgementHostsTab
 
         return $result;
     }
+
+    /**
+     * @param $uuids
+     * @return array
+     */
+    public function byUuids($uuids) {
+        if(empty($uuids)){
+            return [];
+        }
+
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $query = $this->find()
+            ->where([
+                'hostname IN ' => $uuids
+            ])
+            ->order([
+                'entry_time' => 'DESC',
+            ])
+            ->disableHydration()
+            ->all();
+
+        $acks = $query->toArray();
+
+        $result = [];
+        foreach ($acks as $ack) {
+            $result[$ack['hostname']] = $ack;
+        }
+
+        return $result;
+    }
 }

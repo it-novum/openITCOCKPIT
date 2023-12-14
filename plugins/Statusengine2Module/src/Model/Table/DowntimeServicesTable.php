@@ -27,6 +27,7 @@ namespace Statusengine2Module\Model\Table;
 
 use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Http\Exception\NotImplementedException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -466,5 +467,24 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
                 'uuid' => $result['Objects']['name2']
             ]
         ];
+    }
+
+    /**
+     * @param array $uuids
+     * @param bool $isRunning
+     * @return array
+     */
+    public function byUuidsNoJoins($uuids, $isRunning = false) {
+        throw new NotImplementedException();
+    }
+
+    /**
+     * @param $uuids
+     * @param int $startTimestamp
+     * @param int $endTimestamp
+     * @return array
+     */
+    public function getPlannedDowntimes($uuids, int $startTimestamp, int $endTimestamp) {
+        throw new NotImplementedException();
     }
 }

@@ -917,11 +917,33 @@ class StatuspagesTable extends Table {
             ->problemHasBeenAcknowledged()
             ->scheduledDowntimeDepth();
 
-        // todo add host and service downtime comments ?
         $AllHoststatus = $HoststatusTable->byUuid($hostUuids, $HoststatusFields);
-        $AllServicestatus = $ServicestatusTable->byUuid($serviceUuids, $ServicestatusFields);
+        $AckHostUuids = Hash::extract($AllHoststatus, '{s}.Hoststatus[problem_has_been_acknowledged=true].hostname');
+        $DowntimeHostUuids = Hash::extract($AllHoststatus, '{s}.Hoststatus[scheduled_downtime_depth>0].hostname');
 
-        //debug($statuspage);
+        $AllServicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
+        $AckServiceUuids = Hash::extract($AllServicestatus, '{s}.Servicestatus[problem_has_been_acknowledged=true].service_description');
+        $DowntimeServiceUuids = Hash::extract($AllServicestatus, '{s}.Servicestatus[scheduled_downtime_depth>0].service_description');
+
+        // Query Acknowledgements for all objects
+        $AcknowledgementHostsTable = $DbBackend->getAcknowledgementHostsTable();
+        $AcknowledgementServicesTable = $DbBackend->getAcknowledgementServicesTable();
+
+        $AllHostAcknowledgemens = $AcknowledgementHostsTable->byUuids($AckHostUuids);
+        $AllServiceAcknowledgemens = $AcknowledgementServicesTable->byUuids($AckServiceUuids);
+
+        // Query Downtimes for all objects
+        $DowntimehistoryHostsTable = $DbBackend->getDowntimehistoryHostsTable();
+        $DowntimehistoryServicesTable = $DbBackend->getDowntimehistoryServicesTable();
+
+        $AllHostDowntimes = $DowntimehistoryHostsTable->byUuidsNoJoins($DowntimeHostUuids, true);
+        $AllServiceDowntimes = $DowntimehistoryServicesTable->byUuidsNoJoins($DowntimeServiceUuids, true);
+
+        // Query all planned downtimes for all objects
+        $AllPlannedHostDowntimes = $DowntimehistoryHostsTable->getPlannedDowntimes($hostUuids, time(), (time() + (3600 * 24 * 10)));
+        $AllPlannedServiceDowntimes = $DowntimehistoryServicesTable->getPlannedDowntimes($serviceUuids, time(), (time() + (3600 * 24 * 10)));
+
+
         foreach ($statuspage['hosts'] as $host) {
             $hostUuids[$host['id']] = $host['uuid'];
             foreach ($host['services'] as $service) {
@@ -939,35 +961,48 @@ class StatuspagesTable extends Table {
             foreach ($statuspage[$objectType] as $index => $objectGroup) {
                 $statuspage[$objectType][$index]['state_summary'] = [
                     'hosts'    => [
-                        'state'              => [
+                        'state'                    => [
                             0 => 0, // Up
                             1 => 0, // Down
                             2 => 0, // Unreachable
                         ],
-                        'acknowledgements'   => 0,
-                        'downtimes'          => 0,
-                        'total'              => 0, // Total amount of hosts
-                        'problems'           => 0, // Hosts in none up state
-                        'cumulatedStateId'   => 0,
-                        'cumulatedStateName' => __('Operational'),
+                        'acknowledgements'         => 0,
+                        'acknowledgement_details'  => [],
+                        'downtimes'                => 0,
+                        'downtime_details'         => [],
+                        'planned_downtime_details' => [],
+                        'total'                    => 0, // Total amount of hosts
+                        'problems'                 => 0, // Hosts in none up state
+                        'cumulatedStateId'         => 0,
+                        'cumulatedStateName'       => __('Operational'),
                     ],
                     'services' => [
-                        'state'              => [
+                        'state'                    => [
                             0 => 0, // OK
                             1 => 0, // Warning
                             2 => 0, // Critical
                             3 => 0, // Unknown
                         ],
-                        'acknowledgements'   => 0,
-                        'downtimes'          => 0,
-                        'total'              => 0, // Total amount of services
-                        'problems'           => 0, // Services in none ok state
-                        'cumulatedStateId'   => 0,
-                        'cumulatedStateName' => __('Operational'),
+                        'acknowledgements'         => 0,
+                        'acknowledgement_details'  => [],
+                        'downtimes'                => 0,
+                        'downtime_details'         => [],
+                        'planned_downtime_details' => [],
+                        'total'                    => 0, // Total amount of services
+                        'problems'                 => 0, // Services in none ok state
+                        'cumulatedStateId'         => 0,
+                        'cumulatedStateName'       => __('Operational'),
                     ]
                 ];
 
                 foreach ($objectGroup['host_uuids'] as $hostUuid => $v) {
+                    if(isset($AllPlannedHostDowntimes[$hostUuid])){
+                        $statuspage[$objectType][$index]['state_summary']['hosts']['planned_downtime_details'] = array_merge(
+                            $statuspage[$objectType][$index]['state_summary']['hosts']['planned_downtime_details'],
+                            $AllPlannedHostDowntimes[$hostUuid]
+                        );
+                    }
+
                     if (!isset($AllHoststatus[$hostUuid]['Hoststatus'])) {
                         continue;
                     }
@@ -983,13 +1018,30 @@ class StatuspagesTable extends Table {
 
                     if ($Hoststatus->isAcknowledged()) {
                         $statuspage[$objectType][$index]['state_summary']['hosts']['acknowledgements']++;
+                        if (isset($AllHostAcknowledgemens[$hostUuid])) {
+                            $statuspage[$objectType][$index]['state_summary']['hosts']['acknowledgement_details'][] = (new AcknowledgementHost(
+                                $AllHostAcknowledgemens[$hostUuid]
+                            ))->toArray();
+                        }
                     }
                     if ($Hoststatus->isInDowntime()) {
                         $statuspage[$objectType][$index]['state_summary']['hosts']['downtimes']++;
+                        if (isset($AllHostDowntimes[$hostUuid])) {
+                            $statuspage[$objectType][$index]['state_summary']['hosts']['downtime_details'][] = (new Downtime(
+                                $AllHostDowntimes[$hostUuid]
+                            ))->toArray();
+                        }
                     }
                 }
 
                 foreach ($objectGroup['service_uuids'] as $serviceUuid => $v) {
+                    if(isset($AllPlannedServiceDowntimes[$serviceUuid])) {
+                        $statuspage[$objectType][$index]['state_summary']['services']['planned_downtime_details'] = array_merge(
+                            $statuspage[$objectType][$index]['state_summary']['services']['planned_downtime_details'],
+                            $AllPlannedServiceDowntimes[$serviceUuid]
+                        );
+                    }
+
                     if (!isset($AllServicestatus[$serviceUuid]['Servicestatus'])) {
                         continue;
                     }
@@ -1005,9 +1057,19 @@ class StatuspagesTable extends Table {
 
                     if ($Servicestatus->isAcknowledged()) {
                         $statuspage[$objectType][$index]['state_summary']['services']['acknowledgements']++;
+                        if (isset($AllServiceAcknowledgemens[$serviceUuid])) {
+                            $statuspage[$objectType][$index]['state_summary']['services']['acknowledgement_details'][] = (new AcknowledgementService(
+                                $AllServiceAcknowledgemens[$serviceUuid]
+                            ))->toArray();
+                        }
                     }
                     if ($Servicestatus->isInDowntime()) {
                         $statuspage[$objectType][$index]['state_summary']['services']['downtimes']++;
+                        if (isset($AllServiceDowntimes[$serviceUuid])) {
+                            $statuspage[$objectType][$index]['state_summary']['services']['downtime_details'][] = (new Downtime(
+                                $AllServiceDowntimes[$serviceUuid]
+                            ))->toArray();
+                        }
                     }
                 }
             }
@@ -1048,7 +1110,7 @@ class StatuspagesTable extends Table {
 
         debug($statuspage);
 
-
+        return $statuspage;
     }
 
     /**
