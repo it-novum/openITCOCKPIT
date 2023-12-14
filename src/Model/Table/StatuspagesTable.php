@@ -947,6 +947,7 @@ class StatuspagesTable extends Table {
                         'acknowledgements'   => 0,
                         'downtimes'          => 0,
                         'total'              => 0, // Total amount of hosts
+                        'problems'           => 0, // Hosts in none up state
                         'cumulatedStateId'   => 0,
                         'cumulatedStateName' => __('Operational'),
                     ],
@@ -960,6 +961,7 @@ class StatuspagesTable extends Table {
                         'acknowledgements'   => 0,
                         'downtimes'          => 0,
                         'total'              => 0, // Total amount of services
+                        'problems'           => 0, // Services in none ok state
                         'cumulatedStateId'   => 0,
                         'cumulatedStateName' => __('Operational'),
                     ]
@@ -974,6 +976,11 @@ class StatuspagesTable extends Table {
                     $statuspage[$objectType][$index]['state_summary']['hosts']['total']++;
 
                     $statuspage[$objectType][$index]['state_summary']['hosts']['state'][$Hoststatus->currentState()]++;
+
+                    if ($Hoststatus->currentState() > 0) {
+                        $statuspage[$objectType][$index]['state_summary']['hosts']['problems']++;
+                    }
+
                     if ($Hoststatus->isAcknowledged()) {
                         $statuspage[$objectType][$index]['state_summary']['hosts']['acknowledgements']++;
                     }
@@ -991,6 +998,11 @@ class StatuspagesTable extends Table {
                     $statuspage[$objectType][$index]['state_summary']['services']['total']++;
 
                     $statuspage[$objectType][$index]['state_summary']['services']['state'][$Servicestatus->currentState()]++;
+
+                    if ($Servicestatus->currentState() > 0) {
+                        $statuspage[$objectType][$index]['state_summary']['services']['problems']++;
+                    }
+
                     if ($Servicestatus->isAcknowledged()) {
                         $statuspage[$objectType][$index]['state_summary']['services']['acknowledgements']++;
                     }
@@ -1031,7 +1043,6 @@ class StatuspagesTable extends Table {
                     $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] = 3;
                     $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateName'] = __('Unknown');
                 }
-
             }
         }
 
