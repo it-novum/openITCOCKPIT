@@ -863,6 +863,7 @@ class AclDependencies {
         }
 
         //Add dependent ACL actions to $selectedAcos
+        $dependentAcoIdsInUse = []; // don't reset already assigned dependencies
         foreach ($selectedAcos as $acoId => $permissions) {
             if ($permissions === 1) {
                 if (isset($dependencyTree[$acoId])) {
@@ -870,16 +871,26 @@ class AclDependencies {
 
                     foreach ($dependencyTree[$acoId] as $dependentAcoId) {
                         $selectedAcos[$dependentAcoId] = 1;
+                        $dependentAcoIdsInUse[$dependentAcoId] = $dependentAcoId;
+                    }
+                }
+            } else {
+                if (isset($dependencyTree[$acoId])) {
+                    //Remove dependencies from $selectedAcos;
+                    foreach ($dependencyTree[$acoId] as $dependentAcoId) {
+                        if (!in_array($dependentAcoId, $dependentAcoIdsInUse, true)) {
+                            $selectedAcos[$dependentAcoId] = 0;
+                        }
                     }
                 }
             }
         }
-
         return $selectedAcos;
     }
 
     public function filterAcosForFrontend($acosResultThreaded) {
         $allDependenciesSimplified = [];
+
         foreach ($this->dependencies as $controllerName => $actions) { //1
             if (substr($controllerName, -6) === 'Module') {
                 $pluginName = $controllerName;
@@ -955,19 +966,17 @@ class AclDependencies {
                         unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
                     }
 
-                    // Remove ACOs that shoud be ignored like public functions form AppController that exists in all controllers due to class FooController extends AppController and so on
+                    // Remove ACOs that should be ignored like public functions form AppController that exists in all controllers due to class FooController extends AppController and so on
                     if (in_array($actionName, $this->ignore, true)) {
                         unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
                     }
                 }
             }
 
-            //Make sure we have arrays [] not hasmaps {} !!!
+            //Make sure we have arrays [] not hashmaps {} !!!
             $acosResultThreaded[0]['children'][$controllerIndex]['children'] = array_values($acosResultThreaded[0]['children'][$controllerIndex]['children']);
 
         }
-
         return $acosResultThreaded;
     }
-
 }

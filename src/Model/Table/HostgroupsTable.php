@@ -405,9 +405,10 @@ class HostgroupsTable extends Table {
 
     /**
      * @param int $id
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostgroupByIdForMapeditor($id) {
+    public function getHostgroupByIdForMapeditor($id, $MY_RIGHTS = []) {
         $query = $this->find()
             ->contain([
                 'Containers'    => function (Query $q) {
@@ -416,8 +417,16 @@ class HostgroupsTable extends Table {
                         'Containers.name'
                     ]);
                 },
-                'Hosts'         => function (Query $q) {
-                    return $q->contain([
+                'Hosts'         => function (Query $q) use ($MY_RIGHTS) {
+                    if (!empty($MY_RIGHTS)) {
+                        $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.host_id = Hosts.id'
+                        ]);
+                        $q->where([
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
+                    $q->contain([
                         'HostsToContainersSharing',
                         'Services' => function (Query $q) {
                             return $q->where([
@@ -432,14 +441,24 @@ class HostgroupsTable extends Table {
                     ])->where([
                         'Hosts.disabled' => 0
                     ]);
+                    return $q;
                 },
-                'Hosttemplates' => function (Query $q) {
+                'Hosttemplates' => function (Query $q) use ($MY_RIGHTS) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'id'
                         ])
                         ->contain([
-                            'Hosts' => function (Query $query) {
+                            'Hosts' => function (Query $query) use ($MY_RIGHTS) {
+                                if (!empty($MY_RIGHTS)) {
+                                    $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                        'HostsToContainersSharing.host_id = Hosts.id'
+                                    ]);
+                                    $query->where([
+                                        'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                    ]);
+                                }
+
                                 $query
                                     ->disableAutoFields()
                                     ->select([
@@ -812,8 +831,8 @@ class HostgroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Hosts'         => function (Query $q) {
-                    return $q->enableAutoFields(false)
+                'Hosts'         => function (Query $q) use ($MY_RIGHTS) {
+                    $q->enableAutoFields(false)
                         ->select([
                             'Hosts.id',
                             'Hosts.uuid',
@@ -821,14 +840,24 @@ class HostgroupsTable extends Table {
                             'Hosts.description'
                         ])
                         ->contain(['HostsToContainersSharing']);
+
+                    if (!empty($MY_RIGHTS)) {
+                        $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.host_id = Hosts.id'
+                        ]);
+                        $q->where([
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
+                    return $q;
                 },
-                'Hosttemplates' => function (Query $q) {
+                'Hosttemplates' => function (Query $q) use ($MY_RIGHTS) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'id'
                         ])
                         ->contain([
-                            'Hosts' => function (Query $query) {
+                            'Hosts' => function (Query $query) use ($MY_RIGHTS) {
                                 $query
                                     ->disableAutoFields()
                                     ->select([
@@ -838,6 +867,16 @@ class HostgroupsTable extends Table {
                                         'Hosts.hosttemplate_id'
                                     ])
                                     ->contain(['HostsToContainersSharing']);
+
+                                if (!empty($MY_RIGHTS)) {
+                                    $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                        'HostsToContainersSharing.host_id = Hosts.id'
+                                    ]);
+                                    $query->where([
+                                        'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                    ]);
+                                }
+
                                 $query
                                     ->leftJoinWith('Hostgroups')
                                     ->whereNull('Hostgroups.id');
@@ -904,7 +943,11 @@ class HostgroupsTable extends Table {
             ])
             ->where($where)
             ->disableHydration()
-            ->firstOrFail();
+            ->first();
+
+        if ($hostgroup === null) {
+            return [];
+        }
 
         return array_unique(array_merge(
             Hash::extract($hostgroup, 'hosts.{n}.id'),
