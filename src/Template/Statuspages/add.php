@@ -143,33 +143,32 @@
                             <label class="control-label">
                                 <?php echo __('Host groups'); ?>
                             </label>
-                            <!--<div class="input-group" style="width: 100%;">-->
                             <select
                                     id="HostgroupsSelect"
                                     data-placeholder="<?php echo __('Please choose'); ?>"
                                     class="form-control"
                                     chosen="hostgroups"
+                                    callback="loadHostgroups"
                                     multiple
                                     ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
                                     ng-model="hostgroups_ids">
                             </select>
-                            <!--</div>-->
                             <div ng-repeat="error in errors.hostgroups">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
 
-                        <div class="form-group" ng-show="showHostgroupAlias">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Hostgroup alias'); ?>
                             </label>
                             <span ng-if="selectedHostgroups.length > 0">
                             <table class="table">
                                 <thead>
-                                <tr class="d-flex">
-                                    <th class="col-5"><?= __('Hostgroup name'); ?></th>
-                                    <th class="col-7"><?= __('Display name'); ?></th>
-                                </tr>
+                                    <tr class="d-flex">
+                                        <th class="col-5"><?= __('Hostgroup name'); ?></th>
+                                        <th class="col-7"><?= __('Display name'); ?></th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                 <tr ng-repeat="hostgroup in selectedHostgroups" class="d-flex">
@@ -199,6 +198,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="servicegroups"
+                                        callback="loadServicegroups"
                                         multiple
                                         ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
                                         ng-model="servicegroups_ids">
@@ -209,7 +209,7 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-show="showServicegroupAlias">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Servicegroup alias'); ?>
                             </label>
@@ -243,17 +243,16 @@
                             <label class="control-label">
                                 <?php echo __('Hosts'); ?>
                             </label>
-                            <div class="input-group" style="width: 100%;">
                                 <select
                                         id="HostsSelect"
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="hosts"
+                                        callback="loadHosts"
                                         multiple
                                         ng-options="host.key as host.value for host in hosts"
                                         ng-model="hosts_ids">
                                 </select>
-                            </div>
                             <div ng-repeat="error in errors.hosts">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -261,7 +260,7 @@
                         <!--<div class="form-group">
                             <button class="btn btn-primary btn-sm" type="button" ng-click="toggleHostAlias()" ng-show="showHostAliasButton">Set host alias</button>
                         </div>-->
-                        <div class="form-group" ng-show="showHostAlias">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Host alias'); ?>
                             </label>
@@ -292,28 +291,25 @@
 
                         <div class="form-group"
                              ng-class="{'has-error': errors.services}">
-                            <label class="control-label">
+                            <label class="control-label" for="ServicesSelect">
                                 <?php echo __('Services'); ?>
                             </label>
-                            <div class="input-group" style="width: 100%;">
-                                <select
-                                        id="ServicesSelect"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="services"
-                                        multiple
-                                        ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
-                                        ng-model="services_ids">
-                                </select>
-                            </div>
+                            <select
+                                id="ServicesSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                multiple
+                                chosen="services"
+                                callback="loadServices"
+                                ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                ng-model="services_ids">
+                            </select>
                             <div ng-repeat="error in errors.services">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                        <!--<div class="form-group">
-                            <button class="btn btn-primary btn-sm" type="button" ng-click="toggleServiceAlias()" ng-show="showServiceAliasButton">Set service alias</button>
-                        </div>-->
-                        <div class="form-group" ng-show="showServiceAlias">
+
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Service alias'); ?>
                             </label>

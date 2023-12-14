@@ -1069,6 +1069,34 @@ class HostgroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
 
+    public function loadHostgroupsByStringAndContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->getQuery('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $containerIds = [ROOT_CONTAINER];
+        if($containerId !== ROOT_CONTAINER && in_array($containerId, $this->MY_RIGHTS)) {
+            $containerIds = [ROOT_CONTAINER, $containerId];
+        }
+
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
+        $HostgroupCondition->setContainerIds($containerIds);
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $hostgroups = Api::makeItJavaScriptAble(
+            $HostgroupsTable->getHostgroupsForAngular($HostgroupCondition, $selected, true)
+        );
+
+        $this->set('hostgroups', $hostgroups);
+        $this->viewBuilder()->setOption('serialize', ['hostgroups']);
+    }
+
     public function loadHostgroupsByContainerId() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();

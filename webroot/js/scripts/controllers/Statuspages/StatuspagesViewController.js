@@ -15,7 +15,6 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result) {
                 $scope.Statuspage = result.data.Statuspage;
-                console.log($scope.Statuspage);
                 $scope.init = false;
             }, function errorCallback(result) {
                 if (result.status === 403) {

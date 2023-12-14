@@ -186,54 +186,6 @@ class StatuspagesController extends AppController {
     }
 
     /**
-     * Edit method
-     *
-     * @param string|null $id Statuspage id.
-     * @return \Cake\Http\Response|null|void Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function edit($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-
-        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
-        if (!$StatuspagesTable->existsById($id)) {
-            throw new NotFoundException('Statuspage not found');
-        }
-
-        $statuspage = $this->Statuspages->getEditData($id);
-
-
-        if (!$this->isWritableContainer($statuspage['containers']['_ids'][0])) {
-            $this->render403();
-            return;
-        }
-
-        if ($this->request->is('post')) {
-            $statuspageData = $this->request->getData();
-            $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData['Statuspage']);
-            $StatuspagesTable->save($statuspage);
-            if ($statuspage->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $statuspage->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            } else {
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($statuspage); // REST API ID serialization
-                    return;
-                }
-            }
-
-        }
-
-        $this->set('Statuspage', $statuspage);
-        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
-    }
-
-    /**
      * Delete method
      *
      * @param string|null $id Statuspage id.
@@ -244,11 +196,12 @@ class StatuspagesController extends AppController {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
-        if (!$this->Statuspages->existsById($id)) {
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
 
-        $statuspage = $this->Statuspages->get($id, [
+        $statuspage = $StatuspagesTable->get($id, [
             'contain' => [
                 'Containers'
             ]
@@ -260,7 +213,7 @@ class StatuspagesController extends AppController {
             return;
         }
 
-        if ($this->Statuspages->delete($statuspage)) {
+        if ($StatuspagesTable->delete($statuspage)) {
             $this->set('success', true);
             $this->set('id', $id);
             $this->viewBuilder()->setOption('serialize', ['success', 'id']);
@@ -295,13 +248,13 @@ class StatuspagesController extends AppController {
 
     /**
      *
-     * set alias
+     * edit
      *
      * @param string|null $id Statuspage id.
      * @return \Cake\Http\Response|null|void Redirects to index.
      * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
      */
-    public function setAlias($id = null) {
+    public function edit($id = null) {
         if (!$this->isApiRequest()) {
             //Only ship HTML template for angular
             return;
@@ -325,7 +278,7 @@ class StatuspagesController extends AppController {
                 return;
             }
 
-            $statuspageData = $this->request->getData()['Statuspage'];
+            $statuspageData = $this->request->getData();
             $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData, [
                 'validate' => 'alias'
             ]);

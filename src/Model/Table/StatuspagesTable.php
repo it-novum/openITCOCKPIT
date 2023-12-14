@@ -76,10 +76,6 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 class StatuspagesTable extends Table {
     use PaginationAndScrollIndexTrait;
 
-    private $public = false;
-    private $comments = false;
-    private $publicCall = false;
-
     /**
      * Initialize method
      *
@@ -96,23 +92,38 @@ class StatuspagesTable extends Table {
         $this->addBehavior('Timestamp');
 
         $this->belongsToMany('Containers', [
-            'className' => 'Containers', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'container_id', 'joinTable' => 'statuspages_to_containers'
+            'className' => 'Containers',
+            'foreignKey' => 'statuspage_id',
+            'targetForeignKey' => 'container_id',
+            'joinTable' => 'statuspages_to_containers'
         ])->setDependent(true);
 
 
         $this->belongsToMany('Hosts', [
-            'className' => 'Hosts', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'host_id', 'joinTable' => 'statuspages_to_hosts'
+            'className' => 'Hosts',
+            'foreignKey' => 'statuspage_id',
+            'targetForeignKey' => 'host_id',
+            'joinTable' => 'statuspages_to_hosts'
         ])->setDependent(true);
 
         $this->belongsToMany('Services', [
-            'className' => 'Services', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'service_id', 'joinTable' => 'statuspages_to_services'
+            'className' => 'Services',
+            'foreignKey' => 'statuspage_id',
+            'targetForeignKey' => 'service_id',
+            'joinTable' => 'statuspages_to_services'
         ])->setDependent(true);
 
         $this->belongsToMany('Hostgroups', [
-            'className' => 'Hostgroups', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'hostgroup_id', 'joinTable' => 'statuspages_to_hostgroups'
+            'className' => 'Hostgroups',
+            'foreignKey' => 'statuspage_id',
+            'targetForeignKey' => 'hostgroup_id',
+            'joinTable' => 'statuspages_to_hostgroups'
         ])->setDependent(true);
         $this->belongsToMany('Servicegroups', [
-            'className' => 'Servicegroups', 'foreignKey' => 'statuspage_id', 'targetForeignKey' => 'servicegroup_id', 'joinTable' => 'statuspages_to_servicegroups'
+            'className' => 'Servicegroups',
+            'foreignKey' => 'statuspage_id',
+            'targetForeignKey' => 'servicegroup_id',
+            'joinTable' => 'statuspages_to_servicegroups'
         ])->setDependent(true);
 
     }
@@ -124,17 +135,31 @@ class StatuspagesTable extends Table {
      * @return \Cake\Validation\Validator
      */
     public function validationDefault(Validator $validator): Validator {
-        $validator->requirePresence('containers', true, __('You have to choose at least one option.'))->allowEmptyString('containers', null, false)->multipleOptions('containers', [
-            'min' => 1
-        ], __('You have to choose at least one option.'));
+        $validator
+            ->requirePresence('containers', true, __('You have to choose at least one option.'))
+            ->allowEmptyString('containers', null, false)
+            ->multipleOptions('containers', [
+                'min' => 1
+            ], __('You have to choose at least one option.'));
 
-        $validator->scalar('name')->maxLength('name', 255)->requirePresence('name', 'create')->notEmptyString('name');
+        $validator
+            ->scalar('name')
+            ->maxLength('name', 255)
+            ->requirePresence('name', 'create')
+            ->notEmptyString('name');
 
-        $validator->scalar('description')->maxLength('description', 1000)->allowEmptyString('description');
+        $validator
+            ->scalar('description')
+            ->maxLength('description', 1000)
+            ->allowEmptyString('description');
 
-        $validator->boolean('public')->notEmptyString('public');
+        $validator
+            ->boolean('public')
+            ->notEmptyString('public');
 
-        $validator->boolean('show_comments')->notEmptyString('show_comments');
+        $validator
+            ->boolean('show_comments')
+            ->notEmptyString('show_comments');
 
         return $validator;
     }
@@ -260,9 +285,7 @@ class StatuspagesTable extends Table {
         $allservices = [];
         $DbBackend = new DbBackend();
         $statuspage = $this->getStatuspageObjects($id);
-        $this->public = $statuspage['public'];
-        $this->comments = $statuspage['show_comments'];
-        $this->publicCall = $isPublicCall;
+        $comments = $statuspage['show_comments'];
 
         $statuspageView = [
             'statuspage' => [
@@ -292,15 +315,15 @@ class StatuspagesTable extends Table {
                     $properties = $this->getHostInformation($ServicesTable, $HoststatusTable, $ServicestatusTable, $hostExtended);
                     $hostViewData = [];
                     $hostViewData['type'] = 'Host';
-                    if (!$this->publicCall) {
+                    if (!$isPublicCall) {
                         $hostViewData['id'] = $host['id'];
                         $hostViewData['uuid'] = $host['uuid'];
                     }
                     $hostViewData['name'] = ($host['_joinData']['display_alias'] !== null && $host['_joinData']['display_alias'] !== '') ? $host['_joinData']['display_alias'] : $host['name'];
                     $hostViewData = array_merge($hostViewData, $properties);
-                    $plannedDowntimes = $this->getPlannedHostDowntimes($host['uuid'], $DowntimehistoryHostsTable, $UserTime);
+                    $plannedDowntimes = $this->getPlannedHostDowntimes($host['uuid'], $DowntimehistoryHostsTable, $UserTime, $comments);
                     if (count($plannedDowntimes) > 0) {
-                        $hostViewData['plannedDowntimes'] = $this->getPlannedHostDowntimes($host['uuid'], $DowntimehistoryHostsTable, $UserTime);
+                        $hostViewData['plannedDowntimes'] = $plannedDowntimes;
                         $hostViewData['plannedDowntimesCount'] = count($plannedDowntimes);
                     }
                     if ($hostViewData['isAcknowledged']) {
@@ -311,7 +334,7 @@ class StatuspagesTable extends Table {
                         }
                     }
                     if ($hostViewData['isInDowntime']) {
-                        $downtime = $this->getHostDowntime($host['uuid'], $DowntimehistoryHostsTable, $UserTime);
+                        $downtime = $this->getHostDowntime($host['uuid'], $DowntimehistoryHostsTable, $UserTime, $comments);
                         if (!empty($downtime)) {
                             $hostViewData['downtimeData'] = $downtime;
                         }
@@ -335,15 +358,15 @@ class StatuspagesTable extends Table {
 
                     $serviceViewData = [];
                     $serviceViewData['type'] = 'Service';
-                    if (!$this->publicCall) {
+                    if (!$isPublicCall) {
                         $serviceViewData['id'] = $service['id'];
                         $serviceViewData['uuid'] = $service['uuid'];
                     }
                     $serviceViewData['name'] = ($service['_joinData']['display_alias'] !== null && $service['_joinData']['display_alias'] !== '') ? $service['_joinData']['display_alias'] : $service['servicename'];
                     $serviceViewData = array_merge($serviceViewData, $properties);
-                    $plannedDowntimes = $this->getPlannedServiceDowntimes($service['uuid'], $DowntimehistoryServicesTable, $UserTime);
+                    $plannedDowntimes = $this->getPlannedServiceDowntimes($service['uuid'], $DowntimehistoryServicesTable, $UserTime, $comments);
                     if (count($plannedDowntimes) > 0) {
-                        $serviceViewData['plannedDowntimes'] = $this->getPlannedServiceDowntimes($service['uuid'], $DowntimehistoryServicesTable, $UserTime);
+                        $serviceViewData['plannedDowntimes'] = $plannedDowntimes;
                         $serviceViewData['plannedDowntimesCount'] = count($plannedDowntimes);
                     }
                     if ($serviceViewData['isAcknowledged'] && $statuspageView['statuspage']['showComments']) {
@@ -354,7 +377,7 @@ class StatuspagesTable extends Table {
                         }
                     }
                     if ($serviceViewData['isInDowntime']) {
-                        $downtime = $this->getserviceDowntime($service['uuid'], $DowntimehistoryServicesTable, $UserTime);
+                        $downtime = $this->getserviceDowntime($service['uuid'], $DowntimehistoryServicesTable, $UserTime, $comments);
                         if (!empty($downtime)) {
                             $serviceViewData['downtimeData'] = $downtime;
                         }
@@ -374,7 +397,7 @@ class StatuspagesTable extends Table {
                 foreach ($servicegroups as $servicegroup) {
                     $servicegroupViewData = [];
                     $servicegroupViewData['type'] = 'Servicegroup';
-                    if (!$this->publicCall) {
+                    if (!$isPublicCall) {
                         $servicegroupViewData['id'] = $servicegroup['id'];
                         $servicegroupViewData['uuid'] = $servicegroup['uuid'];
                     }
@@ -402,7 +425,7 @@ class StatuspagesTable extends Table {
                 foreach ($hostgroups as $hostgroup) {
                     $hostgroupViewData = [];
                     $hostgroupViewData['type'] = 'Hostgroup';
-                    if (!$this->publicCall) {
+                    if (!$isPublicCall) {
                         $hostgroupViewData['id'] = $hostgroup['id'];
                         $hostgroupViewData['uuid'] = $hostgroup['uuid'];
                     }
@@ -450,11 +473,14 @@ class StatuspagesTable extends Table {
         $info['background'] = 'bg-' . $info['color'];
         $info['isAcknowledged'] = $hoststatus->isAcknowledged();
         $info['isInDowntime'] = $hoststatus->isInDowntime();
-        if ($info['currentState'] == 1) {
+        /* if ($info['currentState'] == 1) {
             $info['cumulatedState'] = 2;
         }
         if ($info['currentState'] == 2) {
             $info['cumulatedState'] = 3;
+        } */
+        if(in_array($info['currentState'], [1,2], true)){
+            $info['cumulatedState'] = $info['currentState'] + 1;
         }
         if ($info['currentState'] == 0) {
             $services = $Service->getActiveServicesByHostId($host->get('id'), false);
@@ -482,12 +508,104 @@ class StatuspagesTable extends Table {
                 }
                 $problemsAcknowledged = $problems - $problemsNotAcknowledged;
                 if ($problemsNotAcknowledged > 0) {
-                    $info['problemtext'] = sprintf("%u of %u problems acknowledged", $problemsAcknowledged, $problems);
+                    $info['problemtext'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
                     $info['problemtextValues'] = ['problems' => $problems, 'acknowledged' => $problemsAcknowledged];
                 }
             }
         }
         return $info;
+    }
+
+    /**
+     * @param int $id |null
+     * @return bool
+     */
+    private function getServiceStatusColor($state = null) {
+        if ($state === null) {
+            return 'text-primary';
+        }
+
+        switch ($state) {
+            case 0:
+                return 'ok';
+
+            case 1:
+                return 'warning';
+
+            case 2:
+                return 'critical';
+
+            default:
+                return 'unknown';
+        }
+    }
+
+    /*
+    * @param ServicesTable $Service
+    * @param ServicestatusTableInterface $Servicestatus
+    * @param array $servicegroup
+    * @return array
+    */
+
+    /**
+     * @param string $uuid
+     * @param DowntimehistoryHostsTableInterface $table
+     * @param $usertime
+     * @param bool $comments
+     * $return array
+     */
+    private function getPlannedHostDowntimes($uuid, DowntimehistoryHostsTableInterface $table, $userTime, bool $comments) {
+        $planned = [];
+        $DowntimeHostConditions = new DowntimeHostConditions();
+        $DowntimeHostConditions->setFrom(time());
+        $DowntimeHostConditions->setTo(time() + (3600 * 24 * 10));
+        $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => "asc"]);
+        $DowntimeHostConditions->setConditions([
+            'DowntimeHosts.hostname IN' => [$uuid], 'DowntimeHosts.was_started' => 0, 'DowntimeHosts.was_cancelled' => 0
+        ]);
+        $hostDowntimes = $table->getDowntimes($DowntimeHostConditions);
+        if (!empty($hostDowntimes)) {
+            foreach ($hostDowntimes as $hostDowntime) {
+                $HostDowntime = new Downtime($hostDowntime->toArray(), true, $userTime);
+                $downtimeArray = $HostDowntime->toArray();
+                $comment = "Work in progress";
+                if ($comments) {
+                    $comment = $downtimeArray['commentData'];
+                }
+                $planned[] = [
+                    'scheduledStartTime' => $downtimeArray['scheduledStartTime'], 'scheduledEndTime' => $downtimeArray['scheduledEndTime'], 'commentData' => $comment
+                ];
+            }
+        }
+        return $planned;
+    }
+
+    /*
+    * @param ServicesTable $Service
+    *  @param array $hostgroup
+    * @param SHoststatusTableInterface $HoststatusTable
+    * @param ServicestatusTableInterface $ServicestatusTable
+    * @return array
+    */
+
+    /**
+     * @param string $uuid
+     * @param DowntimehistoryHostsTableInterface $table
+     * @param $userTime
+     * @param bool $comments
+     * $return array
+     */
+    private function getHostDowntime($uuid, DowntimehistoryHostsTableInterface $table, $userTime, bool $comments = true) {
+        $downtime = $table->byHostUuid($uuid, true);
+        $downtime = new Downtime($downtime->toArray(), true, $userTime);
+        $downtime = $downtime->toArray();
+        $comment = "Work in progress";
+        if ($comments) {
+            $comment = $downtime['commentData'];
+        }
+        return [
+            'scheduledStartTime' => $downtime['scheduledStartTime'], 'scheduledEndTime' => $downtime['scheduledEndTime'], 'commentData' => $comment
+        ];
     }
 
     /**
@@ -507,12 +625,58 @@ class StatuspagesTable extends Table {
         ];
     }
 
-    /*
-    * @param ServicesTable $Service
-    * @param ServicestatusTableInterface $Servicestatus
-    * @param array $servicegroup
-    * @return array
-    */
+    /**
+     * @param string $uuid
+     * @param DowntimehistoryServicesTableInterface $table
+     * @param $usertime
+     * @param bool $comments
+     * $return array
+     */
+    private function getPlannedServiceDowntimes($uuid, DowntimehistoryServicesTableInterface $table, $userTime, bool $comments = true) {
+        $planned = [];
+        $DowntimeServiceConditions = new DowntimeServiceConditions();
+        $DowntimeServiceConditions->setFrom(time());
+        $DowntimeServiceConditions->setTo(time() + (3600 * 24 * 10));
+        $DowntimeServiceConditions->setOrder(['DowntimeServices.scheduled_start_time' => "asc"]);
+        $DowntimeServiceConditions->setConditions([
+            'DowntimeServices.service_description IN' => [$uuid], 'DowntimeServices.was_started' => 0, 'DowntimeServices.was_cancelled' => 0
+        ]);
+        $serviceDowntimes = $table->getDowntimes($DowntimeServiceConditions);
+        if (!empty($serviceDowntimes)) {
+            foreach ($serviceDowntimes as $serviceDowntime) {
+                $ServiceDowntime = new Downtime($serviceDowntime->toArray(), true, $userTime);
+                $downtimeArray = $ServiceDowntime->toArray();
+                $comment = "TestWork in progress";
+                if ($comments) {
+                    $comment = $downtimeArray['commentData'];
+                }
+                $planned[] = [
+                    'scheduledStartTime' => $downtimeArray['scheduledStartTime'], 'scheduledEndTime' => $downtimeArray['scheduledEndTime'], 'commentData' => $comment
+                ];
+            }
+        }
+        return $planned;
+    }
+
+    /**
+     * @param string $uuid
+     * @param DowntimehistoryServicesTableInterface $table
+     * @param bool $comments
+     * @return array
+     */
+    private function getServiceDowntime($uuid, DowntimehistoryServicesTableInterface $table, $userTime, $comments = true) {
+        $downtime = $table->byServiceUuid($uuid, true);
+        $downtime = new Downtime($downtime->toArray(), true, $userTime);
+        $downtime = $downtime->toArray();
+        $comment = "Work in progress";
+        if ($comments) {
+            $comment = $downtime['commentData'];
+        }
+        return [
+            'scheduledStartTime' => $downtime['scheduledStartTime'], 'scheduledEndTime' => $downtime['scheduledEndTime'], 'commentData' => $comment
+        ];
+    }
+
     private function getServicegroupInformation(ServicesTable $Service, ServicestatusTableInterface $Servicestatus, $servicegroup = []) {
         $info = [];
         $info['color'] = $this->getServiceStatusColor(0);
@@ -548,25 +712,18 @@ class StatuspagesTable extends Table {
             }
             $problemsAcknowledged = $problems - $problemsNotAcknowledged;
             if ($problemsNotAcknowledged > 0) {
-                $info['problemtext'] = sprintf("%u of %u problems acknowledged", $problemsAcknowledged, $problems);
+                $info['problemtext'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
                 $info['problemtextValues'] = ['problems' => $problems, 'acknowledged' => $problemsAcknowledged];
 
             }
             if ($problemsInDowntime > 0) {
-                $info['problemtext_down'] = sprintf("%u of %u problems currently in a planned maintenance period", $problemsInDowntime, $problems);
+                $info['problemtext_down'] = __('{0} of {1} problems currently in a planned maintenance period', $problemsInDowntime, $problems);
                 $info['problemtextDownValues'] = ['problems' => $problems, 'downs' => $problemsInDowntime];
             }
         }
         return $info;
     }
 
-    /*
-    * @param ServicesTable $Service
-    *  @param array $hostgroup
-    * @param SHoststatusTableInterface $HoststatusTable
-    * @param ServicestatusTableInterface $ServicestatusTable
-    * @return array
-    */
     private function getHostgroupInformation(ServicesTable $Service, array $hostgroup, HoststatusTableInterface $HoststatusTable, ServicestatusTableInterface $ServicestatusTable) {
         $info = [];
         $HoststatusFields = new HoststatusFields(new DbBackend());
@@ -592,11 +749,11 @@ class StatuspagesTable extends Table {
                 }
                 $problemsAcknowledged = $hostProblems - $hostProblemsNotAcknowledged;
                 if ($hostProblemsNotAcknowledged > 0) {
-                    $info['problemtext'] = sprintf("%u of %u problems acknowledged", $problemsAcknowledged, $hostProblems);
+                    $info['problemtext'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $hostProblems);
                     $info['problemtextValues'] = ['problems' => $hostProblems, 'acknowledged' => $problemsAcknowledged];
                 }
                 if ($hostProblemsInDowntime > 0) {
-                    $info['problemtext_down'] = sprintf("%u of %u problems currently in a planned maintenance period", $hostProblemsInDowntime, $hostProblems);
+                    $info['problemtext_down'] = __('{0} of {1} problems currently in a planned maintenance period', $hostProblemsInDowntime, $hostProblems);
                     $info['problemtextDownValues'] = ['problems' => $hostProblems, 'downs' => $hostProblemsInDowntime];
                 }
             }
@@ -633,11 +790,12 @@ class StatuspagesTable extends Table {
             }
             $problemsAcknowledged = $serviceProblems - $problemsNotAcknowledged;
             if ($problemsNotAcknowledged > 0) {
-                $info['problemtext'] = sprintf("%u of %u problems acknowledged", $problemsAcknowledged, $serviceProblems);
+                $info['problemtext'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $serviceProblems);
                 $info['problemtextValues'] = ['problems' => $serviceProblems, 'acknowledged' => $problemsAcknowledged];
             }
             if ($problemsInDowntime > 0) {
-                $info['problemtext_down'] = sprintf("%u of %u problems currently in a planned maintenance period", $problemsInDowntime, $serviceProblems);
+                $info['problemtext_down'] = __('{0} of {1} problems currently in a planned maintenance period', $problemsInDowntime, $serviceProblems);
+
                 $info['problemtextDownValues'] = ['problems' => $serviceProblems, 'downs' => $problemsInDowntime];
             }
         }
@@ -663,131 +821,6 @@ class StatuspagesTable extends Table {
             return false;
         }
         return true;
-    }
-
-    /**
-     * @param int $id |null
-     * @return bool
-     */
-    private function getServiceStatusColor($state = null) {
-        if ($state === null) {
-            return 'text-primary';
-        }
-
-        switch ($state) {
-            case 0:
-                return 'ok';
-
-            case 1:
-                return 'warning';
-
-            case 2:
-                return 'critical';
-
-            default:
-                return 'unknown';
-        }
-    }
-
-    /**
-     * @param string $uuid
-     * @param DowntimehistoryServicesTableInterface $table
-     * @return array
-     */
-    private function getServiceDowntime($uuid, DowntimehistoryServicesTableInterface $table, $userTime, $isRunning = true) {
-        $downtime = $table->byServiceUuid($uuid, $isRunning);
-        $downtime = new Downtime($downtime->toArray(), true, $userTime);
-        $downtime = $downtime->toArray();
-        $comment = "Work in progress";
-        if ($this->comments) {
-            $comment = $downtime['commentData'];
-        }
-        return [
-            'scheduledStartTime' => $downtime['scheduledStartTime'], 'scheduledEndTime' => $downtime['scheduledEndTime'], 'commentData' => $comment
-        ];
-    }
-
-    /**
-     * @param string $uuid
-     * @param DowntimehistoryHostsTableInterface $table
-     * @param $userTime
-     * $return array
-     */
-    private function getHostDowntime($uuid, DowntimehistoryHostsTableInterface $table, $userTime, $isRunning = true) {
-        $downtime = $table->byHostUuid($uuid, $isRunning);
-        $downtime = new Downtime($downtime->toArray(), true, $userTime);
-        $downtime = $downtime->toArray();
-        $comment = "Work in progress";
-        if ($this->comments) {
-            $comment = $downtime['commentData'];
-        }
-        return [
-            'scheduledStartTime' => $downtime['scheduledStartTime'], 'scheduledEndTime' => $downtime['scheduledEndTime'], 'commentData' => $comment
-        ];
-    }
-
-    /**
-     * @param string $uuid
-     * @param DowntimehistoryHostsTableInterface $table
-     * @param $usertime
-     * $return array
-     */
-    private function getPlannedHostDowntimes($uuid, DowntimehistoryHostsTableInterface $table, $userTime) {
-        $planned = [];
-        $DowntimeHostConditions = new DowntimeHostConditions();
-        $DowntimeHostConditions->setFrom(time());
-        $DowntimeHostConditions->setTo(time() + (3600 * 24 * 10));
-        $DowntimeHostConditions->setOrder(['DowntimeHosts.scheduled_start_time' => "asc"]);
-        $DowntimeHostConditions->setConditions([
-            'DowntimeHosts.hostname IN' => [$uuid], 'DowntimeHosts.was_started' => 0, 'DowntimeHosts.was_cancelled' => 0
-        ]);
-        $hostDowntimes = $table->getDowntimes($DowntimeHostConditions);
-        if (!empty($hostDowntimes)) {
-            foreach ($hostDowntimes as $hostDowntime) {
-                $HostDowntime = new Downtime($hostDowntime->toArray(), true, $userTime);
-                $downtimeArray = $HostDowntime->toArray();
-                $comment = "Work in progress";
-                if ($this->comments) {
-                    $comment = $downtimeArray['commentData'];
-                }
-                $planned[] = [
-                    'scheduledStartTime' => $downtimeArray['scheduledStartTime'], 'scheduledEndTime' => $downtimeArray['scheduledEndTime'], 'commentData' => $comment
-                ];
-            }
-        }
-        return $planned;
-    }
-
-    /**
-     * @param string $uuid
-     * @param DowntimehistoryServicesTableInterface $table
-     * @param $usertime
-     * $return array
-     */
-    private function getPlannedServiceDowntimes($uuid, DowntimehistoryServicesTableInterface $table, $userTime) {
-        $planned = [];
-        $DowntimeServiceConditions = new DowntimeServiceConditions();
-        $DowntimeServiceConditions->setFrom(time());
-        $DowntimeServiceConditions->setTo(time() + (3600 * 24 * 10));
-        $DowntimeServiceConditions->setOrder(['DowntimeServices.scheduled_start_time' => "asc"]);
-        $DowntimeServiceConditions->setConditions([
-            'DowntimeServices.service_description IN' => [$uuid], 'DowntimeServices.was_started' => 0, 'DowntimeServices.was_cancelled' => 0
-        ]);
-        $serviceDowntimes = $table->getDowntimes($DowntimeServiceConditions);
-        if (!empty($serviceDowntimes)) {
-            foreach ($serviceDowntimes as $serviceDowntime) {
-                $ServiceDowntime = new Downtime($serviceDowntime->toArray(), true, $userTime);
-                $downtimeArray = $ServiceDowntime->toArray();
-                $comment = "TestWork in progress";
-                if ($this->comments) {
-                    $comment = $downtimeArray['commentData'];
-                }
-                $planned[] = [
-                    'scheduledStartTime' => $downtimeArray['scheduledStartTime'], 'scheduledEndTime' => $downtimeArray['scheduledEndTime'], 'commentData' => $comment
-                ];
-            }
-        }
-        return $planned;
     }
 
     public function getStatuspageForView(int $id, array $MY_RIGHTS, bool $includeComments) {

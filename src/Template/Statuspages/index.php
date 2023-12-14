@@ -231,14 +231,6 @@
                                                     <?php echo __('Edit'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('edit', 'statuspages')): ?>
-                                                <a ui-sref="StatuspagesAlias({id: statuspage.id})"
-                                                   ng-if="statuspage.allow_edit"
-                                                   class="dropdown-item">
-                                                    <i class="fa fa-cog"></i>
-                                                    <?php echo __('Edit alias'); ?>
-                                                </a>
-                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
                                                 <a ui-sref="StatuspagesView({id: statuspage.id})"
                                                    class="dropdown-item">

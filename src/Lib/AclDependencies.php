@@ -390,6 +390,7 @@ class AclDependencies {
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'listToCsv')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'view')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByString')
+            ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByStringAndContainers')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByContainerId')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosts')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosttemplates')
@@ -491,6 +492,7 @@ class AclDependencies {
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'view')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByContainerId')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByString')
+            ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByStringAndContainers')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'loadServicetemplates')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'loadContainers')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'addServicesToServicegroup')
@@ -560,7 +562,6 @@ class AclDependencies {
             ->dependency('Statuspages', 'index', 'Statuspages', 'loadContainers')
             ->dependency('Statuspages', 'view', 'Statuspages', 'loadContainers')
             ->dependency('Statuspages', 'add', 'Statuspages', 'loadContainers')
-            ->dependency('Statuspages', 'edit', 'Statuspages', 'setAlias')
             ->dependency('Statuspages', 'edit', 'Statuspages', 'loadContainers');
 
         $this
