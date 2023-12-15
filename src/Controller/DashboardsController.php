@@ -169,8 +169,6 @@ class DashboardsController extends AppController {
 
         // Find all the allocated tabs and mark them as... ALLOCATED. Duh.
         foreach ($newTabs as $tabIndex => $tab) {
-            print_r($allocatedTabIds);
-            die();
             if (!in_array($tab['source_tab_id'], $allocatedTabIds, true)) {
                 $newTabs[$tabIndex]['isPinned'] = false;
                 $newTabs[$tabIndex]['isReadonly'] = false;
