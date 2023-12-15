@@ -119,9 +119,6 @@
                                         </label>
                                     </div>
                                     <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
-                                    <div class="help-block text-danger" ng-show="allocation.DashboardTab.flags == 1 && pinnedDashboard.id !== allocation.DashboardTab.id">
-                                        There can only be one pinned dashboard. A different dashboard may be unpinned upon saving.
-                                    </div>
                                 </div>
                             </div>
                         </div>

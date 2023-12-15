@@ -122,6 +122,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
 
                 $scope.tabs = result.data.tabs;
+                console.log(result.data.tabs);
                 if($scope.activeTab === null){
                     $scope.activeTab = $scope.tabs[0].id;
                 }
@@ -151,6 +152,7 @@ angular.module('openITCOCKPIT')
                 $scope.data.Usergroup = result.data.widgets.Usergroup._ids || [];
 
                 // ITC-3037
+                $scope.isReadonly = result.data.isReadonly ? 1 : 0;
                 $scope.isPinned = false;
                 $scope.hideModifications = false;
 
@@ -188,6 +190,7 @@ angular.module('openITCOCKPIT')
                         title: result.data.widgets.Widget[i].title,
                         color: result.data.widgets.Widget[i].color,
                         directive: result.data.widgets.Widget[i].directive,
+                        isReadonly: $scope.isReadonly
                     });
                 }
 

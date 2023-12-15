@@ -59,6 +59,7 @@
                                    href="javascript:void(0);"
                                    ng-if="activeTab !== tab.id"
                                    ng-class="{ 'bg-primary': tab.source === 'ALLOCATED',  'text-warning': tab.source === 'ALLOCATED'}"
+                                   title="{{tab.title}}"
                                    role="tab">
                                 <span class="text"
                                       ng-class="{ 'text-primary': tab.shared === true}">
@@ -75,6 +76,7 @@
                                    aria-expanded="false"
                                    ng-if="activeTab === tab.id"
                                    ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.source !== 'ALLOCATED',  'bg-primary': tab.source === 'ALLOCATED',  'text-light': tab.source === 'ALLOCATED'}"
+                                   title="{{tab.title}}"
                                 >
                                     <span class="text"
                                           ng-class="{ 'text-primary': tab.shared === true}">
@@ -710,9 +712,6 @@
                                 </label>
                             </div>
                             <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
-                            <div class="help-block text-danger" ng-show="data.flags == 1">
-                                There can only be one pinned dashboard. A different dashboard may be unpinned upon saving.
-                            </div>
                         </div>
                     </div>
                 </div>

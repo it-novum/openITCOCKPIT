@@ -3,9 +3,6 @@ angular.module('openITCOCKPIT')
         // I am the ID that will be allocated.
         $scope.id = $stateParams.id;
 
-        // I am the pinned dashboard.
-        $scope.pinnedDashboard = {};
-
         // I am the array of available dashboardTabs.
         $scope.dashboardTabs = [];
 
@@ -57,8 +54,6 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
                 $scope.allocation.DashboardTab.AllocatedUsers._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
-
-                $scope.pinnedDashboard = result.data.pinnedDashboard;
             });
         }
 
@@ -101,8 +96,9 @@ angular.module('openITCOCKPIT')
 
         // I will store the allocation details.
         $scope.saveAllocation = function() {
-            $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function(result) {
-                RedirectService.redirectWithFallback('DashboardsAllocate');
+            $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function() {
+                genericSuccess();
+                RedirectService.redirectWithFallback('DashboardAllocation');
             }, function errorCallback(result) {
                 $scope.errors = result.data.error;
                 genericError();
@@ -110,10 +106,14 @@ angular.module('openITCOCKPIT')
         }
 
         // If the containerId is changed, reload the users!
-        $scope.$watch('allocation.DashboardTab.containers._ids', function(){
-            if($scope.init){
+        $scope.$watch('allocation.DashboardTab.containers._ids', function() {
+            if ($scope.init) {
                 return;
             }
+            // Reset the selected users after changing the container.
+            $scope.allocation.DashboardTab.AllocatedUsers._ids = [];
+
+            // Load new users from the container.
             $scope.loadUsers();
         }, true);
 

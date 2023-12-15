@@ -169,6 +169,8 @@ class DashboardsController extends AppController {
 
         // Find all the allocated tabs and mark them as... ALLOCATED. Duh.
         foreach ($newTabs as $tabIndex => $tab) {
+            print_r($allocatedTabIds);
+            die();
             if (!in_array($tab['source_tab_id'], $allocatedTabIds, true)) {
                 $newTabs[$tabIndex]['isPinned'] = false;
                 $newTabs[$tabIndex]['isReadonly'] = false;
@@ -176,7 +178,10 @@ class DashboardsController extends AppController {
             }
 
             $sourceTab = $DashboardTabsTable->get($newTabs[$tabIndex]['source_tab_id']);
+            $uzer = $UsersTable->get($sourceTab->user_id);
+
             $newTabs[$tabIndex]['source'] = 'ALLOCATED';
+            $newTabs[$tabIndex]['title'] = sprintf(__('Dieses Dashboard wird von %s %s verwaltet.'), h($uzer->firstname), h($uzer->lastname));
             $newTabs[$tabIndex]['isPinned'] = (bool)($sourceTab->flags & DashboardTab::TAB_PINNED);
             $newTabs[$tabIndex]['isReadonly'] = true;
         }
@@ -2022,8 +2027,7 @@ class DashboardsController extends AppController {
             }
 
             $this->set('dashboardTabs', $dashboardTabs);
-            $this->set('pinnedDashboard', $DashboardTabsTable->getPinnedDashboard());
-            $this->viewBuilder()->setOption('serialize', ['dashboardTabs', 'pinnedDashboard']);
+            $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
 
             return;
         }
@@ -2069,12 +2073,15 @@ class DashboardsController extends AppController {
             return;
         }
 
+        $User = new User($this->getUser());
+
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
         // Fetch them all (not allocated ones, tho...)
         $dashboardTabs = $DashboardTabsTable->find()
             ->where(['source_tab_id IS' => null])
+            ->where(['user_id' =>$User->getId()])
             ->contain('Usergroups')
             ->contain('AllocatedUsers')
             ->disableHydration()
