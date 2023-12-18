@@ -129,64 +129,10 @@ class DashboardsController extends AppController {
         }
 
         $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
-        $newTabs = [];
-        $allocatedTabIds = [];
-
-        // neue function
-        foreach ($tabs as $tab) {
-            // If this tab is allocated, call different logic.
-            if (($tab['source'] ?? '') !== 'ALLOCATED') {
-                $newTabs[] = $tab;
-                continue;
-            }
-
-            $allocatedTabIds[] = $tab['id'];
-
-            // Find Copy
-            $copy = $DashboardTabsTable
-                ->find()
-                ->where([
-                    'user_id'       => $user->id,
-                    'source_tab_id' => $tab['id']
-                ])
-                ->disableHydration()
-                ->first();
-
-            // Create new copy
-            if (empty($copy)) {
-                $DashboardTabsTable->copyAllocatedTab($tab['id'], $user->id);
-                // There shouln't be any updates here, duh...
-                continue;
-            }
-
-            // Is there a newer version?
-            if ($copy['modified']->getTimestamp()
-                <= $tab['modified']->getTimestamp()) {
-                $entity = $DashboardTabsTable->get($copy['id']);
-                $DashboardTabsTable->updateAllocatedTab($tab['id'], $copy['id']);
-            }
-        }
-
-        // Find all the allocated tabs and mark them as... ALLOCATED. Duh.
-        foreach ($newTabs as $tabIndex => $tab) {
-            if (!in_array($tab['source_tab_id'], $allocatedTabIds, true)) {
-                $newTabs[$tabIndex]['isPinned'] = false;
-                $newTabs[$tabIndex]['isReadonly'] = false;
-                continue;
-            }
-
-            $sourceTab = $DashboardTabsTable->get($newTabs[$tabIndex]['source_tab_id']);
-            $uzer = $UsersTable->get($sourceTab->user_id);
-
-            $newTabs[$tabIndex]['source'] = 'ALLOCATED';
-            $newTabs[$tabIndex]['title'] = sprintf(__('Dieses Dashboard wird von %s %s verwaltet.'), h($uzer->firstname), h($uzer->lastname));
-            $newTabs[$tabIndex]['isPinned'] = (bool)($sourceTab->flags & DashboardTab::TAB_PINNED);
-            $newTabs[$tabIndex]['isReadonly'] = true;
-        }
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
 
-        $this->set('tabs', $newTabs);
+        $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);
         $this->set('tabRotationInterval', $tabRotationInterval);
         $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp']);

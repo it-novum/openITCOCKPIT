@@ -1421,12 +1421,13 @@ class UsersTable extends Table {
     }
 
     public function getAllocatedTabsByUserId(int $userId): array {
-        return $this
+        $dashboards= $this
             ->find()
             ->contain(['DashboardTabs'])
             ->where(['id' => $userId])
             ->disableHydration()
             ->all()
-            ->toArray();
+            ->toArray()[0]['dashboard_tabs'] ?? [];
+        return Hash::extract($dashboards, '{n}.id');
     }
 }

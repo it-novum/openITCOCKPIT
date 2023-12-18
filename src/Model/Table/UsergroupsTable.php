@@ -286,14 +286,19 @@ class UsergroupsTable extends Table {
         return $usergroup;
     }
 
+    /**
+     * I will return an array of DashboardTabs that were allocated to the given $usergroupId.
+     * @param int $usergroupId
+     * @return array
+     */
     public function getAllocatedTabsByUsergroupId(int $usergroupId): array {
-        return $this
+        $dashboards = $this
             ->find()
             ->contain(['DashboardTabs'])
             ->where(['id' => $usergroupId])
             ->disableHydration()
             ->all()
-            ->toArray()
-        ;
+            ->toArray()[0]['dashboard_tabs'] ?? [];
+        return Hash::extract($dashboards, '{n}.id');
     }
 }
