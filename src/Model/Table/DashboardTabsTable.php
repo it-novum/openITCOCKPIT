@@ -262,6 +262,9 @@ class DashboardTabsTable extends Table {
         // Add User Allocations.
         $allocatedTabIds += $UsersTable->getAllocatedTabsByUserId($userId);
 
+        // Make unique, just for sanity.
+        $allocatedTabIds = array_unique($allocatedTabIds);
+
         // Traverse the allocations and copy / update the allocated tabs.
         foreach ($allocatedTabIds as $allocatedTabId) {
             $Entity = $this->get($allocatedTabId);
@@ -301,23 +304,21 @@ class DashboardTabsTable extends Table {
             ];
         }
 
-
         $result = $this->find()
             ->where([
                 'DashboardTabs.user_id'  => $userId,
                 'DashboardTabs.flags !=' => 2
             ])
             ->order([
+                'DashboardTabs.flags' => 'DESC',
                 'DashboardTabs.position' => 'ASC',
             ])
             ->disableHydration()
             ->all();
 
         foreach ($result as $row) {
-            $tabId = (int)$row['id'];
-
             $forJs[] = [
-                'id'                => $tabId,
+                'id'                => (int)$row['id'],
                 'position'          => (int)$row['position'],
                 'name'              => $row['name'],
                 'shared'            => (bool)$row['shared'],

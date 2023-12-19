@@ -2025,7 +2025,7 @@ class DashboardsController extends AppController {
         // Fetch them all (not allocated ones, tho...)
         $dashboardTabs = $DashboardTabsTable->find()
             ->where(['source_tab_id IS' => null])
-            ->where(['user_id' =>$User->getId()])
+            ->where(['user_id' => $User->getId()])
             ->contain('Usergroups')
             ->contain('AllocatedUsers')
             ->disableHydration()

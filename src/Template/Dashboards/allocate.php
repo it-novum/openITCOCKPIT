@@ -31,7 +31,6 @@
             <div class="panel-hdr">
                 <h2>
                     <span><?= __('Allocate Dashboard') ?>:</span>
-                    <!-- ngIf: isLdapUser -->
                     <span class="fw-300">
                         {{dashboard.name}}
                     </span>

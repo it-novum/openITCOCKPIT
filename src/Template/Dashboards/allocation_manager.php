@@ -196,7 +196,7 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <i class="fa fa-lock" ng-show="dashboardTab.locked"></i>
+                                        <i class="fa fa-lock" ng-show="dashboardTab.flags === 1"></i>
                                     </td>
                                     <td>
                                         <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"

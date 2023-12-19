@@ -18,7 +18,7 @@ angular.module('openITCOCKPIT')
         // I am the pinned flag.
         $scope.isPinned = true;
 
-        // I am the object that is being transported to JSON API.
+        // I am the object that is being transported to JSON API to modify the DashboardTab allocation.
         $scope.allocation = {
             DashboardTab: {
                 id: 0,
@@ -46,14 +46,20 @@ angular.module('openITCOCKPIT')
             // Fetch Users.
             $scope.loadUsers();
 
+            // Fetch Allocation Setup.
+            $scope.fetchAllocation($scope.id);
+        }
+
+        $scope.fetchAllocation = function (tabId) {
             // Fetch the desired Dashboard.
-            $http.get("/dashboards/allocate/" + $scope.id + ".json?angular=true&id=").then(function(result) {
+            $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result) {
                 $scope.dashboard = result.data.dashboardTabs[0];
                 $scope.allocation.DashboardTab.id = result.data.dashboardTabs[0].id;
                 $scope.allocation.DashboardTab.containers._ids = result.data.dashboardTabs[0].containers[0];
                 $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
                 $scope.allocation.DashboardTab.AllocatedUsers._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
+                $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
             });
         }
 
