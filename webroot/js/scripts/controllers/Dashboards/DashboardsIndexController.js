@@ -49,17 +49,6 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        // I will load all containers.
-        $scope.loadContainer = function() {
-            return $http.get("/users/loadContainersForAngular.json", {
-                params: {
-                    'angular': true
-                }
-            }).then(function(result) {
-                $scope.containers = result.data.containers;
-            });
-        };
-
         $scope.gridsterOpts = {
             minRows: 2, // the minimum height of the grid, in rows
             maxRows: 999,
@@ -514,14 +503,14 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.allocateDashboard = function(tabId){
+            // I am initing the view rn.
+            $scope.allocationInitializing = true;
+
             // Fetch Containers.
             $scope.loadContainer();
 
             // Fetch UserGroups.
             $scope.loadUsergroups();
-
-            // Fetch Users.
-            $scope.loadUsers();
 
             // Fetch Current Allocation setup.
             $scope.fetchAllocation(tabId);
@@ -530,6 +519,7 @@ angular.module('openITCOCKPIT')
             $('#allocateDashboardModal').modal('show');
         }
 
+        // I will load the current allocation status.
         $scope.fetchAllocation = function (tabId) {
             // Fetch the desired Dashboard.
             $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result) {
@@ -540,24 +530,14 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.AllocatedUsers._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
                 $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
+
+                // I'm done.
+                $scope.allocationInitializing = false;
             });
         }
 
-        // I will store the allocation details.
-        $scope.saveAllocation = function() {
-            $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function() {
-                $scope.errors = {};
-                genericSuccess();
-                updateInterval();
-                $('#allocateDashboardModal').modal('hide');
-            }, function errorCallback(result) {
-                $scope.errors = result.data.error;
-                genericError();
-            });
-        }
         // I will load all users.
         $scope.loadUsers = function() {
-            console.log($scope.allocation.DashboardTab.containers);
             $http.get("/users/loadUsersByContainerId.json", {
                 params: {
                     'angular': true,
@@ -565,19 +545,63 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result) {
                 $scope.users = result.data.users;
+
+                // Reset the selected users after changing the container.
+                if ($scope.allocationInitializing) {
+                    $scope.allocation.DashboardTab.AllocatedUsers._ids = [];
+                }
             });
         };
-        $scope.loadUsergroups = function(){
+
+        // I will load all containers.
+        $scope.loadContainer = function() {
+            return $http.get("/users/loadContainersForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result) {
+                $scope.containers = result.data.containers;
+            });
+        };
+
+        // I will load all Usergroups.
+        $scope.loadUsergroups = function() {
             $http.get("/usergroups/index.json", {
                 params: {
                     'angular': true,
                     'sort': 'Usergroups.name',
                     'direction': 'asc'
                 }
-            }).then(function(result){
+            }).then(function(result) {
                 $scope.usergroups = result.data.allUsergroups;
             });
         };
+
+        // If the containerId is changed, reload the users!
+        $scope.$watch('allocation.DashboardTab.containers._ids', function() {
+            // Load new users from the container.
+            $scope.loadUsers();
+        }, true);
+
+        // If the [pinned] flag is switched, pass it to the flag int.
+        $scope.$watch('isPinned', function(val) {
+            if (val) {
+                $scope.allocation.DashboardTab.flags |= 1;
+                return;
+            }
+            $scope.allocation.DashboardTab.flags ^= 1;
+        });
+
+        // I will store the allocation details.
+        $scope.saveAllocation = function() {
+            $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function() {
+                genericSuccess();
+                $('#allocateDashboardModal').modal('hide');
+            }, function errorCallback(result) {
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        }
 
         $scope.saveTabRotateInterval = function(){
             $http.post("/dashboards/saveTabRotateInterval.json?angular=true",
@@ -862,27 +886,6 @@ angular.module('openITCOCKPIT')
                 $scope.saveGrid();
             }, 1500);
         }, true);
-
-        // If the containerId is changed, reload the users!
-        $scope.$watch('allocation.DashboardTab.containers._ids', function() {
-            if ($scope.init) {
-                return;
-            }
-            // Reset the selected users after changing the container.
-            $scope.allocation.DashboardTab.AllocatedUsers._ids = [];
-
-            // Load new users from the container.
-            $scope.loadUsers();
-        }, true);
-
-        // If the [pinned] flag is switched, pass it to the flag int.
-        $scope.$watch('isPinned', function(val) {
-            if (val) {
-                $scope.allocation.DashboardTab.flags |= 1;
-                return;
-            }
-            $scope.allocation.DashboardTab.flags ^= 1;
-        });
 
         $scope.load();
     });
