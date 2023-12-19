@@ -1,5 +1,8 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsAllocateController', function($scope, $http, $stateParams, RedirectService) {
+        // I am initing the view rn.
+        $scope.init = true;
+
         // I am the ID that will be allocated.
         $scope.id = $stateParams.id;
 
@@ -37,14 +40,12 @@ angular.module('openITCOCKPIT')
 
         // I will prepeare the view.
         $scope.load = function() {
+
             // Fetch Containers.
             $scope.loadContainer();
 
             // Fetch UserGroups.
             $scope.loadUsergroups();
-
-            // Fetch Users.
-            $scope.loadUsers();
 
             // Fetch Allocation Setup.
             $scope.fetchAllocation($scope.id);
@@ -60,6 +61,9 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.AllocatedUsers._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
                 $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
+
+                // I'm done.
+                $scope.init = false;
             });
         }
 
@@ -76,7 +80,6 @@ angular.module('openITCOCKPIT')
 
         // I will load all users.
         $scope.loadUsers = function() {
-            console.log($scope.allocation.DashboardTab.containers);
             $http.get("/users/loadUsersByContainerId.json", {
                 params: {
                     'angular': true,
@@ -84,6 +87,11 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result) {
                 $scope.users = result.data.users;
+                
+                // Reset the selected users after changing the container.
+                if ($scope.init) {
+                    $scope.allocation.DashboardTab.AllocatedUsers._ids = [];
+                }
             });
         };
 
@@ -113,12 +121,6 @@ angular.module('openITCOCKPIT')
 
         // If the containerId is changed, reload the users!
         $scope.$watch('allocation.DashboardTab.containers._ids', function() {
-            if ($scope.init) {
-                return;
-            }
-            // Reset the selected users after changing the container.
-            $scope.allocation.DashboardTab.AllocatedUsers._ids = [];
-
             // Load new users from the container.
             $scope.loadUsers();
         }, true);
