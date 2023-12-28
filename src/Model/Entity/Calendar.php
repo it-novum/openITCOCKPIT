@@ -5,7 +5,6 @@ namespace App\Model\Entity;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\Entity;
-use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\TableRegistry;
 
 /**
