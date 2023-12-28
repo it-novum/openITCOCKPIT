@@ -2,7 +2,11 @@
 
 namespace App\Model\Entity;
 
+use App\Model\Table\ContainersTable;
+use App\Model\Table\TimeperiodsTable;
 use Cake\ORM\Entity;
+use Cake\ORM\Locator\TableLocator;
+use Cake\ORM\TableRegistry;
 
 /**
  * Calendar Entity
@@ -34,4 +38,31 @@ class Calendar extends Entity {
         'modified'          => true,
         'calendar_holidays' => true
     ];
+
+    /**
+     * I will check where this calendar is in use while the containerId is fixed within a connection.
+     * If you want to change the containerId, I may return a connection that will get broken as soon as the container is changed.
+     * @return array[]
+     */
+    public function canMoveToContainer(int $newContainerId): bool {
+        if (empty($this->getTimePeriods())) {
+            return true;
+        }
+
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        return $ContainersTable->isNewContainerInPathOfOldContainer($newContainerId, $this->container_id);
+    }
+
+
+    /**
+     * I will solely return the array of TimePeriods this Calendar is used with.
+     * @return array
+     */
+    private function getTimePeriods(): array {
+        /** @var TimeperiodsTable $TimePeriodsTable */
+        $TimePeriodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        return $TimePeriodsTable->find()->where(['calendar_id' => $this->id])->toArray();
+    }
 }
