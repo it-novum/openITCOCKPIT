@@ -34,7 +34,7 @@
 
         <div class="panel">
             <div class="card">
-                <div class="alert w-100 bg-<?= h($Statuspage['items'][0]['color']) ?>" role="alert">
+                <div class="alert w-100 bg-<?= h($Statuspage['statuspage']['cumulatedColor']) ?>" role="alert">
                 </div>
                 <div class="ml-2">
 
@@ -45,7 +45,7 @@
                     <p class="lead"><?= h($Statuspage['statuspage']['description']) ?></p>
                     <!--<hr class="my-4">-->
                 </div>
-                <div class="alert w-100 bt-0 bg-<?= h($Statuspage['items'][0]['color']) ?>" role="alert">
+                <div class="alert w-100 bt-0 bg-<?= h($Statuspage['statuspage']['cumulatedColor']) ?>" role="alert">
                 </div>
             </div>
         </div>
@@ -56,38 +56,70 @@
 
                     <div class="d-flex flex-row min-h-50 mt-2 card w-100">
                         <div class="p-2">
-                            <div class="h-100 status-line bg-<?= h($item['color']) ?>  shadow-<?= h($item['color']) ?>"></div>
+                            <div class="h-100 status-line bg-<?= h($item['cumulatedColor']) ?>  shadow-<?= h($item['cumulatedColor']) ?>"></div>
                         </div>
                         <div>
                             <div class="w-100">
                                 <div class="row p-2">
-                                    <h4><?= h($item['name']) ?></h4>
+                                    <h4><b><?= h($item['name']) ?></b></h4>
                                 </div>
                             </div>
 
-                            <?php if ($item['currentState'] > 0 && !$item['isAcknowledged'] && $item['type'] != 'Servicegroup' && $item['type'] != 'Hostgroup'): ?>
+                            <?php if (!empty($item['acknowledgedProblemsText'])): ?>
                                 <div>
-                                    <h4><b><i class="far fa-user"></i> State is not acknowledged!</b>
+                                    <h4><b><i class="far fa-user"></i> <?= h($item['acknowledgedProblemsText']) ?></b>
                                     </h4>
                                 </div>
                             <?php endif; ?>
-                            <?php if ($item['currentState'] > 0 && $item['isAcknowledged'] && $item['type'] != 'Servicegroup' && $item['type'] != 'Hostgroup'): ?>
+
+                            <?php if (!empty($item['acknowledgeComment'])): ?>
                                 <div>
-                                    <h4><b><i class="far fa-user"></i> State is acknowledged!</b>
+                                    <b><?php echo __('Comment'); ?>: <?=  h($item['acknowledgeComment']) ?></b>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($item['hostgroupHostAcknowledgementText'])): ?>
+                                <div>
+                                    <h4><b><i class="far fa-user"></i> <?= h($item['hostgroupHostAcknowledgementText']) ?></b>
                                     </h4>
                                 </div>
                             <?php endif; ?>
-                            <?php if ($item['isAcknowledged'] && $Statuspage['statuspage']['showComments']): ?>
+
+                            <?php if (!empty($item['hostgroupServiceAcknowledgementText'])): ?>
                                 <div>
-                                    <b><?php echo __('Comment'); ?>
-                                        : <?= h($item['acknowledgeData']['comment_data']) ?> </b>
+                                    <h4><b><i class="far fa-user"></i> <?= h($item['hostgroupServiceAcknowledgementText']) ?></b>
+                                    </h4>
                                 </div>
                             <?php endif; ?>
-                            <?php if ($item['isAcknowledged'] && !$Statuspage['statuspage']['showComments']): ?>
+
+                            <?php if (!empty($item['downtimeHostgroupHostText'])): ?>
                                 <div>
-                                    <b><?php echo __('Comment'); ?>: <?php echo __('Work in progress'); ?> </b>
+                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['downtimeHostgroupHostText']) ?></b>
+                                    </h4>
                                 </div>
                             <?php endif; ?>
+
+                            <?php if (!empty($item['plannedDowntimeHostgroupHostText'])): ?>
+                                <div>
+                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['plannedDowntimeHostgroupHostText']) ?></b>
+                                    </h4>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($item['downtimeHostgroupServiceText'])): ?>
+                                <div>
+                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['downtimeHostgroupServiceText']) ?></b>
+                                    </h4>
+                                </div>
+                            <?php endif; ?>
+
+                            <?php if (!empty($item['plannedDowntimeHostgroupServiceText'])): ?>
+                                <div>
+                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['plannedDowntimeHostgroupServiceText']) ?></b>
+                                    </h4>
+                                </div>
+                            <?php endif; ?>
+
                             <?php if (!empty($item['isInDowntime']) && !empty($item['downtimeData'])): ?>
                                 <div class="pt-1">
                                     <table class="table">
@@ -100,39 +132,33 @@
                                         </tr>
                                         <tr>
                                             <td>
-                                                <div><h5> <?php echo __('Start'); ?>
-                                                        : <?= h($item['downtimeData']['scheduledStartTime']) ?></h5>
+                                                <div>
+                                                    <h5> <?php echo __('Start'); ?>
+                                                        : <?= h($item['downtimeData']['scheduledStartTime']) ?>
+                                                    </h5>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div><h5><?php echo __('End'); ?>
-                                                        : <?= h($item['downtimeData']['scheduledEndTime']) ?></h5></div>
+                                                <div>
+                                                    <h5>
+                                                        <?php echo __('End'); ?>
+                                                        : <?= h($item['downtimeData']['scheduledEndTime']) ?>
+                                                    </h5>
+                                                </div>
                                             </td>
                                             <td>
-                                                <div><h5><?php echo __('Comment'); ?>:
-                                                        <?php if ($Statuspage['statuspage']['showComments']): ?>
-                                                            <?= h($item['downtimeData']['commentData']) ?>
-                                                        <?php else: ?>
-                                                            Work in progress
-                                                        <?php endif; ?>
+                                                <div>
+                                                    <h5><?php echo __('Comment'); ?>:
+                                                        <?= h($item['downtimeData']['comment']) ?>
                                                     </h5>
+                                                </div>
                                         </tr>
                                     </table>
                                 </div>
                             <?php endif; ?>
 
-                            <?php if (!empty($item['problemtext'])): ?>
-                                <div>
-                                    <h4><b><?= h($item['problemtext']) ?> </b></h4>
-                                </div>
-                            <?php endif; ?>
-                            <?php if (!empty($item['problemtext_down'])): ?>
-                                <div>
-                                    <h4><b><?= h($item['problemtext_down']) ?> </b></h4>
-                                </div>
-                            <?php endif; ?>
 
-                            <?php if (!empty($item['plannedDowntimes'])): ?>
+                            <?php if (!empty($item['plannedDowntimeData'])): ?>
                                 <div class="table-responsive">
                                     <table class="table table-sm w-100">
                                         <tr>
@@ -140,7 +166,7 @@
                                                     <i class="fa fa-power-off"></i><?php echo __('Planned Downtimes for the next 10 days:'); ?>
                                                 </h5></div>
                                         </tr>
-                                        <?php foreach ($item['plannedDowntimes'] as $downtime): ?>
+                                        <?php foreach ($item['plannedDowntimeData'] as $downtime): ?>
                                             <tr>
                                                 <td>
                                                     <h5><?php echo __('Start'); ?>:
@@ -152,11 +178,7 @@
                                                 </td>
                                                 <td>
                                                     <h5><?php echo __('Comment'); ?>:
-                                                        <?php if ($Statuspage['statuspage']['showComments']): ?>
-                                                            <?= h($downtime['commentData']) ?>
-                                                        <?php else: ?>
-                                                            Work in progress
-                                                        <?php endif; ?>
+                                                        <?= h($downtime['comment']) ?>
                                                     </h5>
                                                 </td>
                                             </tr>
@@ -168,7 +190,7 @@
 
                         </div>
                         <div class="p-2 flex-right">
-                            <div class="h-100 status-line bg-<?= h($item['color']) ?>   shadow-<?= h($item['color']) ?>"></div>
+                            <div class="h-100 status-line bg-<?= h($item['cumulatedColor']) ?>   shadow-<?= h($item['cumulatedColor']) ?>"></div>
                         </div>
                     </div>
 

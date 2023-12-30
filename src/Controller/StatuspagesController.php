@@ -79,15 +79,18 @@ class StatuspagesController extends AppController {
                 $statuspagesWithContainers[$statuspage['id']][] = $container['id'];
             }
             if ($withState) {
-                $statuspageViewData = $StatuspagesTable->getStatuspageView($statuspage['id'], $UserTime);
-                if (count($statuspageViewData['items']) > 0) {
+                $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$statuspage['id'], $this->MY_RIGHTS, $UserTime);
+               /* if (count($statuspageViewData['items']) > 0) {
                     $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['items'][0]['cumulatedState'];
                     $all_statuspages[$key]['color'] = "bg-{$statuspageViewData['items'][0]['color']}";
                 } else {
                     $all_statuspages[$key]['cumulatedState'] = 1;
                     $all_statuspages[$key]['color'] = "bg-primary";
-                }
+                } */
+                $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['statuspage']['cumulatedColorId'];
+                $all_statuspages[$key]['color'] =  'bg-' . $statuspageViewData['statuspage']['cumulatedColor'];
             }
+
             $all_statuspages[$key]['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {
                 $all_statuspages[$key]['allow_edit'] = false;
@@ -123,12 +126,12 @@ class StatuspagesController extends AppController {
         }
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-        $StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, true);
-        die('OLD');
+        //$StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, true);
+        //die('OLD');
 
-        $statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime);
-
-        $this->set('Statuspage', $statuspageViewData);
+        $statuspageViewData =  $StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, $UserTime, true);//$StatuspagesTable->getStatuspageView($id, $UserTime);
+        //$statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime);
+            $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
@@ -145,7 +148,7 @@ class StatuspagesController extends AppController {
         }
         $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
-        $statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime, true);
+        $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$id, $this->MY_RIGHTS, $UserTime, true);
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
@@ -259,13 +262,12 @@ class StatuspagesController extends AppController {
             //Only ship HTML template for angular
             return;
         }
-
         /** @var $StatuspagesTable StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
-        $statuspage = $StatuspagesTable->getStatuspageObjects($id);
+        $statuspage = $StatuspagesTable->getStatuspageWithAllObjects((int)$id, $this->MY_RIGHTS);
 
         if ($this->request->is('post')) {
             $statuspage = $StatuspagesTable->get($id, [

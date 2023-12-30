@@ -58,7 +58,7 @@
             <div class="panel mr-3 ml-3 mb-0">
                 <div>
                     <div class="w-100">
-                        <div class="alert w-100 bg-{{Statuspage.items[0].color}}" role="alert">
+                        <div class="alert w-100 bg-{{Statuspage.statuspage.cumulatedColor}}" role="alert">
                         </div>
                         <div class="ml-2">
                             Statuspage <br>
@@ -67,7 +67,7 @@
                         <div ng-if="Statuspage.statuspage.description != ''">
                             <p class="ml-2">{{Statuspage.statuspage.description}}</p>
                         </div>
-                        <div class="alert w-100 mb-0 bg-{{Statuspage.items[0].color}}" role="alert">
+                        <div class="alert w-100 mb-0 bg-{{Statuspage.statuspage.cumulatedColor}}" role="alert">
                         </div>
                     </div>
                 </div>
@@ -79,14 +79,14 @@
                         <div class="no-padding" ng-repeat="item in Statuspage.items">
                             <div class="d-flex flex-row min-h-50 mt-2 card w-100">
                                 <div class="p-2">
-                                    <div class="h-100 status-line bg-{{item.color}} shadow-{{item.color}}"></div>
+                                    <div class="h-100 status-line bg-{{item.cumulatedColor}} shadow-{{item.color}}"></div>
                                 </div>
                                 <div>
                                     <div class="w-100">
                                         <div class="row p-2">
                                             <!--<h3>{{item.type}}</h3>-->
 
-                                            <h4 ng-if="item.type === 'Host'">
+                                            <h4 ng-if="item.type === 'host'">
                                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                                     <a ui-sref="HostsBrowser({id:item.id})">
                                                         {{ item.name }}
@@ -96,7 +96,7 @@
                                                     {{ item.name }}
                                                 <?php endif; ?>
                                             </h4>
-                                            <h4 ng-if="item.type === 'Service'">
+                                            <h4 ng-if="item.type === 'service'">
                                                 <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
                                                     <a ui-sref="ServicesBrowser({id:item.id})">
                                                         {{ item.name }}
@@ -106,7 +106,7 @@
                                                     {{ item.name }}
                                                 <?php endif; ?>
                                             </h4>
-                                            <h4 ng-if="item.type === 'Hostgroup'">
+                                            <h4 ng-if="item.type === 'hostgroup'">
                                                 <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
                                                     <a ui-sref="HostgroupsExtended({id: item.id})">
                                                         {{ item.name }}
@@ -116,7 +116,7 @@
                                                     {{ item.name }}
                                                 <?php endif; ?>
                                             </h4>
-                                            <h4 ng-if="item.type === 'Servicegroup'">
+                                            <h4 ng-if="item.type === 'servicegroup'">
                                                 <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
                                                     <a ui-sref="ServicegroupsExtended({id: item.id})">
                                                         {{ item.name }}
@@ -131,31 +131,51 @@
 
                                     <div class="p-2">
                                         <div>
-                                            <div ng-if="item.currentState > 0 && !item.isAcknowledged && item.type != 'Servicegroup' && item.type != 'Hostgroup'">
-                                                <!--<h4><b><i class="far fa-user"></i> {{item.type}} <?php echo __('is not acknowledged!'); ?> </b></h4>-->
+                                            <div ng-if="item.acknowledgedProblemsText">
                                                 <h4>
-                                                    <b><i class="far fa-user"></i><?php echo __('State is not acknowledged!'); ?>
+                                                    <b><i class="far fa-user"></i> {{item.acknowledgedProblemsText}}
                                                     </b></h4>
                                             </div>
-                                            <div ng-if="item.currentState > 0 && item.isAcknowledged">
-                                                <!--<h4 ng-if="item.type == 'Service'"><b><i class="fas fa-user"></i> <?php echo __('State of service is acknowledged'); ?></b></h4>
-                                            <h4 ng-if="item.type == 'Host'"><b><i class="fas fa-user"></i> <?php echo __('State of host is acknowledged'); ?></b></h4>-->
-                                                <h4><b><?php echo __('State is acknowledged'); ?></b></h4>
+                                            <div ng-if="item.acknowledgeComment">
+                                                    <b><?php echo __('Comment'); ?>
+                                                        : {{item.acknowledgeComment}}
+                                                    </b>
                                             </div>
-                                            <div ng-if="item.isAcknowledged">
-                                                <b ng-if="Statuspage.statuspage.showComments"><?php echo __('Comment'); ?>
-                                                    :
-                                                    {{item.acknowledgeData.comment_data }}</b>
-                                                <b ng-if="!Statuspage.statuspage.showComments"><?php echo __('Comment'); ?>
-                                                    : <?php echo __('Work in progress'); ?></b>
+                                            <div ng-if="item.hostgroupHostAcknowledgementText">
+                                                <h4>
+                                                    <b><i class="far fa-user"></i> {{item.hostgroupHostAcknowledgementText}}
+                                                    </b></h4>
+                                            </div>
+                                            <div ng-if="item.hostgroupServiceAcknowledgementText">
+                                                <h4>
+                                                    <b><i class="far fa-user"></i> {{item.hostgroupServiceAcknowledgementText}}
+                                                    </b></h4>
+                                            </div>
+                                            <div ng-if="item.downtimeHostgroupHostText">
+                                                <h4>
+                                                    <b><i class="fa fa-power-off"></i> {{item.downtimeHostgroupHostText}}
+                                                    </b></h4>
+                                            </div>
+                                            <div ng-if="item.plannedDowntimeHostgroupHostText">
+                                                <h5>
+                                                    <b><i class="fa fa-power-off"></i> {{item.plannedDowntimeHostgroupHostText}}
+                                                    </b></h5>
+                                            </div>
+                                            <div ng-if="item.downtimeHostgroupServiceText">
+                                                <h4>
+                                                    <b><i class="fa fa-power-off"></i> {{item.downtimeHostgroupServiceText}}
+                                                    </b></h4>
+                                            </div>
+                                            <div ng-if="item.plannedDowntimeHostgroupServiceText">
+                                                <h5>
+                                                    <b><i class="fa fa-power-off"></i> {{item.plannedDowntimeHostgroupServiceText}}
+                                                    </b></h5>
                                             </div>
                                         </div>
 
                                         <div ng-if="item.isInDowntime && item.downtimeData" class="pt-1">
                                             <table class="table">
                                                 <tr>
-                                                    <!--<div ng-if="item.type == 'Service'"><h4><i class="fa fa-power-off"></i> <?php echo __('The service is currently in a planned maintenance period'); ?></b></h4></div>
-                                                    <div ng-if="item.type == 'Host'"><h4><i class="fa fa-power-off"></i> <?php echo __('The host is currently in a planned maintenance period'); ?></b></h4></div>-->
                                                     <h4>
                                                         <i class="fa fa-power-off"></i> <?php echo __(' Is currently in a planned maintenance period'); ?></b>
                                                     </h4>
@@ -171,34 +191,25 @@
                                                     </td>
                                                     <td>
                                                         <div><h5><?php echo __('Comment'); ?>:
-                                                                {{Statuspage.statuspage.showComments ? item.downtimeData.commentData : "work in progress"
-                                                                }}</h5></div>
+                                                                {{item.downtimeData.comment}}</h5></div>
                                                     </td>
                                                 </tr>
                                             </table>
                                         </div>
-
-                                        <div ng-if="item.problemtext"><h4>
-                                                <b>{{item.problemtext}}</b></h4>
-                                        </div>
-                                        <div ng-if="item.problemtext_down"><h4>
-                                                <b>{{item.problemtext_down}}</b></h4>
-                                        </div>
                                         <div class="d-flex justify-content-around">
-                                            <div ng-if="item.plannedDowntimes">
+                                            <div ng-if="item.plannedDowntimeData">
                                                 <table class="table table-sm w-100">
                                                     <tr class="col-12"><h5><i
                                                                     class="fa fa-power-off"></i><?php echo __('Planned Downtimes for the next 10 days:'); ?>
                                                         </h5></tr>
-                                                    <tr ng-repeat="downtime in item.plannedDowntimes">
+                                                    <tr ng-repeat="downtime in item.plannedDowntimeData">
                                                         <td><h5><?php echo __('Start'); ?>:</h5></td>
                                                         <td><h5> {{downtime.scheduledStartTime}}</h5></td>
                                                         <td><h5><?php echo __('End'); ?>:</h5></td>
                                                         <td><h5> {{downtime.scheduledEndTime}}</h5></td>
                                                         <td><h5><?php echo __('Comment'); ?>:</h5></td>
                                                         <td><h5>
-                                                                {{Statuspage.statuspage.showComments ? downtime.commentData : "work in progress"
-                                                                }}</h5></td>
+                                                                {{downtime.comment}}</h5></td>
                                                     </tr>
                                                 </table>
                                             </div>
@@ -206,10 +217,9 @@
                                     </div>
                                 </div>
                                 <div class="p-2 flex-right">
-                                    <div class="h-100 status-line bg-{{item.color}} shadow-{{item.color}}"></div>
+                                    <div class="h-100 status-line bg-{{item.cumulatedColor}} shadow-{{item.cumulatedColor}}"></div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
