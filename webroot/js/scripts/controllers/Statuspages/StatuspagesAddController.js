@@ -69,7 +69,7 @@ angular.module('openITCOCKPIT')
                     'filter': {
                         'servicename': searchString,
                     },
-                    'selected': selected ? $scope.services_ids : []
+                    'selected[]': selected ? $scope.services_ids : []
                 };
 
                 $http.get("/services/loadServicesByStringCake4.json", {
@@ -216,9 +216,9 @@ angular.module('openITCOCKPIT')
             }
             if ($scope.container_id !== null) {
                 $scope.loadHostgroups('', false);
-                $scope.loadHosts('');
-                $scope.loadServices('');
-                $scope.loadServicegroups('');
+                $scope.loadHosts('', false);
+                $scope.loadServices('',false);
+                $scope.loadServicegroups('', false);
                 $scope.proofSelected();
             }
              else {

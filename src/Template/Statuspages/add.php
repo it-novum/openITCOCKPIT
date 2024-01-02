@@ -257,9 +257,6 @@
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-                        <!--<div class="form-group">
-                            <button class="btn btn-primary btn-sm" type="button" ng-click="toggleHostAlias()" ng-show="showHostAliasButton">Set host alias</button>
-                        </div>-->
                         <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Host alias'); ?>
