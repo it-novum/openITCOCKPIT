@@ -37,6 +37,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
+use AutoreportModule\Filter\AutoreportFilter;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -64,6 +65,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Filter\DashboardTabsFilter;
 use ParsedownExtra;
 use RuntimeException;
 use Statusengine\PerfdataParser;
@@ -1994,6 +1996,9 @@ class DashboardsController extends AppController {
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
+        /** @var DashboardTabsFilter $DashboardTabsFilter */
+        $DashboardTabsFilter = new DashboardTabsFilter($this->request);
+
         // Fetch them all (not allocated ones, tho...)
         $dashboardTabs = $DashboardTabsTable->find()
             ->where(['source_tab_id IS' => null])
@@ -2001,6 +2006,7 @@ class DashboardsController extends AppController {
             ->contain('Usergroups')
             ->contain('AllocatedUsers')
             ->disableHydration()
+            ->where($DashboardTabsFilter->indexFilter())
             ->toArray();
 
         // Clean up the mess surrounding the allocation info.

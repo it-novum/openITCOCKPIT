@@ -713,7 +713,7 @@
                                         <?php echo __('Pin Dashboard'); ?>
                                     </label>
                                 </div>
-                                <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
+                                <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?></div>
                             </div>
                         </div>
                     </div>

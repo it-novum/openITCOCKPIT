@@ -59,7 +59,7 @@
                                     class="form-control"
                                     chosen="containers"
                                     ng-options="container.key as container.value for container in containers"
-                                    ng-model="allocation.DashboardTab.containers._ids">
+                                    ng-model="allocation.DashboardTab.container_id">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -117,7 +117,7 @@
                                             <?php echo __('Pin Dashboard'); ?>
                                         </label>
                                     </div>
-                                    <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the left most tab.'); ?></div>
+                                    <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?></div>
                                 </div>
                             </div>
                         </div>

@@ -5,6 +5,7 @@ namespace App\Model\Table;
 
 use App\Lib\PluginManager;
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Model\Entity\Widget;
 use ArrayObject;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
@@ -12,6 +13,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Dashboards\ModuleWidgetsInterface;
+use \DateTime;
 
 /**
  * Widgets Model
@@ -478,19 +480,18 @@ class WidgetsTable extends Table {
     }
 
     /**
-     * I will refresh the modification date of the corellated dashboard_tab entry of this widget.
-     * This fixes an issue where updates to dashboard-widgets are not noticed by sharing and allocating the dashboards.
+     * I will refresh the modification date of the corellated dashboard_tabs entry of this Widget.
+     * This fixes the issue where updates on Widgets are not triggering updates for shared and allocated dashboards.
      *
-     * @param EntityInterface $entity
+     * @param Widget $entity
      * @param ArrayObject $options
      * @return bool
      */
     public function _onSaveSuccess(EntityInterface $entity, ArrayObject $options): bool {
-        // @todo check in dashboard -> widget[] save (Looped / Multiple call?)
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         $DashboardTab = $DashboardTabsTable->get($entity->dashboard_tab_id);
         $patch = [
-            'modified' => new \DateTime()
+            'modified' => new DateTime()
         ];
         $DashboardTabsTable->patchEntity($DashboardTab, $patch);
         $DashboardTabsTable->save($DashboardTab);

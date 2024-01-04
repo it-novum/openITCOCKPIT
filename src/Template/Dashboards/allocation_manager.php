@@ -75,65 +75,8 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by full name'); ?>"
-                                                   ng-model="filter.full_name"
+                                                   ng-model="filter.DashboardTab.name"
                                                    ng-model-options="{debounce: 500}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by email'); ?>"
-                                                   ng-model="filter.Users.email"
-                                                   ng-model-options="{debounce: 500}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-phone"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by phone'); ?>"
-                                                   ng-model="filter.Users.phone"
-                                                   ng-model-options="{debounce: 500}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-6 margin-bottom-10">
-                                    <div class="form-group">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-building"></i></span>
-                                            </div>
-                                            <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by company'); ?>"
-                                                   ng-model="filter.Users.company"
-                                                   ng-model-options="{debounce: 500}">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-xs-12 col-md-12 margin-bottom-10">
-                                    <div class="form-group">
-                                        <div class="input-group input-group-sm">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text"><i class="fa fa-users"></i></span>
-                                            </div>
-                                            <select
-                                                    id="UserRoles"
-                                                    data-placeholder="<?php echo __('Filter by user role'); ?>"
-                                                    class="form-control"
-                                                    chosen="usergroups"
-                                                    multiple
-                                                    ng-model="filter.Users.usergroup_id"
-                                                    ng-options="usergroup.key as usergroup.value for usergroup in usergroups">
-                                            </select>
                                         </div>
                                     </div>
                                 </div>
