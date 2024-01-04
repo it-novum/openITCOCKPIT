@@ -144,10 +144,6 @@ class DashboardTabsTable extends Table {
         return $this->exists(['DashboardTabs.id' => $id]);
     }
 
-    public function copyTab(int $original, int $userId): void {
-
-    }
-
     /**
      * @param int $userId
      * @param array $options
@@ -192,8 +188,6 @@ class DashboardTabsTable extends Table {
         } catch (RecordNotFoundException $e) {
             return 1;
         }
-        //Should be never reached
-        return 1;
     }
 
     /**
@@ -629,19 +623,5 @@ class DashboardTabsTable extends Table {
 
         $this->save($Entity);
         return $Entity;
-    }
-
-    /**
-     * @param DashboardTab $tab
-     * @return bool
-     */
-    public function isAllocated(DashboardTab $tab): bool {
-        // If not allocated, fine then.
-        if (empty($tab->source_tab_id)) {
-            return false;
-        }
-
-        // ITC-3037 MAKE DYNAMIC
-        return true;
     }
 }

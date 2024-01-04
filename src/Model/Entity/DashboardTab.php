@@ -19,7 +19,10 @@ use Cake\ORM\Entity;
  * @property bool $locked
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
- * @property int $flags
+ * @property int|null $flags
+ * @property  int|null $container_id
+ * @property  int[]|null $usergroups
+ * @property  int[]|null $allocated_users
  *
  *
  * @property \App\Model\Entity\User $user
@@ -28,7 +31,7 @@ use Cake\ORM\Entity;
  */
 class DashboardTab extends Entity {
 
-    public const TAB_PINNED = 1 << 0;                 // 1
+    public const TAB_PINNED = 1 << 0;
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
@@ -53,9 +56,9 @@ class DashboardTab extends Entity {
         'user'              => true,
         'source_tab'        => true,
         'widgets'           => true,
-        'usergroups'        => true,
         'flags'             => true,
         'container_id'      => true,
-        'allocated_users'    => true,
+        'usergroups'        => true,
+        'allocated_users'   => true,
     ];
 }

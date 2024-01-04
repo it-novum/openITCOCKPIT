@@ -11,7 +11,7 @@ angular.module('openITCOCKPIT')
         $scope.dashboardIsLocked = false;
         $scope.Usergroup = {};
         $scope.User = {};
-        $scope.hideModifications = false;
+        $scope.hideModifications = 0;
         $scope.isPinned = false;
 
         $scope.flags = {
@@ -149,7 +149,7 @@ angular.module('openITCOCKPIT')
 
                 // ITC-3037
                 $scope.isReadonly = result.data.isReadonly ? 1 : 0;
-                $scope.hideModifications = false;
+                $scope.hideModifications = 0;
 
                 for(var k in $scope.tabs){
                     if($scope.tabs[k].id === $scope.activeTab){
@@ -163,7 +163,7 @@ angular.module('openITCOCKPIT')
                             $scope.gridsterOpts.draggable.enabled = true;
                         }
                         if(($scope.tabs[k].source || '') === 'ALLOCATED'){
-                            $scope.hideModifications = true;
+                            $scope.hideModifications = 1;
                             $scope.dashboardIsLocked = true;
                             $scope.gridsterOpts.resizable.enabled = false;
                             $scope.gridsterOpts.draggable.enabled = false;
@@ -185,7 +185,7 @@ angular.module('openITCOCKPIT')
                         title: result.data.widgets.Widget[i].title,
                         color: result.data.widgets.Widget[i].color,
                         directive: result.data.widgets.Widget[i].directive,
-                        isReadonly: $scope.isReadonly
+                        isReadonly: $scope.hideModifications
                     });
                 }
 

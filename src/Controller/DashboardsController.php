@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
-use App\Model\Entity\DashboardTab;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
@@ -36,7 +35,6 @@ use App\Model\Table\ParenthostsTable;
 use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
-use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\ForbiddenException;
@@ -58,7 +56,6 @@ use itnovum\openITCOCKPIT\Core\Dashboards\TachoJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TacticalOverviewJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\TrafficlightJson;
 use itnovum\openITCOCKPIT\Core\Dashboards\WebsiteJson;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
@@ -67,7 +64,6 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
-use Microsoft\Graph\Model\PrintTaskTrigger;
 use ParsedownExtra;
 use RuntimeException;
 use Statusengine\PerfdataParser;
@@ -157,14 +153,9 @@ class DashboardsController extends AppController {
         $User = new User($this->getUser());
         $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
 
-        $Entity = $DashboardTabsTable->get($tabId);
-
-        // ITC-3037
-        $isReadonly = $DashboardTabsTable->isAllocated($Entity);
 
         $this->set('widgets', $widgets);
-        $this->set('isReadonly', $isReadonly);
-        $this->viewBuilder()->setOption('serialize', ['widgets', 'isReadonly']);
+        $this->viewBuilder()->setOption('serialize', ['widgets']);
     }
 
     public function dynamicDirective() {
