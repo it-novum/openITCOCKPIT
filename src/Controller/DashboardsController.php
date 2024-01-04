@@ -1979,16 +1979,11 @@ class DashboardsController extends AppController {
             /** @var DashboardTabsTable $DashboardTabsTable */
             $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
-            $dashboardTab['allocated_users'] = $dashboardTab['AllocatedUsers'];
             // Fetch from DB
             $Entity = $DashboardTabsTable->get($dashboardTab['id']);
             $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
             // Save
             $DashboardTabsTable->save($Entity);
-print_r($dashboardTab);
-die();
-
-
         }
 
     }

@@ -39,7 +39,7 @@ angular.module('openITCOCKPIT')
                 usergroups: {
                     _ids: []
                 },
-                AllocatedUsers: {
+                allocated_users: {
                     _ids: []
                 },
                 flags: 0,
@@ -525,7 +525,7 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.id = result.data.dashboardTabs[0].id;
                 $scope.allocation.DashboardTab.container_id = result.data.dashboardTabs[0].container_id;
                 $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
-                $scope.allocation.DashboardTab.AllocatedUsers._ids = result.data.dashboardTabs[0].allocated_users;
+                $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
                 $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
 
@@ -546,7 +546,7 @@ angular.module('openITCOCKPIT')
 
                 // Reset the selected users after changing the container.
                 if ($scope.allocationInitializing) {
-                    $scope.allocation.DashboardTab.AllocatedUsers._ids = [];
+                    $scope.allocation.DashboardTab.allocated_users._ids = [];
                 }
             });
         };

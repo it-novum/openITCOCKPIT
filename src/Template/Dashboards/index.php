@@ -674,7 +674,7 @@
                                         class="form-control"
                                         chosen="users"
                                         ng-options="user.key as user.value for user in users"
-                                        ng-model="allocation.DashboardTab.AllocatedUsers._ids"
+                                        ng-model="allocation.DashboardTab.allocated_users._ids"
                                         multiple="multiple">
                                 </select>
                             </div>
