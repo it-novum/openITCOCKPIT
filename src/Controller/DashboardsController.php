@@ -1948,12 +1948,13 @@ class DashboardsController extends AppController {
 
             // Fetch them all (not allocated ones, tho...)
             $dashboardTabs = $DashboardTabsTable->find()
-                ->where(['id' => $id])
+                ->where(['DashboardTabs.id' => $id])
                 ->contain('Usergroups')
                 ->contain('AllocatedUsers')
                 ->contain('Containers')
                 ->disableHydration()
-                ->toArray();
+                ->toArray()
+            ;
 
             // Clean up the mess surrounding the allocation info.
             foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
@@ -1965,9 +1966,6 @@ class DashboardsController extends AppController {
                 $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
                 $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
                 $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
-                // Condense the containers
-                $dashboardTabs[$dashboardTabIndex]['container_name'] = Hash::extract($dashboardTab['containers'] ?? [], '{n}.name');
-                $dashboardTabs[$dashboardTabIndex]['containers'] = Hash::extract($dashboardTab['containers'] ?? [], '{n}.id');
             }
 
             $this->set('dashboardTabs', $dashboardTabs);
@@ -1981,28 +1979,16 @@ class DashboardsController extends AppController {
             /** @var DashboardTabsTable $DashboardTabsTable */
             $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
+            $dashboardTab['allocated_users'] = $dashboardTab['AllocatedUsers'];
             // Fetch from DB
             $Entity = $DashboardTabsTable->get($dashboardTab['id']);
-
-            // Patch with new IDs
-            /** @var UsersTable $UsersTable */
-            $UsersTable = TableRegistry::getTableLocator()->get('users');
-
-            foreach ($dashboardTab['AllocatedUsers']['_ids'] as $userId) {
-                $UserEntity = $UsersTable->get($userId);
-                $UserEntity = $UsersTable->patchEntity($UserEntity, [
-                    'dashboard_tabs' => [
-                        '_ids' => [$dashboardTab['id']]
-                    ]
-                ]);
-                $UsersTable->save($UserEntity);
-            }
-
-            $dashboardTab['containers']['_ids'] = [$dashboardTab['containers']['_ids']];
             $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
-
             // Save
             $DashboardTabsTable->save($Entity);
+print_r($dashboardTab);
+die();
+
+
         }
 
     }

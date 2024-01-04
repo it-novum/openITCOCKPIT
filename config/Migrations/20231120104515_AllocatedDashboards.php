@@ -29,27 +29,6 @@ class AllocatedDashboards extends AbstractMigration {
      * @return void
      */
     public function up(): void {
-        if (!$this->hasTable('containers_to_dashboard_tabs')) {
-            $this->table('containers_to_dashboard_tabs')
-                ->addColumn('id', 'integer', [
-                    'autoIncrement' => true,
-                    'default'       => null,
-                    'limit'         => 11,
-                    'null'          => false,
-                ])
-                ->addPrimaryKey(['id'])
-                ->addColumn('dashboard_tab_id', 'integer', [
-                    'default' => null,
-                    'limit'   => 11,
-                    'null'    => false,
-                ])
-                ->addColumn('container_id', 'integer', [
-                    'default' => null,
-                    'limit'   => 11,
-                    'null'    => false,
-                ])
-                ->create();
-        }
         if (!$this->hasTable('usergroups_to_dashboard_tabs')) {
             $this->table('usergroups_to_dashboard_tabs')
                 ->addColumn('id', 'integer', [
@@ -94,6 +73,11 @@ class AllocatedDashboards extends AbstractMigration {
         }
         if ($this->hasTable('dashboard_tabs')) {
             $this->table('dashboard_tabs')
+                ->addColumn('container_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => true,
+                ])
                 ->addColumn('flags', 'integer', [
                     'default' => 1,
                     'limit'   => 11,

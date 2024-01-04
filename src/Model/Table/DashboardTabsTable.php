@@ -67,13 +67,9 @@ class DashboardTabsTable extends Table {
             'saveStrategy'     => 'replace',
             'dependent'        => true
         ]);
-        $this->belongsToMany('Containers', [
-            'className'        => 'Containers',
-            'joinTable'        => 'containers_to_dashboard_tabs',
-            'foreignKey'       => 'dashboard_tab_id',
-            'targetForeignKey' => 'container_id',
-            'saveStrategy'     => 'replace',
-            'dependent'        => true
+        $this->belongsTo('Containers', [
+            'foreignKey' => 'container_id',
+            'joinType'   => 'INNER'
         ]);
         $this->belongsToMany('AllocatedUsers', [
             'className'        => 'Users',
@@ -83,6 +79,7 @@ class DashboardTabsTable extends Table {
             'saveStrategy'     => 'replace',
             'dependent'        => true
         ]);
+
     }
 
     /**
@@ -310,7 +307,7 @@ class DashboardTabsTable extends Table {
                 'DashboardTabs.flags !=' => 2
             ])
             ->order([
-                'DashboardTabs.flags' => 'DESC',
+                'DashboardTabs.flags'    => 'DESC',
                 'DashboardTabs.position' => 'ASC',
             ])
             ->disableHydration()

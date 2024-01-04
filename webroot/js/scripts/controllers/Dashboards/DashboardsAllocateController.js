@@ -25,16 +25,14 @@ angular.module('openITCOCKPIT')
         $scope.allocation = {
             DashboardTab: {
                 id: 0,
-                containers: {
-                    _ids: []
-                },
                 usergroups: {
                     _ids: []
                 },
                 AllocatedUsers: {
                     _ids: []
                 },
-                flags: 0
+                flags: 0,
+                container_id: 0
             }
         };
 
@@ -56,7 +54,7 @@ angular.module('openITCOCKPIT')
             $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result) {
                 $scope.dashboard = result.data.dashboardTabs[0];
                 $scope.allocation.DashboardTab.id = result.data.dashboardTabs[0].id;
-                $scope.allocation.DashboardTab.containers._ids = result.data.dashboardTabs[0].containers[0];
+                $scope.allocation.DashboardTab.container_id = result.data.dashboardTabs[0].container_id;
                 $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
                 $scope.allocation.DashboardTab.AllocatedUsers._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
@@ -72,7 +70,7 @@ angular.module('openITCOCKPIT')
             $http.get("/users/loadUsersByContainerId.json", {
                 params: {
                     'angular': true,
-                    'containerId': $scope.allocation.DashboardTab.containers._ids
+                    'containerId': $scope.allocation.DashboardTab.container_id
                 }
             }).then(function(result) {
                 $scope.users = result.data.users;
@@ -109,7 +107,7 @@ angular.module('openITCOCKPIT')
         };
 
         // If the containerId is changed, reload the users!
-        $scope.$watch('allocation.DashboardTab.containers._ids', function() {
+        $scope.$watch('allocation.DashboardTab.container_id', function() {
             // Load new users from the container.
             $scope.loadUsers();
         }, true);
