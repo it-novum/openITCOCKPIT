@@ -885,6 +885,14 @@ class Systemsetting extends Importer {
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
             ],
+            (int)104  => [
+                'key'      => 'FRONTEND.LDAP.OPENLDAP_GROUP_SCHEMA',
+                'value'    => 'memberUid',
+                'info'     => 'Specifying Group Memberships by Using the memberUid or uniqueMember (RFC 4519 2.40) attribute for OpenLDAP servers',
+                'section'  => 'FRONTEND',
+                'created'  => '2022-01-06 08:52:17',
+                'modified' => '2022-01-06 08:52:17'
+            ],
         ];
 
         return $data;
