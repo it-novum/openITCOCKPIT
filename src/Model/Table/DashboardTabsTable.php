@@ -69,7 +69,7 @@ class DashboardTabsTable extends Table {
         ]);
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
-            'joinType'   => 'INNER'
+            'joinType'   => 'LEFT'
         ]);
         $this->belongsToMany('AllocatedUsers', [
             'className'        => 'Users',
@@ -77,7 +77,8 @@ class DashboardTabsTable extends Table {
             'foreignKey'       => 'dashboard_tab_id',
             'targetForeignKey' => 'user_id',
             'saveStrategy'     => 'replace',
-            'dependent'        => true
+            'dependent'        => true,
+            'joinType'         => 'LEFT'
         ]);
 
     }
@@ -624,4 +625,5 @@ class DashboardTabsTable extends Table {
         $this->save($Entity);
         return $Entity;
     }
+
 }

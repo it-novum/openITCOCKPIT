@@ -142,10 +142,13 @@
                                         <i class="fa fa-lock" ng-show="dashboardTab.flags === 1"></i>
                                     </td>
                                     <td>
-                                        <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"
-                                           class="btn btn-sm btn-default">
-                                            <i class="fa fa-cog"></i>
-                                        </a>
+
+                                        <div class="btn-group btn-group-xs" role="group">
+                                            <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
@@ -171,14 +174,12 @@
                                     <?php echo __('Undo selection'); ?>
                                 </span>
                             </div>
-                            <?php if ($this->Acl->hasPermission('delete', 'users')): ?>
-                                <div class="col-xs-12 col-md-2 txt-color-red">
-                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                        <i class="fas fa-trash"></i>
-                                        <?php echo __('Delete selected'); ?>
-                                    </span>
-                                </div>
-                            <?php endif; ?>
+                            <div class="col-xs-12 col-md-2 txt-color-red">
+                                <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                    <i class="fas fa-trash"></i>
+                                    <?php echo __('Remove Allocations'); ?>
+                                </span>
+                            </div>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
