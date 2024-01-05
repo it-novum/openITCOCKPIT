@@ -1573,4 +1573,83 @@ class HostgroupsTable extends Table {
 
         return $entity;
     }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostUudsAndServiceUuidsByHostgroupId($id) {
+        $hostgroup = $this->find()
+            ->contain([
+                // Get all hosts that are in this host group through the host template AND
+                // which does NOT have any own host groups
+                'Hosttemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.hosttemplate_id',
+                                        'Hostgroups.id'
+                                    ])
+                                    ->contain([
+                                        'Services' => function (Query $query) {
+                                            return $query->select([
+                                                'Services.uuid'
+                                            ])->where([
+                                                'Services.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->leftJoinWith('Hostgroups')
+                                    ->where(['Hosts.disabled' => 0])
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                },
+
+                // Get all hosts from this host group
+                'Hosts'         => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.uuid',
+                        ])->contain([
+                            'Services' => function (Query $query) {
+                                return $query->select([
+                                    'Services.host_id',
+                                    'Services.uuid'
+                                ])->where([
+                                    'Services.disabled' => 0
+                                ]);
+                            }
+                        ])->where(['Hosts.disabled' => 0]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+        $hostAnServiceUuids['host_uuids'] = array_unique(array_merge(
+            Hash::extract($hostgroup, 'hosts.{n}.uuid'),
+            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.uuid')
+        ));
+
+        $hostAnServiceUuids['service_uuids'] = array_unique(array_merge(
+            Hash::extract($hostgroup, 'hosts.{n}.services.{n}.uuid'),
+            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.services.{n}.uuid')
+        ));
+
+        return $hostAnServiceUuids;
+    }
 }
