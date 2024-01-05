@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsAllocationManagerController', function($scope, $http, SortService){
+    .controller('DashboardsAllocationManagerController', function($scope, $http, SortService, MassChangeService){
         // I am the array of available dashboardTabs.
         $scope.dashboardTabs = [];
 
@@ -29,6 +29,8 @@ angular.module('openITCOCKPIT')
                 name: ''
             }
         };
+
+        $scope.massChange = {};
 
         var defaultFilter = function(){
             $scope.filter = {
@@ -162,5 +164,40 @@ angular.module('openITCOCKPIT')
         $scope.resetFilter = function(){
             defaultFilter();
         };
+
+
+        $scope.undoSelection = function(){
+            MassChangeService.clearSelection();
+            $scope.massChange = MassChangeService.getSelected();
+            $scope.selectedElements = MassChangeService.getCount();
+        };
+
+        $scope.selectAll = function(){
+            if($scope.dashboardTabs){
+                for(var key in $scope.dashboardTabs){
+                    var id = $scope.dashboardTabs[key].id;
+                    $scope.massChange[id] = true;
+                }
+            }
+        };
+
+        $scope.getObjectsForDelete = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.dashboardTabs){
+                for(var id in selectedObjects){
+                    if(id == $scope.dashboardTabs[key].id){
+                        objects[id] = $scope.dashboardTabs[key].name;
+                    }
+                }
+            }
+            return objects;
+        };
+
+        $scope.$watch('filter', function(){
+            $scope.currentPage = 1;
+            $scope.undoSelection();
+            $scope.load();
+        }, true);
 
     });
