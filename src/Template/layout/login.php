@@ -26,6 +26,7 @@
 /**
  * @var \App\View\AppView $this
  */
+$Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 ?>
 
 <!DOCTYPE html>
@@ -70,6 +71,14 @@
             left: 0;
         }
 
+        <?php if($Logo->isCustomLoginBackground()): ?>
+
+        .login-screen-vnc {
+            background-image: url('<?= h($Logo->getCustomLoginBackgroundHtml()) ?>');
+        }
+
+        <?php endif; ?>
+
         .login-screen > figure:nth-child(1) {
             background-image: url('/img/login/<?= h($images['images'][0]['image']) ?>');
         }
@@ -101,7 +110,7 @@ endif;
 
 <div class="peers ai-s fxw-nw h-100vh" ng-controller="LoginLayoutController">
 
-    <?php if ($disableAnimation === false): ?>
+    <?php if ($disableAnimation === false && $Logo->isCustomLoginBackground() === false): ?>
         <div class="login-screen">
             <figure>
                 <figcaption><?= h($images['images'][0]['credit']) ?><?= $description; ?></figcaption>
