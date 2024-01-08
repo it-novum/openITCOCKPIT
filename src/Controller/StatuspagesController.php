@@ -46,11 +46,16 @@ use Cake\Event\EventInterface;
  * @method \App\Model\Entity\Statuspage[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
 class StatuspagesController extends AppController {
+
     //https://discourse.cakephp.org/t/bypass-authentication/9197/3
+    //a condition in src/Policy/RequestPolicy->canAccess is alsonecessary here
     public function beforeFilter(EventInterface $event) {
         parent::beforeFilter($event);
-        $this->Authentication->addUnauthenticatedActions(['public']);
+        //$this->Authentication->addUnauthenticatedActions(['publicView']);
+        $this->Authentication->allowUnauthenticated(['publicView']);
+
     }
+
 
     /**
      * Index method
@@ -80,13 +85,6 @@ class StatuspagesController extends AppController {
             }
             if ($withState) {
                 $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$statuspage['id'], $this->MY_RIGHTS, $UserTime);
-               /* if (count($statuspageViewData['items']) > 0) {
-                    $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['items'][0]['cumulatedState'];
-                    $all_statuspages[$key]['color'] = "bg-{$statuspageViewData['items'][0]['color']}";
-                } else {
-                    $all_statuspages[$key]['cumulatedState'] = 1;
-                    $all_statuspages[$key]['color'] = "bg-primary";
-                } */
                 $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['statuspage']['cumulatedColorId'];
                 $all_statuspages[$key]['color'] =  'bg-' . $statuspageViewData['statuspage']['cumulatedColor'];
             }
@@ -148,7 +146,7 @@ class StatuspagesController extends AppController {
         }
         $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
-        $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$id, $this->MY_RIGHTS, $UserTime, true);
+        $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$id, [], $UserTime, true);
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }

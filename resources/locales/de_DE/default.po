@@ -29742,3 +29742,31 @@ msgstr "VMware Host"
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:96
 msgid "VMware Snapshot services"
 msgstr "VMware Snapshot Services"
+
+#: .-src/Model/Table/StatuspagesTable.php:557
+msgid "State is acknowledged"
+msgstr "Status ist bestätigt"
+
+#: .-src/Model/Table/StatuspagesTable.php:563
+msgid "State is not acknowledged"
+msgstr "Status ist nicht bestätigt"
+
+#: .-src/Model/Table/StatuspagesTable.php:559
+msgid "Work in progress"
+msgstr "In Arbeit"
+
+#: .-src/Model/Table/StatuspagesTable.php:573
+msgid "{0} of {1} problems acknowledged"
+msgstr "{0} of {1} Probleme bestätigt"
+
+#: .-src/Model/Table/StatuspagesTable.php:677
+msgid "{0} of {1} Hostproblems are acknowledged"
+msgstr "{0} of {1} Hostprobleme sind bestätigt"
+
+#: .-src/Model/Table/StatuspagesTable.php:682
+msgid "{0} of {1} Serviceproblems are acknowledged"
+msgstr "{0} of {1} Serviceprobleme sind bestätigt"
+
+#: .-src/Template/Statuspages/index.php:244
+msgid "Public View"
+msgstr "öffentliche Anzeige"

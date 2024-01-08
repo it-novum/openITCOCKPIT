@@ -579,7 +579,7 @@ class StatuspagesTable extends Table {
                         $downtimeDataHost['scheduledStartTime'] = $this->time2string($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledStartTime'], $userTime);
                         $downtimeDataHost['scheduledEndTime'] = $this->time2string($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledEndTime'], $userTime);
                         $downtimeDataHost['comment'] = ($statuspage['show_comments'])
-                            ? $objectGroup['state_summary']['hosts']['downtime_details'][0]['commentData'] : __('In progress');
+                            ? $objectGroup['state_summary']['hosts']['downtime_details'][0]['commentData'] : __('Work in progress');
                         $item['isInDowntime'] = true;
                         $item['downtimeData'] = $downtimeDataHost;
                     }
@@ -591,7 +591,7 @@ class StatuspagesTable extends Table {
                             $downtimePlannedDataHost['scheduledStartTime'] = $this->time2string($planned['scheduled_start_time'], $userTime);
                             $downtimePlannedDataHost['scheduledEndTime'] = $this->time2string($planned['scheduled_end_time'], $userTime);
                             $downtimePlannedDataHost['comment'] = ($statuspage['show_comments'])
-                                ? $planned['comment_data'] : __('In progress');
+                                ? $planned['comment_data'] : __('Work in progress');
                             $plannedDowntimeDataHosts[] = $downtimePlannedDataHost;
                         }
                         $item['plannedDowntimeData'] = $plannedDowntimeDataHosts;
@@ -657,7 +657,7 @@ class StatuspagesTable extends Table {
                     ];
                     $item['id'] = $statuspage[$objectType][$index]['id'];
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
-                        ? $objectGroup['_joinData']['display_alias'] : $objectGroup['name']; //$statuspage[$objectType][$index]['name'];
+                        ? $objectGroup['_joinData']['display_alias'] : $objectGroup['name'];
                     if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] > 0) {
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['hosts']['cumulatedStateId'] + 1;
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
