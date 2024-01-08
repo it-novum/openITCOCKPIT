@@ -102,6 +102,7 @@ class StatuspagesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['all_statuspages']);
     }
 
+
     /**
      * View method
      *
@@ -133,6 +134,15 @@ class StatuspagesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 
+
+    /**
+     * Public View method
+     *
+     * @param string|null $id Statuspage id.
+     * @return \Cake\Http\Response|null|void Renders view
+     * @throws \Cake\Datasource\Exception\NotFoundException
+     * @throws \Cake\Datasource\Exception\MethodNotAllowedExceptionWhen record not found.
+     */
     public function publicView($id = null) {
         if (empty($id)) {
             throw new NotFoundException('Statuspage not found');

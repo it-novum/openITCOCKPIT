@@ -29770,3 +29770,6 @@ msgstr "{0} of {1} Serviceprobleme sind bestätigt"
 #: .-src/Template/Statuspages/index.php:244
 msgid "Public View"
 msgstr "öffentliche Anzeige"
+
+msgid "Status pages"
+msgstr "Statusseiten"

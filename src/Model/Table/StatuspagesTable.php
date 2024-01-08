@@ -254,6 +254,13 @@ class StatuspagesTable extends Table {
         return true;
     }
 
+    /**
+     * @param int $id
+     * @param array $MY_RIGHTS
+     * @param UserTime $userTime
+     * @param bool $includeComments
+     * @return array
+     */
     public function getStatuspageForView(int $id, array $MY_RIGHTS, UserTime $userTime, bool $includeComments = false) {
         $statuspage = $this->getStatuspageWithAllObjects($id, $MY_RIGHTS);
 
@@ -761,6 +768,7 @@ class StatuspagesTable extends Table {
         //exit(1);
         return $statuspageView;
     }
+
 
     private function time2string(int $stamp, UserTime $userTime) {
         return $userTime->format($stamp);
