@@ -358,7 +358,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 <div id="angularAddNodeModal" class="modal" role="dialog">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <form onsubmit="return false;">
+            <form ng-submit="submit()">
                 <div class="modal-header">
                     <h4 class="modal-title"><?php echo __('Add new container'); ?></h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -642,27 +642,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                             </span>
                                         </div>
                                         <input type="text" class="form-control"
-                                               placeholder="<?php echo __('John'); ?>"
+                                               placeholder="<?php echo __('Doe'); ?>"
                                                ng-model="post.Tenant.lastname">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-12 col-md-12">
-                                <div class="form-group">
-                                    <label class="col-xs-12 form-label">
-                                        <?php echo __('Street'); ?>
-                                    </label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text width-40">
-                                                <i class="fa fa-road"></i>
-                                            </span>
-                                        </div>
-                                        <input type="text" class="form-control"
-                                               placeholder="<?php echo __('Any street'); ?>"
-                                               ng-model="post.Tenant.street">
                                     </div>
                                 </div>
                             </div>
@@ -700,7 +681,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                         </div>
                                         <input type="text" class="form-control"
                                                placeholder="<?php echo __('12345'); ?>"
-                                               ng-model="post.Tenant.street">
+                                               ng-model="post.Tenant.zipcode">
                                     </div>
                                 </div>
                             </div>
@@ -714,7 +695,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                     <div class="input-group">
                                         <div class="input-group-prepend">
                                             <span class="input-group-text width-40">
-                                                <i class="fas fa-building"></i>
+                                                <i class="fa-solid fa-tree-city"></i>
                                             </span>
                                         </div>
                                         <input type="text" class="form-control"
@@ -730,15 +711,15 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                     <div class="pull-left" ng-repeat="error in errors.id">
                         <div class="help-block text-danger">{{ error }}</div>
                     </div>
-                    <button type="submit" class="btn btn-primary" ng-click="saveNode()"
+                    <button type="submit" class="btn btn-primary"
                             ng-show="post.Container.containertype_id==<?php echo CT_NODE; ?>">
                         <?php echo __('Create new node'); ?>
                     </button>
-                    <button type="submit" class="btn btn-primary" ng-click="saveTenant()"
+                    <button type="submit" class="btn btn-primary"
                             ng-show="post.Container.containertype_id==<?php echo CT_TENANT; ?>">
                         <?php echo __('Create new tenant'); ?>
                     </button>
-                    <button type="submit" class="btn btn-primary" ng-click="saveLocation()"
+                    <button type="submit" class="btn btn-primary"
                             ng-show="post.Container.containertype_id==<?php echo CT_LOCATION; ?>">
                         <?php echo __('Create new location'); ?>
                     </button>
