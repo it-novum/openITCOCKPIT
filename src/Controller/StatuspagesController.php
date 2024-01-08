@@ -108,7 +108,7 @@ class StatuspagesController extends AppController {
      *
      * @param string|null $id Statuspage id.
      * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @throws \Cake\Http\Exception\NotFoundException; When record not found.
      */
     public function view($id = null) {
         if (!$this->isApiRequest()) {
@@ -140,8 +140,8 @@ class StatuspagesController extends AppController {
      *
      * @param string|null $id Statuspage id.
      * @return \Cake\Http\Response|null|void Renders view
-     * @throws \Cake\Datasource\Exception\NotFoundException
-     * @throws \Cake\Datasource\Exception\MethodNotAllowedExceptionWhen record not found.
+     * @throws \Cake\Http\Exception\NotFoundException
+     * @throws \Cake\Http\Exception\MethodNotAllowedException
      */
     public function publicView($id = null) {
         if (empty($id)) {
@@ -201,7 +201,8 @@ class StatuspagesController extends AppController {
      *
      * @param string|null $id Statuspage id.
      * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @throws \Cake\Http\Exception\NotFoundException
+     * @throws \Cake\Http\Exception\MethodNotAllowedException
      */
     public function delete($id = null) {
         if (!$this->request->is('post')) {
@@ -263,7 +264,7 @@ class StatuspagesController extends AppController {
      *
      * @param string|null $id Statuspage id.
      * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
+     * @throws \Cake\Http\Exception\NotFoundException When record not found.
      */
     public function edit($id = null) {
         if (!$this->isApiRequest()) {
