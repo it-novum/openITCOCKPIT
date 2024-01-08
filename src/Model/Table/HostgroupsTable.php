@@ -1600,6 +1600,8 @@ class HostgroupsTable extends Table {
                                     ->contain([
                                         'Services' => function (Query $query) {
                                             return $query->select([
+                                                'Services.id',
+                                                'Services.host_id',
                                                 'Services.uuid'
                                             ])->where([
                                                 'Services.disabled' => 0
@@ -1624,6 +1626,7 @@ class HostgroupsTable extends Table {
                         ])->contain([
                             'Services' => function (Query $query) {
                                 return $query->select([
+                                    'Services.id',
                                     'Services.host_id',
                                     'Services.uuid'
                                 ])->where([
@@ -1639,16 +1642,21 @@ class HostgroupsTable extends Table {
             ])
             ->disableHydration()
             ->first();
+        foreach ($hostgroup['hosts'] as $host) {
+            $hostAnServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
+            foreach ($host['services'] as $service) {
+                $hostAnServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
+            }
+        }
 
-        $hostAnServiceUuids['host_uuids'] = array_unique(array_merge(
-            Hash::extract($hostgroup, 'hosts.{n}.uuid'),
-            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.uuid')
-        ));
-
-        $hostAnServiceUuids['service_uuids'] = array_unique(array_merge(
-            Hash::extract($hostgroup, 'hosts.{n}.services.{n}.uuid'),
-            Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.services.{n}.uuid')
-        ));
+        foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
+            foreach ($hosttemplate['hosts'] as $host) {
+                $hostAnServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
+                foreach ($host['services'] as $service) {
+                    $hostAnServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
+                }
+            }
+        }
 
         return $hostAnServiceUuids;
     }
