@@ -9,6 +9,10 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewWidget', function($
         controller: function($scope){
             $scope.init = true;
 
+            // ITC-3037
+            var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
+
             var $widget = $('#widget-' + $scope.widget.id);
 
             $scope.frontWidgetHeight = parseInt(($widget.height()), 10);

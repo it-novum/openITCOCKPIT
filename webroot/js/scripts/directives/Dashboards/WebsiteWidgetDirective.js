@@ -19,6 +19,10 @@ angular.module('openITCOCKPIT').directive('websiteWidget', function($http){
             $scope.ready = false;
             $scope.noticeTimeout = null;
 
+            // ITC-3037
+            var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
+
 
             $widget.on('resize', function(event, items){
                 hasResize();

@@ -42,7 +42,7 @@
             </div>
         </flippy-front>
         <flippy-back class="fixFlippy">
-            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
+            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()" ng-hide="readOnly">
                 <i class="fa fa-eye fa-sm"></i>
             </a>
             <div class="row">

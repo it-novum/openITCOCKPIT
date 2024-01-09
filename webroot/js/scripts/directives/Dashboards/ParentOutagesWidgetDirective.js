@@ -14,6 +14,10 @@ angular.module('openITCOCKPIT').directive('parentOutagesWidget', function($http)
                 }
             };
 
+            // ITC-3037
+            var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
+
             $scope.load = function(){
                 $http.get("/dashboards/parentOutagesWidget.json", {
                     params: {

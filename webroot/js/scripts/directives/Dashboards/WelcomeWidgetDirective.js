@@ -8,6 +8,9 @@ angular.module('openITCOCKPIT').directive('welcomeWidget', function($http){
 
         controller: function($scope){
 
+            // ITC-3037
+            var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
 
             $scope.load = function(){
                 $http.get("/angular/statuscount.json", {

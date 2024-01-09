@@ -458,6 +458,16 @@ class Menu {
                     1
                 ))
                 ->addLink(new MenuLink(
+                    __('Dashboard Allocation'),
+                    'DashboardAllocation',
+                    'dashboards',
+                    'allocationManager',
+                    '',
+                    'fa fa-table',
+                    [],
+                    1
+                ))
+                ->addLink(new MenuLink(
                     __('Manage User Roles'),
                     'UsergroupsIndex',
                     'usergroups',
