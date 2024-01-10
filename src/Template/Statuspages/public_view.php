@@ -64,7 +64,7 @@
                                     <h4><b><?= h($item['name']) ?></b></h4>
                                 </div>
                             </div>
-
+                            <h4 class="<?= h($item['cumulatedColor']) ?>"><?= h($item['cumulatedStateName']) ?></h4>
                             <?php if (!empty($item['acknowledgedProblemsText'])): ?>
                                 <div>
                                     <h4><b><i class="far fa-user"></i> <?= h($item['acknowledgedProblemsText']) ?></b>
@@ -191,12 +191,6 @@
                         </div>
                         <div class="p-2 flex-right">
                             <div class="h-100 status-line bg-<?= h($item['cumulatedColor']) ?>   shadow-<?= h($item['cumulatedColor']) ?>"></div>
-                        </div>
-                    </div>
-
-                    <div class="p-0">
-                        <div class="d-flex flex-row p-1 w-100 bg-<?= h($item['cumulatedColor']) ?>  text-white justify-content-center">
-                            <h4 class="p-0"><?= h($item['cumulatedStateName']) ?></h4>
                         </div>
                     </div>
 

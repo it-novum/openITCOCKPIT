@@ -82,7 +82,7 @@
                                 </div>
                                 <div>
                                     <div class="w-100">
-                                        <div class="row p-2">
+                                        <div class="row pl-2">
                                             <h4 ng-if="item.type === 'host'">
                                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                                     <a ui-sref="HostsBrowser({id:item.id})">
@@ -126,8 +126,9 @@
                                         </div>
 
                                     </div>
+                                    <h4 class="{{item.cumulatedColor}}">{{item.cumulatedStateName}}</h4>
 
-                                    <div class="p-2">
+                                    <div class="pr-2">
                                         <div>
                                             <div ng-if="item.acknowledgedProblemsText">
                                                 <h4>
@@ -218,13 +219,6 @@
                                     <div class="h-100 status-line bg-{{item.cumulatedColor}} shadow-{{item.cumulatedColor}}"></div>
                                 </div>
                             </div>
-
-                            <div class="pb-2">
-                                <div class="d-flex flex-row p-2 w-100 bg-{{item.cumulatedColor}} text-white justify-content-center">
-                                    <h4 class="p-0">{{item.cumulatedStateName}}</h4>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
