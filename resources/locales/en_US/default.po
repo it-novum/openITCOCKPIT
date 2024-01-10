@@ -29773,3 +29773,12 @@ msgstr ""
 msgid "Status pages"
 msgstr ""
 
+msgid "Major Outage"
+msgstr ""
+
+msgid "Performance Issues"
+msgstr ""
+
+msgid "Operational"
+msgstr ""
+

@@ -53,7 +53,6 @@ class StatuspagesController extends AppController {
         parent::beforeFilter($event);
         //$this->Authentication->addUnauthenticatedActions(['publicView']);
         $this->Authentication->allowUnauthenticated(['publicView']);
-
     }
 
 

@@ -29773,3 +29773,12 @@ msgstr "öffentliche Anzeige"
 
 msgid "Status pages"
 msgstr "Statusseiten"
+
+msgid "Major Outage"
+msgstr "Schwerer Ausfall"
+
+msgid "Performance Issues"
+msgstr "Leistungsprobleme"
+
+msgid "Operational"
+msgstr "Funktional"

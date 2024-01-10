@@ -1419,6 +1419,13 @@ div.form-group.chosen-small div.chosen-container.chosen-container-single a.chose
     background-color: var(--primary);
 }
 
+.status-line-no-radius {
+    width: 8px;
+    border-radius: 0px;
+    box-shadow: 0 0 7px -2px var(--primary);
+    background-color: var(--primary);
+}
+
 .min-h-50 {
     min-height: 50px;
 }

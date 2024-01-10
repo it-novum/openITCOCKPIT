@@ -25,31 +25,18 @@
 declare(strict_types=1);
 
 namespace App\Model\Table;
-
-use Cake\I18n\FrozenTime;
-use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\DowntimeHostConditions;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\Downtime;
-use itnovum\openITCOCKPIT\Core\DowntimeServiceConditions;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use App\Lib\Interfaces\HoststatusTableInterface;
-use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
-use App\Lib\Interfaces\DowntimehistoryServicesTableInterface;
-use App\Lib\Interfaces\ServicestatusTableInterface;
-use App\Model\Entity\Host;
-use App\Model\Entity\Service;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
-use itnovum\openITCOCKPIT\Core\HoststatusConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
-use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
@@ -556,6 +543,7 @@ class StatuspagesTable extends Table {
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
                         ? $objectGroup['_joinData']['display_alias'] : $objectGroup['name'];
                     if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] > 0) {
+                        $item['cumulatedStateName'] = $objectGroup['state_summary']['hosts']['cumulatedStateName'];
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['hosts']['cumulatedStateId'] + 1;
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
@@ -571,6 +559,7 @@ class StatuspagesTable extends Table {
                         }
                     }
                     if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] === 0) {
+                        $item['cumulatedStateName'] = $objectGroup['state_summary']['services']['cumulatedStateName'];
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
@@ -613,7 +602,7 @@ class StatuspagesTable extends Table {
                     $item['id'] = $objectGroup['id'];
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
                         ? $objectGroup['_joinData']['display_alias'] : $objectGroup['servicename'];
-
+                    $item['cumulatedStateName'] = $objectGroup['state_summary']['services']['cumulatedStateName'];
                     $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
                     $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                     $item['background'] = 'bg-' . $item['cumulatedColor'];
@@ -658,6 +647,7 @@ class StatuspagesTable extends Table {
                 if ($objectType ==='hostgroups') {
                     $item = [
                         'type' => 'hostgroup',
+                        'cumulatedStateName' => __('Operational'),
                         'cumulatedColorId' => -1,
                         'cumulatedColor' => 'primary',
                         'background' => 'bg-primary'
@@ -666,12 +656,14 @@ class StatuspagesTable extends Table {
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
                         ? $objectGroup['_joinData']['display_alias'] : $objectGroup['name'];
                     if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] > 0) {
+                        $item['cumulatedStateName'] = $objectGroup['state_summary']['hosts']['cumulatedStateName'];
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['hosts']['cumulatedStateId'] + 1;
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
                     }
 
                     if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] === 0) {
+                        $item['cumulatedStateName'] = $objectGroup['state_summary']['services']['cumulatedStateName'];
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
@@ -718,6 +710,7 @@ class StatuspagesTable extends Table {
                 if ($objectType === 'servicegroups') {
                     $item = [
                         'type' => 'servicegroup',
+                        'cumulatedStateName' => __('Operational'),
                         'cumulatedColorId' => -1,
                         'cumulatedColor' => 'primary',
                         'background' => 'bg-primary'
@@ -725,6 +718,7 @@ class StatuspagesTable extends Table {
                     $item['id'] = $objectGroup['id'];
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
                         ? $objectGroup['_joinData']['display_alias'] : $objectGroup['name'];
+                    $item['cumulatedStateName'] = $objectGroup['state_summary']['services']['cumulatedStateName'];
                     $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
                     $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                     $item['background'] = 'bg-' . $item['cumulatedColor'];

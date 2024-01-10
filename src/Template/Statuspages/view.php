@@ -71,21 +71,18 @@
                         </div>
                     </div>
                 </div>
-
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="margin-bottom-25">
                         <div class="no-padding" ng-repeat="item in Statuspage.items">
-                            <div class="d-flex flex-row min-h-50 mt-2 card w-100">
-                                <div class="p-2">
+                            <div class="d-flex flex-row min-h-50 card pt-2 m-0 w-100">
+                                <div class="pr-2">
                                     <div class="h-100 status-line bg-{{item.cumulatedColor}} shadow-{{item.color}}"></div>
                                 </div>
                                 <div>
                                     <div class="w-100">
                                         <div class="row p-2">
-                                            <!--<h3>{{item.type}}</h3>-->
-
                                             <h4 ng-if="item.type === 'host'">
                                                 <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                                     <a ui-sref="HostsBrowser({id:item.id})">
@@ -127,6 +124,7 @@
                                                 <?php endif; ?>
                                             </h4>
                                         </div>
+
                                     </div>
 
                                     <div class="p-2">
@@ -216,10 +214,17 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="p-2 flex-right">
+                                <div class="pl-2 flex-right">
                                     <div class="h-100 status-line bg-{{item.cumulatedColor}} shadow-{{item.cumulatedColor}}"></div>
                                 </div>
                             </div>
+
+                            <div class="pb-2">
+                                <div class="d-flex flex-row p-2 w-100 bg-{{item.cumulatedColor}} text-white justify-content-center">
+                                    <h4 class="p-0">{{item.cumulatedStateName}}</h4>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

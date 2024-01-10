@@ -194,10 +194,15 @@
                         </div>
                     </div>
 
+                    <div class="p-0">
+                        <div class="d-flex flex-row p-1 w-100 bg-<?= h($item['cumulatedColor']) ?>  text-white justify-content-center">
+                            <h4 class="p-0"><?= h($item['cumulatedStateName']) ?></h4>
+                        </div>
+                    </div>
+
                 <?php endforeach; ?>
             </div>
         </div>
-
 
     </div>
 </div>
