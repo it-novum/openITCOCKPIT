@@ -343,7 +343,7 @@ if [ -f /opt/openitc/etc/grafana/api_key ]; then
             RESPONSE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/datasources" -XPOST -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
               "name":"Prometheus",
               "type":"prometheus",
-              "url":"http://victoriametrics:8428",
+              "url":"http://'$VICTORIA_METRICS_HOST':'$VICTORIA_METRICS_PORT'",
               "access":"proxy",
               "basicAuth":false,
               "isDefault": false,
