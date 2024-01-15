@@ -4589,13 +4589,13 @@ class ServicesTable extends Table {
             $query->select([
                 'servicegroup_ids' => $query->newExpr(
                     'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
                     GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
                 'count'            => $query->newExpr(
                     'SELECT COUNT(servicegroups.id)
                                 FROM servicegroups
                                 WHERE FIND_IN_SET (servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
                                 GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
                                 AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
             ]);
@@ -4712,13 +4712,13 @@ class ServicesTable extends Table {
             $query->select([
                 'servicegroup_ids' => $query->newExpr(
                     'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
                     GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
                 'count'            => $query->newExpr(
                     'SELECT COUNT(servicegroups.id)
                                 FROM servicegroups
                                 WHERE FIND_IN_SET (servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
                                 GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
                                 AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
             ]);
@@ -5149,13 +5149,13 @@ class ServicesTable extends Table {
             $query->select([
                 'servicegroup_ids' => $query->newExpr(
                     'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
                     GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
                 'count'            => $query->newExpr(
                     'SELECT COUNT(servicegroups.id)
                                 FROM servicegroups
                                 WHERE FIND_IN_SET (servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicetemplate_id),
+                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
                                 GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
                                 AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
             ]);
