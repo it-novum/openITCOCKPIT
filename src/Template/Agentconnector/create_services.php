@@ -287,7 +287,7 @@
                                                 </div>
                                             </div>
 
-                                            <div ng-show="services.disks || services.disk_io">
+                                            <div ng-show="services.disks || services.disks_free || services.disk_io">
                                                 <div class="hr-separator padding-top-10">
                                                     <span class="h5">
                                                         <i class="fa-solid fa-hard-drive"></i>
@@ -309,6 +309,24 @@
                                                             chosen="services.disks"
                                                             ng-options="arrayIndex as service.name for (arrayIndex, service) in services.disks"
                                                             ng-model="servicesToCreateArrayIndices.disks">
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-12 padding-left-0 ">
+                                                    <label class="col-12 control-label"
+                                                           for="diskfree">
+                                                        <?php echo __('Disk space free'); ?>
+                                                        ({{lengthOf(services.disks_free)}})
+                                                    </label>
+                                                    <div class="col-12">
+                                                        <select
+                                                            id="diskfree"
+                                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                                            class="form-control"
+                                                            multiple="multiple"
+                                                            chosen="services.disks_free"
+                                                            ng-options="arrayIndex as service.name for (arrayIndex, service) in services.disks_free"
+                                                            ng-model="servicesToCreateArrayIndices.disks_free">
                                                         </select>
                                                     </div>
                                                 </div>

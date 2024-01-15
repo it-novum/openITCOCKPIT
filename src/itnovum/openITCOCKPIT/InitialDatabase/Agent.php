@@ -192,6 +192,11 @@ class Agent extends Importer {
                 'plugin_name'        => 'Agent',
                 'servicetemplate_id' => 'c475f1c8-fd28-493d-aad0-7861e418170d'
             ],
+            [
+                'name'               => 'agent.system_uptime',
+                'plugin_name'        => 'SystemUptime',
+                'servicetemplate_id' => 'ca9158a8-39a7-4ada-ba69-1fe5865e4ab9'
+            ],
             // Agent 1.x legacy - delete this
             //[
             //    'name'               => 'cpu_percentage',
@@ -228,6 +233,11 @@ class Agent extends Importer {
                 'name'               => 'disks',
                 'plugin_name'        => 'DiskUsage',
                 'servicetemplate_id' => '24851d0d-32fa-4048-bd67-6a30d710bba1'
+            ],
+            [
+                'name'               => 'disks_free', // Virtual JSON field
+                'plugin_name'        => 'DiskFree',
+                'servicetemplate_id' => 'bdc40fb0-3efe-4372-95bf-aaca0b7761d6'
             ],
             // Agent 1.x legacy - delete this
             //[
@@ -380,6 +390,29 @@ class Agent extends Importer {
             ],
 
             [
+                'name'             => 'check_oitc_agent_system_uptime',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '46b1d040-af5a-4b37-bf10-ab7e42b2882e',
+                'description'      => "Checks the Uptime of the Operating System.\n" .
+                    "Warning: Value in seconds. E.g.: 20:1000 Would be warning if the uptime is < 20 or > 1000 \n" .
+                    "Critical: Value in seconds. E.g.: 10:2000 Would be critical if the uptime is < 10 or > 2000 \n" .
+                    "By default, this plugin does not use a threshold! \n" .
+                    "This plugin uses threshold ranges by default: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT \n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning in seconds (range)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical in seconds (range)'
+                    ],
+                ]
+            ],
+
+            [
                 'name'             => 'check_oitc_agent_cpu_total_percentage',
                 'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
                 'command_type'     => CHECK_COMMAND,
@@ -504,11 +537,44 @@ class Agent extends Importer {
                 'command_type'     => CHECK_COMMAND,
                 'human_args'       => null,
                 'uuid'             => '3830078a-ccc5-41fd-ae33-8369bca1a6b7',
-                'description'      => "Checks disk usage of a device.\n" .
+                'description'      => "Checks used disk space of a device.\n" .
                     "Warning: percentage threshold (0-100) or GB value (20)\n" .
                     "Critical: percentage threshold (0-100) or GB value (10)\n" .
                     "Mountpoint: Mountpoint of the device. Examples: Linux: / Windows: C:\\\n" .
-                    "Percentage: Determines if warning and critical is defined as percentage or amount of GB\n",
+                    "Percentage: Determines if warning and critical is defined as percentage or amount of GB\n" .
+                    "This plugin uses threshold ranges by default: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT \n",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Mountpoint'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Unit GB or %'
+                    ]
+                ]
+            ],
+
+            [
+                'name'             => 'check_oitc_agent_disk_free_space',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '131f581f-ced9-405a-ba9b-4e0e7276258c',
+                'description'      => "Checks free disk space of a device.\n" .
+                    "Warning: percentage threshold (0-100) or GB value (20)\n" .
+                    "Critical: percentage threshold (0-100) or GB value (10)\n" .
+                    "Mountpoint: Mountpoint of the device. Examples: Linux: / Windows: C:\\\n" .
+                    "Percentage: Determines if warning and critical is defined as percentage or amount of GB\n" .
+                    "This plugin uses threshold ranges by default: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT \n",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -1368,6 +1434,70 @@ class Agent extends Importer {
             ],
 
             [
+                'uuid'                                      => 'ca9158a8-39a7-4ada-ba69-1fe5865e4ab9',
+                'template_name'                             => 'OITC_AGENT_SYSTEM_UPTIME',
+                'name'                                      => 'Uptime',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '46b1d040-af5a-4b37-bf10-ab7e42b2882e',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '1',
+                'freshness_threshold'                       => '300',
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '1',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '-1:',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '-2:',
+                    ],
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+
+            [
                 'uuid'                                      => 'be4c9649-8771-4704-b409-c56b5f67abc8',
                 'template_name'                             => 'OITC_AGENT_CPU_TOTAL_PERCENTAGE',
                 'name'                                      => 'CPU usage percentage',
@@ -1706,7 +1836,7 @@ class Agent extends Importer {
             [
                 'uuid'                                      => '24851d0d-32fa-4048-bd67-6a30d710bba1',
                 'template_name'                             => 'OITC_AGENT_DISK_USAGE',
-                'name'                                      => 'Disk Usage',
+                'name'                                      => 'Disk Space Used',
                 'container_id'                              => ROOT_CONTAINER,
                 'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
                 'check_period_id'                           => '1',
@@ -1759,6 +1889,78 @@ class Agent extends Importer {
                     [
                         'commandargument_id' => '$ARG2$',
                         'value'              => '90',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG3$',
+                        'value'              => '/',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG4$',
+                        'value'              => '%',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+
+            [
+                'uuid'                                      => 'bdc40fb0-3efe-4372-95bf-aaca0b7761d6',
+                'template_name'                             => 'OITC_AGENT_DISK_FREE',
+                'name'                                      => 'Disk Free Space',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => '131f581f-ced9-405a-ba9b-4e0e7276258c',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '1',
+                'freshness_threshold'                       => '300',
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '1',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '20:',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
+                        'value'              => '10:',
                     ],
                     [
                         'commandargument_id' => '$ARG3$',
@@ -3375,7 +3577,7 @@ class Agent extends Importer {
                 $servicetemplateEntity = $this->ServicetemplatesTable->get($servicetemplate['Servicetemplate']['id']);
                 $servicetemplateEntity = $this->ServicetemplatesTable->patchEntity($servicetemplateEntity, $servicetemplate['Servicetemplate']);
                 $this->ServicetemplatesTable->save($servicetemplateEntity);
-                if(!$servicetemplateEntity->hasErrors()){
+                if (!$servicetemplateEntity->hasErrors()) {
                     $updateServices = true;
                 }
             }
