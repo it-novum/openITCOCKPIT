@@ -555,9 +555,33 @@ class AutomapsController extends AppController {
                 }
             }
 
+            $hostgroupRegex = '';
+            $allHostIdsArray = [];
+            if ($post['hostgroup_regex'] != '') {
+
+                $hostgroupRegex = $post['hostgroup_regex'];
+                if (!empty($hostgroupRegex)) {
+
+                    try {
+                        $allHostIdsArray = $HostgroupsTable->getHostIdsByHostgroupNameRegex($hostgroupRegex);
+
+                        $hostgroupCount = $HostgroupsTable->getHostgroupIdsByNameRegex($hostgroupRegex, 'count');
+
+                    } catch (Exception $e) {
+                        $hostgroupCount = 0;
+                    }
+
+                }
+
+            }
+
             $HostConditions = new HostConditions();
             $HostConditions->setContainerIds($containerIds);
             $HostConditions->setHostnameRegex($post['host_regex']);
+            if (!empty($hostgroupRegex)) {
+                $HostConditions->setHostgroupRegex($hostgroupRegex);
+                $HostConditions->setHostIds($allHostIdsArray);
+            }
             $HostFilter = new HostFilter($this->request); //Only used for order right now
 
             if ($post['host_regex'] != '') {
@@ -571,24 +595,12 @@ class AutomapsController extends AppController {
             $ServicesConditions = new ServiceConditions();
             $ServicesConditions->setContainerIds($containerIds);
             $ServicesConditions->setHostnameRegex($post['host_regex']);
-            if ($post['hostgroup_regex'] != '') {
-                $ServicesConditions->setHostgroupRegex($post['hostgroup_regex']);
-            }
             $ServicesConditions->setServicenameRegex($post['service_regex']);
 
-            $hostgroupRegex = $ServicesConditions->getHostgroupRegex();
             if (!empty($hostgroupRegex)) {
 
-                try {
-                    $allHostIdsArray = $HostgroupsTable->getHostIdsByHostgroupNameRegex($hostgroupRegex);
-
-                    $hostgroupCount = $HostgroupsTable->getHostgroupIdsByNameRegex($hostgroupRegex, 'count');
-
-                    $ServicesConditions->setHostIds($allHostIdsArray);
-                } catch (Exception $e) {
-                    $hostgroupCount = 0;
-                    $ServicesConditions->setHostgroupRegex('');
-                }
+                $ServicesConditions->setHostgroupRegex($hostgroupRegex);
+                $ServicesConditions->setHostIds($allHostIdsArray);
 
             }
 

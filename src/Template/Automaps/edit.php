@@ -144,23 +144,6 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.hostgroup_regex}">
-                            <label class="control-label">
-                                <?php echo __('Host group RegEx'); ?>
-                            </label>
-                            <input
-                                class="form-control"
-                                type="text"
-                                ng-model-options="{debounce: 500}"
-                                ng-model="post.Automap.hostgroup_regex">
-                            <div ng-repeat="error in errors.hostgroup_regex">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                            <div class="help-block" ng-show="data.hostgroupCount > 0">
-                                <?php echo __('{0} host groups matching to regular expression.', '{{data.hostgroupCount}}'); ?>
-                            </div>
-                        </div>
-
                         <div class="form-group required" ng-class="{'has-error': errors.service_regex}">
                             <label class="control-label">
                                 <?php echo __('Service RegEx'); ?>
@@ -175,6 +158,23 @@
                             </div>
                             <div class="help-block" ng-show="data.serviceCount > 0">
                                 <?php echo __('{0} services matching to regular expression.', '{{data.serviceCount}}'); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group" ng-class="{'has-error': errors.hostgroup_regex}">
+                            <label class="control-label">
+                                <?php echo __('Host group RegEx'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model-options="{debounce: 500}"
+                                ng-model="post.Automap.hostgroup_regex">
+                            <div ng-repeat="error in errors.hostgroup_regex">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block" ng-show="data.hostgroupCount > 0">
+                                <?php echo __('{0} host groups matching to regular expression.', '{{data.hostgroupCount}}'); ?>
                             </div>
                         </div>
 
