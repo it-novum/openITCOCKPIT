@@ -885,6 +885,15 @@ class Systemsetting extends Importer {
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
             ],
+            (int)104  => [
+                'key'      => 'FRONTEND.LDAP.OAUTH_ALLOWED',
+                'value'    => '0',
+                'info'     => 'Allow LDAP users to use oAuth authentification',
+                'section'  => 'FRONTEND',
+                'created'  => '2020-01-29 09:28:17',
+                'modified' => '2020-01-29 09:28:17'
+
+            ],
         ];
 
         return $data;

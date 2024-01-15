@@ -265,6 +265,17 @@ class SystemsettingsTable extends Table {
         }
     }
 
+    public function isLdapAllowedForOauth() {
+        try {
+            $result = $this->getSystemsettingByKey('FRONTEND.LDAP.OAUTH_ALLOWED');
+            
+            $value = (int)$result->get('value');
+            return $value === 1;
+        } catch (\Exception $e) {
+            return false;
+        }
+    } 
+
     public function getOAuthConfig() {
         $query = $this->find()
             ->where([
