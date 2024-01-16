@@ -119,7 +119,6 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
 
                 $scope.tabs = result.data.tabs;
-                console.log(result.data.tabs);
                 if($scope.activeTab === null){
                     $scope.activeTab = $scope.tabs[0].id;
                 }
@@ -551,11 +550,9 @@ angular.module('openITCOCKPIT')
 
                 for(let index in result.data.users){
                     let myUser = result.data.users[index];
-
-                    if(myUser.id === $scope.userId){
-                        continue;
+                    if(myUser.key !== $scope.userId){
+                        $scope.users.push(myUser);
                     }
-                    result.data.users.push(myUser);
                 }
 
                 // Reset the selected users after changing the container.

@@ -12,6 +12,9 @@ angular.module('openITCOCKPIT')
         // I am the list of containers.
         $scope.containers = [];
 
+        // I am the ID of the current user.
+        $scope.userId = 0;
+
         // I am the array of available users.
         $scope.users = [];
 
@@ -58,6 +61,7 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
                 $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
+                $scope.userId = result.data.userId;
                 $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
 
                 // I'm done.
@@ -66,17 +70,27 @@ angular.module('openITCOCKPIT')
         }
 
         // I will load all users.
-        $scope.loadUsers = function() {
+        $scope.loadUsers = function(){
+            if($scope.allocation.DashboardTab.container_id === 0){
+                return;
+            }
             $http.get("/users/loadUsersByContainerId.json", {
                 params: {
                     'angular': true,
                     'containerId': $scope.allocation.DashboardTab.container_id
                 }
-            }).then(function(result) {
-                $scope.users = result.data.users;
+            }).then(function(result){
+                $scope.users = [];
+
+                for(let index in result.data.users){
+                    let myUser = result.data.users[index];
+                    if(myUser.key !== $scope.userId){
+                        $scope.users.push(myUser);
+                    }
+                }
 
                 // Reset the selected users after changing the container.
-                if ($scope.allocationInitializing) {
+                if($scope.allocationInitializing){
                     $scope.allocation.DashboardTab.allocated_users._ids = [];
                 }
             });
