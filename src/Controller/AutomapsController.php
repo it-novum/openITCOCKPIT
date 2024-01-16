@@ -42,6 +42,7 @@ use Cake\Utility\Hash;
 use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Dashboards\AutomapJson;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
@@ -51,6 +52,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\AutomapsFilter;
 use itnovum\openITCOCKPIT\Filter\HostFilter;
 use itnovum\openITCOCKPIT\Filter\ServiceFilter;
+use Cake\ORM\Query;
 
 /**
  * Class AutomapsController
@@ -232,6 +234,8 @@ class AutomapsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $ServicesTable ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var $ServicesTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
         $containerIds = [
             $automap['container_id']
@@ -276,6 +280,7 @@ class AutomapsController extends AppController {
         $ServicesConditions = new ServiceConditions($conditions);
         $ServicesConditions->setContainerIds($containerIds);
         $ServicesConditions->setHostnameRegex($automap['host_regex']);
+        $ServicesConditions->setHostgroupRegex($automap['hostgroup_regex']);
         $ServicesConditions->setServicenameRegex($automap['service_regex']);
 
         $ServiceFilter = new ServiceFilter($this->request);
@@ -283,6 +288,20 @@ class AutomapsController extends AppController {
 
         if ($automap['use_paginator'] === false) {
             $PaginateOMat = null;
+        }
+
+        $hostgroupRegex = $ServicesConditions->getHostgroupRegex();
+
+        if (!empty($hostgroupRegex)) {
+
+            try {
+                $allHostIdsArray = $HostgroupsTable->getHostIdsByHostgroupNameRegex($hostgroupRegex);
+
+                $ServicesConditions->setHostIds($allHostIdsArray);
+            } catch (Exception $e) {
+                $ServicesConditions->setHostgroupRegex('');
+            }
+
         }
 
         try {
@@ -422,6 +441,7 @@ class AutomapsController extends AppController {
                         'container_id'      => $sourceAutomap['container_id'],
                         'recursive'         => $sourceAutomap['recursive'],
                         'host_regex'        => $automapData['Automap']['host_regex'],
+                        'hostgroup_regex'        => $automapData['Automap']['hostgroup_regex'],
                         'service_regex'     => $automapData['Automap']['service_regex'],
                         'show_ok'           => $sourceAutomap['show_ok'],
                         'show_warning'      => $sourceAutomap['show_warning'],
@@ -445,7 +465,7 @@ class AutomapsController extends AppController {
                     //All automaps without validation errors got already saved to the database
                     $newAutomapEntity = $AutomapsTable->get($automapData['Automap']['id']);
                     $newAutomapEntity->setAccess('*', false);
-                    $newAutomapEntity->setAccess(['name', 'description', 'host_regex', 'service_regex'], true);
+                    $newAutomapEntity->setAccess(['name', 'description', 'host_regex', 'hostgroup_regex','service_regex'], true);
 
                     $newAutomapEntity = $AutomapsTable->patchEntity($newAutomapEntity, $automapData['Automap']);
                     $action = 'edit';
@@ -501,11 +521,13 @@ class AutomapsController extends AppController {
             'container_id'  => 0,
             'recursive'     => 0,
             'host_regex'    => '',
+            'hostgroup_regex'    => '',
             'service_regex' => ''
         ];
 
         $hostCount = 0;
         $serviceCount = 0;
+        $hostgroupCount = 0;
 
         $post = $this->request->getData('Automap', []);
         $post = Hash::merge($defaults, $post);
@@ -517,6 +539,8 @@ class AutomapsController extends AppController {
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
             /** @var $ServicesTable ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            /** @var $HostgroupTable ServicesTable */
+            $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
 
             $containerIds = [
                 $post['container_id']
@@ -531,9 +555,33 @@ class AutomapsController extends AppController {
                 }
             }
 
+            $hostgroupRegex = '';
+            $allHostIdsArray = [];
+            if ($post['hostgroup_regex'] != '') {
+
+                $hostgroupRegex = $post['hostgroup_regex'];
+                if (!empty($hostgroupRegex)) {
+
+                    try {
+                        $allHostIdsArray = $HostgroupsTable->getHostIdsByHostgroupNameRegex($hostgroupRegex);
+
+                        $hostgroupCount = $HostgroupsTable->getHostgroupIdsByNameRegex($hostgroupRegex, 'count');
+
+                    } catch (Exception $e) {
+                        $hostgroupCount = 0;
+                    }
+
+                }
+
+            }
+
             $HostConditions = new HostConditions();
             $HostConditions->setContainerIds($containerIds);
             $HostConditions->setHostnameRegex($post['host_regex']);
+            if (!empty($hostgroupRegex)) {
+                $HostConditions->setHostgroupRegex($hostgroupRegex);
+                $HostConditions->setHostIds($allHostIdsArray);
+            }
             $HostFilter = new HostFilter($this->request); //Only used for order right now
 
             if ($post['host_regex'] != '') {
@@ -548,6 +596,14 @@ class AutomapsController extends AppController {
             $ServicesConditions->setContainerIds($containerIds);
             $ServicesConditions->setHostnameRegex($post['host_regex']);
             $ServicesConditions->setServicenameRegex($post['service_regex']);
+
+            if (!empty($hostgroupRegex)) {
+
+                $ServicesConditions->setHostgroupRegex($hostgroupRegex);
+                $ServicesConditions->setHostIds($allHostIdsArray);
+
+            }
+
             if ($post['service_regex'] != '') {
                 try {
                     if ($this->DbBackend->isNdoUtils()) {
@@ -570,7 +626,8 @@ class AutomapsController extends AppController {
 
         $this->set('hostCount', $hostCount);
         $this->set('serviceCount', $serviceCount);
-        $this->viewBuilder()->setOption('serialize', ['hostCount', 'serviceCount']);
+        $this->set('hostgroupCount', $hostgroupCount);
+        $this->viewBuilder()->setOption('serialize', ['hostCount', 'serviceCount', 'hostgroupCount']);
     }
 
     public function automap() {

@@ -128,4 +128,19 @@ class HostgroupConditions {
     public function getOrder() {
         return SanitizeOrder::filterOrderArray($this->order);
     }
+
+    /**
+     * @return string
+     */
+    public function getHostgroupRegex() {
+        return $this->hostnameRegex;
+    }
+
+    /**
+     * @param string $hostgroupRegex
+     */
+    public function setHostgroupRegex($hostgroupRegex) {
+        $this->hostgroupRegex = $hostgroupRegex;
+    }
+
 }

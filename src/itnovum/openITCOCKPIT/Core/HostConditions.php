@@ -75,6 +75,11 @@ class HostConditions {
     private $hostgroupIds = [];
 
     /**
+     * @var string
+     */
+    private $hostgroupRegex = '';
+
+    /**
      * HostConditions constructor.
      * @param array $conditions
      */
@@ -218,6 +223,20 @@ class HostConditions {
      */
     public function setHostnameRegex($hostnameRegex) {
         $this->hostnameRegex = $hostnameRegex;
+    }
+
+    /**
+     * @return string
+     */
+    public function getHostgroupRegex() {
+        return $this->hostgroupRegex;
+    }
+
+    /**
+     * @param string $hostgroupRegex
+     */
+    public function setHostgroupRegex($hostgroupRegex) {
+        $this->hostgroupRegex = $hostgroupRegex;
     }
 
     /**

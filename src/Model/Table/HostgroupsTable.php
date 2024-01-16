@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Hostgroup;
+use Cake\Database\Expression\Comparison;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -1013,6 +1014,83 @@ class HostgroupsTable extends Table {
     }
 
     /**
+     * @param string $hostgroupRegex
+     * @return array
+     */
+    public function getHostIdsByHostgroupNameRegex($hostgroupRegex) {
+
+        $hostGroupContainers = $this->getHostgroupIdsByNameRegex($hostgroupRegex, 'all');
+
+        $allHostIdsArray = [];
+        foreach ($hostGroupContainers as $hostGroupContainer) {
+            foreach ($hostGroupContainer->hostgroups as $hostgroup) {
+                $hostIds = $this->getHostIdsByHostgroupId($hostgroup->id);
+                foreach ($hostIds As $hostId) {
+                    $allHostIdsArray[] = $hostId;
+                }
+            }
+
+        }
+
+        return $allHostIdsArray;
+
+    }
+
+    /**
+     * @param string $hostgroupRegex
+     * @param string $type (all or count, list is NOT supported!)
+     * @return int|array
+     */
+    public function getHostgroupIdsByNameRegex($hostgroupRegex, $type = 'all') {
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        $query = $ContainersTable->find()
+            ->contain(['Hostgroups' => function (Query $query) {
+                $query->disableAutoFields()
+                    ->select([
+                        'id',
+                        'container_id'
+                    ]);
+
+                return $query;
+            }])
+            ->select(['id'])
+            ->where([
+                'containertype_id' => CT_HOSTGROUP
+            ]);
+
+        $where = [];
+
+        if ($this->isValidRegularExpression($hostgroupRegex)) {
+        $where[] = new Comparison(
+            'Containers.name',
+            $hostgroupRegex,
+            'string',
+            'RLIKE'
+        );
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+
+        if ($type === 'all') {
+            $query->order([
+                'id' => 'asc'
+            ]);
+        }
+
+        if ($type === 'count') {
+            return $query->count();
+        }
+
+        return $query;
+
+    }
+
+    /**
      * @param $id
      * @param $satelliteId
      * @return array
@@ -1573,4 +1651,13 @@ class HostgroupsTable extends Table {
 
         return $entity;
     }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
+    }
+
 }

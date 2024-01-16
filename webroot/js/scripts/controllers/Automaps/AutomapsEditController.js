@@ -17,6 +17,7 @@ angular.module('openITCOCKPIT')
 
         $scope.data = {
             hostCount: 0,
+            hostgroupCount: 0,
             serviceCount: 0
         };
 
@@ -93,11 +94,23 @@ angular.module('openITCOCKPIT')
             ).then(function(result){
                 $scope.data.hostCount = result.data.hostCount;
                 $scope.data.serviceCount = result.data.serviceCount;
+                $scope.data.hostgroupCount = result.data.hostgroupCount;
                 $scope.init = false;
             });
         };
 
         $scope.$watch('post.Automap.host_regex', function(){
+            if($scope.init){
+                return;
+            }
+
+            if($scope.post.Automap.host_regex != '' && $scope.post.Automap.container_id > 0){
+                $scope.getMatchingHostAndServices();
+            }
+
+        });
+
+        $scope.$watch('post.Automap.hostgroup_regex', function(){
             if($scope.init){
                 return;
             }

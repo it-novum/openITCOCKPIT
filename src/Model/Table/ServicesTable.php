@@ -21,6 +21,7 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -3133,6 +3134,10 @@ class ServicesTable extends Table {
             'servicename REGEXP' => $ServiceConditions->getServicenameRegex()
         ]);
 
+        if (!empty($ServiceConditions->getHostgroupRegex())) {
+            $query->where(['Hosts.id IN' => $ServiceConditions->getHostIds()]);
+        }
+
         if ($type === 'all') {
             $query->order([
                 'servicename' => 'asc',
@@ -3235,6 +3240,10 @@ class ServicesTable extends Table {
         $query->having([
             'servicename REGEXP' => $ServiceConditions->getServicenameRegex()
         ]);
+
+        if (!empty($ServiceConditions->getHostgroupRegex())) {
+            $query->where(['Hosts.id IN' => $ServiceConditions->getHostIds()]);
+        }
 
         if ($type === 'all') {
             $query->order([
