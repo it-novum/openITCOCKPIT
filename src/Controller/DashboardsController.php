@@ -37,7 +37,6 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
-use AutoreportModule\Filter\AutoreportFilter;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -65,6 +64,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\DashboardTabsFilter;
 use ParsedownExtra;
 use RuntimeException;
@@ -1885,6 +1885,121 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * I will allocate the dashboard_tab identified by the given $id.
+     * @param $id
+     * @return void
+     */
+    public function allocate($id = null): void {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+        if ($this->request->is('get')) {
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            // Fetch them all (not allocated ones, tho...)
+            $dashboardTabs = $DashboardTabsTable->find()
+                ->where(['DashboardTabs.id' => $id])
+                ->contain('Usergroups')
+                ->contain('AllocatedUsers')
+                ->contain('Containers')
+                ->disableHydration()
+                ->toArray();
+
+            // Clean up the mess surrounding the allocation info.
+            foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
+                // Condense the users
+                $dashboardTabs[$dashboardTabIndex]['allocated_users_names'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.firstname');
+                $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
+                $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
+                // Condense the usergroups
+                $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
+                $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
+                $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+            }
+
+            $this->set('dashboardTabs', $dashboardTabs);
+            $this->set('userId', (new User($this->getUser()))->getId());
+            $this->viewBuilder()->setOption('serialize', ['dashboardTabs', 'userId']);
+
+            return;
+        }
+        if ($this->request->is('post')) {
+            $dashboardTab = $this->request->getData('DashboardTab');
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            // Fetch from DB
+            $Entity = $DashboardTabsTable->get($dashboardTab['id']);
+            $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
+            // Save
+            $DashboardTabsTable->save($Entity);
+        }
+    }
+
+    /**
+     * I will remove the allocation of the dashboard_tab identified by the given $id.
+     * @param $id
+     * @return void
+     */
+    public function deallocate($id = null): void {
+        $id = (int)$id;
+        if ($id <= 0) {
+            return;
+        }
+
+        $dashboardTab = [
+            'allocated_users' => ['_ids' => []],
+            'usergroups'      => ['_ids' => []],
+        ];
+
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        // Fetch from DB
+        $Entity = $DashboardTabsTable->get($id);
+        $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
+        // Save
+        $DashboardTabsTable->save($Entity);
+    }
+
+    /**
+     * I will solely provide the list of dashboards on the instance including the allocated users and usergroups.
+     * @return void
+     */
+    public function allocationManager(): void {
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        $DashboardsTabsFilter = new DashboardTabsFilter($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $DashboardsTabsFilter->getPage());
+
+        $dashboardTabs = $DashboardTabsTable->getDashboardTabsIndex($DashboardsTabsFilter, $PaginateOMat);
+
+        // Clean up the mess surrounding the allocation info.
+        foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
+            // Condense the users
+            $dashboardTabs[$dashboardTabIndex]['allocated_users_names'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.firstname');
+            $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
+            $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
+            // Condense the usergroups
+            $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
+            $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
+            $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+        }
+
+        $this->set('dashboardTabs', $dashboardTabs);
+        $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
+
+    }
+
     /*************************************************
      *       openITCOCKPIT Desktop App METHODS       *
      *************************************************/
@@ -1928,101 +2043,5 @@ class DashboardsController extends AppController {
         $this->set('hoststatusSummary', $hoststatusSummary);
         $this->set('servicestatusSummary', $servicestatusSummary);
         $this->viewBuilder()->setOption('serialize', ['hoststatusSummary', 'servicestatusSummary']);
-    }
-
-    public function allocate($id = null) {
-        if (!$this->isApiRequest()) {
-            return;
-        }
-        if ($this->request->is('get')) {
-
-            /** @var DashboardTabsTable $DashboardTabsTable */
-            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-
-            // Fetch them all (not allocated ones, tho...)
-            $dashboardTabs = $DashboardTabsTable->find()
-                ->where(['DashboardTabs.id' => $id])
-                ->contain('Usergroups')
-                ->contain('AllocatedUsers')
-                ->contain('Containers')
-                ->disableHydration()
-                ->toArray()
-            ;
-
-            // Clean up the mess surrounding the allocation info.
-            foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
-                // Condense the users
-                $dashboardTabs[$dashboardTabIndex]['allocated_users_names'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.firstname');
-                $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
-                $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
-                // Condense the usergroups
-                $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
-                $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
-                $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
-            }
-
-            $this->set('dashboardTabs', $dashboardTabs);
-            $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
-
-            return;
-        }
-        if ($this->request->is('post')) {
-            $dashboardTab = $this->request->getData('DashboardTab');
-
-            /** @var DashboardTabsTable $DashboardTabsTable */
-            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-
-            // Fetch from DB
-            $Entity = $DashboardTabsTable->get($dashboardTab['id']);
-            $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
-            // Save
-            $DashboardTabsTable->save($Entity);
-        }
-
-    }
-
-    /**
-     * I will solely provide the list of dashboards on the instance including the allocated users and usergroups.^
-     * @return void
-     */
-    public function allocationManager(): void {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship template
-            return;
-        }
-
-        $User = new User($this->getUser());
-
-        /** @var DashboardTabsTable $DashboardTabsTable */
-        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-
-        /** @var DashboardTabsFilter $DashboardTabsFilter */
-        $DashboardTabsFilter = new DashboardTabsFilter($this->request);
-
-        // Fetch them all (not allocated ones, tho...)
-        $dashboardTabs = $DashboardTabsTable->find()
-            ->where(['source_tab_id IS' => null])
-            ->where(['user_id' => $User->getId()])
-            ->contain('Usergroups')
-            ->contain('AllocatedUsers')
-            ->disableHydration()
-            ->where($DashboardTabsFilter->indexFilter())
-            ->toArray();
-
-        // Clean up the mess surrounding the allocation info.
-        foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
-            // Condense the users
-            $dashboardTabs[$dashboardTabIndex]['allocated_users_names'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.firstname');
-            $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
-            $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
-            // Condense the usergroups
-            $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
-            $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
-            $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
-        }
-
-        $this->set('dashboardTabs', $dashboardTabs);
-        $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
-
     }
 }

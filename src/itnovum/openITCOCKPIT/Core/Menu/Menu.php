@@ -458,16 +458,6 @@ class Menu {
                     1
                 ))
                 ->addLink(new MenuLink(
-                    __('Dashboard Allocation'),
-                    'DashboardAllocation',
-                    'dashboards',
-                    'allocationManager',
-                    '',
-                    'fa fa-table',
-                    [],
-                    1
-                ))
-                ->addLink(new MenuLink(
                     __('Manage User Roles'),
                     'UsergroupsIndex',
                     'usergroups',
@@ -496,6 +486,16 @@ class Menu {
                     'fas fa-bullhorn',
                     [__('message'), __('news'), __('information')],
                     4
+                ))
+                ->addLink(new MenuLink(
+                    __('Dashboard Allocation'),
+                    'DashboardAllocation',
+                    'dashboards',
+                    'allocationManager',
+                    '',
+                    'fa fa-table',
+                    [],
+                    5
                 ))
             )
             ->addCategory((new MenuCategory(

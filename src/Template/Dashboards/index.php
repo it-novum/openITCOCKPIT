@@ -58,7 +58,7 @@
                                 <a class="nav-link"
                                    href="javascript:void(0);"
                                    ng-if="activeTab !== tab.id"
-                                   ng-class="{ 'bg-primary': tab.source === 'ALLOCATED',  'text-warning': tab.source === 'ALLOCATED'}"
+                                   ng-class="{ 'bg-primary-50': tab.source === 'ALLOCATED',  'text-dark': tab.source === 'ALLOCATED'}"
                                    title="{{tab.title}}"
                                    role="tab">
                                 <span class="text"
@@ -75,7 +75,7 @@
                                    data-toggle="dropdown"
                                    aria-expanded="false"
                                    ng-if="activeTab === tab.id"
-                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.source !== 'ALLOCATED',  'bg-primary': tab.source === 'ALLOCATED',  'text-light': tab.source === 'ALLOCATED'}"
+                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.source !== 'ALLOCATED',  'bg-primary-50': tab.source === 'ALLOCATED',  'text-dark': tab.source === 'ALLOCATED'}"
                                    title="{{tab.title}}"
                                 >
                                     <span class="text"

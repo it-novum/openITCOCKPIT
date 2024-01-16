@@ -1,5 +1,9 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsAllocationManagerController', function($scope, $http, SortService, MassChangeService){
+    .controller('DashboardsAllocationManagerController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, NotyService){
+        //
+        SortService.setSort(QueryStringService.getValue('sort', 'name'));
+        SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
+
         // I am the array of available dashboardTabs.
         $scope.dashboardTabs = [];
 
@@ -8,6 +12,11 @@ angular.module('openITCOCKPIT')
 
         // I am the array of available usergroups.
         $scope.usergroups = [];
+
+        // I am ...
+        $scope.massChange = {};
+        $scope.selectedElements = 0;
+        $scope.deleteUrl = '/dashboards/deallocate/';
 
         // I am the object that is being transported to JSON API.
         $scope.allocation = {
@@ -27,16 +36,16 @@ angular.module('openITCOCKPIT')
         $scope.filter = {
             DashboardTab: {
                 name: ''
-            }
+            },
+            full_name : ''
         };
-
-        $scope.massChange = {};
 
         var defaultFilter = function(){
             $scope.filter = {
                 DashboardTab: {
-                    name: 'ASNAEB'
-                }
+                    name: ''
+                },
+                full_name : ''
             };
         };
 
@@ -47,14 +56,31 @@ angular.module('openITCOCKPIT')
                     'angular': true,
                     'scroll': $scope.useScroll,
                     'sort': SortService.getSort(),
-                    'direction': 'asc',
                     'page': $scope.currentPage,
-                    'filter[DashboardTabs.name]': $scope.filter.DashboardTab.name
+                    'direction': SortService.getDirection(),
+                    'filter[DashboardTabs.name]': $scope.filter.DashboardTab.name,
+                    'filter[full_name]' : $scope.filter.full_name
                 }
             }).then(function(result){
                 $scope.dashboardTabs = result.data.dashboardTabs;
+                $scope.paging = result.data.paging;
+                $scope.scroll = result.data.scroll;
             });
         }
+
+        //
+        $scope.changepage = function(page){
+            if(page !== $scope.currentPage){
+                $scope.currentPage = page;
+                $scope.load();
+            }
+        };
+
+        //
+        $scope.changeMode = function(val){
+            $scope.useScroll = val;
+            $scope.load();
+        };
 
         // I will load all users.
         $scope.loadUsers = function(){
@@ -153,6 +179,31 @@ angular.module('openITCOCKPIT')
                 timeout: 3500
             }).show();
         };
+
+
+        $scope.getObjectForDelete = function(dashboardTab){
+            var object = {};
+            object[dashboardTab.id] = dashboardTab.name;
+            console.log(object);
+            return object;
+        };
+
+        $scope.getObjectsForDelete = function(){
+            var objects = {};
+            var selectedObjects = MassChangeService.getSelected();
+            for(var key in $scope.users){
+                for(var id in selectedObjects){
+                    if(id == $scope.users[key].id){
+                        if($scope.users[key].allow_edit === true){
+                            objects[id] = $scope.users[key].full_name;
+                        }
+                    }
+                }
+            }
+            return objects;
+        };
+
+        SortService.setCallback($scope.load);
         $scope.load();
 
         // Trigger filter show / Hide.
