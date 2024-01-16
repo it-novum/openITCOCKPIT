@@ -569,6 +569,7 @@ class AutomapsController extends AppController {
 
                     } catch (Exception $e) {
                         $hostgroupCount = 0;
+                        $hostgroupRegex = '';
                     }
 
                 }
