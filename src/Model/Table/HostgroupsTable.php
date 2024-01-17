@@ -1018,20 +1018,14 @@ class HostgroupsTable extends Table {
      * @return array
      */
     public function getHostIdsByHostgroupNameRegex($hostgroupRegex) {
-
-        $hostGroupContainers = $this->getHostgroupIdsByNameRegex($hostgroupRegex, 'all');
-
+        $hostGroupIds = $this->getHostgroupIdsByNameRegex($hostgroupRegex);
         $allHostIdsArray = [];
-        foreach ($hostGroupContainers as $hostGroupContainer) {
-            foreach ($hostGroupContainer->hostgroups as $hostgroup) {
-                $hostIds = $this->getHostIdsByHostgroupId($hostgroup->id);
-                foreach ($hostIds As $hostId) {
-                    $allHostIdsArray[] = $hostId;
-                }
+        foreach ($hostGroupIds as $hostGroupId) {
+            $hostIds = $this->getHostIdsByHostgroupId($hostGroupId);
+            foreach ($hostIds as $hostId) {
+                $allHostIdsArray[$hostId] = $hostId;
             }
-
         }
-
         return $allHostIdsArray;
 
     }
@@ -1041,53 +1035,33 @@ class HostgroupsTable extends Table {
      * @param string $type (all or count, list is NOT supported!)
      * @return int|array
      */
-    public function getHostgroupIdsByNameRegex($hostgroupRegex, $type = 'all') {
-
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $query = $ContainersTable->find()
-            ->contain(['Hostgroups' => function (Query $query) {
-                $query->disableAutoFields()
-                    ->select([
-                        'id',
-                        'container_id'
-                    ]);
-
-                return $query;
-            }])
-            ->select(['id'])
-            ->where([
-                'containertype_id' => CT_HOSTGROUP
-            ]);
-
+    public function getHostgroupIdsByNameRegex(string $hostgroupRegex, $type = 'all') {
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id'
+            ])
+            ->contain(['Containers'])
+            ->disableHydration();
         $where = [];
 
         if ($this->isValidRegularExpression($hostgroupRegex)) {
-        $where[] = new Comparison(
-            'Containers.name',
-            $hostgroupRegex,
-            'string',
-            'RLIKE'
-        );
+            $where[] = new Comparison(
+                'Containers.name',
+                $hostgroupRegex,
+                'string',
+                'RLIKE'
+            );
         }
 
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
-        if ($type === 'all') {
-            $query->order([
-                'id' => 'asc'
-            ]);
-        }
-
         if ($type === 'count') {
             return $query->count();
         }
 
-        return $query;
-
+        $result = $query->all();
+        return $this->emptyArrayIfNull(Hash::extract($result->toArray(), '{n}.id'));
     }
 
     /**

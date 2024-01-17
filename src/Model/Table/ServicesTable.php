@@ -21,7 +21,6 @@ use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\Comparison\ServiceComparisonForSave;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicestatusConditions;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -3134,8 +3133,23 @@ class ServicesTable extends Table {
             'servicename REGEXP' => $ServiceConditions->getServicenameRegex()
         ]);
 
-        if (!empty($ServiceConditions->getHostgroupRegex())) {
-            $query->where(['Hosts.id IN' => $ServiceConditions->getHostIds()]);
+        $hostIdsFromServiceCondition = [];
+        if (!empty($ServiceConditions->getHostId())) {
+            $hostIdsFromServiceCondition[$ServiceConditions->getHostId()] = $ServiceConditions->getHostId();
+        }
+        if (!empty($ServiceConditions->getHostIds())) {
+            $hostIds = $ServiceConditions->getHostIds();
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+            }
+            $hostIdsFromServiceCondition = array_merge(
+                $hostIdsFromServiceCondition,
+                $hostIds
+            );
+        }
+
+        if (!empty($hostIdsFromServiceCondition)) {
+            $query->where(['Hosts.id IN' => $hostIdsFromServiceCondition]);
         }
 
         if ($type === 'all') {
@@ -3241,10 +3255,23 @@ class ServicesTable extends Table {
             'servicename REGEXP' => $ServiceConditions->getServicenameRegex()
         ]);
 
-        if (!empty($ServiceConditions->getHostgroupRegex())) {
-            $query->where(['Hosts.id IN' => $ServiceConditions->getHostIds()]);
+        $hostIdsFromServiceCondition = [];
+        if (!empty($ServiceConditions->getHostId())) {
+            $hostIdsFromServiceCondition[$ServiceConditions->getHostId()] = $ServiceConditions->getHostId();
         }
-
+        if (!empty($ServiceConditions->getHostIds())) {
+            $hostIds = $ServiceConditions->getHostIds();
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+            }
+            $hostIdsFromServiceCondition = array_merge(
+                $hostIdsFromServiceCondition,
+                $hostIds
+            );
+        }
+        if (!empty($hostIdsFromServiceCondition)) {
+            $query->where(['Hosts.id IN' => $hostIdsFromServiceCondition]);
+        }
         if ($type === 'all') {
             $query->order([
                 'Hosts.name'  => 'asc',

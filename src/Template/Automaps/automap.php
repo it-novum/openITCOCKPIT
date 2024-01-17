@@ -31,7 +31,7 @@
                 <strong><?php echo __('Regular expression for hosts') ?>:</strong>
                 <code>{{ automap.host_regex }}</code>
             </div>
-            <div class="col-xs-12 col-md-3" ng-if="automap.hostgroup_regex.length > 0">
+            <div class="col-xs-12 col-md-3">
                 <strong><?php echo __('Regular expression for host groups') ?>:</strong>
                 <code>{{ automap.hostgroup_regex }}</code>
             </div>

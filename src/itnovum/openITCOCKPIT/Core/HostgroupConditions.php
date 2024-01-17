@@ -70,7 +70,7 @@ class HostgroupConditions {
     public function getConditionsForFind() {
         $conditions = $this->conditions;
         if (!empty($this->containerIds)) {
-            if(!is_array($this->containerIds)){
+            if (!is_array($this->containerIds)) {
                 $this->containerIds = [$this->containerIds];
             }
 
@@ -128,19 +128,4 @@ class HostgroupConditions {
     public function getOrder() {
         return SanitizeOrder::filterOrderArray($this->order);
     }
-
-    /**
-     * @return string
-     */
-    public function getHostgroupRegex() {
-        return $this->hostnameRegex;
-    }
-
-    /**
-     * @param string $hostgroupRegex
-     */
-    public function setHostgroupRegex($hostgroupRegex) {
-        $this->hostgroupRegex = $hostgroupRegex;
-    }
-
 }

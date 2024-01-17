@@ -129,7 +129,7 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            if($scope.post.Automap.host_regex != '' && $scope.post.Automap.container_id > 0){
+            if($scope.post.Automap.hostgroup_regex != '' && $scope.post.Automap.container_id > 0){
                 $scope.getMatchingHostAndServices();
             }
 
