@@ -199,6 +199,13 @@
                                                             <option value="AzureActiveDirectory"><?php echo __('Azure Active Directory'); ?></option>
                                                         </select>
                                                     </div>
+                                                    <div ng-switch-when="FRONTEND.LDAP.OPENLDAP_GROUP_SCHEMA">
+                                                        <select class="form-control systemsetting-input"
+                                                                ng-model="systemsetting.value">
+                                                            <option value="memberUid"><?php echo __('memberUid (deprecated)'); ?></option>
+                                                            <option value="uniqueMember"><?php echo __('uniqueMember (RFC 4519 2.40)'); ?></option>
+                                                        </select>
+                                                    </div>
                                                     <div ng-switch-default>
                                                         <input type="text"
                                                                ng-model="systemsetting.value"

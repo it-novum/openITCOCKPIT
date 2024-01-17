@@ -122,7 +122,12 @@ class UnitScaler {
 
         foreach (['min', 'max', 'warn', 'crit'] as $key) {
             if (!empty($this->gauge['datasource'][$key])) {
-                $this->gauge['datasource'][$key] = $this->shiftValue($this->gauge['datasource'][$key], $targetUnit);
+                // todo: add support for ranges !
+                // At the moment, the openITCOCKPIT frontend does not support to display range thresholds in the charts / graphs
+                // For this reason, also the UnitScaler does not support it - at least for now.
+                // The workaround is, to cast the thresholds "10:50" to a float to only get 10
+                $value = floatval($this->gauge['datasource'][$key]);
+                $this->gauge['datasource'][$key] = $this->shiftValue($value, $targetUnit);
             }
         }
 
@@ -160,7 +165,12 @@ class UnitScaler {
 
         foreach (['min', 'max', 'warn', 'crit'] as $key) {
             if (!empty($this->gauge['datasource'][$key])) {
-                $this->gauge['datasource'][$key] = $this->shiftValue($this->gauge['datasource'][$key], $targetUnit);
+                // todo: add support for ranges !
+                // At the moment, the openITCOCKPIT frontend does not support to display range thresholds in the charts / graphs
+                // For this reason, also the UnitScaler does not support it - at least for now.
+                // The workaround is, to cast the thresholds "10:50" to a float to only get 10
+                $value = floatval($this->gauge['datasource'][$key]);
+                $this->gauge['datasource'][$key] = $this->shiftValue($value, $targetUnit);
             }
         }
 
