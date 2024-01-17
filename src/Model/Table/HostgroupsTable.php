@@ -1017,8 +1017,8 @@ class HostgroupsTable extends Table {
      * @param string $hostgroupRegex
      * @return array
      */
-    public function getHostIdsByHostgroupNameRegex($hostgroupRegex) {
-        $hostGroupIds = $this->getHostgroupIdsByNameRegex($hostgroupRegex);
+    public function getHostIdsByHostgroupNameRegex($hostgroupRegex, $containerIds) {
+        $hostGroupIds = $this->getHostgroupIdsByNameRegex($hostgroupRegex, $containerIds);
         $allHostIdsArray = [];
         foreach ($hostGroupIds as $hostGroupId) {
             $hostIds = $this->getHostIdsByHostgroupId($hostGroupId);
@@ -1032,15 +1032,20 @@ class HostgroupsTable extends Table {
 
     /**
      * @param string $hostgroupRegex
-     * @param string $type (all or count, list is NOT supported!)
-     * @return int|array
+     * @param array|mixed $containerIds
+     * @param @param string $type (all or count, list is NOT supported!)
+     * @return array|int
      */
-    public function getHostgroupIdsByNameRegex(string $hostgroupRegex, $type = 'all') {
+    public function getHostgroupIdsByNameRegex(string $hostgroupRegex, $containerIds, $type = 'all') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
         $query = $this->find()
             ->select([
-                'Hostgroups.id'
+                'Hostgroups.id',
             ])
             ->contain(['Containers'])
+            ->where(['Containers.parent_id IN' => $containerIds])
             ->disableHydration();
         $where = [];
 

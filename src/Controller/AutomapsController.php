@@ -284,7 +284,7 @@ class AutomapsController extends AppController {
         }
         if (!empty($automap['hostgroup_regex'])) {
             try {
-                $allHostIdsArray = $HostgroupsTable->getHostIdsByHostgroupNameRegex($automap['hostgroup_regex']);
+                $allHostIdsArray = $HostgroupsTable->getHostIdsByHostgroupNameRegex($automap['hostgroup_regex'], $containerIds);
                 $ServicesConditions->setHostIds($allHostIdsArray);
             } catch (Exception $e) {
                 $ServicesConditions->setHostIds([]);
@@ -506,7 +506,6 @@ class AutomapsController extends AppController {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
         }
-
         $defaults = [
             'container_id'    => 0,
             'recursive'       => 0,
@@ -552,12 +551,12 @@ class AutomapsController extends AppController {
             $allHostIdsArray = [];
             if ($post['hostgroup_regex'] != '') {
                 try {
-                    $allHostIdsArray = $HostgroupsTable->getHostIdsByHostgroupNameRegex($post['hostgroup_regex']);
-                    $hostgroupCount = $HostgroupsTable->getHostgroupIdsByNameRegex($post['hostgroup_regex'], 'count');
-
+                    $allHostIdsArray = $HostgroupsTable->getHostIdsByHostgroupNameRegex($post['hostgroup_regex'], $containerIds);
+                    $hostgroupCount = $HostgroupsTable->getHostgroupIdsByNameRegex($post['hostgroup_regex'], $containerIds, 'count');
                 } catch (Exception $e) {
                     $hostgroupCount = 0;
                 }
+
                 $HostConditions->setHostIds($allHostIdsArray);
                 if (empty($allHostIdsArray)) {
                     $this->set('hostCount', $hostCount);
