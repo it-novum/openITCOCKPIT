@@ -106,6 +106,8 @@ class UsersController extends AppController {
             $images['particles'] = 'none';
         }
 
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         $hasValidSslCertificate = false;
         if (isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && isset($_SERVER['SSL_CERT'])) {
@@ -138,6 +140,9 @@ class UsersController extends AppController {
                     }
                     $Session->write('oauth_user_not_found', $oauth_error);
                 }
+            } else {
+                $loginData = $result->getData();
+                $UsersTable->saveLastLoginDate($loginData['email']);
             }
         }
 
@@ -163,15 +168,14 @@ class UsersController extends AppController {
             return;
         }
 
-        /** @var UsersTable $UsersTable */
-        $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
         if ($this->request->is('post')) {
             // Docs: https://book.cakephp.org/authentication/1/en/index.html
 
             $result = $this->Authentication->getResult();
             if ($result->getStatus() === ResultInterface::SUCCESS) {
                 $this->set('success', true);
+                $loginData = $this->request->getData();
+                $UsersTable->saveLastLoginDate($loginData['email']);
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
@@ -239,10 +243,14 @@ class UsersController extends AppController {
         $all_users = [];
 
         $types = $UsersTable->getUserTypesWithStyles();
+        $UserTime = $User->getUserTime();
 
         foreach ($all_tmp_users as $index => $_user) {
             /** @var User $_user */
             $user = $_user->toArray();
+            if (!empty($user['last_login'])) {
+                $user['last_login'] = $UserTime->format($user['last_login']->getTimestamp());
+            }
             $user['allow_edit'] = $this->hasRootPrivileges;
             if (!empty($user['samaccountname'])) {
                 $user['UserTypes'] = [$types['LDAP_USER']];

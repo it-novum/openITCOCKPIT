@@ -11,6 +11,7 @@ use Cake\ORM\Entity;
  * @property int $user_id
  * @property string $apikey
  * @property string|null $description
+ * @property datetime $last_use
  *
  * @property \App\Model\Entity\User $user
  */
@@ -29,6 +30,7 @@ class Apikey extends Entity {
         'user_id'     => true,
         'apikey'      => true,
         'description' => true,
+        'last_use'    => true,
         'user'        => true
     ];
 }
