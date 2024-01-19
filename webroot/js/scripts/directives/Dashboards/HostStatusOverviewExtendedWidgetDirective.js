@@ -49,6 +49,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
                 $http.get("/dashboards/hostStatusOverviewExtendedWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Hoststatus = result.data.config.Hoststatus;
+                    $scope.filter.Hoststatus.state_since = parseInt(result.data.config.Hoststatus.state_since, 10);
                     $scope.statusCount = result.data.statusCount;
                     $scope.init = false;
                     $('#HostsKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
@@ -103,19 +104,17 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
 
             $scope.load();
 
-            $scope.saveHoststatusOverview = function(){
+            $scope.saveHoststatusOverviewExtended = function(){
                 if($scope.init){
                     return;
                 }
-                $http.post("/dashboards/hostStatusOverviewWidget.json?angular=true",
+                $http.post("/dashboards/hostStatusOverviewExtendedWidget.json?angular=true",
                     {
                         Widget: {
                             id: $scope.widget.id
                         },
                         Hoststatus: $scope.filter.Hoststatus,
-                        Host: {
-                            name: $scope.filter.Host.name
-                        }
+                        Host: $scope.filter.Host
                     }
                 ).then(function(result){
                     //Update status
@@ -129,6 +128,9 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
                     hostname: $scope.filter.Host.name,
                     hoststate: [$scope.filter.Hoststatus.current_state]
                 };
+
+
+                // TODO host_ids for index
 
                 if($scope.filter.Hoststatus.current_state > 0){
                     if($scope.filter.Hoststatus.acknowledged){

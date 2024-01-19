@@ -301,7 +301,7 @@
                 </div>
                 <div class="row py-2">
                     <div class="col-lg-12">
-                        <button class="btn btn-primary float-right" ng-click="saveHoststatusOverview()">
+                        <button class="btn btn-primary float-right" ng-click="saveHoststatusOverviewExtended()">
                             <?php echo __('Save'); ?>
                         </button>
                     </div>

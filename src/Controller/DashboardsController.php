@@ -1521,7 +1521,7 @@ class DashboardsController extends AppController {
             //Only ship HTML template
             return;
         }
-        $HostStatusOverviewJson = new HostStatusOverviewExtendedJson();
+        $HostStatusOverviewExtendedJson = new HostStatusOverviewExtendedJson();
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
@@ -1538,7 +1538,7 @@ class DashboardsController extends AppController {
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
             }
-            $config = $HostStatusOverviewJson->standardizedData($data);
+            $config = $HostStatusOverviewExtendedJson->standardizedData($data);
 
             if ($this->DbBackend->isNdoUtils()) {
                 /** @var HostsTable $HostsTable */
@@ -1564,7 +1564,7 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $config = $HostStatusOverviewJson->standardizedData($this->request->getData());
+            $config = $HostStatusOverviewExtendedJson->standardizedData($this->request->getData());
             $widgetId = (int)$this->request->getData('Widget.id', 0);
 
             if (!$WidgetsTable->existsById($widgetId)) {
