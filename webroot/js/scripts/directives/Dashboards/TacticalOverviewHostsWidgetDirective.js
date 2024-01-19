@@ -10,9 +10,6 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
             $scope.interval = null;
             $scope.init = true;
             $scope.hoststatusSummary = null;
-
-            var $widget = $('#widget-' + $scope.widget.id);
-
             $scope.hostListTimeout = null;
 
 

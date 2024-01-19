@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewExtendedJson;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
@@ -1515,7 +1516,157 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    public function hostStatusOverviewExtendedWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $HostStatusOverviewJson = new HostStatusOverviewExtendedJson();
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $WidgetsTable->get($widgetId);
+
+            $data = [];
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
+            }
+            $config = $HostStatusOverviewJson->standardizedData($data);
+
+            if ($this->DbBackend->isNdoUtils()) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $count = $HostsTable->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $count = $HostsTable->getHoststatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+            }
+            $this->set('config', $config);
+            $this->set('statusCount', $count);
+            $this->viewBuilder()->setOption('serialize', ['config', 'statusCount']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $HostStatusOverviewJson->standardizedData($this->request->getData());
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
     public function serviceStatusOverviewWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $ServiceStatusOverviewJson = new ServiceStatusOverviewJson();
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $widget = $WidgetsTable->get($widgetId);
+
+            $data = [];
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
+            }
+            $config = $ServiceStatusOverviewJson->standardizedData($data);
+
+            if ($this->DbBackend->isNdoUtils()) {
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $count = $ServicesTable->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+                //$query = $this->Servicestatus->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                //$modelName = 'Servicestatus';
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $count = $ServicesTable->getServicestatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+            }
+            $this->set('config', $config);
+            $this->set('statusCount', $count);
+            $this->viewBuilder()->setOption('serialize', ['config', 'statusCount']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $ServiceStatusOverviewJson->standardizedData($this->request->getData());
+
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
+
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function serviceStatusOverviewExtendedWidget() {
         if (!$this->isApiRequest()) {
             //Only ship HTML template
             return;
