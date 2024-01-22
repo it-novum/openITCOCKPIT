@@ -1539,12 +1539,9 @@ class DashboardsController extends AppController {
                 $data = json_decode($widget->get('json_data'), true);
             }
             $config = $HostStatusOverviewExtendedJson->standardizedData($data);
-
+            $hostIds = [];
             if ($this->DbBackend->isNdoUtils()) {
-                /** @var HostsTable $HostsTable */
-                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-
-                $count = $HostsTable->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                throw new MissingDbBackendException('MissingDbBackendException');
             }
 
             if ($this->DbBackend->isCrateDb()) {
@@ -1555,11 +1552,13 @@ class DashboardsController extends AppController {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $count = $HostsTable->getHoststatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                $hostIds = $HostsTable->getHostIdsBySelectedStatusExtendedStatusengine3($this->MY_RIGHTS, $config);
             }
+
             $this->set('config', $config);
-            $this->set('statusCount', $count);
-            $this->viewBuilder()->setOption('serialize', ['config', 'statusCount']);
+            $this->set('statusCount', sizeof($hostIds));
+            $this->set('hostIds', $hostIds);
+            $this->viewBuilder()->setOption('serialize', ['config', 'statusCount', 'hostIds']);
             return;
         }
 

@@ -32,25 +32,42 @@
 
         <flippy-front
             class="bg-host-{{filter.Hoststatus.current_state}} bg-host-background-icon bg-host-front-{{filter.Hoststatus.current_state}} fixFlippy">
-            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
-                <i class="fa fa-cog fa-sm"></i>
-            </a>
-            <div class="padding-5" style="font-size:{{fontSize}}px;">
-                <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
-                    <a ng-click="goToState()" class="pointer">
-                        <div class="row text-center">
-                            <div class="col col-lg-12 txt-color-white">
-                                {{ statusCount }}
-                            </div>
-                        </div>
+            <div class="row">
+                <div class="col-xs-12 col-lg-12">
+                    <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark"
+                       ng-click="showConfig()">
+                        <i class="fa fa-cog fa-sm"></i>
                     </a>
-                <?php else: ?>
-                    <div class="row text-center">
-                        <div class="col col-lg-12 txt-color-white">
+                    <span ng-if="filter.Hoststatus.state_older_than"
+                          class="pr-2 text-white italic pull-right font-weight-light font-md">
+                        <i class="fa-solid fa-business-time"></i> <?= __('State older than'); ?>:
+                        {{filter.Hoststatus.state_older_than}}
+                        <span ng-show="filter.Hoststatus.state_older_than_unit == 'SECOND'">
+                            <?= __('second(s)'); ?>
+                        </span>
+                        <span ng-show="filter.Hoststatus.state_older_than_unit == 'MINUTE'">
+                            <?= __('minute(s)'); ?>
+                        </span>
+                        <span ng-show="filter.Hoststatus.state_older_than_unit == 'HOUR'">
+                            <?= __('hour(s)'); ?>
+                        </span>
+                        <span ng-show="filter.Hoststatus.state_older_than_unit == 'DAY'">
+                            <?= __('day(s)'); ?>
+                        </span>
+                    </span>
+                </div>
+                <div class="col col-lg-12">
+                    <div class="padding-5 text-center" style="font-size:{{fontSize}}px;">
+                        <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
+                            <a ng-click="statusCount > 0 && goToState()" class="text-white"
+                               ng-class="{'pointer': statusCount > 0}">
+                                {{ statusCount }}
+                            </a>
+                        <?php else: ?>
                             {{ statusCount }}
-                        </div>
+                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
+                </div>
             </div>
         </flippy-front>
         <flippy-back class="fixFlippy">
@@ -257,41 +274,41 @@
                                     <i class="far fa-clock fa-lg"></i>
                                 </span>
                             </div>
-                            <input ng-model="filter.Hoststatus.state_since"
+                            <input ng-model="filter.Hoststatus.state_older_than"
                                    placeholder="<?= __('Leave empty for all'); ?>"
                                    class="form-control" type="number" min="1">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-primary dropdown-toggle"
                                         type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
-                                    <span ng-show="filter.Hoststatus.state_since_unit == 'seconds'">
+                                    <span ng-show="filter.Hoststatus.state_older_than_unit == 'SECOND'">
                                         <?= __('seconds'); ?>
                                     </span>
-                                    <span ng-show="filter.Hoststatus.state_since_unit == 'minutes'">
+                                    <span ng-show="filter.Hoststatus.state_older_than_unit == 'MINUTE'">
                                         <?= __('minutes'); ?>
                                     </span>
-                                    <span ng-show="filter.Hoststatus.state_since_unit == 'hours'">
+                                    <span ng-show="filter.Hoststatus.state_older_than_unit == 'HOUR'">
                                         <?= __('hours'); ?>
                                     </span>
-                                    <span ng-show="filter.Hoststatus.state_since_unit == 'days'">
-                                    <?= __('days'); ?>
+                                    <span ng-show="filter.Hoststatus.state_older_than_unit == 'DAY'">
+                                        <?= __('days'); ?>
                                     </span>
                                 </button>
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="javascript:void(0);"
-                                       ng-click="filter.Hoststatus.state_since_unit = 'seconds'">
+                                       ng-click="filter.Hoststatus.state_older_than_unit = 'SECOND'">
                                         <?= __('seconds'); ?>
                                     </a>
                                     <a class="dropdown-item" href="javascript:void(0);"
-                                       ng-click="filter.Hoststatus.state_since_unit = 'minutes'">
+                                       ng-click="filter.Hoststatus.state_older_than_unit = 'MINUTE'">
                                         <?= __('minutes'); ?>
                                     </a>
                                     <a class="dropdown-item" href="javascript:void(0);"
-                                       ng-click="filter.Hoststatus.state_since_unit = 'hours'">
+                                       ng-click="filter.Hoststatus.state_older_than_unit = 'HOUR'">
                                         <?= __('hours'); ?>
                                     </a>
                                     <a class="dropdown-item" href="javascript:void(0);"
-                                       ng-click="filter.Hoststatus.state_since_unit = 'days'">
+                                       ng-click="filter.Hoststatus.state_older_than_unit = 'DAY'">
                                         <?= __('days'); ?>
                                     </a>
                                 </div>

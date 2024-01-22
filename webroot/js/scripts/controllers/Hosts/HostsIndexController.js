@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
         filterHostname = QueryStringService.getStateValue($stateParams, 'hostname');
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');
         keywords = QueryStringService.getStateValue($stateParams, 'keywords');
+        not_keywords = QueryStringService.getStateValue($stateParams, 'not_keywords');
         //console.log(QueryStringService.getStateValue($stateParams, 'filter'));
         /*** Filter Settings ***/
             //filterId = QueryStringService.getStateValue($stateParams, 'filter');
@@ -30,12 +31,12 @@ angular.module('openITCOCKPIT')
                     }, Host: {
                         id: QueryStringService.getStateValue($stateParams, 'id', []),
                         name: (filterHostname) ? filterHostname : '',
-                        name_regex: false,
+                        name_regex: QueryStringService.getStateValue($stateParams, 'name_regex', false) == '1',
                         hostdescription: '',
                         keywords: (keywords) ? keywords : '',
-                        not_keywords: '',
+                        not_keywords: (not_keywords) ? not_keywords : '',
                         address: (filterAddress) ? filterAddress : '',
-                        address_regex: false,
+                        address_regex: QueryStringService.getStateValue($stateParams, 'address_regex', false) == '1',
                         satellite_id: [],
                         priority: {
                             1: false,

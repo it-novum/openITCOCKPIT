@@ -28,8 +28,8 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
                     not_acknowledged: false,
                     in_downtime: false,
                     not_in_downtime: false,
-                    state_since: null,
-                    state_since_unit: 'minutes',
+                    state_older_than: null,
+                    state_older_than_unit: 'minutes',
                 },
                 Host: {
                     name: '',
@@ -44,13 +44,15 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
                 }
             };
             $scope.statusCount = null;
+            $scope.hostIds = [];
 
             $scope.load = function(){
                 $http.get("/dashboards/hostStatusOverviewExtendedWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Hoststatus = result.data.config.Hoststatus;
-                    $scope.filter.Hoststatus.state_since = parseInt(result.data.config.Hoststatus.state_since, 10);
+                    $scope.filter.Hoststatus.state_older_than = parseInt(result.data.config.Hoststatus.state_older_than, 10);
                     $scope.statusCount = result.data.statusCount;
+                    $scope.hostIds = result.data.hostIds;
                     $scope.init = false;
                     $('#HostsKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
                     $('#HostsNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
@@ -60,7 +62,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
 
 
             $scope.hideConfig = function(){
-                $('#widget-content-' + $scope.widget.id).css('overflow', 'hidden');
+                $('#widget-content-' + $scope.widget.id).css('overflow', 'hidden').animate({scrollTop: '0px'}, 500);
                 $scope.$broadcast('FLIP_EVENT_IN');
             };
             $scope.showConfig = function(){
@@ -126,11 +128,12 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
             $scope.goToState = function(){
                 var params = {
                     hostname: $scope.filter.Host.name,
-                    hoststate: [$scope.filter.Hoststatus.current_state]
+                    hoststate: [$scope.filter.Hoststatus.current_state],
                 };
 
-
-                // TODO host_ids for index
+                if($scope.hostIds.length > 0){
+                    params.id = $scope.hostIds;
+                }
 
                 if($scope.filter.Hoststatus.current_state > 0){
                     if($scope.filter.Hoststatus.acknowledged){
@@ -150,7 +153,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
                     }
                 }
 
-
+                params = _.merge(params, $scope.filter.Host);
                 $state.go('HostsIndex', params);
             };
 

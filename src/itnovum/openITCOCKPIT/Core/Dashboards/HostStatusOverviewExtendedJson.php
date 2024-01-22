@@ -44,13 +44,13 @@ class HostStatusOverviewExtendedJson extends DashboardJsonStandardizer {
             'not_keywords'  => ''
         ],
         'Hoststatus' => [
-            'current_state'    => 0,
-            'acknowledged'     => false,
-            'not_acknowledged' => false,
-            'in_downtime'      => false,
-            'not_in_downtime'  => false,
-            'state_since'      => null,
-            'state_since_unit' => 'minutes'
+            'current_state'         => 0,
+            'acknowledged'          => false,
+            'not_acknowledged'      => false,
+            'in_downtime'           => false,
+            'not_in_downtime'       => false,
+            'state_older_than'      => null,
+            'state_older_than_unit' => 'MINUTE'
         ],
         'Hostgroup'  => [
             '_ids' => ''
@@ -70,6 +70,12 @@ class HostStatusOverviewExtendedJson extends DashboardJsonStandardizer {
 
             // POST request to save to database
             $request['Hostgroup']['_ids'] = implode(',', $request['Hostgroup']['_ids']);
+        }
+        if (empty($request['Host']['name'])) {
+            $request['Host']['name_regex'] = false;
+        }
+        if (empty($request['Host']['address'])) {
+            $request['Host']['address_regex'] = false;
         }
         return $this->_standardizedData($this->fields, $request);
     }
