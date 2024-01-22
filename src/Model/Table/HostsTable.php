@@ -21,6 +21,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Cache\ObjectsCache;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -3173,9 +3174,7 @@ class HostsTable extends Table {
             ->select([
                 'Hosts.id'
             ])
-            ->where([
-                'Hosts.disabled' => 0
-            ])
+            ->innerJoinWith('Hosttemplates')
             ->join([
                 'b' => [
                     'table'      => 'statusengine_hoststatus',
@@ -3183,6 +3182,9 @@ class HostsTable extends Table {
                     'alias'      => 'Hoststatus',
                     'conditions' => 'Hoststatus.hostname = Hosts.uuid',
                 ]
+            ])
+            ->where([
+                'Hosts.disabled' => 0
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
@@ -3192,11 +3194,7 @@ class HostsTable extends Table {
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
-
         $where = [];
-        if (!empty($conditions['Host']['name'])) {
-            $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
-        }
 
         $where['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
 
@@ -3242,7 +3240,7 @@ class HostsTable extends Table {
                     'table'      => 'hosttemplates_to_hostgroups',
                     'type'       => 'LEFT',
                     'alias'      => 'HosttemplatesToHostgroups',
-                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosts.hosttemplate_id',
                 ]
             ]);
             $query->having([
@@ -3252,25 +3250,55 @@ class HostsTable extends Table {
             $query->group('Hosts.id');
         }
 
-        if (isset($where['Hosts.keywords rlike'])) {
+        if (!empty($conditions['Host']['name'])) {
+            if (isset($conditions['Host']['name_regex']) && $conditions['Host']['name_regex'] === true || $conditions['Host']['name_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['Host']['name'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                // Use LIKE
+                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+            }
+        }
+
+        if (!empty($conditions['Host']['address'])) {
+            if (isset($conditions['Host']['address_regex']) && $conditions['Host']['address_regex'] === true || $conditions['Host']['address_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['address'])) {
+                    $where[] = new Comparison(
+                        'Hosts.address',
+                        $conditions['Host']['address'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                $where['Hosts.address LIKE'] = sprintf('%%%s%%', $conditions['Host']['address']);
+            }
+        }
+
+        if (!empty($conditions['Host']['keywords'])) {
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-                $where['Hosts.keywords rlike'],
+                $conditions['Host']['keywords'],
                 'string',
                 'RLIKE'
             );
-            unset($where['Hosts.keywords rlike']);
         }
 
-        if (isset($where['Hosts.not_keywords not rlike'])) {
+        if (!empty($conditions['Host']['not_keywords'])) {
             $where[] = new Comparison(
                 'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
-                $where['Hosts.not_keywords not rlike'],
+                $conditions['Host']['not_keywords'],
                 'string',
                 'NOT RLIKE'
             );
-            unset($where['Hosts.not_keywords not rlike']);
         }
+
         if (!empty($conditions['Hoststatus']['state_older_than']) && is_numeric($conditions['Hoststatus']['state_older_than']) && $conditions['Hoststatus']['state_older_than'] > 0) {
             $intervalUnit = 'MINUTE';
             if (in_array($conditions['Hoststatus']['state_older_than_unit'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {

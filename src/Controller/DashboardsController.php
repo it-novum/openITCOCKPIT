@@ -1539,6 +1539,23 @@ class DashboardsController extends AppController {
                 $data = json_decode($widget->get('json_data'), true);
             }
             $config = $HostStatusOverviewExtendedJson->standardizedData($data);
+            $conditions = $config;
+            // Migrate keyword / tags from JSON string to SQL RLIKE query string
+            foreach (['Host'] as $tableName) {
+                foreach (['keywords', 'not_keywords'] as $field) {
+                    if (empty($conditions[$tableName][$field])) {
+                        $conditions[$tableName][$field] = [];
+                    }
+
+                    if (isset($conditions[$tableName][$field]) && is_string($conditions[$tableName][$field])) {
+                        $arr = explode(',', $conditions[$tableName][$field]);
+                        $conditions[$tableName][$field] = [];
+                        if (!empty($arr)) {
+                            $conditions[$tableName][$field] = sprintf('.*(%s).*', implode('|', $arr));
+                        }
+                    }
+                }
+            }
             $hostIds = [];
             if ($this->DbBackend->isNdoUtils()) {
                 throw new MissingDbBackendException('MissingDbBackendException');
@@ -1552,7 +1569,7 @@ class DashboardsController extends AppController {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $hostIds = $HostsTable->getHostIdsBySelectedStatusExtendedStatusengine3($this->MY_RIGHTS, $config);
+                $hostIds = $HostsTable->getHostIdsBySelectedStatusExtendedStatusengine3($this->MY_RIGHTS, $conditions);
             }
 
             $this->set('config', $config);

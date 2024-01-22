@@ -49,6 +49,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
             $scope.load = function(){
                 $http.get("/dashboards/hostStatusOverviewExtendedWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
+                    $scope.filter.Hostgroup._ids = result.data.config.Hostgroup._ids.split(',').map(Number);
                     $scope.filter.Hoststatus = result.data.config.Hoststatus;
                     $scope.filter.Hoststatus.state_older_than = parseInt(result.data.config.Hoststatus.state_older_than, 10);
                     $scope.statusCount = result.data.statusCount;
@@ -56,6 +57,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
                     $scope.init = false;
                     $('#HostsKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
                     $('#HostsNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
+
                     $scope.loadHostgroups();
                 });
             };
@@ -105,6 +107,9 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
             };
 
             $scope.load();
+            jQuery(function(){
+                $("input[data-role=tagsinput]").tagsinput();
+            });
 
             $scope.saveHoststatusOverviewExtended = function(){
                 if($scope.init){
@@ -116,7 +121,8 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
                             id: $scope.widget.id
                         },
                         Hoststatus: $scope.filter.Hoststatus,
-                        Host: $scope.filter.Host
+                        Host: $scope.filter.Host,
+                        Hostgroup: $scope.filter.Hostgroup
                     }
                 ).then(function(result){
                     //Update status
