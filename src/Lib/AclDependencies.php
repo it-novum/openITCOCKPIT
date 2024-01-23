@@ -402,7 +402,8 @@ class AclDependencies {
             ->dependency('Hostgroups', 'edit', 'Hostgroups', 'addHostsToHostgroup')
             ->dependency('Hostgroups', 'edit', 'Hostgroups', 'append')
             ->dependency('Hostgroups', 'extended', 'Hostgroups', 'loadHostgroupWithHostsById')
-            ->dependency('Hostgroups', 'extended', 'Hostgroups', 'listToPdf');
+            ->dependency('Hostgroups', 'extended', 'Hostgroups', 'listToPdf')
+            ->dependency('Hostgroups', 'extended', 'Hostgroups', 'loadAdditionalInformation');
 
 
         $this
