@@ -38,21 +38,26 @@
                        ng-click="showConfig()">
                         <i class="fa fa-cog fa-sm"></i>
                     </a>
-                    <span ng-if="filter.Hoststatus.state_older_than"
-                          class="pr-2 text-white italic pull-right font-weight-light font-md">
+                    <span class="pr-2 text-white italic pull-right font-weight-light font-md">
                         <i class="fa-solid fa-business-time"></i> <?= __('State older than'); ?>:
-                        {{filter.Hoststatus.state_older_than}}
-                        <span ng-show="filter.Hoststatus.state_older_than_unit == 'SECOND'">
-                            <?= __('second(s)'); ?>
+                        <span ng-show="filter.Hoststatus.state_older_than"
+                              ng-switch="filter.Hoststatus.state_older_than_unit">
+                            {{filter.Hoststatus.state_older_than}}
+                            <span ng-switch-when="SECOND">
+                                <?= __('second(s)'); ?>
+                            </span>
+                            <span ng-switch-when="MINUTE">
+                                <?= __('minute(s)'); ?>
+                            </span>
+                            <span ng-switch-when="HOUR">
+                                <?= __('hour(s)'); ?>
+                            </span>
+                            <span ng-switch-when="DAY">
+                                <?= __('day(s)'); ?>
+                            </span>
                         </span>
-                        <span ng-show="filter.Hoststatus.state_older_than_unit == 'MINUTE'">
-                            <?= __('minute(s)'); ?>
-                        </span>
-                        <span ng-show="filter.Hoststatus.state_older_than_unit == 'HOUR'">
-                            <?= __('hour(s)'); ?>
-                        </span>
-                        <span ng-show="filter.Hoststatus.state_older_than_unit == 'DAY'">
-                            <?= __('day(s)'); ?>
+                        <span ng-hide="filter.Hoststatus.state_older_than">
+                            <i class="fa-solid fa-infinity"></i>
                         </span>
                     </span>
                 </div>
@@ -121,7 +126,12 @@
                     <div class="col-xs-12 col-lg-12 margin-bottom-5">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                <div class="input-group-text">
+                                    <div class="icon-stack">
+                                        <i class="fas fa-desktop"></i>
+                                        <i class="fa-solid fa-tags fa-xs text-success cornered cornered-lr"></i>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col tagsinputFilter">
                                 <input type="text"
@@ -138,7 +148,12 @@
                     <div class="col-xs-12 col-lg-12 margin-bottom-5">
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                <div class="input-group-text">
+                                    <div class="icon-stack">
+                                        <i class="fas fa-desktop"></i>
+                                        <i class="fa-solid fa-tags fa-xs text-danger cornered cornered-lr"></i>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col tagsinputFilter">
                                 <input type="text" class="input-sm"
@@ -279,18 +294,19 @@
                                    class="form-control" type="number" min="1">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-primary dropdown-toggle"
+                                        ng-switch="filter.Hoststatus.state_older_than_unit"
                                         type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
-                                    <span ng-show="filter.Hoststatus.state_older_than_unit == 'SECOND'">
+                                    <span ng-switch-when="SECOND">
                                         <?= __('seconds'); ?>
                                     </span>
-                                    <span ng-show="filter.Hoststatus.state_older_than_unit == 'MINUTE'">
+                                    <span ng-switch-when="MINUTE">
                                         <?= __('minutes'); ?>
                                     </span>
-                                    <span ng-show="filter.Hoststatus.state_older_than_unit == 'HOUR'">
+                                    <span ng-switch-when="HOUR">
                                         <?= __('hours'); ?>
                                     </span>
-                                    <span ng-show="filter.Hoststatus.state_older_than_unit == 'DAY'">
+                                    <span ng-switch-when="DAY">
                                         <?= __('days'); ?>
                                     </span>
                                 </button>

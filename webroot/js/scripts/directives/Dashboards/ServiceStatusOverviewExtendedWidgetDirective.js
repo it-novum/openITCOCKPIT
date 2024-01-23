@@ -28,10 +28,16 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewExtendedWidget',
                     not_in_downtime: false,
                 },
                 Host: {
-                    name: ''
+                    name: '',
+                    name_regex: false,
+                    keywords: '',
+                    not_keywords: '',
                 },
                 Service: {
-                    name: ''
+                    name: '',
+                    name_regex: false,
+                    keywords: '',
+                    not_keywords: '',
                 }
             };
             $scope.statusCount = null;
@@ -72,6 +78,9 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewExtendedWidget',
 
 
             $scope.load();
+            jQuery(function(){
+                $("input[data-role=tagsinput]").tagsinput();
+            });
 
             $scope.saveServicestatusOverview = function(){
                 if($scope.init){

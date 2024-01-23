@@ -1541,18 +1541,15 @@ class DashboardsController extends AppController {
             $config = $HostStatusOverviewExtendedJson->standardizedData($data);
             $conditions = $config;
             // Migrate keyword / tags from JSON string to SQL RLIKE query string
-            foreach (['Host'] as $tableName) {
-                foreach (['keywords', 'not_keywords'] as $field) {
-                    if (empty($conditions[$tableName][$field])) {
-                        $conditions[$tableName][$field] = [];
-                    }
-
-                    if (isset($conditions[$tableName][$field]) && is_string($conditions[$tableName][$field])) {
-                        $arr = explode(',', $conditions[$tableName][$field]);
-                        $conditions[$tableName][$field] = [];
-                        if (!empty($arr)) {
-                            $conditions[$tableName][$field] = sprintf('.*(%s).*', implode('|', $arr));
-                        }
+            foreach (['keywords', 'not_keywords'] as $field) {
+                if (empty($conditions['Host'][$field])) {
+                    $conditions['Host'][$field] = [];
+                }
+                if (isset($conditions['Host'][$field]) && is_string($conditions['Host'][$field])) {
+                    $arr = explode(',', $conditions['Host'][$field]);
+                    $conditions['Host'][$field] = [];
+                    if (!empty($arr)) {
+                        $conditions['Host'][$field] = sprintf('.*(%s).*', implode('|', $arr));
                     }
                 }
             }
@@ -1687,7 +1684,7 @@ class DashboardsController extends AppController {
             //Only ship HTML template
             return;
         }
-        $ServiceStatusOverviewJson = new ServiceStatusOverviewJson();
+        $ServiceStatusOverviewExtendedJson = new ServiceStatusOverviewExtendedJson();
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
@@ -1704,9 +1701,10 @@ class DashboardsController extends AppController {
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
             }
-            $config = $ServiceStatusOverviewJson->standardizedData($data);
+            $config = $ServiceStatusOverviewExtendedJson->standardizedData($data);
 
             if ($this->DbBackend->isNdoUtils()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
                 /** @var ServicesTable $ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
@@ -1732,7 +1730,7 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
-            $config = $ServiceStatusOverviewJson->standardizedData($this->request->getData());
+            $config = $ServiceStatusOverviewExtendedJson->standardizedData($this->request->getData());
 
             $widgetId = (int)$this->request->getData('Widget.id', 0);
 

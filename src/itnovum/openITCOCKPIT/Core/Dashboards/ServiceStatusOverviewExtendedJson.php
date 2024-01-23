@@ -35,24 +35,26 @@ class ServiceStatusOverviewExtendedJson extends DashboardJsonStandardizer {
      * oITC will take care of the rest of the work
      */
     protected $fields = [
-        'Host'         => [
-            'name'          => '',
-            'name_regex'    => false,
-            'address'       => '',
-            'address_regex' => false,
-            'keywords'      => '',
-            'not_keywords'  => ''
+        'Servicestatus' => [
+            'current_state'    => 0,
+            'acknowledged'     => false,
+            'not_acknowledged' => false,
+            'in_downtime'      => false,
+            'not_in_downtime'  => false,
         ],
-        'Service'      => [
+        'Host'          => [
+            'name'         => '',
+            'name_regex'   => false,
+            'keywords'     => '',
+            'not_keywords' => ''
+        ],
+        'Service'       => [
             'servicename'       => '',
             'servicename_regex' => false,
             'keywords'          => '',
             'not_keywords'      => ''
         ],
-        'Hostgroup'    => [
-            '_ids' => ''
-        ],
-        'Servicegroup' => [
+        'Servicegroup'  => [
             '_ids' => ''
         ]
     ];
@@ -62,15 +64,6 @@ class ServiceStatusOverviewExtendedJson extends DashboardJsonStandardizer {
      * @return array
      */
     public function standardizedData($request = []) {
-        if (isset($request['Hostgroup']['_ids']) && is_array($request['Hostgroup']['_ids'])) {
-            $request['Hostgroup']['_ids'] = array_filter(
-                $request['Hostgroup']['_ids'], function ($value) {
-                return $value > 0;
-            });
-
-            // POST request to save to database
-            $request['Hostgroup']['_ids'] = implode(',', $request['Hostgroup']['_ids']);
-        }
         if (isset($request['Servicegroup']['_ids']) && is_array($request['Servicegroup']['_ids'])) {
             $request['Servicegroup']['_ids'] = array_filter(
                 $request['Servicegroup']['_ids'], function ($value) {
@@ -78,6 +71,12 @@ class ServiceStatusOverviewExtendedJson extends DashboardJsonStandardizer {
             });
             // POST request to save to database
             $request['Servicegroup']['_ids'] = implode(',', $request['Servicegroup']['_ids']);
+        }
+        if (empty($request['Host']['name'])) {
+            $request['Host']['name_regex'] = false;
+        }
+        if (empty($request['Service']['servicename'])) {
+            $request['Service']['servicename_regex'] = false;
         }
         return $this->_standardizedData($this->fields, $request);
     }
