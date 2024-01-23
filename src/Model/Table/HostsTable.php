@@ -4633,13 +4633,13 @@ class HostsTable extends Table {
             $query->select([
                 'hostgroup_ids' => $query->newExpr(
                     'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                     GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
                 'count'         => $query->newExpr(
                     'SELECT COUNT(hostgroups.id)
                                 FROM hostgroups
                                 WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                                 GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
                                 AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
             ]);
@@ -4749,13 +4749,13 @@ class HostsTable extends Table {
             $query->select([
                 'hostgroup_ids' => $query->newExpr(
                     'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                     GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
                 'count'         => $query->newExpr(
                     'SELECT COUNT(hostgroups.id)
                                 FROM hostgroups
                                 WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                                 GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
                                 AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
             ]);
@@ -5134,13 +5134,13 @@ class HostsTable extends Table {
             $query->select([
                 'hostgroup_ids' => $query->newExpr(
                     'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                    GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                     GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
                 'count'         => $query->newExpr(
                     'SELECT COUNT(hostgroups.id)
                                 FROM hostgroups
                                 WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                                GROUP_CONCAT(HosttemplatesToHostgroups.hosttemplate_id),
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                                 GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
                                 AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
             ]);
