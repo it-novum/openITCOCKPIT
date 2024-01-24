@@ -36,10 +36,10 @@ use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Apikey;
-use itnovum\openITCOCKPIT\Core\Locales;
 
 /**
  * Class ProfileController
@@ -54,6 +54,7 @@ class ProfileController extends AppController {
         }
 
         $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
 
         /** @var $UsersTable UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
@@ -74,6 +75,12 @@ class ProfileController extends AppController {
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return profile information
+            if (!empty($user['User']['apikeys'])) {
+                foreach ($user['User']['apikeys'] as $index => $apiKey) {
+                    $apiKey['last_use'] = $UserTime->format($apiKey['last_use']->getTimestamp());
+                    $user['User']['apikeys'][$index] = $apiKey;
+                }
+            }
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('maxUploadLimit', $FileUploadSize->toArray());
@@ -242,6 +249,7 @@ class ProfileController extends AppController {
         }
 
         $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
 
         /** @var $ApikeysTable ApikeysTable */
         $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
@@ -258,6 +266,9 @@ class ProfileController extends AppController {
                     $User->getId()
                 );
                 $Apikey = new Apikey($apikey);
+                if (!empty($Apikey->getLastUse())) {
+                    $Apikey->setLastUse($UserTime->format($Apikey->getLastUse()->getTimestamp()));
+                }
                 $Apikey = $Apikey->toArray();
 
                 $qr = new QrCodeGenerator($Apikey['apikey']);
@@ -275,6 +286,9 @@ class ProfileController extends AppController {
             $apikeys = [];
             foreach ($apikeysResult as $apikey) {
                 $Apikey = new Apikey($apikey);
+                if (!empty($Apikey->getLastUse())) {
+                    $Apikey->setLastUse($UserTime->format($Apikey->getLastUse()->getTimestamp()));
+                }
                 $apikeys[] = $Apikey->toArray();
             }
 
