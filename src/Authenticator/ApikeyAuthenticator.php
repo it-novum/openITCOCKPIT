@@ -90,7 +90,6 @@ class ApikeyAuthenticator extends AbstractAuthenticator implements StatelessInte
         $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
         $apiKeyId = $ApikeysTable->getIdByApiKey($apiKey);
 
-        $succeeded = true;
 
         if (!empty($apiKeyId)) {
 
@@ -103,17 +102,17 @@ class ApikeyAuthenticator extends AbstractAuthenticator implements StatelessInte
                     $apiKeyToUpdate->last_use
                 ));
                 Log::error(json_encode($apiKeyToUpdate->getErrors()));
-                $succeeded = false;
+                return false;
             }
 
         } else {
             Log::error(sprintf(
                 'saveLastUseDate: Could not save api key because id not found.'
             ));
-            $succeeded = false;
+            return false;
         }
 
-        return $succeeded;
+        return true;
 
     }
 

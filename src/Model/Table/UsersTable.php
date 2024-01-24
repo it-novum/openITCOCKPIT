@@ -1422,9 +1422,6 @@ class UsersTable extends Table {
      * @return bool
      */
     public function saveLastLoginDate($email) {
-
-        $succeeded = true;
-
         if (!str_contains($email, '@')) {
             $userIdQuery = $this->find()->select(['id'])->where(['samaccountname' => $email])->first();
         } else {
@@ -1441,7 +1438,7 @@ class UsersTable extends Table {
                     $userToUpdate->last_login
                 ));
                 Log::error(json_encode($userToUpdate->getErrors()));
-                $succeeded = false;
+                return false;
             }
 
         } else {
@@ -1449,11 +1446,10 @@ class UsersTable extends Table {
                 'UserTable: Could not save user %s',
                 $email
             ));
-            $succeeded = false;
+            return false;
         }
 
-        return $succeeded;
-
+        return true;
     }
 
 }
