@@ -180,7 +180,7 @@
                                        class="form-control form-control-sm"
                                        data-role="tagsinput"
                                        id="ServicesKeywordsInput{{widget.id}}"
-                                       placeholder="<?php echo __('Filter by tags'); ?>"
+                                       placeholder="<?php echo __('Filter by service tags'); ?>"
                                        ng-model="filter.Service.keywords"
                                        ng-model-options="{debounce: 500}"
                                        style="display: none;">
@@ -201,7 +201,7 @@
                                 <input type="text" class="input-sm"
                                        data-role="tagsinput"
                                        id="ServicesNotKeywordsInput{{widget.id}}"
-                                       placeholder="<?php echo __('Filter by excluded tags'); ?>"
+                                       placeholder="<?php echo __('Filter by excluded service tags'); ?>"
                                        ng-model="filter.Service.not_keywords"
                                        ng-model-options="{debounce: 500}">
                             </div>
@@ -270,12 +270,12 @@
                         <div class="custom-control custom-radio custom-control-left margin-right-10">
                             <input type="radio"
                                    class="custom-control-input"
-                                   id="widget-radio2-{{widget.id}}"
-                                   ng-value="2"
+                                   id="widget-radio3-{{widget.id}}"
+                                   ng-value="3"
                                    ng-model="filter.Servicestatus.current_state"
                                    ng-model-options="{debounce: 500}">
                             <label class="custom-control-label custom-control-label-unknown"
-                                   for="widget-radio2-{{widget.id}}">
+                                   for="widget-radio3-{{widget.id}}">
                                 <?php echo __('Unknown'); ?>
                             </label>
                         </div>
