@@ -28,6 +28,7 @@ namespace App\Controller;
 
 
 use App\Model\Table\ContainersTable;
+use App\Model\Table\StatuspagesTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -36,15 +37,9 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
-use App\Model\Table\StatuspagesTable;
 use Cake\Event\EventInterface;
 
-/**
- * Statuspages Controller
- *
- * @property StatuspagesTable $Statuspages
- * @method \App\Model\Entity\Statuspage[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
- */
+
 class StatuspagesController extends AppController {
 
     //https://discourse.cakephp.org/t/bypass-authentication/9197/3
@@ -70,7 +65,7 @@ class StatuspagesController extends AppController {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
-        /** @var $StatuspagesTable StatuspagesTable */
+        /** @var StatuspagesTable $StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
 
         $statuspagesFilter = new StatuspagesFilter($this->request);
@@ -85,7 +80,7 @@ class StatuspagesController extends AppController {
             if ($withState) {
                 $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$statuspage['id'], $this->MY_RIGHTS, $UserTime);
                 $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['statuspage']['cumulatedColorId'];
-                $all_statuspages[$key]['color'] =  'bg-' . $statuspageViewData['statuspage']['cumulatedColor'];
+                $all_statuspages[$key]['color'] = 'bg-' . $statuspageViewData['statuspage']['cumulatedColor'];
             }
 
             $all_statuspages[$key]['allow_edit'] = true;
@@ -127,9 +122,9 @@ class StatuspagesController extends AppController {
         //$StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, true);
         //die('OLD');
 
-        $statuspageViewData =  $StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, $UserTime, true);//$StatuspagesTable->getStatuspageView($id, $UserTime);
+        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, $UserTime, true);//$StatuspagesTable->getStatuspageView($id, $UserTime);
         //$statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime);
-            $this->set('Statuspage', $statuspageViewData);
+        $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 

@@ -25,6 +25,7 @@
 declare(strict_types=1);
 
 namespace App\Model\Table;
+
 use Cake\Utility\Hash;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
@@ -310,7 +311,7 @@ class StatuspagesTable extends Table {
                 $serviceUuids[$service['id']] = $service['uuid'];
                 $statuspage['servicegroups'][$key]['service_uuids'][$service['uuid']] = null;
                 $hostUuids[$service['host']['id']] = $service['host']['uuid'];
-                $statuspage['servicegroups'][$key]['host_uuids'][$host['uuid']] = null;
+                $statuspage['servicegroups'][$key]['host_uuids'][$service['host']['uuid']] = null;
             }
 
             foreach ($servicegroup['servicetemplates'] as $servicetemplate) {
@@ -318,7 +319,7 @@ class StatuspagesTable extends Table {
                     $serviceUuids[$service['id']] = $service['uuid'];
                     $statuspage['servicegroups'][$key]['service_uuids'][$service['uuid']] = null;
                     $hostUuids[$service['host']['id']] = $service['host']['uuid'];
-                    $statuspage['servicegroups'][$key]['host_uuids'][$host['uuid']] = null;
+                    $statuspage['servicegroups'][$key]['host_uuids'][$service['host']['uuid']] = null;
                 }
             }
         }
@@ -536,7 +537,7 @@ class StatuspagesTable extends Table {
         // Create total summary state of the complete Status page
         foreach (['hosts', 'services', 'hostgroups', 'servicegroups'] as $objectType) {
             foreach ($statuspage[$objectType] as $index => $objectGroup) {
-                if ($objectType ==='hosts') {
+                if ($objectType === 'hosts') {
                     $item = [];
                     $item['type'] = 'host';
                     $item['id'] = $objectGroup['id'];
@@ -564,13 +565,13 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
                         $problems = $objectGroup['state_summary']['services']['problems'];
-                        if($problems > 0) {
+                        if ($problems > 0) {
                             $problemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
                             $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
                         }
                     }
 
-                    if($objectGroup['state_summary']['hosts']['downtimes'] === 1) {
+                    if ($objectGroup['state_summary']['hosts']['downtimes'] === 1) {
                         $downtimeDataHost = [];
                         $downtimeDataHost['scheduledStartTime'] = $this->time2string($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledStartTime'], $userTime);
                         $downtimeDataHost['scheduledEndTime'] = $this->time2string($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledEndTime'], $userTime);
@@ -580,9 +581,9 @@ class StatuspagesTable extends Table {
                         $item['downtimeData'] = $downtimeDataHost;
                     }
 
-                    if(count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
+                    if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
                         $plannedDowntimeDataHosts = [];
-                        foreach($objectGroup['state_summary']['hosts']['planned_downtime_details'] as $planned) {
+                        foreach ($objectGroup['state_summary']['hosts']['planned_downtime_details'] as $planned) {
                             $downtimePlannedDataHost = [];
                             $downtimePlannedDataHost['scheduledStartTime'] = $this->time2string($planned['scheduled_start_time'], $userTime);
                             $downtimePlannedDataHost['scheduledEndTime'] = $this->time2string($planned['scheduled_end_time'], $userTime);
@@ -607,7 +608,7 @@ class StatuspagesTable extends Table {
                     $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                     $item['background'] = 'bg-' . $item['cumulatedColor'];
                     if ($item['cumulatedColorId'] > 0) {
-                        if($objectGroup['state_summary']['services']['acknowledgements'] === 0) {
+                        if ($objectGroup['state_summary']['services']['acknowledgements'] === 0) {
                             $item['isAcknowledge'] = false;
                             $item['acknowledgedProblemsText'] = __('State is not acknowledged');
                         } else {
@@ -618,7 +619,7 @@ class StatuspagesTable extends Table {
                         }
                     }
 
-                    if($objectGroup['state_summary']['services']['downtimes'] === 1) {
+                    if ($objectGroup['state_summary']['services']['downtimes'] === 1) {
                         $downtimeDataService = [];
                         $downtimeDataService['scheduledStartTime'] = $this->time2string($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'], $userTime);
                         $downtimeDataService['scheduledEndTime'] = $this->time2string($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledEndTime'], $userTime);
@@ -628,9 +629,9 @@ class StatuspagesTable extends Table {
                         $item['downtimeData'] = $downtimeDataService;
                     }
 
-                    if(count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
+                    if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
                         $plannedDowntimeDataServices = [];
-                        foreach($objectGroup['state_summary']['services']['planned_downtime_details'] as $planned) {
+                        foreach ($objectGroup['state_summary']['services']['planned_downtime_details'] as $planned) {
                             $downtimePlannedDataService = [];
                             $downtimePlannedDataService['scheduledStartTime'] = $this->time2string($planned['scheduled_start_time'], $userTime);
                             $downtimePlannedDataService['scheduledEndTime'] = $this->time2string($planned['scheduled_end_time'], $userTime);
@@ -644,13 +645,13 @@ class StatuspagesTable extends Table {
                     $items[] = $item;
                 }
 
-                if ($objectType ==='hostgroups') {
+                if ($objectType === 'hostgroups') {
                     $item = [
-                        'type' => 'hostgroup',
+                        'type'               => 'hostgroup',
                         'cumulatedStateName' => __('Operational'),
-                        'cumulatedColorId' => -1,
-                        'cumulatedColor' => 'primary',
-                        'background' => 'bg-primary'
+                        'cumulatedColorId'   => -1,
+                        'cumulatedColor'     => 'primary',
+                        'background'         => 'bg-primary'
                     ];
                     $item['id'] = $statuspage[$objectType][$index]['id'];
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
@@ -669,36 +670,36 @@ class StatuspagesTable extends Table {
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
                     }
 
-                    if($item['cumulatedColorId'] > 0) {
+                    if ($item['cumulatedColorId'] > 0) {
                         $problems = $objectGroup['state_summary']['hosts']['problems'];
-                        if($problems > 0) {
+                        if ($problems > 0) {
                             $hostgroupAcknowledgements = $objectGroup['state_summary']['hosts']['acknowledgements'];
                             $item['hostgroupHostAcknowledgementText'] = __('{0} of {1} Hostproblems are acknowledged', $hostgroupAcknowledgements, $problems);
                         }
                         $problems = $objectGroup['state_summary']['services']['problems'];
-                        if($problems > 0) {
+                        if ($problems > 0) {
                             $hostgroupAcknowledgements = $objectGroup['state_summary']['services']['acknowledgements'];
                             $item['hostgroupServiceAcknowledgementText'] = __('{0} of {1} Serviceproblems are acknowledged', $hostgroupAcknowledgements, $problems);
                         }
                     }
 
-                    if($objectGroup['state_summary']['hosts']['downtimes'] > 0) {
+                    if ($objectGroup['state_summary']['hosts']['downtimes'] > 0) {
                         $downtimes = $objectGroup['state_summary']['hosts']['downtimes'];
                         $total = $objectGroup['state_summary']['hosts']['total'];
                         $item['downtimeHostgroupHostText'] = __('{0} of {1} Hosts are currently in downtime', $downtimes, $total);
                     }
-                    if(count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
+                    if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
                         $plannedDowntimes = count($objectGroup['state_summary']['hosts']['planned_downtime_details']);
                         $item['plannedDowntimeHostgroupHostText'] =
                             __('{0} Downtimes for hosts are planned in the next 10 Days', $plannedDowntimes);
                     }
 
-                    if($objectGroup['state_summary']['services']['downtimes'] > 0) {
+                    if ($objectGroup['state_summary']['services']['downtimes'] > 0) {
                         $downtimes = $objectGroup['state_summary']['services']['downtimes'];
                         $total = $objectGroup['state_summary']['services']['total'];
                         $item['downtimeHostgroupServiceText'] = __('{0} of {1} services are currently in downtime', $downtimes, $total);
                     }
-                    if(count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
+                    if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
                         $plannedDowntimes = count($objectGroup['state_summary']['services']['planned_downtime_details']);
                         $item['plannedDowntimeHostgroupServiceText'] =
                             __('{0} Downtimes for services are planned in the next 10 Days', $plannedDowntimes);
@@ -709,11 +710,11 @@ class StatuspagesTable extends Table {
 
                 if ($objectType === 'servicegroups') {
                     $item = [
-                        'type' => 'servicegroup',
+                        'type'               => 'servicegroup',
                         'cumulatedStateName' => __('Operational'),
-                        'cumulatedColorId' => -1,
-                        'cumulatedColor' => 'primary',
-                        'background' => 'bg-primary'
+                        'cumulatedColorId'   => -1,
+                        'cumulatedColor'     => 'primary',
+                        'background'         => 'bg-primary'
                     ];
                     $item['id'] = $objectGroup['id'];
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
@@ -724,17 +725,17 @@ class StatuspagesTable extends Table {
                     $item['background'] = 'bg-' . $item['cumulatedColor'];
                     if ($item['cumulatedColorId'] > 0) {
                         $problems = $objectGroup['state_summary']['services']['problems'];
-                        if($problems > 0) {
+                        if ($problems > 0) {
                             $problemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
                             $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
                         }
                     }
-                    if($objectGroup['state_summary']['services']['downtimes'] > 0) {
+                    if ($objectGroup['state_summary']['services']['downtimes'] > 0) {
                         $downtimes = $objectGroup['state_summary']['services']['downtimes'];
                         $total = $objectGroup['state_summary']['services']['total'];
                         $item['downtimeText'] = __('{0} of {1} Services are currently in downtime', $downtimes, $total);
                     }
-                    if(count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
+                    if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
                         $plannedDowntimes = count($objectGroup['state_summary']['services']['planned_downtime_details']);
                         $item['plannedDowntimeText'] =
                             __('{0} Downtimes are planned in the next 10 Days', $plannedDowntimes);
@@ -744,18 +745,54 @@ class StatuspagesTable extends Table {
             }
         }
 
+        $names = [
+            -1 => __('Not in Monitoring'),
+            0  => __('All services are operational'),
+            1  => __('Performance Issues'),
+            2  => __('Major Outage'),
+            3  => __('Unknown'),
+        ];
+
+        $icons = [
+            -1 => 'fa-solid fa-eye-low-vision',
+            0  => 'fa-solid fa-check',
+            1  => 'fa-solid fa-triangle-exclamation',
+            2  => 'fa-solid fa-bolt',
+            3  => 'fa-solid fa-question',
+        ];
+
+        if (empty($items)) {
+            return [
+                'statuspage' => [
+                    'name'                 => $statuspage['name'],
+                    'description'          => $statuspage['description'],
+                    'public'               => $statuspage['public'],
+                    'showComments'         => $statuspage['show_comments'],
+                    'cumulatedColorId'     => -1,
+                    'cumulatedColor'       => 'primary',
+                    'cumulatedHumanStatus' => __('Not in Monitoring'),
+                    'cumulatedIcon'        => 'fa-solid fa-eye-low-vision',
+                    'background'           => 'bg-primary'
+                ],
+                'items'      => [],
+            ];
+        }
+
         $items = Hash::sort($items, '{n}.cumulatedColorId', 'desc');
+
         $statuspageView = [
             'statuspage' => [
-                'name' => $statuspage['name'],
-                'description' => $statuspage['description'],
-                'public' => $statuspage['public'],
-                'showComments' => $statuspage['show_comments'],
-                'cumulatedColorId' => $items[0]['cumulatedColorId'] ?? -1,
-                'cumulatedColor' => $items[0]['cumulatedColor'] ?? 'primary',
-                'background' => !empty($items[0]['cumulatedColor']) ? 'bg-' . $items[0]['cumulatedColor'] : 'bg-primary'
+                'name'                 => $statuspage['name'],
+                'description'          => $statuspage['description'],
+                'public'               => $statuspage['public'],
+                'showComments'         => $statuspage['show_comments'],
+                'cumulatedColorId'     => $items[0]['cumulatedColorId'] ?? -1,
+                'cumulatedColor'       => $items[0]['cumulatedColor'] ?? 'primary',
+                'cumulatedHumanStatus' => $names[$items[0]['cumulatedColorId']] ?? __('Unknown'),
+                'cumulatedIcon'        => $icons[$items[0]['cumulatedColorId']] ?? 'fa-solid fa-eye-low-vision',
+                'background'           => !empty($items[0]['cumulatedColor']) ? 'bg-' . $items[0]['cumulatedColor'] : 'bg-primary'
             ],
-            'items'   => $items,
+            'items'      => $items,
         ];
 
         //debug($statuspage);
@@ -830,7 +867,7 @@ class StatuspagesTable extends Table {
                                 'Servicetemplates.name'
                             ]);
                         },
-                        'Hosts' => function (Query $q) {
+                        'Hosts'            => function (Query $q) {
                             return $q->select([
                                 'Hosts.id',
                                 'Hosts.uuid',

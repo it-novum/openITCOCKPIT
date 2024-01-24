@@ -1433,3 +1433,19 @@ div.form-group.chosen-small div.chosen-container.chosen-container-single a.chose
 .flex-right {
     margin-left:auto;
 }
+
+.shadow-ok, .shadow-up {
+    box-shadow: 0 0 7px -2px #00C851;
+}
+
+.shadow-warning {
+    box-shadow: 0 0 7px -2px #ffbb33;
+}
+
+.shadow-critical, .shadow-down {
+    box-shadow: 0 0 7px -2px #CC0000;
+}
+
+.shadow-unknown, .shadow-unreachable {
+    box-shadow: 0 0 7px -2px #727b84;
+}
