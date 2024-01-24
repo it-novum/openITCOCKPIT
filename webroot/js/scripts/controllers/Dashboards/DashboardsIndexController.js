@@ -13,6 +13,7 @@ angular.module('openITCOCKPIT')
         $scope.User = {};
         $scope.hideModifications = 0;
         $scope.isPinned = false;
+        $scope.userId = 0;
 
         $scope.flags = {
             exists: 1 << 0,
@@ -28,7 +29,7 @@ angular.module('openITCOCKPIT')
             usergroups: [],
             flags: 0,
             Container: {
-                _ids:[]
+                _ids: []
             }
         };
 
@@ -118,7 +119,6 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
 
                 $scope.tabs = result.data.tabs;
-                console.log(result.data.tabs);
                 if($scope.activeTab === null){
                     $scope.activeTab = $scope.tabs[0].id;
                 }
@@ -518,9 +518,9 @@ angular.module('openITCOCKPIT')
         }
 
         // I will load the current allocation status.
-        $scope.fetchAllocation = function (tabId) {
+        $scope.fetchAllocation = function(tabId){
             // Fetch the desired Dashboard.
-            $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result) {
+            $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result){
                 $scope.dashboard = result.data.dashboardTabs[0];
                 $scope.allocation.DashboardTab.id = result.data.dashboardTabs[0].id;
                 $scope.allocation.DashboardTab.container_id = result.data.dashboardTabs[0].container_id;
@@ -528,6 +528,7 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
                 $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
+                $scope.userId = result.data.userId;
 
                 // I'm done.
                 $scope.allocationInitializing = false;
@@ -535,55 +536,67 @@ angular.module('openITCOCKPIT')
         }
 
         // I will load all users.
-        $scope.loadUsers = function() {
+        $scope.loadUsers = function(){
+            if($scope.allocation.DashboardTab.container_id === 0){
+                return;
+            }
             $http.get("/users/loadUsersByContainerId.json", {
                 params: {
                     'angular': true,
                     'containerId': $scope.allocation.DashboardTab.container_id
                 }
-            }).then(function(result) {
-                $scope.users = result.data.users;
+            }).then(function(result){
+                $scope.users = [];
+
+                for(let index in result.data.users){
+                    let myUser = result.data.users[index];
+                    if(myUser.key !== $scope.userId){
+                        $scope.users.push(myUser);
+                    }
+                }
 
                 // Reset the selected users after changing the container.
-                if ($scope.allocationInitializing) {
+                if($scope.allocationInitializing){
                     $scope.allocation.DashboardTab.allocated_users._ids = [];
                 }
             });
         };
 
         // I will load all containers.
-        $scope.loadContainer = function() {
+        $scope.loadContainer = function(){
             return $http.get("/users/loadContainersForAngular.json", {
                 params: {
                     'angular': true
                 }
-            }).then(function(result) {
+            }).then(function(result){
                 $scope.containers = result.data.containers;
             });
         };
 
         // I will load all Usergroups.
-        $scope.loadUsergroups = function() {
+        $scope.loadUsergroups = function(){
             $http.get("/usergroups/index.json", {
                 params: {
                     'angular': true,
                     'sort': 'Usergroups.name',
                     'direction': 'asc'
                 }
-            }).then(function(result) {
+            }).then(function(result){
                 $scope.usergroups = result.data.allUsergroups;
             });
         };
 
         // If the containerId is changed, reload the users!
-        $scope.$watch('allocation.DashboardTab.container_id', function() {
-            // Load new users from the container.
-            $scope.loadUsers();
+        $scope.$watch('allocation.DashboardTab.container_id', function(){
+            if($scope.allocation.DashboardTab.container_id > 0){
+                // Load new users from the container.
+                $scope.loadUsers();
+            }
         }, true);
 
         // If the [pinned] flag is switched, pass it to the flag int.
-        $scope.$watch('isPinned', function(val) {
-            if (val) {
+        $scope.$watch('isPinned', function(val){
+            if(val){
                 $scope.allocation.DashboardTab.flags |= 1;
                 return;
             }
@@ -591,11 +604,11 @@ angular.module('openITCOCKPIT')
         });
 
         // I will store the allocation details.
-        $scope.saveAllocation = function() {
-            $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function() {
+        $scope.saveAllocation = function(){
+            $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function(){
                 genericSuccess();
                 $('#allocateDashboardModal').modal('hide');
-            }, function errorCallback(result) {
+            }, function errorCallback(result){
                 $scope.errors = result.data.error;
                 genericError();
             });

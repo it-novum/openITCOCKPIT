@@ -4,7 +4,10 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\DashboardTab;
+use ArrayObject;
+use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -12,6 +15,8 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\DashboardTabsFilter;
 
 /**
  * DashboardTabs Model
@@ -33,6 +38,7 @@ use Cake\Validation\Validator;
 class DashboardTabsTable extends Table {
 
     use Cake2ResultTableTrait;
+    use PaginationAndScrollIndexTrait;
 
     /**
      * Initialize method
@@ -81,6 +87,77 @@ class DashboardTabsTable extends Table {
             'joinType'         => 'LEFT'
         ]);
 
+    }
+
+    /**
+     * @inheritDoc
+     * I take care to remove the tabs where the given $entity is the source_tab.
+     */
+    protected function _processDelete(EntityInterface $entity, ArrayObject $options): bool {
+        $parentSuccess = parent::_processDelete($entity, $options);
+
+        if ($parentSuccess) {
+            $children = $this->find()->where(['source_tab_id' => $entity->id])->all();
+
+            foreach ($children as $child) {
+                $this->delete($child);
+            }
+        }
+
+        return $parentSuccess;
+    }
+
+
+    /**
+     * @param DashboardTabsFilter $DashboardTabsFilter
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getDashboardTabsIndex(DashboardTabsFilter $DashboardTabsFilter, ?PaginateOMat $PaginateOMat = null) {
+        $query = $this->find();
+        $query
+            ->select([
+                'id',
+                'name',
+                'flags',
+                'Users.firstname',
+                'Users.lastname',
+                'full_name' => $query->func()->concat([
+                    'Users.firstname' => 'literal',
+                    ' ',
+                    'Users.lastname'  => 'literal'
+                ])
+
+            ])
+            ->where(['source_tab_id IS' => null])
+            ->contain('Usergroups')
+            ->contain('AllocatedUsers')
+            ->contain('Users')
+            ->disableHydration();
+        $where = $DashboardTabsFilter->indexFilter();
+        if (isset($where['full_name LIKE'])) {
+            $having = [];
+            $having['full_name LIKE'] = $where['full_name LIKE'];
+            unset($where['full_name LIKE']);
+            $query->having($having);
+        }
+
+        $query->order(
+            array_merge(
+                $DashboardTabsFilter->getOrderForPaginator('DashboardTabs.name', 'asc'),
+                ['DashboardTabs.name' => 'asc']
+            )
+        )
+            ->where($where);
+
+        if ($PaginateOMat === null) {
+            $result = $query->toArray();
+        } else if ($PaginateOMat->useScroll()) {
+            $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+        } else {
+            $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+        }
+        return $result;
     }
 
     /**
@@ -611,13 +688,7 @@ class DashboardTabsTable extends Table {
             'source_tab_id'     => $originalTabId,
             'check_for_updates' => 0,
             'last_update'       => time(),
-            'widgets'           => null
-        ];
-
-        $Entity = $this->patchEntity($Entity, $patch);
-
-        $patch = [
-            'widgets' => $widgets
+            'widgets'           => $widgets
         ];
 
         $Entity = $this->patchEntity($Entity, $patch);

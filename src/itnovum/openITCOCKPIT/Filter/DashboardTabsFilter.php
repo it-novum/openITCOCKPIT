@@ -33,7 +33,8 @@ class DashboardTabsFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like'   => [
-                'DashboardTabs.name'
+                'DashboardTabs.name',
+                'full_name'
             ]
         ];
 

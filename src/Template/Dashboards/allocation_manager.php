@@ -74,8 +74,22 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by full name'); ?>"
+                                                   placeholder="<?php echo __('Filter by name'); ?>"
                                                    ng-model="filter.DashboardTab.name"
+                                                   ng-model-options="{debounce: 500}">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="fa fa-filter"></i></span>
+                                            </div>
+                                            <input type="text" class="form-control form-control-sm"
+                                                   placeholder="<?php echo __('Filter by full name'); ?>"
+                                                   ng-model="filter.full_name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -102,16 +116,20 @@
                                         <i class="fa" ng-class="getSortClass('name')"></i>
                                         <?php echo __('Name'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('usergroups')">
-                                        <i class="fa" ng-class="getSortClass('usergroups')"></i>
+                                    <th class="no-sort" ng-click="orderBy('full_name')">
+                                        <i class="fa" ng-class="getSortClass('full_name')"></i>
+                                        <?php echo __('Full Name'); ?>
+                                    </th>
+                                    <th class="no-sort">
+                                        <i class="fa"></i>
                                         <?php echo __('Usergroups'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Users')">
-                                        <i class="fa" ng-class="getSortClass('Users')"></i>
+                                    <th class="no-sort">
+                                        <i class="fa"></i>
                                         <?php echo __('Users'); ?>
                                     </th>
-                                    <th class="no-sort" ng-click="orderBy('Pinned')">
-                                        <i class="fa" ng-class="getSortClass('Pinned')"></i>
+                                    <th class="no-sort" ng-click="orderBy('Flags')">
+                                        <i class="fa" ng-class="getSortClass('Flags')"></i>
                                         <?php echo __('Pinned'); ?>
                                     </th>
                                     <th class="no-sort text-center">
@@ -126,6 +144,7 @@
                                                ng-model="massChange[dashboardTab.id]">
                                     </td>
                                     <td>{{dashboardTab.name}}</td>
+                                    <td>{{dashboardTab.full_name}}</td>
                                     <td>
                                         {{dashboardTab.usergroups_count}}
                                         <span class="badge badge-primary" ng-repeat="name in dashboardTab.usergroups_names">
@@ -138,16 +157,28 @@
                                             {{name}}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="width-50">
                                         <i class="fa fa-lock" ng-show="dashboardTab.flags === 1"></i>
                                     </td>
-                                    <td>
 
+                                    <td class="width-50">
                                         <div class="btn-group btn-group-xs" role="group">
                                             <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"
                                                class="btn btn-default btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
                                             </a>
+                                            <button type="button"
+                                                    class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                    data-toggle="dropdown">
+                                                <i class="caret"></i>
+                                            </button>
+                                            <div class="dropdown-menu dropdown-menu-right">
+                                                <a ng-click="confirmDelete(getObjectForDelete(dashboardTab))"
+                                                   class="dropdown-item txt-color-red">
+                                                    <i class="fa fa-trash"></i>
+                                                    <?php echo __('Delete'); ?>
+                                                </a>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
@@ -177,7 +208,7 @@
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fas fa-trash"></i>
-                                    <?php echo __('Remove Allocations'); ?>
+                                    <?php echo __('Delete selected'); ?>
                                 </span>
                             </div>
                         </div>
@@ -190,3 +221,8 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- ANGAULAR DIRECTIVES -->
+<massdelete></massdelete>
