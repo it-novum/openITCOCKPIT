@@ -26,11 +26,11 @@
 namespace App\Authenticator;
 
 
+use App\Model\Table\UsersTable;
 use Authentication\Authenticator\AbstractAuthenticator;
-use Authentication\Authenticator\PersistenceInterface;
 use Authentication\Authenticator\Result;
 use Authentication\Authenticator\ResultInterface;
-use Psr\Http\Message\ResponseInterface;
+use Cake\ORM\TableRegistry;
 use Psr\Http\Message\ServerRequestInterface;
 
 class SslAuthenticator extends AbstractAuthenticator {
@@ -48,6 +48,15 @@ class SslAuthenticator extends AbstractAuthenticator {
 
         if (empty($user)) {
             return new Result(null, Result::FAILURE_IDENTITY_NOT_FOUND, $this->_identifier->getErrors());
+
+            /**
+             * this if statement prevents that the save date will be triggered on every single request.
+             * possible solution is to save the date only once a day, but this needs an extra query
+             */
+        } else if ($_SERVER['REQUEST_URI'] == '/') {
+            /** @var UsersTable $UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+            $UsersTable->saveLastLoginDate($user->get('email'));
         }
 
         return new Result($user, Result::SUCCESS);

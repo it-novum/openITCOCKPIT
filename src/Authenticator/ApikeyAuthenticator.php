@@ -26,11 +26,14 @@
 namespace App\Authenticator;
 
 
+use App\Model\Table\ApikeysTable;
 use Authentication\Authenticator\AbstractAuthenticator;
-use Authentication\Authenticator\AuthenticationRequiredException;
 use Authentication\Authenticator\Result;
 use Authentication\Authenticator\ResultInterface;
 use Authentication\Authenticator\StatelessInterface;
+use Cake\I18n\FrozenTime;
+use Cake\Log\Log;
+use Cake\ORM\TableRegistry;
 use Psr\Http\Message\ServerRequestInterface;
 
 class ApikeyAuthenticator extends AbstractAuthenticator implements StatelessInterface {
@@ -65,7 +68,52 @@ class ApikeyAuthenticator extends AbstractAuthenticator implements StatelessInte
         }
         //$request->withoutHeader('Set-Cookie');
 
-        return new Result($user, Result::SUCCESS);
+        $result = new Result($user, Result::SUCCESS);
+
+        if ($result->isValid() && $data['apikey'] !== null) {
+            $this->saveLastUseDate($data['apikey']);
+        }
+
+        return $result;
+    }
+
+    /**
+     *  Gets the record by api key and saves the last use date
+     * Returns true for successful
+     *
+     * @param string $apiKey
+     * @return bool
+     */
+    public function saveLastUseDate($apiKey) {
+
+        /** @var $ApikeysTable ApikeysTable */
+        $ApikeysTable = TableRegistry::getTableLocator()->get('Apikeys');
+        $apiKeyId = $ApikeysTable->getIdByApiKey($apiKey);
+
+
+        if (!empty($apiKeyId)) {
+
+            $apiKeyToUpdate = $ApikeysTable->get($apiKeyId);
+            $apiKeyToUpdate->set('last_use', FrozenTime::now());
+            if (!$ApikeysTable->save($apiKeyToUpdate)) {
+                Log::error(sprintf(
+                    'saveLastUseDate: Could not save api key [%s] %s',
+                    $apiKeyToUpdate->id,
+                    $apiKeyToUpdate->last_use
+                ));
+                Log::error(json_encode($apiKeyToUpdate->getErrors()));
+                return false;
+            }
+
+        } else {
+            Log::error(sprintf(
+                'saveLastUseDate: Could not save api key because id not found.'
+            ));
+            return false;
+        }
+
+        return true;
+
     }
 
 

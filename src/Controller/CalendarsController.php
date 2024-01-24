@@ -192,6 +192,15 @@ class CalendarsController extends AppController {
             }
 
             $Entity = $CalendarsTable->get($id);
+
+            // Is container changed?
+            if (!$Entity->canMoveToContainer($data['container_id'])) {
+                $error = ['containers' => ['_empty' => __('This calendar is currently related to a timeperiod that belongs to different container. Please modify the timeperiod first.')]];
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $error);
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
             $Entity = $CalendarsTable->patchEntity($Entity, $data);
 
             $CalendarsTable->save($Entity);
