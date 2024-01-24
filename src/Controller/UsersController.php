@@ -41,6 +41,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\I18n\FrozenTime;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -378,6 +379,14 @@ class UsersController extends AppController {
         if (!$this->allowedByContainerId($containersToCheck)) {
             $this->render403();
             return;
+        }
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+        $UserTime = $User->getUserTime();
+        foreach ($user['User']['apikeys'] as $i => $apikey) {
+            if (isset($apikey['last_use']) && $apikey['last_use'] instanceof FrozenTime) {
+                $user['User']['apikeys'][$i]['last_use'] = $UserTime->format($apikey['last_use']->getTimestamp());
+            }
         }
 
         $isLdapUser = !empty($user['User']['samaccountname']);
