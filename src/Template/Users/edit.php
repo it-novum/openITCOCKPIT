@@ -652,6 +652,10 @@ containerMessage = '<?= __('Hidden due to insufficient permissions'); ?>'">
                                         <div ng-repeat="error in errors.apikeys[index].description">
                                             <div class="help-block text-danger">{{ error }}</div>
                                         </div>
+                                        <div class="help-block">
+                                            <?= __('Last use'); ?>
+                                            {{ apikey.last_use }}
+                                        </div>
                                     </div>
                                     <div class="col-md-8 mb-3">
                                         <label class="control-label" for="ApiKey_{{ index }}">
