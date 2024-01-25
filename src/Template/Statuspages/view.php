@@ -206,7 +206,7 @@
                                         <div class="row">
                                             <div class="col-12 text-truncate">
                                                 <i class="fa fa-power-off"></i>
-                                                <?= __(' Is currently in a planned maintenance period'); ?>
+                                                <?= __('Is currently in a planned maintenance period'); ?>
                                                 <div class="row">
                                                     <div class="col-xs-12 col-md-3">
                                                         <?= __('Start'); ?>: {{item.downtimeData.scheduledStartTime}}

@@ -152,7 +152,9 @@ class StatuspagesController extends AppController {
         $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
         $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$id, [], $UserTime, true);
-        $this->set('Statuspage', $statuspageViewData);
+        $this->set('statuspage', $statuspageViewData);
+        $this->set('systemname', $this->getSystemname());
+        $this->set('id', $id);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
 

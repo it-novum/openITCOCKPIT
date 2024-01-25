@@ -31,14 +31,51 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 /**
  * @var \App\View\AppView $this
+ * @var int $id
+ * @var string $systemname
+ * @var array $statuspage
  */
 
 $logo = new Logo();
 ?>
 
 <!DOCTYPE html>
-<html ng-app="openITCOCKPITStatuspagePublic">
+<html>
 <head>
+
+    <!--[if IE]>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <![endif]-->
+    <?php echo $this->Html->charset(); ?>
+
+    <!--
+                                    ///
+                          ///////////////////////
+                      ///////////////////////////////
+                    ///////////////////////////////////
+                 /////////////////////////////////////////
+                ///////////////////////////////////////////
+               ////////////////   .////////////////////    ,
+              //////////                  //////             .
+             ////////         //////        /         ///////.
+             ///////       ///////////.   /////// ////////////
+            ///////       /////////////      /   /////////////
+            ///////       /////////////*  /* /   /////////////
+            ///////       /////////////   /*     /////////////
+            ////////        //////////    /*       //////////
+            //////////                     //
+            /////////////               ////////
+            /////////////////////////////////////////////
+            ///////////////////////////////////////////
+            ////////////////////////////////////////
+            ////////////////////////////////////
+
+                    Open Source Monitoring Solution
+
+        Website: https://openitcockpit.io/
+        GitHub: https://github.com/it-novum/openITCOCKPIT
+    -->
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
@@ -48,12 +85,17 @@ $logo = new Logo();
     <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/dist/compressed_app.css">
     <link rel="stylesheet" type="text/css" href="/smartadmin4/dist/css/themes/cust-theme-10.css">
+    <link rel="stylesheet" type="text/css" href="/css/openitcockpit-colors.css">
     <link rel="stylesheet" type="text/css" href="/css/openitcockpit-utils.css">
+    <link rel="stylesheet" type="text/css" href="/css/openitcockpit.css">
 
+    <link rel="stylesheet" type="text/css" href="/css/statuspage.css">
 
-
-
-    <title><?= __('Statuspage') ?></title>
+    <title>
+        <?= __('Statuspage') ?>
+        -
+        <?= h($statuspage['statuspage']['name']); ?>
+    </title>
 
     <!-- FAVICONS -->
     <link rel="shortcut icon" type="image/x-icon; charset=binary" href="/img/favicons/favicon.ico">
@@ -62,28 +104,54 @@ $logo = new Logo();
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicons/favicon-16x16.png">
     <link rel="manifest" href="/img/favicons/site.webmanifest">
 
-    <style>
-
-    </style>
-
-    <script>
-
-    </script>
-
 </head>
-<body>
-<div class="container-fluid">
-    <nav class="navbar" style="background-color: black;">
-        <!-- Navbar content -->
-        <a class="navbar-brand"><img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="SmartAdmin WebApp" aria-roledescription="logo"><span></span> openItCOCKPIT</span></a>
-    </nav>
-</div>
-<div class="container-fluid">
-<?= $this->fetch('content') ?>
+<body class="mod-bg-1 mod-nav-link desktop pace-done nav-function-top blur dark-mode-body">
+
+<header class="page-header" role="banner">
+    <!-- we need this logo when user switches to nav-function-top -->
+    <div class="page-logo">
+        <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
+           class="page-logo-link d-flex align-items-center position-relative">
+            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp"
+                 aria-roledescription="logo">
+            <span class="page-logo-text mr-1"><?= h($systemname); ?></span>
+        </a>
+    </div>
+
+    <!-- DOC: mobile button appears during mobile width -->
+    <div class="hidden-lg-up">
+        <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
+           class="page-logo-link d-flex align-items-center position-relative">
+            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp"
+                 aria-roledescription="logo">
+            <span class="page-logo-text mr-1 text-dark"><?= h($systemname); ?></span>
+        </a>
+    </div>
+
+    <div class="ml-auto d-flex">
+
+        <?php /*
+        // This is here as reference if we want to add some icons to the main menu bar in the future
+        <!-- app settings -->
+        <div class="hidden-md-down">
+            <a href="#" class="header-icon">
+                <i class="fa fa-cogs"></i>
+            </a>
+        </div>
+        */ ?>
+
+    </div>
+</header>
+<div class="page-content-margin">
+    <main role="main">
+        <?= $this->fetch('content') ?>
+    </main>
 </div>
 
+<?php /*
+ // At the moment we do not need any JavaScript on this page
 <script src="/node_modules/jquery/dist/jquery.min.js"></script>
-
+*/ ?>
 
 </body>
 </html>
