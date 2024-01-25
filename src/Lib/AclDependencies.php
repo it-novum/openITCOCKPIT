@@ -240,6 +240,7 @@ class AclDependencies {
             ->allow('Dashboards', 'hostStatusOverviewWidget')
             ->allow('Dashboards', 'hostStatusOverviewExtendedWidget')
             ->allow('Dashboards', 'tachoWidget')
+            ->allow('Dashboards', 'serviceStatusOverviewWidget')
             ->allow('Dashboards', 'serviceStatusOverviewExtendedWidget')
             ->allow('Dashboards', 'websiteWidget')
             ->allow('Dashboards', 'todayWidget')
