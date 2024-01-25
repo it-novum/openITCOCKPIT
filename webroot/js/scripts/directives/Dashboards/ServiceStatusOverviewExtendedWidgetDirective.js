@@ -54,6 +54,8 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewExtendedWidget',
                     $scope.filter.Servicestatus.state_older_than = parseInt(result.data.config.Servicestatus.state_older_than, 10);
                     $scope.filter.Servicegroup._ids = result.data.config.Servicegroup._ids.split(',').map(Number);
                     $scope.statusCount = result.data.statusCount;
+                    $scope.serviceIds = result.data.serviceIds;
+
                     $scope.init = false;
                     $('#HostsKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
                     $('#HostsNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
@@ -137,10 +139,15 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewExtendedWidget',
             $scope.goToState = function(){
                 var params = {
                     servicename: $scope.filter.Service.name,
+                    servicename_regex: $scope.filter.Service.name_regex,
                     hostname: $scope.filter.Host.name,
                     hostname_regex: $scope.filter.Host.name_regex,
                     servicestate: [$scope.filter.Servicestatus.current_state]
                 };
+
+                if($scope.serviceIds.length > 0){
+                    params.id = $scope.serviceIds;
+                }
 
 
                 if($scope.filter.Servicestatus.current_state > 0){

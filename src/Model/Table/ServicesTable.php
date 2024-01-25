@@ -3515,7 +3515,6 @@ class ServicesTable extends Table {
             ]);
             $query->group('Services.id');
         }
-
         if (!empty($conditions['Host']['name'])) {
             if (isset($conditions['Host']['name_regex']) && $conditions['Host']['name_regex'] === true || $conditions['Host']['name_regex'] === 'true') {
                 if ($this->isValidRegularExpression($conditions['Host']['name'])) {
@@ -3528,7 +3527,12 @@ class ServicesTable extends Table {
                 }
             } else {
                 // Use LIKE
-                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['Host']['name']);
+                $where[] = new Comparison(
+                    'Hosts.name',
+                    sprintf('%%%s%%', $conditions['Host']['name']),
+                    'string',
+                    'LIKE'
+                );
             }
         }
 
@@ -3543,7 +3547,12 @@ class ServicesTable extends Table {
                     );
                 }
             } else {
-                $where['IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'] = sprintf('%%%s%%', $conditions['Service']['servicename']);
+                $where[] = new Comparison(
+                    'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                    sprintf('%%%s%%', $conditions['Service']['servicename']),
+                    'string',
+                    'LIKE'
+                );
             }
         }
 

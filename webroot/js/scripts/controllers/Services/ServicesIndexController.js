@@ -81,7 +81,7 @@ angular.module('openITCOCKPIT')
                     Services: {
                         id: QueryStringService.getStateValue($stateParams, 'id', []),
                         name: QueryStringService.getStateValue($stateParams, 'servicename', ''),
-                        name_regex: false,
+                        name_regex: QueryStringService.getStateValue($stateParams, 'servicename_regex', ''),
                         keywords: QueryStringService.getStateValue($stateParams, 'keywords', ''),
                         not_keywords: QueryStringService.getStateValue($stateParams, 'not_keywords', ''),
                         servicedescription: '',
