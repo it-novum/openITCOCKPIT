@@ -53,9 +53,16 @@
                     <span class="fw-300"><i>{{ Statuspage.statuspage.name }}</i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
+                    <button class="btn btn-default btn-xs mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
+
+                    <a ng-href="/statuspages/publicView/{{id}}" target="_blank"
+                       class="btn btn-xs btn-primary mr-1 shadow-0" ng-show="Statuspage.statuspage.public">
+                        <i class="fas fa-eye"></i>
+                        <?php echo __('Public View'); ?>
+                    </a>
+
                     <?php if ($this->Acl->hasPermission('index', 'statuspages')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='StatuspagesIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">

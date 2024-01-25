@@ -183,13 +183,9 @@
 
                                 <td class="word-break">
                                     <?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
-                                        <a href="/statuspages/view/{{statuspage.id}}" target="_blank"
-                                           ng-if="statuspage.allow_view">
+                                        <a ui-sref="StatuspagesView({id: statuspage.id})">
                                             {{statuspage.name}}
                                         </a>
-                                        <span ng-if="!statuspage.allow_view">
-                                            {{statuspage.name}}
-                                        </span>
                                     <?php else: ?>
                                         {{statuspage.name}}
                                     <?php endif; ?>

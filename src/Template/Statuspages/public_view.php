@@ -25,7 +25,7 @@
 
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Statuspage $statuspage
+ * @var \App\Model\Entity\Statuspage $Statuspage
  */
 
 ?>
@@ -56,7 +56,8 @@
 
                     <div class="d-flex flex-row min-h-50 mt-2 card w-100">
                         <div class="p-2">
-                            <div class="h-100 status-line bg-<?= h($item['cumulatedColor']) ?>  shadow-<?= h($item['cumulatedColor']) ?>"></div>
+                            <div
+                                class="h-100 status-line bg-<?= h($item['cumulatedColor']) ?>  shadow-<?= h($item['cumulatedColor']) ?>"></div>
                         </div>
                         <div>
                             <div class="w-100">
@@ -74,48 +75,59 @@
 
                             <?php if (!empty($item['acknowledgeComment'])): ?>
                                 <div>
-                                    <b><?php echo __('Comment'); ?>: <?=  h($item['acknowledgeComment']) ?></b>
+                                    <b><?php echo __('Comment'); ?>: <?= h($item['acknowledgeComment']) ?></b>
                                 </div>
                             <?php endif; ?>
 
                             <?php if (!empty($item['hostgroupHostAcknowledgementText'])): ?>
                                 <div>
-                                    <h4><b><i class="far fa-user"></i> <?= h($item['hostgroupHostAcknowledgementText']) ?></b>
+                                    <h4>
+                                        <b><i class="far fa-user"></i> <?= h($item['hostgroupHostAcknowledgementText']) ?>
+                                        </b>
                                     </h4>
                                 </div>
                             <?php endif; ?>
 
                             <?php if (!empty($item['hostgroupServiceAcknowledgementText'])): ?>
                                 <div>
-                                    <h4><b><i class="far fa-user"></i> <?= h($item['hostgroupServiceAcknowledgementText']) ?></b>
+                                    <h4>
+                                        <b><i class="far fa-user"></i> <?= h($item['hostgroupServiceAcknowledgementText']) ?>
+                                        </b>
                                     </h4>
                                 </div>
                             <?php endif; ?>
 
                             <?php if (!empty($item['downtimeHostgroupHostText'])): ?>
                                 <div>
-                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['downtimeHostgroupHostText']) ?></b>
+                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['downtimeHostgroupHostText']) ?>
+                                        </b>
                                     </h4>
                                 </div>
                             <?php endif; ?>
 
                             <?php if (!empty($item['plannedDowntimeHostgroupHostText'])): ?>
                                 <div>
-                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['plannedDowntimeHostgroupHostText']) ?></b>
+                                    <h4>
+                                        <b><i class="fa fa-power-off"></i> <?= h($item['plannedDowntimeHostgroupHostText']) ?>
+                                        </b>
                                     </h4>
                                 </div>
                             <?php endif; ?>
 
                             <?php if (!empty($item['downtimeHostgroupServiceText'])): ?>
                                 <div>
-                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['downtimeHostgroupServiceText']) ?></b>
+                                    <h4>
+                                        <b><i class="fa fa-power-off"></i> <?= h($item['downtimeHostgroupServiceText']) ?>
+                                        </b>
                                     </h4>
                                 </div>
                             <?php endif; ?>
 
                             <?php if (!empty($item['plannedDowntimeHostgroupServiceText'])): ?>
                                 <div>
-                                    <h4><b><i class="fa fa-power-off"></i> <?= h($item['plannedDowntimeHostgroupServiceText']) ?></b>
+                                    <h4>
+                                        <b><i class="fa fa-power-off"></i> <?= h($item['plannedDowntimeHostgroupServiceText']) ?>
+                                        </b>
                                     </h4>
                                 </div>
                             <?php endif; ?>
@@ -190,7 +202,8 @@
 
                         </div>
                         <div class="p-2 flex-right">
-                            <div class="h-100 status-line bg-<?= h($item['cumulatedColor']) ?>   shadow-<?= h($item['cumulatedColor']) ?>"></div>
+                            <div
+                                class="h-100 status-line bg-<?= h($item['cumulatedColor']) ?>   shadow-<?= h($item['cumulatedColor']) ?>"></div>
                         </div>
                     </div>
 
