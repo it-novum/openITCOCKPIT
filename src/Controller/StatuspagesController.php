@@ -119,11 +119,8 @@ class StatuspagesController extends AppController {
         }
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
-        //$StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, true);
-        //die('OLD');
 
-        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, $UserTime, true);//$StatuspagesTable->getStatuspageView($id, $UserTime);
-        //$statuspageViewData = $StatuspagesTable->getStatuspageView($id, $UserTime);
+        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, $UserTime, true);
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
@@ -141,12 +138,16 @@ class StatuspagesController extends AppController {
         if (empty($id)) {
             throw new NotFoundException('Statuspage not found');
         }
+
+        /** @var StatuspagesTable $StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
         }
         if (!$StatuspagesTable->isPublic($id)) {
-            throw new  MethodNotAllowedException('Statuspage not public');
+            // We don't want to be too honest at this point so that it is not possible to bruteforce existing Statuspages
+            // GitHub does this the same way, if you are not logged in you get a Not found error on private repisitories.
+            throw new NotFoundException('Statuspage not found');
         }
         $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
@@ -168,9 +169,12 @@ class StatuspagesController extends AppController {
 
         $data = $this->request->getData();
         if (($this->request->is('post') || $this->request->is('put')) && isset($data)) {
+
+            /** @var StatuspagesTable $StatuspagesTable */
             $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
             $statuspage = $StatuspagesTable->newEmptyEntity();
             $statuspage = $StatuspagesTable->patchEntity($statuspage, $data);
+
             $StatuspagesTable->save($statuspage);
             if ($statuspage->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
@@ -202,6 +206,8 @@ class StatuspagesController extends AppController {
         if (!$this->request->is('post')) {
             throw new MethodNotAllowedException();
         }
+
+        /** @var StatuspagesTable $StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
@@ -234,6 +240,7 @@ class StatuspagesController extends AppController {
 
     /**
      * @return void
+     * @throws \Exception
      */
     public function loadContainers() {
         if (!$this->isAngularJsRequest()) {
@@ -265,7 +272,7 @@ class StatuspagesController extends AppController {
             //Only ship HTML template for angular
             return;
         }
-        /** @var $StatuspagesTable StatuspagesTable */
+        /** @var StatuspagesTable $StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
             throw new NotFoundException('Statuspage not found');
