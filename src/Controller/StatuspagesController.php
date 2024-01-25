@@ -142,12 +142,12 @@ class StatuspagesController extends AppController {
         /** @var StatuspagesTable $StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
         if (!$StatuspagesTable->existsById($id)) {
-            throw new NotFoundException('Statuspage not found');
+            throw new NotFoundException(__('Statuspage not found'));
         }
         if (!$StatuspagesTable->isPublic($id)) {
             // We don't want to be too honest at this point so that it is not possible to bruteforce existing Statuspages
             // GitHub does this the same way, if you are not logged in you get a Not found error on private repisitories.
-            throw new NotFoundException('Statuspage not found');
+            throw new NotFoundException(__('Statuspage not found'));
         }
         $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');

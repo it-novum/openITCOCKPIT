@@ -26,21 +26,21 @@ declare(strict_types=1);
 
 namespace App\Model\Table;
 
-use Cake\Utility\Hash;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
-use itnovum\openITCOCKPIT\Core\Views\Downtime;
-use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
-use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\Views\AcknowledgementHost;
 use itnovum\openITCOCKPIT\Core\Views\AcknowledgementService;
+use itnovum\openITCOCKPIT\Core\Views\Downtime;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
+use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
 
 
 /**
@@ -80,12 +80,10 @@ class StatuspagesTable extends Table {
 
         $this->addBehavior('Timestamp');
 
-        $this->belongsToMany('Containers', [
-            'className'        => 'Containers',
-            'foreignKey'       => 'statuspage_id',
-            'targetForeignKey' => 'container_id',
-            'joinTable'        => 'statuspages_to_containers'
-        ])->setDependent(true);
+        $this->belongsTo('Containers', [
+            'foreignKey' => 'container_id',
+            'joinType'   => 'INNER'
+        ]);
 
 
         $this->belongsToMany('Hosts', [
@@ -125,11 +123,10 @@ class StatuspagesTable extends Table {
      */
     public function validationDefault(Validator $validator): Validator {
         $validator
-            ->requirePresence('containers', true, __('You have to choose at least one option.'))
-            ->allowEmptyString('containers', null, false)
-            ->multipleOptions('containers', [
-                'min' => 1
-            ], __('You have to choose at least one option.'));
+            ->integer('container_id')
+            ->requirePresence('container_id', 'create')
+            ->allowEmptyString('container_id', null, false)
+            ->greaterThanOrEqual('container_id', 1);
 
         $validator
             ->scalar('name')
@@ -170,18 +167,14 @@ class StatuspagesTable extends Table {
      */
     public function getStatuspagesIndex(StatuspagesFilter $StatuspagesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->find('all');
-        $query->contain(['Containers']);
         $query->where($StatuspagesFilter->indexFilter())->distinct('Statuspages.id');;
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
-            if (!empty($MY_RIGHTS)) {
-                return $q->where(['Containers.id IN' => $MY_RIGHTS]);
-            }
-            return $q;
-        });
+        if (!empty($MY_RIGHTS)) {
+            $query->where(['Statuspages.container_id IN' => $MY_RIGHTS]);
+        }
 
-        $query->disableHydration();
-        $query->order($StatuspagesFilter->getOrderForPaginator('Statuspages.id', 'asc'));
+        $query->order($StatuspagesFilter->getOrderForPaginator('Statuspages.id', 'asc'))
+            ->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

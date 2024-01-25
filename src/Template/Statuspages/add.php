@@ -59,22 +59,22 @@
                 <div class="panel-content">
                     <form ng-submit="submit();" class="form-horizontal" ng-init="successMessage=
                         {objectName : '<?php echo __('Status page'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
-                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                        <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                             <label class="control-label" for="ContainersSelect">
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                    id="ContainersSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="container_id">
+                                id="ContainersSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="post.Statuspage.container_id">
                             </select>
-                            <div ng-show="post.Statuspage.containers._ids.length === 0" class="warning-glow">
+                            <div ng-show="post.Statuspage.container_id === null" class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
                             </div>
-                            <div ng-repeat="error in errors.containers">
+                            <div ng-repeat="error in errors.container_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -84,9 +84,9 @@
                                 <?php echo __('Name'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Statuspage.name">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Statuspage.name">
                             <div ng-repeat="error in errors.name">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -97,9 +97,9 @@
                                 <?php echo __('Description'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="post.Statuspage.description">
+                                class="form-control"
+                                type="text"
+                                ng-model="post.Statuspage.description">
                             <div ng-repeat="error in errors.description">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -135,77 +135,77 @@
                                 </label>
                             </div>
                         </div>
-
                         <hr>
-
-                        <div class="form-group"
-                             ng-class="{'has-error': errors.hostgroups}">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Host groups'); ?>
                             </label>
                             <select
-                                    id="HostgroupsSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="hostgroups"
-                                    callback="loadHostgroups"
-                                    multiple
-                                    ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                    ng-model="hostgroups_ids">
+                                id="HostgroupsSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="hostgroups"
+                                callback="loadHostgroups"
+                                multiple
+                                ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
+                                ng-model="post.Statuspage.hostgroups._ids">
                             </select>
-                            <div ng-repeat="error in errors.hostgroups">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" ng-if="post.Statuspage.hostgroups._ids.length > 0">
                             <label class="control-label">
                                 <?php echo __('Hostgroup alias'); ?>
                             </label>
-                            <span ng-if="selectedHostgroups.length > 0">
-                            <table class="table">
-                                <thead>
+                            <div >
+                                <table class="table">
+                                    <thead>
                                     <tr class="d-flex">
                                         <th class="col-5"><?= __('Hostgroup name'); ?></th>
                                         <th class="col-7"><?= __('Display name'); ?></th>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="hostgroup in selectedHostgroups" class="d-flex">
-                                    <td class="col-5">{{hostgroup.name}}</td>
-                                    <td class="col-7">
-                                        <input
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="hostgroup in hostgroups track by $index"
+                                        ng-if="post.Statuspage.hostgroups._ids.indexOf(hostgroup.id) !== -1">
+                                        <td class="col-5"> *** {{hostgroups[$index]}} ***
+                                            {{hostgroup.value}}
+                                        </td>
+                                        <td class="col-7">
+                                            <input class="form-control" type="text"
+                                                ng-model="hostgroups[$index]._joinData.display_alias">
+                                        </td>
+                                    </tr>
+                                    <tr ng-repeat="hostgroup in selectedHostgroups" class="d-flex">
+                                        <td class="col-5">{{hostgroup.name}}</td>
+                                        <td class="col-7">
+                                            <input
                                                 class="form-control"
                                                 type="text"
                                                 ng-model="hostgroup.display_alias">
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <hr>
 
-                        <div class="form-group"
-                             ng-class="{'has-error': errors.servicegroups}">
+                        <div class="form-group">
                             <label class="control-label">
                                 <?php echo __('Service groups'); ?>
                             </label>
                             <div class="input-group" style="width: 100%;">
                                 <select
-                                        id="ServicegroupsSelect"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="servicegroups"
-                                        callback="loadServicegroups"
-                                        multiple
-                                        ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
-                                        ng-model="servicegroups_ids">
+                                    id="ServicegroupsSelect"
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="servicegroups"
+                                    callback="loadServicegroups"
+                                    multiple
+                                    ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
+                                    ng-model="post.Statuspage.servicegroups._ids">
                                 </select>
-                            </div>
-                            <div ng-repeat="error in errors.servicegroups">
-                                <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
 
@@ -213,27 +213,27 @@
                             <label class="control-label">
                                 <?php echo __('Servicegroup alias'); ?>
                             </label>
-                            <span ng-if="selectedServicegroups.length > 0">
-                            <table class="table">
-                                <thead>
-                                <tr class="d-flex">
-                                    <th class="col-5"><?= __('Servicegroup name'); ?></th>
-                                    <th class="col-7"><?= __('Display name'); ?></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="servicegroup in selectedServicegroups" class="d-flex">
-                                    <td class="col-5">{{servicegroup.name}}</td>
-                                    <td class="col-7">
-                                        <input
+                            <div ng-if="post.Statuspage.servicegroups._ids.length > 0">
+                                <table class="table">
+                                    <thead>
+                                    <tr class="d-flex">
+                                        <th class="col-5"><?= __('Servicegroup name'); ?></th>
+                                        <th class="col-7"><?= __('Display name'); ?></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="servicegroup in selectedServicegroups" class="d-flex">
+                                        <td class="col-5">{{servicegroup.name}}</td>
+                                        <td class="col-7">
+                                            <input
                                                 class="form-control"
                                                 type="text"
                                                 ng-model="servicegroup.display_alias">
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <hr>
@@ -243,16 +243,16 @@
                             <label class="control-label">
                                 <?php echo __('Hosts'); ?>
                             </label>
-                                <select
-                                        id="HostsSelect"
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="hosts"
-                                        callback="loadHosts"
-                                        multiple
-                                        ng-options="host.key as host.value for host in hosts"
-                                        ng-model="hosts_ids">
-                                </select>
+                            <select
+                                id="HostsSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="hosts"
+                                callback="loadHosts"
+                                multiple
+                                ng-options="host.key as host.value for host in hosts"
+                                ng-model="post.Statuspage.hosts._ids">
+                            </select>
                             <div ng-repeat="error in errors.hosts">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
@@ -261,27 +261,27 @@
                             <label class="control-label">
                                 <?php echo __('Host alias'); ?>
                             </label>
-                            <span ng-if="selectedHosts.length > 0">
-                            <table class="table">
-                                <thead>
-                                <tr class="d-flex">
-                                    <th class="col-5"><?= __('Host name'); ?></th>
-                                    <th class="col-7"><?= __('Display name'); ?></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="host in selectedHosts" class="d-flex">
-                                    <td class="col-5">{{host.name}}</td>
-                                    <td class="col-7">
-                                        <input
+                            <div ng-if="post.Statuspage.hosts._ids.length > 0">
+                                <table class="table">
+                                    <thead>
+                                    <tr class="d-flex">
+                                        <th class="col-5"><?= __('Host name'); ?></th>
+                                        <th class="col-7"><?= __('Display name'); ?></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="host in selectedHosts" class="d-flex">
+                                        <td class="col-5">{{host.name}}</td>
+                                        <td class="col-7">
+                                            <input
                                                 class="form-control"
                                                 type="text"
                                                 ng-model="host.display_alias">
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <hr>
@@ -299,7 +299,7 @@
                                 chosen="services"
                                 callback="loadServices"
                                 ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
-                                ng-model="services_ids">
+                                ng-model="post.Statuspage.hosts.services._ids">
                             </select>
                             <div ng-repeat="error in errors.services">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -310,29 +310,29 @@
                             <label class="control-label">
                                 <?php echo __('Service alias'); ?>
                             </label>
-                            <span ng-if="selectedServices.length > 0">
-                            <table class="table">
-                                <thead>
-                                <tr class="d-flex">
-                                    <th class="col-3"><?= __('Service name'); ?></th>
-                                    <th class="col-2"><?= __('Host name'); ?></th>
-                                    <th class="col-7"><?= __('Display name'); ?></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr ng-repeat="service in selectedServices" class="d-flex">
-                                    <td class="col-3">{{service.name}}</td>
-                                    <td class="col-2">{{service.hostName}}</td>
-                                    <td class="col-7">
-                                        <input
+                            <div ng-if="post.Statuspage.hosts.services._ids.length > 0">
+                                <table class="table">
+                                    <thead>
+                                    <tr class="d-flex">
+                                        <th class="col-3"><?= __('Service name'); ?></th>
+                                        <th class="col-2"><?= __('Host name'); ?></th>
+                                        <th class="col-7"><?= __('Display name'); ?></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="service in selectedServices" class="d-flex">
+                                        <td class="col-3">{{service.name}}</td>
+                                        <td class="col-2">{{service.hostName}}</td>
+                                        <td class="col-7">
+                                            <input
                                                 class="form-control"
                                                 type="text"
                                                 ng-model="service.display_alias">
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </span>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div class="card margin-top-10">

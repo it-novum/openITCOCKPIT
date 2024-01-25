@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Model\Entity;
 
-use Cake\ORM\Entity;
 use Cake\I18n\FrozenTime;
+use Cake\ORM\Entity;
 
 /**
  * Statuspage Entity
@@ -23,8 +23,7 @@ use Cake\I18n\FrozenTime;
  * @property \App\Model\Entity\StatuspagesToServicegroup[] $statuspages_to_servicegroups
  * @property \App\Model\Entity\StatuspagesToService[] $statuspages_to_services
  */
-class Statuspage extends Entity
-{
+class Statuspage extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -35,28 +34,16 @@ class Statuspage extends Entity
      * @var array<string, bool>
      */
     protected $_accessible = [
-        'name' => true,
-        'description' => true,
-        'public' => true,
+        'container_id'  => true,
+        'name'          => true,
+        'description'   => true,
+        'public'        => true,
         'show_comments' => true,
-        'created' => true,
-        'modified' => true,
-        'containers' => true,
-        'hosts' => true,
-        'services' => true,
-        'hostgroups' => true,
+        'hosts'         => true,
+        'services'      => true,
+        'hostgroups'    => true,
         'servicegroups' => true,
+        'created'       => true,
+        'modified'      => true,
     ];
-
-    /**
-     * @return array
-     */
-    public function getContainerIds() {
-        foreach ($this->containers as $container) {
-            /** @var Container $container */
-            $containerIds[] = $container->get('id');
-        }
-
-        return array_unique($containerIds);
-    }
 }

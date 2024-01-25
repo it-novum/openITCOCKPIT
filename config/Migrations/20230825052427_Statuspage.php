@@ -24,6 +24,11 @@ class Statuspage extends AbstractMigration
                     'null'          => false,
                 ])
                 ->addPrimaryKey(['id'])
+                ->addColumn('container_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
                 ->addColumn('name', 'string', [
                     'default' => null,
                     'limit'   => 255,
@@ -54,38 +59,6 @@ class Statuspage extends AbstractMigration
                     'limit'   => null,
                     'null'    => false,
                 ])
-                ->create();
-        }
-
-        if (!$this->hasTable('statuspages_to_containers')) {
-            $this->table('statuspages_to_containers')
-                ->addColumn('id', 'integer', [
-                    'autoIncrement' => true,
-                    'default'       => null,
-                    'limit'         => 11,
-                    'null'          => false,
-                ])
-                ->addPrimaryKey(['id'])
-                ->addColumn('container_id', 'integer', [
-                    'default' => null,
-                    'limit'   => 11,
-                    'null'    => false,
-                ])
-                ->addColumn('statuspage_id', 'integer', [
-                    'default' => null,
-                    'limit'   => 11,
-                    'null'    => false,
-                ])
-                ->addIndex(
-                    [
-                        'container_id',
-                    ]
-                )
-                ->addIndex(
-                    [
-                        'statuspage_id',
-                    ]
-                )
                 ->create();
         }
 
@@ -241,7 +214,6 @@ class Statuspage extends AbstractMigration
 
     public function down(): void {
         $this->table('statuspages')->drop()->save();
-        $this->table('statuspages_to_containers')->drop()->save();
         $this->table('statuspages_to_hosts')->drop()->save();
         $this->table('statuspages_to_servicess')->drop()->save();
         $this->table('statuspages_to_hostgroups')->drop()->save();
