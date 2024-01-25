@@ -81,6 +81,7 @@ class StatuspagesController extends AppController {
                 $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$statuspage['id'], $this->MY_RIGHTS, $UserTime);
                 $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['statuspage']['cumulatedColorId'];
                 $all_statuspages[$key]['color'] = 'bg-' . $statuspageViewData['statuspage']['cumulatedColor'];
+                $all_statuspages[$key]['css_color'] = $statuspageViewData['statuspage']['cumulatedColor'];
             }
 
             $all_statuspages[$key]['allow_edit'] = true;

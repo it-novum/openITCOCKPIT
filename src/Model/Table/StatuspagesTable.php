@@ -548,6 +548,7 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['hosts']['cumulatedStateId'] + 1;
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
+                        $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
                         if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0) {
                             $item['isAcknowledge'] = true;
                             $item['acknowledgedProblemsText'] = __('State is acknowledged');
@@ -564,6 +565,7 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
+                        $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
                         $problems = $objectGroup['state_summary']['services']['problems'];
                         if ($problems > 0) {
                             $problemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
@@ -607,6 +609,7 @@ class StatuspagesTable extends Table {
                     $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
                     $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                     $item['background'] = 'bg-' . $item['cumulatedColor'];
+                    $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
                     if ($item['cumulatedColorId'] > 0) {
                         if ($objectGroup['state_summary']['services']['acknowledgements'] === 0) {
                             $item['isAcknowledge'] = false;
@@ -651,7 +654,8 @@ class StatuspagesTable extends Table {
                         'cumulatedStateName' => __('Operational'),
                         'cumulatedColorId'   => -1,
                         'cumulatedColor'     => 'primary',
-                        'background'         => 'bg-primary'
+                        'background'         => 'bg-primary',
+                        'background_css'     => 'primary' // For openITCOCKPIT-Mobile
                     ];
                     $item['id'] = $statuspage[$objectType][$index]['id'];
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
@@ -661,6 +665,7 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['hosts']['cumulatedStateId'] + 1;
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
+                        $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
                     }
 
                     if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] === 0) {
@@ -668,6 +673,7 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
                         $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                         $item['background'] = 'bg-' . $item['cumulatedColor'];
+                        $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
                     }
 
                     if ($item['cumulatedColorId'] > 0) {
@@ -714,7 +720,8 @@ class StatuspagesTable extends Table {
                         'cumulatedStateName' => __('Operational'),
                         'cumulatedColorId'   => -1,
                         'cumulatedColor'     => 'primary',
-                        'background'         => 'bg-primary'
+                        'background'         => 'bg-primary',
+                        'background_css'     => 'primary'
                     ];
                     $item['id'] = $objectGroup['id'];
                     $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
@@ -723,6 +730,7 @@ class StatuspagesTable extends Table {
                     $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
                     $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
                     $item['background'] = 'bg-' . $item['cumulatedColor'];
+                    $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
                     if ($item['cumulatedColorId'] > 0) {
                         $problems = $objectGroup['state_summary']['services']['problems'];
                         if ($problems > 0) {
@@ -772,7 +780,8 @@ class StatuspagesTable extends Table {
                     'cumulatedColor'       => 'primary',
                     'cumulatedHumanStatus' => __('Not in Monitoring'),
                     'cumulatedIcon'        => 'fa-solid fa-eye-low-vision',
-                    'background'           => 'bg-primary'
+                    'background'           => 'bg-primary',
+                    'background_css'       => 'primary'
                 ],
                 'items'      => [],
             ];
@@ -790,7 +799,8 @@ class StatuspagesTable extends Table {
                 'cumulatedColor'       => $items[0]['cumulatedColor'] ?? 'primary',
                 'cumulatedHumanStatus' => $names[$items[0]['cumulatedColorId']] ?? __('Unknown'),
                 'cumulatedIcon'        => $icons[$items[0]['cumulatedColorId']] ?? 'fa-solid fa-eye-low-vision',
-                'background'           => !empty($items[0]['cumulatedColor']) ? 'bg-' . $items[0]['cumulatedColor'] : 'bg-primary'
+                'background'           => !empty($items[0]['cumulatedColor']) ? 'bg-' . $items[0]['cumulatedColor'] : 'bg-primary',
+                'background_css'       => !empty($items[0]['cumulatedColor']) ? $items[0]['cumulatedColor'] : 'primary' // For openITCOCKPIT-Mobile
             ],
             'items'      => $items,
         ];
