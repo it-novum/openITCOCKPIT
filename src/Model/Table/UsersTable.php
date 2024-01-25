@@ -1423,18 +1423,6 @@ class UsersTable extends Table {
         return $orphanedUsers;
     }
 
-<<<<<<< HEAD
-    public function getAllocatedTabsByUserId(int $userId): array {
-        $dashboards= $this
-            ->find()
-            ->contain(['DashboardTabs'])
-            ->where(['id' => $userId])
-            ->disableHydration()
-            ->all()
-            ->toArray()[0]['dashboard_tabs'] ?? [];
-        return Hash::extract($dashboards, '{n}.id');
-    }
-=======
     /**
      * Gets the record by api key and saves the last login date
      *  Returns true for successful
@@ -1473,5 +1461,14 @@ class UsersTable extends Table {
         return true;
     }
 
->>>>>>> development
+    public function getAllocatedTabsByUserId(int $userId): array {
+        $dashboards = $this
+            ->find()
+            ->contain(['DashboardTabs'])
+            ->where(['id' => $userId])
+            ->disableHydration()
+            ->all()
+            ->toArray()[0]['dashboard_tabs'] ?? [];
+        return Hash::extract($dashboards, '{n}.id');
+    }
 }
