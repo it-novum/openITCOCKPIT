@@ -1322,4 +1322,5 @@ div.packetmanager-selection > span::selection {
 
 .statuspage-item-box {
     background: #4285F408;
+    background-clip: content-box;
 }
