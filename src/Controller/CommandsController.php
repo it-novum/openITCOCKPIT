@@ -35,10 +35,14 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
+use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -418,5 +422,40 @@ class CommandsController extends AppController {
         }
         $this->set('result', $postData);
         $this->viewBuilder()->setOption('serialize', ['result']);
+    }
+
+    public function getNagiosConfiguration() {
+
+        $commandId = $this->request->getQuery('commandId', null);
+
+        if (!empty($commandId)) {
+
+            $TableName = "Commands";
+            $confName = "commands";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $commandNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$commandId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $commandNagiosConfig = "Command Config Record not found.";
+        }
+
+        if (empty($commandId) || gettype($commandNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $commandNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("commandConfig", $commandNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['commandConfig']);
+
+
     }
 }
