@@ -135,10 +135,19 @@
                                 </label>
                             </div>
                         </div>
-                        <hr>
+
+                        <fieldset class="pb-1">
+                            <legend class="fs-md fieldset-legend-border-bottom">
+                                <h5>
+                                    <?= __('Status page items'); ?>
+                                </h5>
+                            </legend>
+                        </fieldset>
+
                         <div class="form-group">
                             <label class="control-label">
-                                <?php echo __('Host groups'); ?>
+                                <i class="fas fa-server"></i>
+                                <?= __('Host groups'); ?>
                             </label>
                             <select
                                 id="HostgroupsSelect"
@@ -151,12 +160,48 @@
                                 ng-model="post.Statuspage.hostgroups._ids">
                             </select>
                         </div>
+                        <div class="form-group" ng-if="post.Statuspage.hostgroups._ids.length > 0">
+                            <div class="row pb-2">
+                                <div class="col-4 bold">
+                                    <?= __('Hostgroup name'); ?>
+                                </div>
+                                <div class="col-8 bold">
+                                    <?= __('Display name'); ?>
+                                </div>
+                            </div>
+                            <div ng-repeat="hostgroup in hostgroups track by $index" class="row form-group"
+                                 ng-if="post.Statuspage.hostgroups._ids.indexOf(hostgroup.id) !== -1">
+                                <div class="col-4 statuspage-item-box">
+                                    <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
+                                        <a ui-sref="HostgroupsExtended({id: hostgroup.id})"
+                                           class="text-primary">{{hostgroup.value}}</a>
+                                    <?php else: ?>
+                                        {{hostgroup.value}}
+                                    <?php endif; ?>
+                                </div>
+                                <div class="col-8">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa-solid fa-tag text-primary"></i>
+                                            </span>
+                                        </div>
+                                        <input class="form-control form-control-sm" type="text"
+                                               placeholder="<?= __("Set alias for host group"); ?>"
+                                               ng-model="hostgroups[$index]._joinData.display_alias">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+<br />
+<br />
+<br />
 
                         <div class="form-group" ng-if="post.Statuspage.hostgroups._ids.length > 0">
                             <label class="control-label">
-                                <?php echo __('Hostgroup alias'); ?>
+                                <?php echo __('Host group alias'); ?>
                             </label>
-                            <div >
+                            <div>
                                 <table class="table">
                                     <thead>
                                     <tr class="d-flex">
@@ -167,12 +212,12 @@
                                     <tbody>
                                     <tr ng-repeat="hostgroup in hostgroups track by $index"
                                         ng-if="post.Statuspage.hostgroups._ids.indexOf(hostgroup.id) !== -1">
-                                        <td class="col-5"> *** {{hostgroups[$index]}} ***
+                                        <td class="col-5">
                                             {{hostgroup.value}}
                                         </td>
                                         <td class="col-7">
                                             <input class="form-control" type="text"
-                                                ng-model="hostgroups[$index]._joinData.display_alias">
+                                                   ng-model="hostgroups[$index]._joinData.display_alias">
                                         </td>
                                     </tr>
                                     <tr ng-repeat="hostgroup in selectedHostgroups" class="d-flex">

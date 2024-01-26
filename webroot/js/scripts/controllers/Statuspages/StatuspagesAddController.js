@@ -78,16 +78,14 @@ angular.module('openITCOCKPIT')
             if($scope.post.Statuspage.container_id === null){
                 return;
             }
-            var restoreForaliasProperties = {};
-            if($scope.post.Statuspage.hostgroups._ids.length > 0){
-                //save display_alias for restore
+            var hostgroupsAliasForRefill = {};
+            if(typeof $scope.hostgroups !== "undefined" && $scope.post.Statuspage.hostgroups._ids.length > 0){
                 $scope.hostgroups.map(function(hostgroup){
-                    if($scope.post.Statuspage.hostgroups._ids.indexOf(hostgroup['key']) > -1){
-                        Object.assign(restoreForaliasProperties, hostgroup['aliasProperties']);
+                    if($scope.post.Statuspage.hostgroups._ids.indexOf(hostgroup.id) !== -1){
+                        Object.assign(hostgroupsAliasForRefill, {[hostgroup.id]: hostgroup._joinData.display_alias});
                     }
                 });
             }
-            console.log(restoreForaliasProperties);
             $http.get("/hostgroups/loadHostgroupsByStringAndContainers.json", {
                 params: {
                     'angular': true,
@@ -98,20 +96,25 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.hostgroups = result.data.hostgroups;
-                $scope.hostgroups.map(function(option){
+                $scope.hostgroups.map(function(hostgroup){
                     // New properties to be added
-                    aliasProperties = {
-                        id: option['key'],
+                    hostgroupProperties = {
+                        id: parseInt(hostgroup['key'], 10),
                         _joinData: {
-                            display_alias: ''
+                            display_alias: hostgroupsAliasForRefill[hostgroup['key']] ?? ''
                         }
                     };
-
                     // Assign new properties and return
-                    return Object.assign(option, aliasProperties);
+                    return Object.assign(hostgroup, hostgroupProperties);
                 });
             });
         };
+
+        function arrContains(val1, val2){
+            return _.any(arr, function(a){
+                return _.isEqual(a, [val1, val2])
+            });
+        }
 
         $scope.loadServicegroups = function(searchString){
             if($scope.post.Statuspage.container_id === null){
