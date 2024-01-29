@@ -137,9 +137,14 @@
                         </div>
 
                         <fieldset class="pb-1">
-                            <legend class="fs-md fieldset-legend-border-bottom">
+                            <legend class="fs-md fieldset-legend-border-bottom"
+                                    ng-class="{'fieldset-legend-border-bottom-danger': noItemsSelected}">
                                 <h5>
                                     <?= __('Status page items'); ?>
+                                    <span class="text-danger font-xs pl-1 fw-300"
+                                          ng-show="noItemsSelected">
+                                        <?= __('You must select at least one configuration item for status page.'); ?>
+                                    </span>
                                 </h5>
                             </legend>
                         </fieldset>
@@ -157,20 +162,20 @@
                                 callback="loadHostgroups"
                                 multiple
                                 ng-options="hostgroup.key as hostgroup.value for hostgroup in hostgroups"
-                                ng-model="post.Statuspage.hostgroups._ids">
+                                ng-model="post.Statuspage.selected_hostgroups._ids">
                             </select>
                         </div>
-                        <div class="form-group" ng-if="post.Statuspage.hostgroups._ids.length > 0">
+                        <div class="form-group" ng-if="post.Statuspage.selected_hostgroups._ids.length > 0">
                             <div class="row pb-2">
                                 <div class="col-4 bold">
-                                    <?= __('Hostgroup name'); ?>
+                                    <?= __('Host group name'); ?>
                                 </div>
                                 <div class="col-8 bold">
                                     <?= __('Display name'); ?>
                                 </div>
                             </div>
                             <div ng-repeat="hostgroup in hostgroups track by $index" class="row form-group"
-                                 ng-if="post.Statuspage.hostgroups._ids.indexOf(hostgroup.id) !== -1">
+                                 ng-if="post.Statuspage.selected_hostgroups._ids.indexOf(hostgroup.id) !== -1">
                                 <div class="col-4 statuspage-item-box">
                                     <?php if ($this->Acl->hasPermission('extended', 'hostgroups')): ?>
                                         <a ui-sref="HostgroupsExtended({id: hostgroup.id})"
@@ -193,100 +198,61 @@
                                 </div>
                             </div>
                         </div>
-<br />
-<br />
-<br />
 
-                        <div class="form-group" ng-if="post.Statuspage.hostgroups._ids.length > 0">
-                            <label class="control-label">
-                                <?php echo __('Host group alias'); ?>
-                            </label>
-                            <div>
-                                <table class="table">
-                                    <thead>
-                                    <tr class="d-flex">
-                                        <th class="col-5"><?= __('Hostgroup name'); ?></th>
-                                        <th class="col-7"><?= __('Display name'); ?></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="hostgroup in hostgroups track by $index"
-                                        ng-if="post.Statuspage.hostgroups._ids.indexOf(hostgroup.id) !== -1">
-                                        <td class="col-5">
-                                            {{hostgroup.value}}
-                                        </td>
-                                        <td class="col-7">
-                                            <input class="form-control" type="text"
-                                                   ng-model="hostgroups[$index]._joinData.display_alias">
-                                        </td>
-                                    </tr>
-                                    <tr ng-repeat="hostgroup in selectedHostgroups" class="d-flex">
-                                        <td class="col-5">{{hostgroup.name}}</td>
-                                        <td class="col-7">
-                                            <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="hostgroup.display_alias">
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <hr>
 
                         <div class="form-group">
                             <label class="control-label">
-                                <?php echo __('Service groups'); ?>
+                                <i class="fa fa-cogs"></i>
+                                <?= __('Service groups'); ?>
                             </label>
-                            <div class="input-group" style="width: 100%;">
-                                <select
-                                    id="ServicegroupsSelect"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="servicegroups"
-                                    callback="loadServicegroups"
-                                    multiple
-                                    ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
-                                    ng-model="post.Statuspage.servicegroups._ids">
-                                </select>
+                            <select
+                                id="ServicegroupsSelect"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="servicegroups"
+                                callback="loadServicegroups"
+                                multiple
+                                ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
+                                ng-model="post.Statuspage.selected_servicegroups._ids">
+                            </select>
+                        </div>
+                        <div class="form-group" ng-if="post.Statuspage.selected_servicegroups._ids.length > 0">
+                            <div class="row pb-2">
+                                <div class="col-4 bold">
+                                    <?= __('Service group name'); ?>
+                                </div>
+                                <div class="col-8 bold">
+                                    <?= __('Display name'); ?>
+                                </div>
+                            </div>
+                            <div ng-repeat="servicegroup in servicegroups track by $index" class="row form-group"
+                                 ng-if="post.Statuspage.selected_servicegroups._ids.indexOf(servicegroup.id) !== -1">
+                                <div class="col-4 statuspage-item-box">
+                                    <?php if ($this->Acl->hasPermission('extended', 'servicegroups')): ?>
+                                        <a ui-sref="ServicegroupsExtended({id: servicegroup.id})"
+                                           class="text-primary">{{servicegroup.value}}</a>
+                                    <?php else: ?>
+                                        {{servicegroup.value}}
+                                    <?php endif; ?>
+                                </div>
+                                <div class="col-8">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa-solid fa-tag text-primary"></i>
+                                            </span>
+                                        </div>
+                                        <input class="form-control form-control-sm" type="text"
+                                               placeholder="<?= __("Set alias for service group"); ?>"
+                                               ng-model="servicegroups[$index]._joinData.display_alias">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-
                         <div class="form-group">
                             <label class="control-label">
-                                <?php echo __('Servicegroup alias'); ?>
-                            </label>
-                            <div ng-if="post.Statuspage.servicegroups._ids.length > 0">
-                                <table class="table">
-                                    <thead>
-                                    <tr class="d-flex">
-                                        <th class="col-5"><?= __('Servicegroup name'); ?></th>
-                                        <th class="col-7"><?= __('Display name'); ?></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="servicegroup in selectedServicegroups" class="d-flex">
-                                        <td class="col-5">{{servicegroup.name}}</td>
-                                        <td class="col-7">
-                                            <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="servicegroup.display_alias">
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="form-group"
-                             ng-class="{'has-error': errors.hosts}">
-                            <label class="control-label">
-                                <?php echo __('Hosts'); ?>
+                                <i class="fa fa-desktop"></i>
+                                <?= __('Hosts'); ?>
                             </label>
                             <select
                                 id="HostsSelect"
@@ -296,87 +262,90 @@
                                 callback="loadHosts"
                                 multiple
                                 ng-options="host.key as host.value for host in hosts"
-                                ng-model="post.Statuspage.hosts._ids">
+                                ng-model="post.Statuspage.selected_hosts._ids">
                             </select>
-                            <div ng-repeat="error in errors.hosts">
-                                <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                        <div class="form-group" ng-if="post.Statuspage.selected_hosts._ids.length > 0">
+                            <div class="row pb-2">
+                                <div class="col-4 bold">
+                                    <?= __('Host name'); ?>
+                                </div>
+                                <div class="col-8 bold">
+                                    <?= __('Display name'); ?>
+                                </div>
+                            </div>
+                            <div ng-repeat="host in hosts track by $index" class="row form-group"
+                                 ng-if="post.Statuspage.selected_hosts._ids.indexOf(host.id) !== -1">
+                                <div class="col-4 statuspage-item-box">
+                                    <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
+                                        <a ui-sref="HostsBrowser({id: host.id})"
+                                           class="text-primary">{{host.value}}</a>
+                                    <?php else: ?>
+                                        {{host.value}}
+                                    <?php endif; ?>
+                                </div>
+                                <div class="col-8">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa-solid fa-tag text-primary"></i>
+                                            </span>
+                                        </div>
+                                        <input class="form-control form-control-sm" type="text"
+                                               placeholder="<?= __("Set alias for host"); ?>"
+                                               ng-model="hosts[$index]._joinData.display_alias">
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                         <div class="form-group">
                             <label class="control-label">
-                                <?php echo __('Host alias'); ?>
-                            </label>
-                            <div ng-if="post.Statuspage.hosts._ids.length > 0">
-                                <table class="table">
-                                    <thead>
-                                    <tr class="d-flex">
-                                        <th class="col-5"><?= __('Host name'); ?></th>
-                                        <th class="col-7"><?= __('Display name'); ?></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="host in selectedHosts" class="d-flex">
-                                        <td class="col-5">{{host.name}}</td>
-                                        <td class="col-7">
-                                            <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="host.display_alias">
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <hr>
-
-                        <div class="form-group"
-                             ng-class="{'has-error': errors.services}">
-                            <label class="control-label" for="ServicesSelect">
-                                <?php echo __('Services'); ?>
+                                <i class="fa fa-cog"></i>
+                                <?= __('Services'); ?>
                             </label>
                             <select
                                 id="ServicesSelect"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
-                                multiple
                                 chosen="services"
                                 callback="loadServices"
+                                multiple
                                 ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
-                                ng-model="post.Statuspage.hosts.services._ids">
+                                ng-model="post.Statuspage.selected_services._ids">
                             </select>
-                            <div ng-repeat="error in errors.services">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
                         </div>
-
-                        <div class="form-group">
-                            <label class="control-label">
-                                <?php echo __('Service alias'); ?>
-                            </label>
-                            <div ng-if="post.Statuspage.hosts.services._ids.length > 0">
-                                <table class="table">
-                                    <thead>
-                                    <tr class="d-flex">
-                                        <th class="col-3"><?= __('Service name'); ?></th>
-                                        <th class="col-2"><?= __('Host name'); ?></th>
-                                        <th class="col-7"><?= __('Display name'); ?></th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr ng-repeat="service in selectedServices" class="d-flex">
-                                        <td class="col-3">{{service.name}}</td>
-                                        <td class="col-2">{{service.hostName}}</td>
-                                        <td class="col-7">
-                                            <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="service.display_alias">
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
+                        <div class="form-group" ng-if="post.Statuspage.selected_services._ids.length > 0">
+                            <div class="row pb-2">
+                                <div class="col-4 bold">
+                                    <?= __('Service name'); ?>
+                                </div>
+                                <div class="col-8 bold">
+                                    <?= __('Display name'); ?>
+                                </div>
+                            </div>
+                            <div ng-repeat="service in services track by $index" class="row form-group"
+                                 ng-if="post.Statuspage.selected_services._ids.indexOf(service.id) !== -1">
+                                <div class="col-4 statuspage-item-box">
+                                    <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
+                                        <a ui-sref="ServicesBrowser({id: service.id})"
+                                           class="text-primary">{{service.value.servicename}}</a>
+                                    <?php else: ?>
+                                        {{service.value.servicename}}
+                                    <?php endif; ?>
+                                </div>
+                                <div class="col-8">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fa-solid fa-tag text-primary"></i>
+                                            </span>
+                                        </div>
+                                        <input class="form-control form-control-sm" type="text"
+                                               placeholder="<?= __("Set alias for service"); ?>"
+                                               ng-model="services[$index]._joinData.display_alias">
+                                    </div>
+                                </div>
                             </div>
                         </div>
 

@@ -147,7 +147,37 @@ class StatuspagesTable extends Table {
             ->boolean('show_comments')
             ->notEmptyString('show_comments');
 
+        $validator
+            ->add('selected_hosts', 'custom', [
+                'rule'    => [$this, 'atLeastOneConfigurationItem'],
+                'message' => __('You must select at least one configuration item for status page.')
+            ]);
+        $validator
+            ->add('selected_services', 'custom', [
+                'rule'    => [$this, 'atLeastOneConfigurationItem'],
+                'message' => __('You must select at least one configuration item for status page.')
+            ]);
+        $validator
+            ->add('selected_hostgroups', 'custom', [
+                'rule'    => [$this, 'atLeastOneConfigurationItem'],
+                'message' => __('You must select at least one configuration item for status page.')
+            ]);
+        $validator
+            ->add('selected_servicegroups', 'custom', [
+                'rule'    => [$this, 'atLeastOneConfigurationItem'],
+                'message' => __('You must select at least one configuration item for status page.')
+            ]);
+
         return $validator;
+    }
+
+    /**
+     * @param $value
+     * @param $context
+     * @return bool
+     */
+    public function atLeastOneConfigurationItem($value, $context) {
+        return !empty(Hash::filter(Hash::extract($context['data'], '{s}._ids')));
     }
 
     /**
@@ -166,8 +196,10 @@ class StatuspagesTable extends Table {
      * @return array
      */
     public function getStatuspagesIndex(StatuspagesFilter $StatuspagesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all');
-        $query->where($StatuspagesFilter->indexFilter())->distinct('Statuspages.id');;
+        $indexFilter = $StatuspagesFilter->indexFilter();
+        $query = $this->find()
+            ->contain(['Hosts', 'Services', 'Hostgroups', 'Servicegroups'])
+            ->where($indexFilter);
 
         if (!empty($MY_RIGHTS)) {
             $query->where(['Statuspages.container_id IN' => $MY_RIGHTS]);
@@ -1112,5 +1144,42 @@ class StatuspagesTable extends Table {
 
         return $query->firstOrFail();
     }
+
+    public function getStatuspageForEdit($id) {
+        $query = $this->find()
+            ->where([
+                'Statuspages.id' => $id
+            ])
+            ->contain([
+                'Hostgroups',
+                'Servicegroups',
+                'Hosts',
+                'Services'
+            ])
+            ->disableHydration()
+            ->first();
+
+        $statuspage = $query;
+        $statuspage['selected_hostgroups'] = [
+            '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
+        ];
+
+        $statuspage['selected_hosts'] = [
+            '_ids' => Hash::extract($query, 'hosts.{n}.id')
+        ];
+
+        $statuspage['selected_servicegroups'] = [
+            '_ids' => Hash::extract($query, 'servicegroups.{n}.id')
+        ];
+        $statuspage['selected_services'] = [
+            '_ids' => Hash::extract($query, 'services.{n}.id')
+        ];
+
+
+        return [
+            'Statuspage' => $statuspage
+        ];
+    }
+
 
 }

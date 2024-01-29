@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
 use App\Model\Table\StatuspagesTable;
+use Cake\Event\EventInterface;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -37,7 +38,6 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\StatuspagesFilter;
-use Cake\Event\EventInterface;
 
 
 class StatuspagesController extends AppController {
@@ -65,20 +65,25 @@ class StatuspagesController extends AppController {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+
         /** @var StatuspagesTable $StatuspagesTable */
         $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
 
         $statuspagesFilter = new StatuspagesFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $statuspagesFilter->getPage());
-        $all_statuspages = $StatuspagesTable->getStatuspagesIndex($statuspagesFilter, $PaginateOMat, $this->MY_RIGHTS);
-        $statuspagesWithContainers = [];
+        $all_statuspages = $StatuspagesTable->getStatuspagesIndex($statuspagesFilter, $PaginateOMat, $MY_RIGHTS);
         foreach ($all_statuspages as $key => $statuspage) {
-            $statuspagesWithContainers[$statuspage['id']] = [];
-            foreach ($statuspage['containers'] as $container) {
-                $statuspagesWithContainers[$statuspage['id']][] = $container['id'];
-            }
+
             if ($withState) {
-                $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$statuspage['id'], $this->MY_RIGHTS, $UserTime);
+                $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$statuspage['id'], $MY_RIGHTS, $UserTime);
                 $all_statuspages[$key]['cumulatedState'] = $statuspageViewData['statuspage']['cumulatedColorId'];
                 $all_statuspages[$key]['color'] = 'bg-' . $statuspageViewData['statuspage']['cumulatedColor'];
                 $all_statuspages[$key]['css_color'] = $statuspageViewData['statuspage']['cumulatedColor'];
@@ -86,10 +91,7 @@ class StatuspagesController extends AppController {
 
             $all_statuspages[$key]['allow_edit'] = true;
             if ($this->hasRootPrivileges === false) {
-                $all_statuspages[$key]['allow_edit'] = false;
-                if (empty(array_diff($statuspagesWithContainers[$statuspage['id']], $this->getWriteContainers()))) {
-                    $all_statuspages[$key]['allow_edit'] = true;
-                }
+                $all_statuspages[$key]['allow_edit'] = $this->isWritableContainer($statuspage['container_id']);
             }
         }
 
@@ -121,7 +123,16 @@ class StatuspagesController extends AppController {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
-        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $this->MY_RIGHTS, $UserTime, true);
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+
+        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $MY_RIGHTS, $UserTime, true);
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
@@ -170,31 +181,69 @@ class StatuspagesController extends AppController {
             return;
         }
 
-        $data = $this->request->getData();
-        if (($this->request->is('post') || $this->request->is('put')) && isset($data)) {
+        /** @var StatuspagesTable $StatuspagesTable */
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
 
-            /** @var StatuspagesTable $StatuspagesTable */
-            $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if ($this->request->is('post') || $this->request->is('put')) {
             $statuspage = $StatuspagesTable->newEmptyEntity();
-            $statuspage = $StatuspagesTable->patchEntity($statuspage, $data);
-
+            $statuspage = $StatuspagesTable->patchEntity($statuspage, $this->request->getData('Statuspage', []));
             $StatuspagesTable->save($statuspage);
             if ($statuspage->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $statuspage->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
-            } else {
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($statuspage);
-                    return;
-                }
-
             }
+
             $this->set('statuspage', $statuspage);
             $this->viewBuilder()->setOption('serialize', ['statuspage']);
-
         }
+    }
+
+    /**
+     *
+     * edit
+     *
+     * @param string|null $id Statuspage id.
+     * @return \Cake\Http\Response|null|void Redirects to index.
+     * @throws \Cake\Http\Exception\NotFoundException When record not found.
+     */
+    public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var StatuspagesTable $StatuspagesTable */
+        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
+        if (!$StatuspagesTable->existsById($id)) {
+            throw new NotFoundException('Status page not found');
+        }
+        $statuspage = $StatuspagesTable->getStatuspageForEdit($id);
+        if (!$this->allowedByContainerId($statuspage['Statuspage']['container_id'])) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('post') && $this->isAngularJsRequest()) {
+            $data = $this->request->getData('Statuspage');
+            $statuspage = $StatuspagesTable->get($id);
+            $statuspage = $StatuspagesTable->patchEntity($statuspage, $data);
+            $StatuspagesTable->save($statuspage);
+            if ($statuspage->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $statuspage->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
+            }
+
+            $this->set('statuspage', $statuspage);
+            $this->viewBuilder()->setOption('serialize', ['statuspage']);
+        }
+
+        $this->set('statuspage', $statuspage);
+        $this->viewBuilder()->setOption('serialize', ['statuspage']);
+
     }
 
     /**
@@ -216,14 +265,10 @@ class StatuspagesController extends AppController {
             throw new NotFoundException('Statuspage not found');
         }
 
-        $statuspage = $StatuspagesTable->get($id, [
-            'contain' => [
-                'Containers'
-            ]
-        ]);
+        $statuspage = $StatuspagesTable->get($id);
 
 
-        if (!$this->isWritableContainer($statuspage['containers'][0]['id'])) {
+        if (!$this->isWritableContainer($statuspage['container_id'])) {
             $this->render403();
             return;
         }
@@ -262,58 +307,5 @@ class StatuspagesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
-    /**
-     *
-     * edit
-     *
-     * @param string|null $id Statuspage id.
-     * @return \Cake\Http\Response|null|void Redirects to index.
-     * @throws \Cake\Http\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null) {
-        if (!$this->isApiRequest()) {
-            //Only ship HTML template for angular
-            return;
-        }
-        /** @var StatuspagesTable $StatuspagesTable */
-        $StatuspagesTable = TableRegistry::getTableLocator()->get('Statuspages');
-        if (!$StatuspagesTable->existsById($id)) {
-            throw new NotFoundException('Statuspage not found');
-        }
-        $statuspage = $StatuspagesTable->getStatuspageWithAllObjects((int)$id, $this->MY_RIGHTS);
-
-        if ($this->request->is('post')) {
-            $statuspage = $StatuspagesTable->get($id, [
-                'contain' => [
-                    'Containers', 'Hosts', 'Services', 'Hostgroups', 'Servicegroups'
-                ]
-            ]);
-            if (!$this->isWritableContainer($statuspage['containers'][0]['id'])) {
-                $this->render403();
-                return;
-            }
-
-            $statuspageData = $this->request->getData();
-            $statuspage = $StatuspagesTable->patchEntity($statuspage, $statuspageData, [
-                'validate' => 'alias'
-            ]);
-            $StatuspagesTable->save($statuspage);
-            if ($statuspage->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $statuspage->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            } else {
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($statuspage); // REST API ID serialization
-                    return;
-                }
-            }
-        }
-
-        $this->set('Statuspage', $statuspage);
-        $this->viewBuilder()->setOption('serialize', ['Statuspage']);
-
-    }
 
 }
