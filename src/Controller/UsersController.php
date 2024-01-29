@@ -415,6 +415,12 @@ class UsersController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
 
             $data = $this->request->getData('User', []);
+            foreach ($data['apikeys'] as $i => $apikey) {
+                if (isset($apikey['last_use'])) {
+                    $data['apikeys'][$i]['last_use'] = FrozenTime::createFromFormat($UserTime->getFormatString(), $apikey['last_use'])->subHours(1);
+                }
+            }
+
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
             }
