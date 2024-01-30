@@ -35,7 +35,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <i class="fa fa-plus"></i> <?php echo __('Edit'); ?>
+        <i class="fa fa-pencil"></i> <?php echo __('Edit'); ?>
     </li>
 </ol>
 
@@ -112,8 +112,6 @@
                                 <input type="checkbox"
                                        class="custom-control-input"
                                        id="public"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        ng-model="post.Statuspage.public">
                                 <label class="custom-control-label" for="public">
                                     <?php echo __('Public'); ?>
@@ -127,8 +125,6 @@
                                 <input type="checkbox"
                                        class="custom-control-input"
                                        id="showComments"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        ng-model="post.Statuspage.show_comments">
                                 <label class="custom-control-label" for="showComments">
                                     <?php echo __('Show comments'); ?>

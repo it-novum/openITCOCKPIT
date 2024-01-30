@@ -306,6 +306,4 @@ class StatuspagesController extends AppController {
         $this->set('containers', $containers);
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
-
-
 }

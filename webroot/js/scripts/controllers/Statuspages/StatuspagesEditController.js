@@ -1,11 +1,8 @@
 angular.module('openITCOCKPIT')
     .controller('StatuspagesEditController', function($scope, $http, $state, $stateParams, NotyService){
-
-
         $scope.id = $stateParams.id;
         $scope.init = true;
         $scope.errors = {};
-
 
         $scope.load = function(){
             $http.get("/statuspages/edit/" + $scope.id + ".json", {
@@ -14,13 +11,11 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.post = result.data.statuspage;
-
                 $scope.init = false;
             }, function errorCallback(result){
                 if(result.status === 403){
                     $state.go('403');
                 }
-
                 if(result.status === 404){
                     $state.go('404');
                 }
@@ -28,13 +23,13 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.loadContainers = function(){
-            var params = {
-                'angular': true
-            };
             $http.get("/statuspages/loadContainers.json", {
-                params: params
+                params: {
+                    'angular': true
+                }
             }).then(function(result){
                 $scope.containers = result.data.containers;
+                $scope.init = false;
                 $scope.load();
             });
         };
@@ -43,7 +38,8 @@ angular.module('openITCOCKPIT')
             if($scope.post.Statuspage.container_id === null){
                 return;
             }
-            $http.get("/hostgroups/loadHostgroupsByString.json", {
+
+            $http.get("/hostgroups/loadHostgroupsByStringAndContainers.json", {
                 params: {
                     'angular': true,
                     'containerId': $scope.post.Statuspage.container_id,
@@ -53,7 +49,8 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 let hostgroupsAliasForRefill = $scope.storeForRefill(
-                    $scope.hostgroups,
+                    //initial refill with loaded status page
+                    (typeof $scope.hostgroups === 'undefined') ? $scope.post.Statuspage.hostgroups : $scope.hostgroups,
                     $scope.post.Statuspage.selected_hostgroups._ids
                 );
                 $scope.hostgroups = result.data.hostgroups;
@@ -84,7 +81,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 let servicegroupsAliasForRefill = $scope.storeForRefill(
-                    $scope.servicegroups,
+                    (typeof $scope.servicegroups === 'undefined') ? $scope.post.Statuspage.servicegroups : $scope.servicegroups,
                     $scope.post.Statuspage.selected_servicegroups._ids
                 );
                 $scope.servicegroups = result.data.servicegroups;
@@ -105,7 +102,6 @@ angular.module('openITCOCKPIT')
             if($scope.post.Statuspage.container_id === null){
                 return;
             }
-
             $http.get("/hosts/loadHostsByContainerId.json", {
                 params: {
                     'angular': true,
@@ -116,7 +112,7 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 let hostsAliasForRefill = $scope.storeForRefill(
-                    $scope.hosts,
+                    (typeof $scope.hosts === 'undefined') ? $scope.post.Statuspage.hosts : $scope.hosts,
                     $scope.post.Statuspage.selected_hosts._ids
                 );
                 $scope.hosts = result.data.hosts;
@@ -148,7 +144,7 @@ angular.module('openITCOCKPIT')
                 $scope.params
             ).then(function(result){
                 let servicesAliasForRefill = $scope.storeForRefill(
-                    $scope.services,
+                    (typeof $scope.services === 'undefined') ? $scope.post.Statuspage.services : $scope.services,
                     $scope.post.Statuspage.selected_services._ids
                 );
                 $scope.services = result.data.services;
@@ -214,10 +210,10 @@ angular.module('openITCOCKPIT')
             $scope.errors = {};
             $scope.filterBySelectedAndCleanUpForSubmit();
 
-            $http.post("/statuspages/add.json?angular=true", $scope.post
+            $http.post("/statuspages/edit/" + $scope.id + ".json?angular=true",
+                $scope.post
             ).then(function(result){
-
-                var url = $state.href('StatuspagesAdd', {id: result.data.id});
+                var url = $state.href('StatuspagesEdit', {id: $scope.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
@@ -249,11 +245,9 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            if($scope.post.Statuspage.container_id !== null){
-                $scope.loadHostgroups('');
-                $scope.loadHosts('');
-                $scope.loadServices('');
-                $scope.loadServicegroups('');
-            }
+            $scope.loadHostgroups('');
+            $scope.loadServicegroups('');
+            $scope.loadHosts('');
+            $scope.loadServices('');
         }, true);
     });

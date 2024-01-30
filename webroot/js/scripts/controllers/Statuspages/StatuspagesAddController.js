@@ -33,11 +33,10 @@ angular.module('openITCOCKPIT')
         $scope.errors = {};
 
         $scope.loadContainers = function(){
-            var params = {
-                'angular': true
-            };
             $http.get("/statuspages/loadContainers.json", {
-                params: params
+                params: {
+                    'angular': true
+                }
             }).then(function(result){
                 $scope.containers = result.data.containers;
                 $scope.init = false;
@@ -48,7 +47,7 @@ angular.module('openITCOCKPIT')
             if($scope.post.Statuspage.container_id === null){
                 return;
             }
-            $http.get("/hostgroups/loadHostgroupsByString.json", {
+            $http.get("/hostgroups/loadHostgroupsByStringAndContainers.json", {
                 params: {
                     'angular': true,
                     'containerId': $scope.post.Statuspage.container_id,
@@ -214,15 +213,13 @@ angular.module('openITCOCKPIT')
             }
         };
 
-
         $scope.submit = function(){
             $scope.errors = {};
             $scope.filterBySelectedAndCleanUpForSubmit();
 
             $http.post("/statuspages/add.json?angular=true", $scope.post
             ).then(function(result){
-
-                var url = $state.href('StatuspagesAdd', {id: result.data.id});
+                var url = $state.href('StatuspagesEdit', {id: result.data.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName

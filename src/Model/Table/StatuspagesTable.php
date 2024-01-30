@@ -1175,7 +1175,6 @@ class StatuspagesTable extends Table {
             '_ids' => Hash::extract($query, 'services.{n}.id')
         ];
 
-
         return [
             'Statuspage' => $statuspage
         ];
