@@ -174,41 +174,53 @@ angular.module('openITCOCKPIT')
             return refillData;
         };
 
-        $scope.filterBySelectedAndCleanUpForSubmit = function(){
-            if($scope.post.Statuspage.selected_hostgroups._ids.length > 0){
-                $scope.post.Statuspage.hostgroups = $scope.hostgroups.filter(function(hostgroup){
-                    if($scope.post.Statuspage.selected_hostgroups._ids.indexOf(hostgroup.id) !== -1){
-                        return hostgroup;
-                    }
-                });
-            }
-            if($scope.post.Statuspage.selected_servicegroups._ids.length > 0){
-                $scope.post.Statuspage.servicegroups = $scope.servicegroups.filter(function(servicegroup){
-                    if($scope.post.Statuspage.selected_servicegroups._ids.indexOf(servicegroup.id) !== -1){
-                        return servicegroup;
-                    }
-                });
-            }
-            if($scope.post.Statuspage.selected_hosts._ids.length > 0){
-                $scope.post.Statuspage.hosts = $scope.hosts.filter(function(host){
-                    if($scope.post.Statuspage.selected_hosts._ids.indexOf(host.id) !== -1){
-                        return host;
-                    }
-                });
-            }
-            if($scope.post.Statuspage.selected_services._ids.length > 0){
-                $scope.post.Statuspage.services = $scope.services.filter(function(service){
-                    if($scope.post.Statuspage.selected_services._ids.indexOf(service.id) !== -1){
-                        return service;
-                    }
-                });
-            }
-        };
+        $scope.cleanUpForSubmit = function(){
+            $scope.post.Statuspage.selected_hostgroups._ids = _.intersection(
+                _.map($scope.hostgroups, 'key'),
+                $scope.post.Statuspage.selected_hostgroups._ids
+            );
+            $scope.post.Statuspage.selected_servicegroups._ids = _.intersection(
+                _.map($scope.servicegroups, 'key'),
+                $scope.post.Statuspage.selected_servicegroups._ids
+            );
+            $scope.post.Statuspage.selected_hosts._ids = _.intersection(
+                _.map($scope.hosts, 'key'),
+                $scope.post.Statuspage.selected_hosts._ids
+            );
+            $scope.post.Statuspage.selected_services._ids = _.intersection(
+                _.map($scope.services, 'key'),
+                $scope.post.Statuspage.selected_services._ids
+            );
+        }
+
+        $scope.filterBySelected = function(){
+            $scope.post.Statuspage.hostgroups = $scope.hostgroups.filter(function(hostgroup){
+                if($scope.post.Statuspage.selected_hostgroups._ids.indexOf(hostgroup.id) !== -1){
+                    return hostgroup;
+                }
+            });
+            $scope.post.Statuspage.servicegroups = $scope.servicegroups.filter(function(servicegroup){
+                if($scope.post.Statuspage.selected_servicegroups._ids.indexOf(servicegroup.id) !== -1){
+                    return servicegroup;
+                }
+            });
+            $scope.post.Statuspage.hosts = $scope.hosts.filter(function(host){
+                if($scope.post.Statuspage.selected_hosts._ids.indexOf(host.id) !== -1){
+                    return host;
+                }
+            });
+            $scope.post.Statuspage.services = $scope.services.filter(function(service){
+                if($scope.post.Statuspage.selected_services._ids.indexOf(service.id) !== -1){
+                    return service;
+                }
+            });
+        }
 
 
         $scope.submit = function(){
             $scope.errors = {};
-            $scope.filterBySelectedAndCleanUpForSubmit();
+            $scope.cleanUpForSubmit();
+            $scope.filterBySelected();
 
             $http.post("/statuspages/edit/" + $scope.id + ".json?angular=true",
                 $scope.post
@@ -238,7 +250,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        //Fire on page load
+//Fire on page load
         $scope.loadContainers();
 
         $scope.$watch('post.Statuspage.container_id', function(){
@@ -250,4 +262,5 @@ angular.module('openITCOCKPIT')
             $scope.loadHosts('');
             $scope.loadServices('');
         }, true);
-    });
+    })
+;
