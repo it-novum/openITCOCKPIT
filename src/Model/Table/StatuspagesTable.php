@@ -91,7 +91,7 @@ class StatuspagesTable extends Table {
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'host_id',
             'joinTable'        => 'statuspages_to_hosts',
-            'saveStrategy' => 'replace'
+            'saveStrategy'     => 'replace'
         ])->setDependent(true);
 
         $this->belongsToMany('Services', [
@@ -99,7 +99,7 @@ class StatuspagesTable extends Table {
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'service_id',
             'joinTable'        => 'statuspages_to_services',
-            'saveStrategy' => 'replace'
+            'saveStrategy'     => 'replace'
         ])->setDependent(true);
 
         $this->belongsToMany('Hostgroups', [
@@ -107,7 +107,7 @@ class StatuspagesTable extends Table {
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'hostgroup_id',
             'joinTable'        => 'statuspages_to_hostgroups',
-            'saveStrategy' => 'replace'
+            'saveStrategy'     => 'replace'
         ])->setDependent(true);
 
         $this->belongsToMany('Servicegroups', [
@@ -115,7 +115,7 @@ class StatuspagesTable extends Table {
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'servicegroup_id',
             'joinTable'        => 'statuspages_to_servicegroups',
-            'saveStrategy' => 'replace'
+            'saveStrategy'     => 'replace'
         ])->setDependent(true);
 
     }
@@ -1156,10 +1156,26 @@ class StatuspagesTable extends Table {
                 'Statuspages.id' => $id
             ])
             ->contain([
-                'Hostgroups',
-                'Servicegroups',
-                'Hosts',
-                'Services'
+                'Hostgroups'    => function (Query $query) {
+                    return $query->select([
+                        'Hostgroups.id'
+                    ]);
+                },
+                'Servicegroups' => function (Query $query) {
+                    return $query->select([
+                        'Servicegroups.id'
+                    ]);
+                },
+                'Hosts'         => function (Query $query) {
+                    return $query->select([
+                        'Hosts.id'
+                    ]);
+                },
+                'Services'      => function (Query $query) {
+                    return $query->select([
+                        'Services.id'
+                    ]);
+                }
             ])
             ->disableHydration()
             ->first();
@@ -1168,6 +1184,7 @@ class StatuspagesTable extends Table {
         $statuspage['selected_hostgroups'] = [
             '_ids' => Hash::extract($query, 'hostgroups.{n}.id')
         ];
+
 
         $statuspage['selected_hosts'] = [
             '_ids' => Hash::extract($query, 'hosts.{n}.id')
