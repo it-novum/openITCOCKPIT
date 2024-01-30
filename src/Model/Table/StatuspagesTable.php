@@ -437,8 +437,8 @@ class StatuspagesTable extends Table {
                         'planned_downtime_details' => [],
                         'total'                    => 0, // Total amount of hosts
                         'problems'                 => 0, // Hosts in none up state
-                        'cumulatedStateId'         => 0,
-                        'cumulatedStateName'       => __('Operational'),
+                        'cumulatedStateId'         => -1,
+                        'cumulatedStateName'       => __('Not in Monitoring'),
                     ],
                     'services' => [
                         'state'                    => [
@@ -454,8 +454,8 @@ class StatuspagesTable extends Table {
                         'planned_downtime_details' => [],
                         'total'                    => 0, // Total amount of services
                         'problems'                 => 0, // Services in none ok state
-                        'cumulatedStateId'         => 0,
-                        'cumulatedStateName'       => __('Operational'),
+                        'cumulatedStateId'         => -1,
+                        'cumulatedStateName'       => __('Not in Monitoring'),
                     ]
                 ];
 
@@ -532,16 +532,77 @@ class StatuspagesTable extends Table {
                         if (isset($AllServiceDowntimes[$serviceUuid])) {
                             $statuspage[$objectType][$index]['state_summary']['services']['downtime_details'][] = array_merge((new Downtime(
                                 $AllServiceDowntimes[$serviceUuid]
-                            ))->toArray(), ['servicename' => $serviceUuid]);
+                            ))->toArray(), ['name' => $serviceUuid]);
                         }
                     }
                 }
             }
         }
 
-        // Set cumulatedState state
+        // Set cumulatedState state for hosts and services
+        $itemTypes = [
+            'hosts'         => 'host',
+            'services'      => 'service',
+            'hostgroups'    => 'hostgroup',
+            'servicegroups' => 'servicegroup'
+        ];
+
+        $stateNames = [
+            -1 => __('Not in Monitoring'),
+            0  => __('All services are operational'),
+            1  => __('Performance Issues'),
+            2  => __('Major Outage'),
+            3  => __('Unknown'),
+        ];
+
+        $stateIcons = [
+            -1 => 'fa-solid fa-eye-low-vision',
+            0  => 'fa-solid fa-check',
+            1  => 'fa-solid fa-triangle-exclamation',
+            2  => 'fa-solid fa-bolt',
+            3  => 'fa-solid fa-question',
+        ];
+
+        $stateColors = [
+            -1 => 'text-primary',
+            0  => 'ok',
+            1  => 'warning',
+            2  => 'critical',
+            3  => 'unknown'
+        ];
+
+        // $items is used by all views
+        $items = [];
+
         foreach (['hosts', 'services', 'hostgroups', 'servicegroups'] as $objectType) {
             foreach ($statuspage[$objectType] as $index => $objectGroup) {
+                $name = $objectGroup['name'];
+                if (!empty($objectGroup['_joinData']['display_alias'])) {
+                    $name = $objectGroup['_joinData']['display_alias'];
+                }
+
+                $item = [
+                    'type'                     => $itemTypes[$objectType], // Legacy at its best
+                    'id'                       => $objectGroup['id'],
+                    'name'                     => $name,
+                    'cumulatedStateName'       => $stateNames[-1], // State for humans
+                    'cumulatedColorId'         => -1, // Numeric state representation
+                    'cumulatedColor'           => 'text-primary', // For text
+                    'background'               => 'bg-primary', // For backgrounds
+                    'background_css'           => 'primary', // For openITCOCKPIT-Mobile (for shadows)
+                    'isAcknowledge'            => false,
+                    'acknowledgedProblemsText' => __('State is not acknowledged'),
+                    'acknowledgeComment'       => null,
+                    'scheduledStartTime'       => null,
+                    'scheduledEndTime'         => null,
+                    'comment'                  => null,
+                    'isInDowntime'             => false,
+                    'downtimeData'             => [],
+                    'plannedDowntimeData'      => [],
+
+                ];
+
+                // Get the worst host state
                 if ($objectGroup['state_summary']['hosts']['state'][1] > 0) {
                     // Host is down
                     $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] = 1;
@@ -553,7 +614,7 @@ class StatuspagesTable extends Table {
                     $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateName'] = __('Unknown');
                 }
 
-
+                // Get the worst service state
                 if ($objectGroup['state_summary']['services']['state'][1] > 0) {
                     // Services is warning
                     $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] = 1;
@@ -569,244 +630,115 @@ class StatuspagesTable extends Table {
                     $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] = 3;
                     $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateName'] = __('Unknown');
                 }
-            }
-        }
-        $items = [];
-        // Create total summary state of the complete Status page
 
-        foreach (['hosts', 'services', 'hostgroups', 'servicegroups'] as $objectType) {
-            foreach ($statuspage[$objectType] as $index => $objectGroup) {
-                if ($objectType === 'hosts') {
-                    $item = [];
-                    $item['type'] = 'host';
-                    $item['id'] = $objectGroup['id'];
-                    $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
-                        ? $objectGroup['_joinData']['display_alias'] : $objectGroup['name'];
-                    if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] > 0) {
-                        $item['cumulatedStateName'] = $objectGroup['state_summary']['hosts']['cumulatedStateName'];
-                        $item['cumulatedColorId'] = $objectGroup['state_summary']['hosts']['cumulatedStateId'] + 1;
-                        $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
-                        $item['background'] = 'bg-' . $item['cumulatedColor'];
-                        $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
-                        if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0) {
-                            $item['isAcknowledge'] = true;
-                            $item['acknowledgedProblemsText'] = __('State is acknowledged');
-                            $item['acknowledgeComment'] = ($statuspage['show_comments'])
-                                ? $objectGroup['state_summary']['hosts']['acknowledgement_details'][0]['comment_data'] : __('Work in progress');;
-                        }
-                        if ($objectGroup['state_summary']['hosts']['acknowledgements'] === 0) {
-                            $item['isAcknowledge'] = false;
-                            $item['acknowledgedProblemsText'] = __('State is not acknowledged');
-                        }
-                    }
-                    if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] === 0) {
-                        $item['cumulatedStateName'] = $objectGroup['state_summary']['services']['cumulatedStateName'];
-                        $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
-                        $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
-                        $item['background'] = 'bg-' . $item['cumulatedColor'];
-                        $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
-                        $problems = $objectGroup['state_summary']['services']['problems'];
-                        if ($problems > 0) {
-                            $problemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
-                            $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
-                        }
+                // If the host is up -> use worst service state
+                // IF host is down (or unreachable) use the host state (service state not needed in this case)
+                // This is the same behavior as we use on Maps
+                if ($statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] > 0) {
+                    // Host is down or unreachable - use the host status only
+                    // +1 shifts a host state into a service state so we can use a single array
+                    $cumulatedStateId = $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] + 1;
+                    $item['cumulatedStateName'] = $stateNames[$cumulatedStateId];
+                    $item['cumulatedColorId'] = $cumulatedStateId;
+                    $item['cumulatedColor'] = $stateColors[$cumulatedStateId];
+                    $item['background'] = 'bg-' . $stateColors[$cumulatedStateId];
+                    $item['background_css'] = $stateColors[$cumulatedStateId]; // For openITCOCKPIT-Mobile
+
+                    if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0) {
+                        $item['isAcknowledge'] = true;
+                        $item['acknowledgedProblemsText'] = __('State is acknowledged');
+                        $item['acknowledgeComment'] = ($showComments)
+                            ? $objectGroup['state_summary']['hosts']['acknowledgement_details'][0]['comment_data'] : __('Work in progress');
                     }
 
-                    if ($objectGroup['state_summary']['hosts']['downtimes'] === 1 && $showComments) {
+                    $problems = $objectGroup['state_summary']['hosts']['problems'];
+                    if ($problems > 0) {
+                        $problemsAcknowledged = $objectGroup['state_summary']['hosts']['acknowledgements'];
+                        $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
+                    }
+
+                    if ($objectGroup['state_summary']['hosts']['downtimes'] === 1) {
                         $downtimeDataHost = [];
                         $downtimeDataHost['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledStartTime'] ?? 0);
                         $downtimeDataHost['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledEndTime'] ?? 0);
-                        $downtimeDataHost['comment'] = ($statuspage['show_comments'])
+                        $downtimeDataHost['comment'] = ($showComments)
                             ? $objectGroup['state_summary']['hosts']['downtime_details'][0]['commentData'] : __('Work in progress');
                         $item['isInDowntime'] = true;
                         $item['downtimeData'] = $downtimeDataHost;
                     }
 
-                    if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0 && $showComments) {
+                    if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
                         $plannedDowntimeDataHosts = [];
                         foreach ($objectGroup['state_summary']['hosts']['planned_downtime_details'] as $planned) {
                             $downtimePlannedDataHost = [];
                             $downtimePlannedDataHost['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
                             $downtimePlannedDataHost['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
-                            $downtimePlannedDataHost['comment'] = ($statuspage['show_comments'])
+                            $downtimePlannedDataHost['comment'] = ($showComments)
                                 ? $planned['comment_data'] : __('Work in progress');
                             $plannedDowntimeDataHosts[] = $downtimePlannedDataHost;
                         }
                         $item['plannedDowntimeData'] = $plannedDowntimeDataHosts;
                     }
 
-                    $items[] = $item;
-                }
+                } else {
+                    // Host is UP - use cumulated service status (just like on maps)
+                    // Merge host state and service state into one singel cumulated state
+                    $cumulatedStateId = $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'];
+                    $item['cumulatedStateName'] = $stateNames[$cumulatedStateId];
+                    $item['cumulatedColorId'] = $cumulatedStateId;
+                    $item['cumulatedColor'] = $stateColors[$cumulatedStateId];
+                    $item['background'] = 'bg-' . $stateColors[$cumulatedStateId];
+                    $item['background_css'] = $stateColors[$cumulatedStateId]; // For openITCOCKPIT-Mobile
 
-                if ($objectType === 'services') {
-                    $item = [];
-                    $item['type'] = 'service';
-                    $item['id'] = $objectGroup['id'];
-                    $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
-                        ? $objectGroup['_joinData']['display_alias'] : $objectGroup['servicename'];
-                    $item['cumulatedStateName'] = $objectGroup['state_summary']['services']['cumulatedStateName'];
-                    $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
-                    $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
-                    $item['background'] = 'bg-' . $item['cumulatedColor'];
-                    $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
-                    if ($item['cumulatedColorId'] > 0) {
-                        if ($objectGroup['state_summary']['services']['acknowledgements'] === 0) {
-                            $item['isAcknowledge'] = false;
-                            $item['acknowledgedProblemsText'] = __('State is not acknowledged');
-                        } else {
+                    // Is there a service with an issue?
+                    if ($statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] > 0) {
+                        $cumulatedStateId = $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'];
+                        $item['cumulatedStateName'] = $stateNames[$cumulatedStateId];
+                        $item['cumulatedColorId'] = $cumulatedStateId;
+                        $item['cumulatedColor'] = $stateColors[$cumulatedStateId];
+                        $item['background'] = 'bg-' . $stateColors[$cumulatedStateId];
+                        $item['background_css'] = $stateColors[$cumulatedStateId]; // For openITCOCKPIT-Mobile
+
+                        if ($objectGroup['state_summary']['services']['acknowledgements'] > 0) {
                             $item['isAcknowledge'] = true;
                             $item['acknowledgedProblemsText'] = __('State is acknowledged');
-                            $item['acknowledgeComment'] = ($statuspage['show_comments'])
+                            $item['acknowledgeComment'] = ($showComments)
                                 ? $objectGroup['state_summary']['services']['acknowledgement_details'][0]['comment_data'] : __('Work in progress');
                         }
-                    }
 
-                    if ($objectGroup['state_summary']['services']['downtimes'] === 1 && $showComments) {
-                        $downtimeDataService = [];
-                        $downtimeDataService['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'] ?? 0);
-                        $downtimeDataService['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledEndTime'] ?? 0);
-                        $downtimeDataService['comment'] = ($statuspage['show_comments'])
-                            ? $objectGroup['state_summary']['services']['downtime_details'][0]['commentData'] : __('In progress');
-                        $item['isInDowntime'] = true;
-                        $item['downtimeData'] = $downtimeDataService;
-                    }
-
-                    if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0 && $showComments) {
-                        $plannedDowntimeDataServices = [];
-                        foreach ($objectGroup['state_summary']['services']['planned_downtime_details'] as $planned) {
-                            $downtimePlannedDataService = [];
-                            $downtimePlannedDataService['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
-                            $downtimePlannedDataService['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
-                            $downtimePlannedDataService['comment'] = ($statuspage['show_comments'])
-                                ? $planned['comment_data'] : __('In progress');
-                            $plannedDowntimeDataServices[] = $downtimePlannedDataService;
-                        }
-                        $item['plannedDowntimeData'] = $plannedDowntimeDataServices;
-                    }
-
-                    $items[] = $item;
-                }
-
-                if ($objectType === 'hostgroups') {
-                    $item = [
-                        'type'               => 'hostgroup',
-                        'cumulatedStateName' => __('Operational'),
-                        'cumulatedColorId'   => -1,
-                        'cumulatedColor'     => 'primary',
-                        'background'         => 'bg-primary',
-                        'background_css'     => 'primary' // For openITCOCKPIT-Mobile
-                    ];
-                    $item['id'] = $statuspage[$objectType][$index]['id'];
-                    $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
-                        ? $objectGroup['_joinData']['display_alias'] : $objectGroup['name'];
-                    if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] > 0) {
-                        $item['cumulatedStateName'] = $objectGroup['state_summary']['hosts']['cumulatedStateName'];
-                        $item['cumulatedColorId'] = $objectGroup['state_summary']['hosts']['cumulatedStateId'] + 1;
-                        $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
-                        $item['background'] = 'bg-' . $item['cumulatedColor'];
-                        $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
-                    }
-
-                    if ($objectGroup['state_summary']['hosts']['cumulatedStateId'] === 0) {
-                        $item['cumulatedStateName'] = $objectGroup['state_summary']['services']['cumulatedStateName'];
-                        $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
-                        $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
-                        $item['background'] = 'bg-' . $item['cumulatedColor'];
-                        $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
-                    }
-
-                    if ($item['cumulatedColorId'] > 0) {
-                        $problems = $objectGroup['state_summary']['hosts']['problems'];
-                        if ($problems > 0) {
-                            $hostgroupAcknowledgements = $objectGroup['state_summary']['hosts']['acknowledgements'];
-                            $item['hostgroupHostAcknowledgementText'] = __('{0} of {1} Hostproblems are acknowledged', $hostgroupAcknowledgements, $problems);
-                        }
-                        $problems = $objectGroup['state_summary']['services']['problems'];
-                        if ($problems > 0) {
-                            $hostgroupAcknowledgements = $objectGroup['state_summary']['services']['acknowledgements'];
-                            $item['hostgroupServiceAcknowledgementText'] = __('{0} of {1} Serviceproblems are acknowledged', $hostgroupAcknowledgements, $problems);
-                        }
-                    }
-
-                    if ($objectGroup['state_summary']['hosts']['downtimes'] > 0) {
-                        $downtimes = $objectGroup['state_summary']['hosts']['downtimes'];
-                        $total = $objectGroup['state_summary']['hosts']['total'];
-                        $item['downtimeHostgroupHostText'] = __('{0} of {1} Hosts are currently in downtime', $downtimes, $total);
-                    }
-                    if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
-                        $plannedDowntimes = count($objectGroup['state_summary']['hosts']['planned_downtime_details']);
-                        $item['plannedDowntimeHostgroupHostText'] =
-                            __('{0} Downtimes for hosts are planned in the next 10 Days', $plannedDowntimes);
-                    }
-
-                    if ($objectGroup['state_summary']['services']['downtimes'] > 0) {
-                        $downtimes = $objectGroup['state_summary']['services']['downtimes'];
-                        $total = $objectGroup['state_summary']['services']['total'];
-                        $item['downtimeHostgroupServiceText'] = __('{0} of {1} services are currently in downtime', $downtimes, $total);
-                    }
-                    if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
-                        $plannedDowntimes = count($objectGroup['state_summary']['services']['planned_downtime_details']);
-                        $item['plannedDowntimeHostgroupServiceText'] =
-                            __('{0} Downtimes for services are planned in the next 10 Days', $plannedDowntimes);
-                    }
-
-                    $items[] = $item;
-                }
-
-                if ($objectType === 'servicegroups') {
-                    $item = [
-                        'type'               => 'servicegroup',
-                        'cumulatedStateName' => __('Operational'),
-                        'cumulatedColorId'   => -1,
-                        'cumulatedColor'     => 'primary',
-                        'background'         => 'bg-primary',
-                        'background_css'     => 'primary'
-                    ];
-                    $item['id'] = $objectGroup['id'];
-                    $item['name'] = ($objectGroup['_joinData']['display_alias'] !== null && $objectGroup['_joinData']['display_alias'] !== '')
-                        ? $objectGroup['_joinData']['display_alias'] : $objectGroup['name'];
-                    $item['cumulatedStateName'] = $objectGroup['state_summary']['services']['cumulatedStateName'];
-                    $item['cumulatedColorId'] = $objectGroup['state_summary']['services']['cumulatedStateId'];
-                    $item['cumulatedColor'] = $this->getServiceStatusColor($item['cumulatedColorId']);
-                    $item['background'] = 'bg-' . $item['cumulatedColor'];
-                    $item['background_css'] = $item['cumulatedColor']; // For openITCOCKPIT-Mobile
-                    if ($item['cumulatedColorId'] > 0) {
                         $problems = $objectGroup['state_summary']['services']['problems'];
                         if ($problems > 0) {
                             $problemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
                             $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
                         }
                     }
-                    if ($objectGroup['state_summary']['services']['downtimes'] > 0) {
-                        $downtimes = $objectGroup['state_summary']['services']['downtimes'];
-                        $total = $objectGroup['state_summary']['services']['total'];
-                        $item['downtimeText'] = __('{0} of {1} Services are currently in downtime', $downtimes, $total);
+
+                    if ($objectGroup['state_summary']['services']['downtimes'] === 1) {
+                        $downtimeDataHost = [];
+                        $downtimeDataHost['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'] ?? 0);
+                        $downtimeDataHost['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledEndTime'] ?? 0);
+                        $downtimeDataHost['comment'] = ($showComments)
+                            ? $objectGroup['state_summary']['services']['downtime_details'][0]['commentData'] : __('Work in progress');
+                        $item['isInDowntime'] = true;
+                        $item['downtimeData'] = $downtimeDataHost;
                     }
+
                     if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
-                        $plannedDowntimes = count($objectGroup['state_summary']['services']['planned_downtime_details']);
-                        $item['plannedDowntimeText'] =
-                            __('{0} Downtimes are planned in the next 10 Days', $plannedDowntimes);
+                        $plannedDowntimeDataServices = [];
+                        foreach ($objectGroup['state_summary']['services']['planned_downtime_details'] as $planned) {
+                            $downtimePlannedDataHost = [];
+                            $downtimePlannedDataHost['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
+                            $downtimePlannedDataHost['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
+                            $downtimePlannedDataHost['comment'] = ($showComments)
+                                ? $planned['comment_data'] : __('Work in progress');
+                            $plannedDowntimeDataServices[] = $downtimePlannedDataHost;
+                        }
+                        $item['plannedDowntimeData'] = $plannedDowntimeDataServices;
                     }
-                    $items[] = $item;
                 }
+                $items[] = $item;
             }
         }
-
-        $names = [
-            -1 => __('Not in Monitoring'),
-            0  => __('All services are operational'),
-            1  => __('Performance Issues'),
-            2  => __('Major Outage'),
-            3  => __('Unknown'),
-        ];
-
-        $icons = [
-            -1 => 'fa-solid fa-eye-low-vision',
-            0  => 'fa-solid fa-check',
-            1  => 'fa-solid fa-triangle-exclamation',
-            2  => 'fa-solid fa-bolt',
-            3  => 'fa-solid fa-question',
-        ];
 
         if (empty($items)) {
             return [
@@ -836,16 +768,14 @@ class StatuspagesTable extends Table {
                 'showComments'         => $statuspage['show_comments'],
                 'cumulatedColorId'     => $items[0]['cumulatedColorId'] ?? -1,
                 'cumulatedColor'       => $items[0]['cumulatedColor'] ?? 'primary',
-                'cumulatedHumanStatus' => $names[$items[0]['cumulatedColorId']] ?? __('Unknown'),
-                'cumulatedIcon'        => $icons[$items[0]['cumulatedColorId']] ?? 'fa-solid fa-eye-low-vision',
-                'background'           => !empty($items[0]['cumulatedColor']) ? 'bg-' . $items[0]['cumulatedColor'] : 'bg-primary',
-                'background_css'       => !empty($items[0]['cumulatedColor']) ? $items[0]['cumulatedColor'] : 'primary' // For openITCOCKPIT-Mobile
+                'cumulatedHumanStatus' => $stateNames[$items[0]['cumulatedColorId']] ?? __('Unknown'),
+                'cumulatedIcon'        => $stateIcons[$items[0]['cumulatedColorId']] ?? 'fa-solid fa-eye-low-vision',
+                'background'           => $items[0]['background'],
+                'background_css'       => $items[0]['background_css'], // For openITCOCKPIT-Mobile
             ],
             'items'      => $items,
         ];
 
-        //debug($statuspage);
-        //exit(1);
         return $statuspageView;
     }
 
@@ -902,7 +832,7 @@ class StatuspagesTable extends Table {
                         'Services.id',
                         'Services.uuid',
                         'Services.host_id',
-                        'servicename' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                        'name' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                     ])
                     ->contain([
                         'Servicetemplates' => function (Query $q) {
