@@ -602,7 +602,18 @@ class StatuspagesTable extends Table {
 
                 ];
 
+                /*
+                 * @todo use foreach for host and service state summary
+                 * set cumulate state name dynamically
+                 * remove text-primary as background color :D
+                 */
+
                 // Get the worst host state
+                if ($objectGroup['state_summary']['hosts']['state'][0] > 0) {
+                    // Host is up
+                    $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] = 0;
+                    $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateName'] = __('ALL is alright');
+                }
                 if ($objectGroup['state_summary']['hosts']['state'][1] > 0) {
                     // Host is down
                     $statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] = 1;
@@ -615,6 +626,11 @@ class StatuspagesTable extends Table {
                 }
 
                 // Get the worst service state
+                if ($objectGroup['state_summary']['services']['state'][0] > 0) {
+                    // Services is ok
+                    $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] = 0;
+                    $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateName'] = __('ALL is alright');
+                }
                 if ($objectGroup['state_summary']['services']['state'][1] > 0) {
                     // Services is warning
                     $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] = 1;
