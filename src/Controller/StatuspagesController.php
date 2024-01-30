@@ -195,6 +195,11 @@ class StatuspagesController extends AppController {
                 return;
             }
 
+            if ($this->isJsonRequest()) {
+                $this->serializeCake4Id($statuspage); // REST API ID serialization
+                return;
+            }
+
             $this->set('statuspage', $statuspage);
             $this->viewBuilder()->setOption('serialize', ['statuspage']);
         }
