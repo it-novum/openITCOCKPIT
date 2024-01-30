@@ -1324,3 +1324,7 @@ div.packetmanager-selection > span::selection {
     background: #4285F408;
     background-clip: content-box;
 }
+
+.warning-icon-gray {
+    filter: grayscale(100%);
+}

@@ -106,7 +106,7 @@
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.public}">
-                            <div class="custom-control custom-checkbox margin-bottom-10"
+                            <div class="custom-control custom-checkbox"
                                  ng-class="{'has-error': errors.public}">
 
                                 <input type="checkbox"
@@ -119,10 +119,15 @@
                                     <?php echo __('Public'); ?>
                                 </label>
                             </div>
+                            <div class="help-block mt-0">
+                                <span class="font-lg"
+                                      ng-class="{'warning-icon-gray' : post.Statuspage.public == 0}">⚠️</span>
+                                <?= __('Grant unrestricted access to this Statuspage without user authentication.'); ?>
+                            </div>
                         </div>
 
                         <div class="form-group" ng-class="{'has-error': errors.show_comments}">
-                            <div class="custom-control custom-checkbox margin-bottom-10"
+                            <div class="custom-control custom-checkbox"
                                  ng-class="{'has-error': errors.show_comments}">
                                 <input type="checkbox"
                                        class="custom-control-input"
@@ -131,8 +136,11 @@
                                        ng-false-value="0"
                                        ng-model="post.Statuspage.show_comments">
                                 <label class="custom-control-label" for="showComments">
-                                    <?php echo __('Show comments'); ?>
+                                    <?php echo __('Show downtime comments'); ?>
                                 </label>
+                            </div>
+                            <div class="help-block mt-0">
+                                <?= __('Show scheduled downtimes including the comment data. This can be used to inform about ongoing and upcoming maintenance.'); ?>
                             </div>
                         </div>
 
