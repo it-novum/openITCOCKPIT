@@ -123,6 +123,8 @@ class StatuspagesController extends AppController {
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
+        $statuspage = $StatuspagesTable->get($id);
+
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
             /** @var $ContainersTable ContainersTable */
@@ -132,7 +134,7 @@ class StatuspagesController extends AppController {
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
 
-        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $MY_RIGHTS, $UserTime, true);
+        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $MY_RIGHTS, $UserTime, $statuspage->show_comments);
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }

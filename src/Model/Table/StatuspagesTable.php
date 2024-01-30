@@ -270,11 +270,11 @@ class StatuspagesTable extends Table {
     /**
      * @param int $id
      * @param array $MY_RIGHTS
-     * @param UserTime $userTime
-     * @param bool $includeComments
+     * @param UserTime $UserTime
+     * @param bool $showComments
      * @return array
      */
-    public function getStatuspageForView(int $id, array $MY_RIGHTS, UserTime $userTime, bool $includeComments = false) {
+    public function getStatuspageForView(int $id, array $MY_RIGHTS, UserTime $UserTime, bool $showComments = false) {
         $statuspage = $this->getStatuspageWithAllObjects($id, $MY_RIGHTS);
 
         // Merge all host and service uuids to select the host and service status
@@ -387,12 +387,20 @@ class StatuspagesTable extends Table {
         $DowntimehistoryHostsTable = $DbBackend->getDowntimehistoryHostsTable();
         $DowntimehistoryServicesTable = $DbBackend->getDowntimehistoryServicesTable();
 
-        $AllHostDowntimes = $DowntimehistoryHostsTable->byUuidsNoJoins($DowntimeHostUuids, true);
-        $AllServiceDowntimes = $DowntimehistoryServicesTable->byUuidsNoJoins($DowntimeServiceUuids, true);
+        $AllHostDowntimes = [];
+        $AllServiceDowntimes = [];
+        $AllPlannedHostDowntimes = [];
+        $AllPlannedServiceDowntimes = [];
 
-        // Query all planned downtimes for all objects
-        $AllPlannedHostDowntimes = $DowntimehistoryHostsTable->getPlannedDowntimes($hostUuids, time(), (time() + (3600 * 24 * 10)));
-        $AllPlannedServiceDowntimes = $DowntimehistoryServicesTable->getPlannedDowntimes($serviceUuids, time(), (time() + (3600 * 24 * 10)));
+        if ($showComments) {
+            // Query all currently running downtimes
+            $AllHostDowntimes = $DowntimehistoryHostsTable->byUuidsNoJoins($DowntimeHostUuids, true);
+            $AllServiceDowntimes = $DowntimehistoryServicesTable->byUuidsNoJoins($DowntimeServiceUuids, true);
+
+            // Query all planned downtimes for all objects
+            $AllPlannedHostDowntimes = $DowntimehistoryHostsTable->getPlannedDowntimes($hostUuids, time(), (time() + (3600 * 24 * 10)));
+            $AllPlannedServiceDowntimes = $DowntimehistoryServicesTable->getPlannedDowntimes($serviceUuids, time(), (time() + (3600 * 24 * 10)));
+        }
 
 
         foreach ($statuspage['hosts'] as $host) {
@@ -560,6 +568,7 @@ class StatuspagesTable extends Table {
         }
         $items = [];
         // Create total summary state of the complete Status page
+
         foreach (['hosts', 'services', 'hostgroups', 'servicegroups'] as $objectType) {
             foreach ($statuspage[$objectType] as $index => $objectGroup) {
                 if ($objectType === 'hosts') {
@@ -598,22 +607,22 @@ class StatuspagesTable extends Table {
                         }
                     }
 
-                    if ($objectGroup['state_summary']['hosts']['downtimes'] === 1) {
+                    if ($objectGroup['state_summary']['hosts']['downtimes'] === 1 && $showComments) {
                         $downtimeDataHost = [];
-                        $downtimeDataHost['scheduledStartTime'] = $this->time2string($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledStartTime'], $userTime);
-                        $downtimeDataHost['scheduledEndTime'] = $this->time2string($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledEndTime'], $userTime);
+                        $downtimeDataHost['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledStartTime'] ?? 0);
+                        $downtimeDataHost['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledEndTime'] ?? 0);
                         $downtimeDataHost['comment'] = ($statuspage['show_comments'])
                             ? $objectGroup['state_summary']['hosts']['downtime_details'][0]['commentData'] : __('Work in progress');
                         $item['isInDowntime'] = true;
                         $item['downtimeData'] = $downtimeDataHost;
                     }
 
-                    if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
+                    if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0 && $showComments) {
                         $plannedDowntimeDataHosts = [];
                         foreach ($objectGroup['state_summary']['hosts']['planned_downtime_details'] as $planned) {
                             $downtimePlannedDataHost = [];
-                            $downtimePlannedDataHost['scheduledStartTime'] = $this->time2string($planned['scheduled_start_time'], $userTime);
-                            $downtimePlannedDataHost['scheduledEndTime'] = $this->time2string($planned['scheduled_end_time'], $userTime);
+                            $downtimePlannedDataHost['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
+                            $downtimePlannedDataHost['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
                             $downtimePlannedDataHost['comment'] = ($statuspage['show_comments'])
                                 ? $planned['comment_data'] : __('Work in progress');
                             $plannedDowntimeDataHosts[] = $downtimePlannedDataHost;
@@ -647,22 +656,22 @@ class StatuspagesTable extends Table {
                         }
                     }
 
-                    if ($objectGroup['state_summary']['services']['downtimes'] === 1) {
+                    if ($objectGroup['state_summary']['services']['downtimes'] === 1 && $showComments) {
                         $downtimeDataService = [];
-                        $downtimeDataService['scheduledStartTime'] = $this->time2string($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'], $userTime);
-                        $downtimeDataService['scheduledEndTime'] = $this->time2string($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledEndTime'], $userTime);
+                        $downtimeDataService['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'] ?? 0);
+                        $downtimeDataService['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledEndTime'] ?? 0);
                         $downtimeDataService['comment'] = ($statuspage['show_comments'])
                             ? $objectGroup['state_summary']['services']['downtime_details'][0]['commentData'] : __('In progress');
                         $item['isInDowntime'] = true;
                         $item['downtimeData'] = $downtimeDataService;
                     }
 
-                    if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
+                    if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0 && $showComments) {
                         $plannedDowntimeDataServices = [];
                         foreach ($objectGroup['state_summary']['services']['planned_downtime_details'] as $planned) {
                             $downtimePlannedDataService = [];
-                            $downtimePlannedDataService['scheduledStartTime'] = $this->time2string($planned['scheduled_start_time'], $userTime);
-                            $downtimePlannedDataService['scheduledEndTime'] = $this->time2string($planned['scheduled_end_time'], $userTime);
+                            $downtimePlannedDataService['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
+                            $downtimePlannedDataService['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
                             $downtimePlannedDataService['comment'] = ($statuspage['show_comments'])
                                 ? $planned['comment_data'] : __('In progress');
                             $plannedDowntimeDataServices[] = $downtimePlannedDataService;
@@ -833,11 +842,6 @@ class StatuspagesTable extends Table {
         //debug($statuspage);
         //exit(1);
         return $statuspageView;
-    }
-
-
-    private function time2string(int $stamp, UserTime $userTime) {
-        return $userTime->format($stamp);
     }
 
     /**
