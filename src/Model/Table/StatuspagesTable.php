@@ -90,27 +90,32 @@ class StatuspagesTable extends Table {
             'className'        => 'Hosts',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'host_id',
-            'joinTable'        => 'statuspages_to_hosts'
+            'joinTable'        => 'statuspages_to_hosts',
+            'saveStrategy' => 'replace'
         ])->setDependent(true);
 
         $this->belongsToMany('Services', [
             'className'        => 'Services',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'service_id',
-            'joinTable'        => 'statuspages_to_services'
+            'joinTable'        => 'statuspages_to_services',
+            'saveStrategy' => 'replace'
         ])->setDependent(true);
 
         $this->belongsToMany('Hostgroups', [
             'className'        => 'Hostgroups',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'hostgroup_id',
-            'joinTable'        => 'statuspages_to_hostgroups'
+            'joinTable'        => 'statuspages_to_hostgroups',
+            'saveStrategy' => 'replace'
         ])->setDependent(true);
+
         $this->belongsToMany('Servicegroups', [
             'className'        => 'Servicegroups',
             'foreignKey'       => 'statuspage_id',
             'targetForeignKey' => 'servicegroup_id',
-            'joinTable'        => 'statuspages_to_servicegroups'
+            'joinTable'        => 'statuspages_to_servicegroups',
+            'saveStrategy' => 'replace'
         ])->setDependent(true);
 
     }
@@ -1179,6 +1184,4 @@ class StatuspagesTable extends Table {
             'Statuspage' => $statuspage
         ];
     }
-
-
 }
