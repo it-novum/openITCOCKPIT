@@ -73,6 +73,13 @@ class HostgroupsTable extends Table {
             'joinTable'        => 'hosttemplates_to_hostgroups',
             'saveStrategy'     => 'replace'
         ]);
+        $this->belongsToMany('Statuspages', [
+            'className'        => 'Statuspages',
+            'foreignKey'       => 'hostgroup_id',
+            'targetForeignKey' => 'statuspage_id',
+            'joinTable'        => 'statuspages_to_hostgroups',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
     }
 
     /**

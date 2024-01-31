@@ -172,6 +172,14 @@ class ServicesTable extends Table {
         $this->hasMany('Widgets', [
             'foreignKey' => 'service_id'
         ]);
+
+        $this->belongsToMany('Statuspages', [
+            'className'        => 'Statuspages',
+            'foreignKey'       => 'service_id',
+            'targetForeignKey' => 'statuspage_id',
+            'joinTable'        => 'statuspages_to_services',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
     }
 
     /**
