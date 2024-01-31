@@ -460,7 +460,6 @@ class StatuspagesTable extends Table {
                 ];
 
                 foreach ($objectGroup['host_uuids'] as $hostUuid => $v) {
-
                     if (isset($AllPlannedHostDowntimes[$hostUuid])) {
                         $statuspage[$objectType][$index]['state_summary']['hosts']['planned_downtime_details'] = array_merge(
                             $statuspage[$objectType][$index]['state_summary']['hosts']['planned_downtime_details'],
@@ -647,25 +646,30 @@ class StatuspagesTable extends Table {
                 $item['background'] = 'bg-' . $stateColors['hosts'][$cumulatedStateId];
                 $item['background_css'] = $stateColors['hosts'][$cumulatedStateId]; // For openITCOCKPIT-Mobile
 
-                if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
-                    $plannedDowntimeDataHosts = [];
-                    foreach ($objectGroup['state_summary']['hosts']['planned_downtime_details'] as $planned) {
-                        $downtimePlannedDataHost = [];
-                        $downtimePlannedDataHost['scheduledStartTimestamp'] = $planned['scheduled_start_time'];
-                        $downtimePlannedDataHost['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
-                        $downtimePlannedDataHost['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
-                        $downtimePlannedDataHost['comment'] = ($showComments)
-                            ? $planned['comment_data'] : __('Work in progress');
-                        $plannedDowntimeDataHosts[] = $downtimePlannedDataHost;
+                //only relevant for host and host groups
+                if (in_array($objectType, ['hosts', 'hostgroups'], true)) {
+                    if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
+                        $plannedDowntimeDataHosts = [];
+                        foreach ($objectGroup['state_summary']['hosts']['planned_downtime_details'] as $planned) {
+                            $downtimePlannedDataHost = [];
+                            $downtimePlannedDataHost['scheduledStartTimestamp'] = $planned['scheduled_start_time'];
+                            $downtimePlannedDataHost['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
+                            $downtimePlannedDataHost['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
+                            $downtimePlannedDataHost['comment'] = ($showComments)
+                                ? $planned['comment_data'] : __('Work in progress');
+                            $plannedDowntimeDataHosts[] = $downtimePlannedDataHost;
+                        }
+                        $plannedDowntimeDataHosts = Hash::sort(
+                            $plannedDowntimeDataHosts,
+                            '{n}.scheduledStartTimestamp', 'asc'
+                        );
+                        $item['plannedDowntimeData'] = $plannedDowntimeDataHosts;
                     }
-                    $plannedDowntimeDataHosts = Hash::sort(
-                        $plannedDowntimeDataHosts,
-                        '{n}.scheduledStartTimestamp', 'asc'
-                    );
-                    $item['plannedDowntimeData'] = $plannedDowntimeDataHosts;
                 }
 
-                if ($statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] > 0) {
+
+                if ($statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] > 0 &&
+                    in_array($objectType, ['hosts', 'hostgroups'], true)) {
                     // Host is down or unreachable - use the host status only
                     if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0) {
                         $item['isAcknowledge'] = true;
@@ -691,6 +695,16 @@ class StatuspagesTable extends Table {
                         $item['downtimeData'] = $downtimeDataHost;
                     }
                 } else {
+                    // Set initial state for service or service groups
+                    if (in_array($objectType, ['services', 'servicegroups'], true)) {
+                        $cumulatedStateId = $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'];
+                        $cumulatedStateName = $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateName'];
+                        $item['cumulatedStateName'] = $cumulatedStateName;
+                        $item['cumulatedColorId'] = $cumulatedStateId;
+                        $item['cumulatedColor'] = $stateColors['services'][$cumulatedStateId];
+                        $item['background'] = 'bg-' . $stateColors['services'][$cumulatedStateId];
+                        $item['background_css'] = $stateColors['services'][$cumulatedStateId]; // For openITCOCKPIT-Mobile
+                    }
                     // All hosts are up - Is there a service with an issue?
                     if ($statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] > 0) {
                         $cumulatedStateId = $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'];
@@ -887,7 +901,8 @@ class StatuspagesTable extends Table {
                     })
                     ->where([
                         'Services.disabled' => 0
-                    ]);
+                    ])
+                    ->group(['Services.id']);
             })
             ->contain('Hostgroups', function (Query $q) use ($MY_RIGHTS) {
                 return $q
