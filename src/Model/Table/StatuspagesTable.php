@@ -634,12 +634,6 @@ class StatuspagesTable extends Table {
 
                 ];
 
-                /*
-                 * @todo use foreach for host and service state summary
-                 * set cumulate state name dynamically
-                 * remove text-primary as background color :D
-                 */
-
                 // Get the worst host state
                 foreach ($objectGroup['state_summary']['hosts']['state'] as $state => $stateCount) {
                     if ($stateCount > 0) {
@@ -673,12 +667,17 @@ class StatuspagesTable extends Table {
                     $plannedDowntimeDataHosts = [];
                     foreach ($objectGroup['state_summary']['hosts']['planned_downtime_details'] as $planned) {
                         $downtimePlannedDataHost = [];
+                        $downtimePlannedDataHost['scheduledStartTimestamp'] = $planned['scheduled_start_time'];
                         $downtimePlannedDataHost['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
                         $downtimePlannedDataHost['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
                         $downtimePlannedDataHost['comment'] = ($showComments)
                             ? $planned['comment_data'] : __('Work in progress');
                         $plannedDowntimeDataHosts[] = $downtimePlannedDataHost;
                     }
+                    $plannedDowntimeDataHosts = Hash::sort(
+                        $plannedDowntimeDataHosts,
+                        '{n}.scheduledStartTimestamp', 'asc'
+                    );
                     $item['plannedDowntimeData'] = $plannedDowntimeDataHosts;
                 }
 
@@ -699,6 +698,7 @@ class StatuspagesTable extends Table {
 
                     if ($objectGroup['state_summary']['hosts']['downtimes'] === 1) {
                         $downtimeDataHost = [];
+                        $downtimeDataHost['scheduledStartTimestamp'] = $objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledStartTime'];
                         $downtimeDataHost['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledStartTime'] ?? 0);
                         $downtimeDataHost['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['hosts']['downtime_details'][0]['scheduledEndTime'] ?? 0);
                         $downtimeDataHost['comment'] = ($showComments)
@@ -732,29 +732,50 @@ class StatuspagesTable extends Table {
                     }
 
                     if ($objectGroup['state_summary']['services']['downtimes'] === 1) {
-                        $downtimeDataHost = [];
-                        $downtimeDataHost['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'] ?? 0);
-                        $downtimeDataHost['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledEndTime'] ?? 0);
-                        $downtimeDataHost['comment'] = ($showComments)
+                        $downtimeDataService = [];
+                        $downtimeDataService['scheduledStartTimestamp'] = $objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'];
+                        $downtimeDataService['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'] ?? 0);
+                        $downtimeDataService['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledEndTime'] ?? 0);
+                        $downtimeDataService['comment'] = ($showComments)
                             ? $objectGroup['state_summary']['services']['downtime_details'][0]['commentData'] : __('Work in progress');
                         $item['isInDowntime'] = true;
-                        $item['downtimeData'] = $downtimeDataHost;
+                        if (!empty($item['downtimeData'])) {
+                            $plannedDowntimeDataServices = array_merge(
+                                $plannedDowntimeDataServices,
+                                $item['downtimeData']
+                            );
+
+                            $plannedDowntimeDataServices = Hash::sort(
+                                $plannedDowntimeDataServices, '{n}.scheduledStartTimestamp', 'asc'
+                            );
+                        }
+                        $item['downtimeData'] = $downtimeDataService;
                     }
 
                     if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
                         $plannedDowntimeDataServices = [];
                         foreach ($objectGroup['state_summary']['services']['planned_downtime_details'] as $planned) {
-                            $downtimePlannedDataHost = [];
-                            $downtimePlannedDataHost['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
-                            $downtimePlannedDataHost['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
-                            $downtimePlannedDataHost['comment'] = ($showComments)
+                            $downtimePlannedDataService = [];
+                            $downtimePlannedDataService['scheduledStartTimestamp'] = $planned['scheduled_start_time'];
+                            $downtimePlannedDataService['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
+                            $downtimePlannedDataService['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
+                            $downtimePlannedDataService['comment'] = ($showComments)
                                 ? $planned['comment_data'] : __('Work in progress');
-                            $plannedDowntimeDataServices[] = $downtimePlannedDataHost;
+                            $plannedDowntimeDataServices[] = $downtimePlannedDataService;
                         }
+                        if (!empty($item['plannedDowntimeData'])) {
+                            $plannedDowntimeDataServices = array_merge(
+                                $plannedDowntimeDataServices,
+                                $item['plannedDowntimeData']
+                            );
+                        }
+                        $plannedDowntimeDataServices = Hash::sort(
+                            $plannedDowntimeDataServices,
+                            '{n}.scheduledStartTimestamp', 'asc'
+                        );
                         $item['plannedDowntimeData'] = $plannedDowntimeDataServices;
                     }
                 }
-
                 $items[] = $item;
             }
         }
