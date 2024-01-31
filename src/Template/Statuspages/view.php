@@ -205,8 +205,10 @@
                                     <div class="col-12 text-truncate" ng-if="item.isInDowntime && item.downtimeData">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
-                                                <i class="fa fa-power-off"></i>
-                                                <?= __('Is currently in a planned maintenance period'); ?>
+                                                <div class="pt-1">
+                                                    <i class="fa fa-power-off"></i>
+                                                    <?= __('Is currently in a planned maintenance period'); ?>
+                                                </div>
                                                 <div class="row">
                                                     <div class="col-xs-12 col-md-3">
                                                         <?= __('Start'); ?>: {{item.downtimeData.scheduledStartTime}}
@@ -227,8 +229,11 @@
                                     <div class="col-12 text-truncate" ng-if="item.plannedDowntimeData.length > 0">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
-                                                <i class="fa fa-power-off"></i>
-                                                <?= __('Planned Downtimes for the next 10 days:'); ?>
+                                                <div class="pt-1">
+                                                    <i class="fa fa-power-off"></i>
+                                                    <?= __('Planned Downtimes for the next 10 days:'); ?>
+                                                </div>
+
                                                 <div class="row" ng-repeat="downtime in item.plannedDowntimeData">
                                                     <div class="col-xs-12 col-md-3">
                                                         <?= __('Start'); ?>: {{downtime.scheduledStartTime}}

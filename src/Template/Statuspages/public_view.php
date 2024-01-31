@@ -159,8 +159,10 @@
                                             <div class="col-12 ">
                                                 <div class="row">
                                                     <div class="col-12 ">
-                                                        <i class="fa fa-power-off"></i>
-                                                        <?= __('Is currently in a planned maintenance period'); ?>
+                                                        <div class="pt-1">
+                                                            <i class="fa fa-power-off"></i>
+                                                            <?= __('Is currently in a planned maintenance period'); ?>
+                                                        </div>
                                                         <div class="row">
                                                             <div class="col-xs-12 col-md-3">
                                                                 <?= __('Start'); ?>:
@@ -186,8 +188,10 @@
                                             <div class="col-12 ">
                                                 <div class="row">
                                                     <div class="col-12 ">
-                                                        <i class="fa fa-power-off"></i>
-                                                        <?= __('Planned Downtimes for the next 10 days:'); ?>
+                                                        <div class="pt-1">
+                                                            <i class="fa fa-power-off"></i>
+                                                            <?= __('Planned Downtimes for the next 10 days:'); ?>
+                                                        </div>
                                                         <?php foreach ($item['plannedDowntimeData'] as $downtime): ?>
                                                             <div class="row">
                                                                 <div class="col-xs-12 col-md-3">
@@ -231,6 +235,3 @@
 
     </div>
 </div>
-
-
-
