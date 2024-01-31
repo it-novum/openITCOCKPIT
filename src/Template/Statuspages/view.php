@@ -88,7 +88,7 @@
 
 
                         <div
-                            class="p-3 statuspage-bg-{{Statuspage.statuspage.cumulatedColor}} rounded overflow-hidden position-relative text-white">
+                            class="p-3 bg-{{Statuspage.statuspage.cumulatedColor}} rounded overflow-hidden position-relative text-white">
                             <div>
                                 <h2 class="d-block l-h-n m-0 fw-500">
                                     {{Statuspage.statuspage.cumulatedHumanStatus}}
