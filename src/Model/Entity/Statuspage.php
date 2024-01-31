@@ -13,7 +13,10 @@ use Cake\ORM\Entity;
  * @property string $name
  * @property string|null $description
  * @property bool $public
- * @property bool $show_comments
+ * @property bool $show_downtimes
+ * @property bool $show_downtime_comments
+ * @property bool $show_acknowledgements
+ * @property bool $show_acknowledgement_comments
  * @property FrozenTime $created
  * @property FrozenTime $modified
  *
@@ -34,16 +37,19 @@ class Statuspage extends Entity {
      * @var array<string, bool>
      */
     protected $_accessible = [
-        'container_id'  => true,
-        'name'          => true,
-        'description'   => true,
-        'public'        => true,
-        'show_comments' => true,
-        'hosts'         => true,
-        'services'      => true,
-        'hostgroups'    => true,
-        'servicegroups' => true,
-        'created'       => true,
-        'modified'      => true,
+        'container_id'                  => true,
+        'name'                          => true,
+        'description'                   => true,
+        'public'                        => true,
+        'show_downtimes'                => true,
+        'show_downtime_comments'        => true,
+        'show_acknowledgements'         => true,
+        'show_acknowledgement_comments' => true,
+        'hosts'                         => true,
+        'services'                      => true,
+        'hostgroups'                    => true,
+        'servicegroups'                 => true,
+        'created'                       => true,
+        'modified'                      => true,
     ];
 }

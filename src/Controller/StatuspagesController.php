@@ -134,7 +134,7 @@ class StatuspagesController extends AppController {
             $MY_RIGHTS = $this->MY_RIGHTS;
         }
 
-        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $MY_RIGHTS, $UserTime, $statuspage->show_comments);
+        $statuspageViewData = $StatuspagesTable->getStatuspageForView($id, $MY_RIGHTS, $UserTime);
         $this->set('Statuspage', $statuspageViewData);
         $this->viewBuilder()->setOption('serialize', ['Statuspage']);
     }
@@ -165,7 +165,7 @@ class StatuspagesController extends AppController {
         }
         $this->viewBuilder()->setLayout('statuspage_public');
         $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
-        $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$id, [], $UserTime, true);
+        $statuspageViewData = $StatuspagesTable->getStatuspageForView((int)$id, [], $UserTime);
         $this->set('statuspage', $statuspageViewData);
         $this->set('systemname', $this->getSystemname());
         $this->set('id', $id);

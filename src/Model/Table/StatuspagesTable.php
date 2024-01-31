@@ -149,8 +149,20 @@ class StatuspagesTable extends Table {
             ->notEmptyString('public');
 
         $validator
-            ->boolean('show_comments')
-            ->notEmptyString('show_comments');
+            ->boolean('show_downtimes')
+            ->allowEmptyString('show_downtimes');
+
+        $validator
+            ->boolean('show_downtime_comments')
+            ->allowEmptyString('show_downtime_comments');
+
+        $validator
+            ->boolean('show_acknowledgements')
+            ->allowEmptyString('show_acknowledgements');
+
+        $validator
+            ->boolean('show_acknowledgement_comments')
+            ->allowEmptyString('show_acknowledgement_comments');
 
         $validator
             ->add('selected_hosts', 'custom', [
@@ -276,11 +288,12 @@ class StatuspagesTable extends Table {
      * @param int $id
      * @param array $MY_RIGHTS
      * @param UserTime $UserTime
-     * @param bool $showComments
      * @return array
      */
-    public function getStatuspageForView(int $id, array $MY_RIGHTS, UserTime $UserTime, bool $showComments = false) {
+    public function getStatuspageForView(int $id, array $MY_RIGHTS, UserTime $UserTime) {
         $statuspage = $this->getStatuspageWithAllObjects($id, $MY_RIGHTS);
+
+        $showComments = true; // todo implement me
 
         // Merge all host and service uuids to select the host and service status
         $hostUuids = [];
@@ -767,16 +780,19 @@ class StatuspagesTable extends Table {
         if (empty($items)) {
             return [
                 'statuspage' => [
-                    'name'                 => $statuspage['name'],
-                    'description'          => $statuspage['description'],
-                    'public'               => $statuspage['public'],
-                    'showComments'         => $statuspage['show_comments'],
-                    'cumulatedColorId'     => -1,
-                    'cumulatedColor'       => 'primary',
-                    'cumulatedHumanStatus' => __('Not in Monitoring'),
-                    'cumulatedIcon'        => 'fa-solid fa-eye-low-vision',
-                    'background'           => 'bg-primary',
-                    'background_css'       => 'primary'
+                    'name'                        => $statuspage['name'],
+                    'description'                 => $statuspage['description'],
+                    'public'                      => $statuspage['public'],
+                    'showDowntimes'               => $statuspage['show_downtimes'],
+                    'showDowntimeComments'        => $statuspage['show_downtime_comments'],
+                    'showAcknowledgements'        => $statuspage['show_acknowledgements'],
+                    'showAcknowledgementComments' => $statuspage['show_acknowledgement_comments'],
+                    'cumulatedColorId'            => -1,
+                    'cumulatedColor'              => 'primary',
+                    'cumulatedHumanStatus'        => __('Not in Monitoring'),
+                    'cumulatedIcon'               => 'fa-solid fa-eye-low-vision',
+                    'background'                  => 'bg-primary',
+                    'background_css'              => 'primary'
                 ],
                 'items'      => [],
             ];
@@ -786,16 +802,19 @@ class StatuspagesTable extends Table {
 
         $statuspageView = [
             'statuspage' => [
-                'name'                 => $statuspage['name'],
-                'description'          => $statuspage['description'],
-                'public'               => $statuspage['public'],
-                'showComments'         => $statuspage['show_comments'],
-                'cumulatedColorId'     => $items[0]['cumulatedColorId'] ?? -1,
-                'cumulatedColor'       => $items[0]['cumulatedColor'],
-                'cumulatedHumanStatus' => $items[0]['cumulatedStateName'],
-                'cumulatedIcon'        => $stateIcons[$items[0]['cumulatedColorId']] ?? 'fa-solid fa-eye-low-vision',
-                'background'           => $items[0]['background'],
-                'background_css'       => $items[0]['background_css'], // For openITCOCKPIT-Mobile
+                'name'                        => $statuspage['name'],
+                'description'                 => $statuspage['description'],
+                'public'                      => $statuspage['public'],
+                'showDowntimes'               => $statuspage['show_downtimes'],
+                'showDowntimeComments'        => $statuspage['show_downtime_comments'],
+                'showAcknowledgements'        => $statuspage['show_acknowledgements'],
+                'showAcknowledgementComments' => $statuspage['show_acknowledgement_comments'],
+                'cumulatedColorId'            => $items[0]['cumulatedColorId'] ?? -1,
+                'cumulatedColor'              => $items[0]['cumulatedColor'],
+                'cumulatedHumanStatus'        => $items[0]['cumulatedStateName'],
+                'cumulatedIcon'               => $stateIcons[$items[0]['cumulatedColorId']] ?? 'fa-solid fa-eye-low-vision',
+                'background'                  => $items[0]['background'],
+                'background_css'              => $items[0]['background_css'], // For openITCOCKPIT-Mobile
             ],
             'items'      => $items,
         ];

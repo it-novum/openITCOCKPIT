@@ -157,9 +157,23 @@
                                     <i class="fa" ng-class="getSortClass('Statuspages.description')"></i>
                                     <?php echo __('Description'); ?>
                                 </th>
-                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.show_comments')">
-                                    <i class="fa" ng-class="getSortClass('Statuspages.show_comments')"></i>
-                                    <?php echo __('Comments'); ?>
+                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.show_downtimes')">
+                                    <i class="fa" ng-class="getSortClass('Statuspages.show_downtimes')"></i>
+                                    <?php echo __('Show Downtimes'); ?>
+                                </th>
+                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.show_downtime_comments')">
+                                    <i class="fa" ng-class="getSortClass('Statuspages.show_downtime_comments')"></i>
+                                    <?php echo __('Downtime Comments'); ?>
+                                </th>
+                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.show_acknowledgements')">
+                                    <i class="fa" ng-class="getSortClass('Statuspages.show_acknowledgements')"></i>
+                                    <?php echo __('Show Acknowledgements'); ?>
+                                </th>
+                                <th class="no-sort width-95"
+                                    ng-click="orderBy('Statuspages.show_acknowledgement_comments')">
+                                    <i class="fa"
+                                       ng-class="getSortClass('Statuspages.show_acknowledgement_comments')"></i>
+                                    <?php echo __('Acknowledgement Comments'); ?>
                                 </th>
                                 <th class="no-sort width-95" ng-click="orderBy('Statuspages.public')">
                                     <i class="fa" ng-class="getSortClass('Statuspages.public')"></i>
@@ -192,8 +206,20 @@
                                 </td>
                                 <td class="text-truncate text-truncate-sm">{{statuspage.description}}</td>
                                 <td>
-                                    <i class="fas fa-check text-success" ng-show="statuspage.show_comments"></i>
-                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_comments"></i>
+                                    <i class="fas fa-check text-success" ng-show="statuspage.show_downtimes"></i>
+                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_downtimes"></i>
+                                </td>
+                                <td>
+                                    <i class="fas fa-check text-success" ng-show="statuspage.show_downtime_comments"></i>
+                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_downtime_comments"></i>
+                                </td>
+                                <td>
+                                    <i class="fas fa-check text-success" ng-show="statuspage.show_acknowledgements"></i>
+                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_acknowledgements"></i>
+                                </td>
+                                <td>
+                                    <i class="fas fa-check text-success" ng-show="statuspage.show_acknowledgement_comments"></i>
+                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_acknowledgement_comments"></i>
                                 </td>
                                 <td>
                                     <i class="fas fa-check text-success" ng-show="statuspage.public"></i>

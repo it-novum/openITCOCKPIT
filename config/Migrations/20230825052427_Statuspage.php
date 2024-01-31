@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 use Migrations\AbstractMigration;
 
-class Statuspage extends AbstractMigration
-{
+class Statuspage extends AbstractMigration {
     public $autoId = false;
+
     /**
      * Change Method.
      *
@@ -13,8 +13,7 @@ class Statuspage extends AbstractMigration
      * https://book.cakephp.org/phinx/0/en/migrations.html#the-change-method
      * @return void
      */
-    public function change(): void
-    {
+    public function change(): void {
         if (!$this->hasTable('statuspages')) {
             $this->table('statuspages')
                 ->addColumn('id', 'integer', [
@@ -40,12 +39,27 @@ class Statuspage extends AbstractMigration
                     'null'    => true,
                 ])
                 ->addColumn('public', 'boolean', [
-                    'default' => '0',
+                    'default' => 0,
                     'limit'   => null,
                     'null'    => false,
                 ])
-                ->addColumn('show_comments', 'boolean', [
-                    'default' => '0',
+                ->addColumn('show_downtimes', 'boolean', [
+                    'default' => 0,
+                    'limit'   => null,
+                    'null'    => false,
+                ])
+                ->addColumn('show_downtime_comments', 'boolean', [
+                    'default' => 0,
+                    'limit'   => null,
+                    'null'    => false,
+                ])
+                ->addColumn('show_acknowledgements', 'boolean', [
+                    'default' => 0,
+                    'limit'   => null,
+                    'null'    => false,
+                ])
+                ->addColumn('show_acknowledgement_comments', 'boolean', [
+                    'default' => 0,
                     'limit'   => null,
                     'null'    => false,
                 ])

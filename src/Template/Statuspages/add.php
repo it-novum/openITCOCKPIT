@@ -105,6 +105,14 @@
                             </div>
                         </div>
 
+                        <fieldset class="pb-1">
+                            <legend class="fs-md fieldset-legend-border-bottom"
+                                    ng-class="{'fieldset-legend-border-bottom-danger': noItemsSelected}">
+                                <h5>
+                                    <?= __('Access control'); ?>
+                                </h5>
+                            </legend>
+                        </fieldset>
                         <div class="form-group" ng-class="{'has-error': errors.public}">
                             <div class="custom-control custom-checkbox"
                                  ng-class="{'has-error': errors.public}">
@@ -112,8 +120,6 @@
                                 <input type="checkbox"
                                        class="custom-control-input"
                                        id="public"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
                                        ng-model="post.Statuspage.public">
                                 <label class="custom-control-label" for="public">
                                     <?php echo __('Public'); ?>
@@ -126,21 +132,84 @@
                             </div>
                         </div>
 
-                        <div class="form-group" ng-class="{'has-error': errors.show_comments}">
-                            <div class="custom-control custom-checkbox"
-                                 ng-class="{'has-error': errors.show_comments}">
-                                <input type="checkbox"
-                                       class="custom-control-input"
-                                       id="showComments"
-                                       ng-true-value="1"
-                                       ng-false-value="0"
-                                       ng-model="post.Statuspage.show_comments">
-                                <label class="custom-control-label" for="showComments">
-                                    <?php echo __('Show downtime comments'); ?>
-                                </label>
+
+                        <fieldset class="pb-1">
+                            <legend class="fs-md fieldset-legend-border-bottom"
+                                    ng-class="{'fieldset-legend-border-bottom-danger': noItemsSelected}">
+                                <h5>
+                                    <?= __('Downtime and Acknowledgements'); ?>
+                                </h5>
+                            </legend>
+                        </fieldset>
+                        <div class="row">
+                            <div class="col-xs-12 col-md-6">
+                                <!-- Downtimes -->
+                                <div class="form-group" ng-class="{'has-error': errors.show_downtimes}">
+                                    <div class="custom-control custom-checkbox"
+                                         ng-class="{'has-error': errors.show_downtimes}">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="showDowntimes"
+                                               ng-model="post.Statuspage.show_downtimes">
+                                        <label class="custom-control-label" for="showDowntimes">
+                                            <?php echo __('Show Downtimes'); ?>
+                                        </label>
+                                    </div>
+                                    <div class="help-block mt-0">
+                                        <?= __('Determines if running and planed downtimes are displayed on the status page'); ?>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" ng-class="{'has-error': errors.show_downtime_comments}">
+                                    <div class="custom-control custom-checkbox"
+                                         ng-class="{'has-error': errors.show_downtime_comments}">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="showDowntimeComments"
+                                               ng-model="post.Statuspage.show_downtime_comments">
+                                        <label class="custom-control-label" for="showDowntimeComments">
+                                            <?php echo __('Show Downtime Comment'); ?>
+                                        </label>
+                                    </div>
+                                    <div class="help-block mt-0">
+                                        <?= __('Determines if the comments of the downtime are displayed on the status page.'); ?>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="help-block mt-0">
-                                <?= __('Show scheduled downtimes including the comment data. This can be used to inform about ongoing and upcoming maintenance.'); ?>
+
+                            <div class="col-xs-12 col-md-6">
+                                <!-- Acknowledgements -->
+                                <div class="form-group" ng-class="{'has-error': errors.show_acknowledgements}">
+                                    <div class="custom-control custom-checkbox"
+                                         ng-class="{'has-error': errors.show_acknowledgements}">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="showAcknowledgements"
+                                               ng-model="post.Statuspage.show_acknowledgements">
+                                        <label class="custom-control-label" for="showAcknowledgements">
+                                            <?php echo __('Show Acknowledgements'); ?>
+                                        </label>
+                                    </div>
+                                    <div class="help-block mt-0">
+                                        <?= __('Determines if acknowledgements are displayed on the status page'); ?>
+                                    </div>
+                                </div>
+
+                                <div class="form-group" ng-class="{'has-error': errors.show_acknowledgement_comments}">
+                                    <div class="custom-control custom-checkbox"
+                                         ng-class="{'has-error': errors.show_acknowledgement_comments}">
+                                        <input type="checkbox"
+                                               class="custom-control-input"
+                                               id="showAcknowledgementComments"
+                                               ng-model="post.Statuspage.show_acknowledgement_comments">
+                                        <label class="custom-control-label" for="showAcknowledgementComments">
+                                            <?php echo __('Show Acknowledgement comments'); ?>
+                                        </label>
+                                    </div>
+                                    <div class="help-block mt-0">
+                                        <?= __('Determines if the comments of the acknowledgements are displayed on the status page.'); ?>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
