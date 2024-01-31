@@ -817,8 +817,6 @@ class ServicesController extends AppController {
 
                 $User = new User($this->getUser());
 
-                $extDataForChangelog = $ServicesTable->resolveDataForChangelog($request);
-
                 /** @var  ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 

@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -85,10 +88,12 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <div class="row">
-                        <div class="form-group required col-lg-10">
+                        <div class="form-group required col-lg-12">
                             <label class="control-label" for="HostgroupSelect">
                                 <?php echo __('Host group'); ?>
                             </label>
+                        </div>
+                        <div class="form-group required col-lg-9">
                             <select
                                 id="HostgroupSelect"
                                 data-placeholder="<?php echo __('Please choose'); ?>"
@@ -99,8 +104,8 @@
                             </select>
                         </div>
 
-                        <div class="col-lg-2">
-                            <div class="btn-group btn-group-sm" style="padding-top:23px;"
+                        <div class="col-lg-1">
+                            <div class="btn-group btn-group-sm"
                                  ng-show="hostgroup.Hostgroup.allowEdit">
                                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
@@ -171,6 +176,15 @@
                                 </div>
                             </div>
                         </div>
+                        <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('dependencyTree', 'ImportedHostgroups', 'ImportModule')): ?>
+                            <div class="col-lg-2 text-right" ng-if="AdditionalInformationExists">
+                                <a class="btn btn-outline-primary btn-sm btn-w-m waves-effect waves-themed"
+                                   ui-sref="ImportedHostgroupsDependencyTree({id: post.Hostgroup.id})">
+                                    <i class="fas fa-sitemap fa-rotate-270"></i>
+                                    <?= __('Dependency tree'); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">

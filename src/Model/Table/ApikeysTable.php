@@ -140,4 +140,28 @@ class ApikeysTable extends Table {
         $apikey = bin2hex($bytes);
         return $apikey;
     }
+
+    /**
+     *  Gets the id by api key
+     *
+     * @param string $apiKey
+     * @return int|null
+     */
+    public function getIdByApiKey($apiKey) {
+
+        $apiKeyIdQuery = $this->find()
+            ->select([
+                'id'
+            ])
+            ->where([
+                'apiKey' => $apiKey,
+            ])->first();
+
+        if (empty($apiKeyIdQuery)) {
+            return null;
+        }
+
+        return $apiKeyIdQuery->id;
+
+    }
 }

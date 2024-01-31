@@ -38,12 +38,15 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use Cake\Cache\Cache;
+
 use Cake\Core\Configure;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use ImportModule\Model\Table\ImportedHostgroupsTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
@@ -1140,6 +1143,25 @@ class HostgroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostgroupConfig']);
 
 
+    }
+
+    public function loadAdditionalInformation() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+
+        $additionalInformationExists = false;
+
+        if (Plugin::isLoaded('ImportModule')) {
+            /** @var ImportedHostgroupsTable $ImportedHostgroupsTable */
+            $ImportedHostgroupsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHostgroups');
+            $additionalInformationExists = $ImportedHostgroupsTable->existsImportedHostgroupByHostgroupId($id);
+        }
+
+        $this->set('AdditionalInformationExists', $additionalInformationExists);
+        $this->viewBuilder()->setOption('serialize', ['AdditionalInformationExists']);
     }
 
 }
