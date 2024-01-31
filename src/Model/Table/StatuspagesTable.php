@@ -547,22 +547,6 @@ class StatuspagesTable extends Table {
             'servicegroups' => 'servicegroup'
         ];
 
-        $stateNames = [
-            'hosts'    => [
-                -1 => __('Not in Monitoring'),
-                0  => __('All services are operational'),
-                1  => __('Major Outage'),
-                2  => __('Unknown'),
-            ],
-            'services' => [
-                -1 => __('Not in Monitoring'),
-                0  => __('All services are operational'),
-                1  => __('Performance Issues'),
-                2  => __('Major Outage'),
-                3  => __('Unknown'),
-            ]
-        ];
-
         $stateIcons = [
             -1 => 'fa-solid fa-eye-low-vision',
             0  => 'fa-solid fa-check',
@@ -619,8 +603,8 @@ class StatuspagesTable extends Table {
                     'name'                     => $name,
                     'cumulatedStateName'       => $stateNames['hosts'][-1], // State for humans
                     'cumulatedColorId'         => -1, // Numeric state representation
-                    'cumulatedColor'           => 'text-primary', // For text
-                    'background'               => 'bg-primary', // For backgrounds
+                    'cumulatedColor'           => 'not-monitored', // For text
+                    'background'               => 'bg-not-monitored', // For backgrounds
                     'background_css'           => 'primary', // For openITCOCKPIT-Mobile (for shadows)
                     'isAcknowledge'            => false,
                     'acknowledgedProblemsText' => __('State is not acknowledged'),
@@ -707,7 +691,7 @@ class StatuspagesTable extends Table {
                         $item['downtimeData'] = $downtimeDataHost;
                     }
                 } else {
-                    // Is there a service with an issue?
+                    // All hosts are up - Is there a service with an issue?
                     if ($statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] > 0) {
                         $cumulatedStateId = $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'];
                         $cumulatedStateName = $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateName'];
