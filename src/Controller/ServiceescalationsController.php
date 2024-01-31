@@ -34,12 +34,15 @@ use App\Model\Table\ServiceescalationsTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
@@ -392,4 +395,40 @@ class ServiceescalationsController extends AppController {
         $this->set(compact(['excludedServicegroups']));
         $this->viewBuilder()->setOption('serialize', ['excludedServicegroups']);
     }
+
+    public function nagiosConfiguration() {
+
+        $serviceescalationId = $this->request->getQuery('serviceescalationId', null);
+
+        if (!empty($serviceescalationId)) {
+
+            $TableName = "Serviceescalations";
+            $confName = "serviceescalations";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $serviceescalationNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$serviceescalationId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $serviceescalationNagiosConfig = "Service escalation Config Record not found.";
+        }
+
+        if (empty($serviceescalationId) || gettype($serviceescalationNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $serviceescalationNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("serviceescalationConfig", $serviceescalationNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['serviceescalationConfig']);
+
+
+    }
+
 }

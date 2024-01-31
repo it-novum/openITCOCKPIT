@@ -10,7 +10,7 @@ angular.module('openITCOCKPIT')
         filterAddress = QueryStringService.getStateValue($stateParams, 'address');
         keywords = QueryStringService.getStateValue($stateParams, 'keywords');
         //console.log(QueryStringService.getStateValue($stateParams, 'filter'));
-        $scope.hostConfig = [];
+        $scope.hostConfig = {};
         /*** Filter Settings ***/
             //filterId = QueryStringService.getStateValue($stateParams, 'filter');
         var defaultFilter = function(){
@@ -371,8 +371,8 @@ angular.module('openITCOCKPIT')
             $scope.load();
         }
 
-        $scope.getNagiosConfiguration = function(hostId){
-            $http.get("/hosts/getNagiosConfiguration.json?angular=true", {
+        $scope.showNagiosConfiguration = function(hostId){
+            $http.get("/hosts/nagiosConfiguration.json", {
                 params: {
                     'angular': true,
                     'hostId': hostId

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HosttemplatesIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService, $state){
+    .controller('HosttemplatesIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService, $state, NotyService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Hosttemplates.name'));
@@ -7,6 +7,8 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         $scope.useScroll = true;
+
+        $scope.hosttemplateConfig = {};
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -121,6 +123,23 @@ angular.module('openITCOCKPIT')
         $scope.changeMode = function(val){
             $scope.useScroll = val;
             $scope.load();
+        };
+
+        $scope.showNagiosConfiguration = function(hosttemplateId){
+            $http.get("/hosttemplates/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'hosttemplateId': hosttemplateId
+                }
+            }).then(function(result){
+                $scope.hosttemplateConfig = result.data.hosttemplateConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         //Fire on page load

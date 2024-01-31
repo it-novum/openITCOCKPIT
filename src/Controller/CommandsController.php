@@ -424,7 +424,7 @@ class CommandsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
-    public function getNagiosConfiguration() {
+    public function nagiosConfiguration() {
 
         $commandId = $this->request->getQuery('commandId', null);
 

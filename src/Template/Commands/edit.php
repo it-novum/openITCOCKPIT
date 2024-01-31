@@ -54,10 +54,14 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                 </h2>
                 <div class="panel-toolbar">
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
-                        <a href="javascript:void(0);"
-                           ng-click="getNagiosConfiguration(post.Command.id)">
+                        <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'commands')): ?>
+                            <a href="javascript:void(0);"
+                               ng-click="showNagiosConfiguration(post.Command.id)">
+                                UUID: {{post.Command.uuid}}
+                            </a>
+                        <?php else: ?>
                             UUID: {{post.Command.uuid}}
-                        </a>
+                        <?php endif; ?>
                     </div>
 
                     <button ng-click="showDefaultMacros()"

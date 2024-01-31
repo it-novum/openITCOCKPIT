@@ -154,7 +154,8 @@
                                 </td>
                                 <td>{{hosttemplate.Hosttemplate.name}}</td>
                                 <td>
-                                    <span class="badge border {{hosttemplate.Hosttemplate.type.class}} {{hosttemplate.Hosttemplate.type.color}}">
+                                    <span
+                                        class="badge border {{hosttemplate.Hosttemplate.type.class}} {{hosttemplate.Hosttemplate.type.color}}">
                                         <i class="{{hosttemplate.Hosttemplate.type.icon}}"></i>
                                         {{hosttemplate.Hosttemplate.type.title}}
                                     </span>
@@ -211,6 +212,14 @@
                                                    ui-sref="DocumentationsView({uuid:hosttemplate.Hosttemplate.uuid, type:'hosttemplate'})">
                                                     <i class="fa fa-book"></i>
                                                     <?php echo __('Documentation'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'hosttemplates')): ?>
+                                                <a href="javascript:void(0);"
+                                                   class="dropdown-item"
+                                                   ng-click="showNagiosConfiguration(hosttemplate.Hosttemplate.id)">
+                                                    <i class="fa fa-file-code"></i>
+                                                    <?php echo __('Configuration'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'hosttemplates')): ?>
@@ -279,6 +288,53 @@
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show host template config modal -->
+<div id="angularShowConfigurationModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-file-code"></i>
+                    <?php echo __('Host Template Configuration'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="control-label">
+                        <?php echo __('File'); ?>
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="hosttemplateConfig.file">
+                </div>
+
+                <div class="form-group" ng-repeat="(label, value) in hosttemplateConfig.content">
+                    <label class="control-label">
+                        {{ label }}
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="value">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
                 </div>
             </div>
         </div>

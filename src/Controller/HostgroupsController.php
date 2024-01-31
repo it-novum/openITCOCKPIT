@@ -38,8 +38,10 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\ServicesTable;
 use Cake\Cache\Cache;
+use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -47,6 +49,7 @@ use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -1103,4 +1106,40 @@ class HostgroupsController extends AppController {
         $this->set('hostgroups', $hostgroups);
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
+
+    public function nagiosConfiguration() {
+
+        $hostgroupId = $this->request->getQuery('hostgroupId', null);
+
+        if (!empty($hostgroupId)) {
+
+            $TableName = "Hostgroups";
+            $confName = "hostgroups";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $hostgroupNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$hostgroupId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $hostgroupNagiosConfig = "Hostgroup Config Record not found.";
+        }
+
+        if (empty($hostgroupId) || gettype($hostgroupNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $hostgroupNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("hostgroupConfig", $hostgroupNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['hostgroupConfig']);
+
+
+    }
+
 }

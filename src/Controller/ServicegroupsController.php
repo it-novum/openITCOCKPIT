@@ -39,15 +39,18 @@ use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use Cake\Cache\Cache;
+use Cake\Core\Configure;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
@@ -1087,4 +1090,40 @@ class ServicegroupsController extends AppController {
         $this->set('servicegroups', $servicegroups);
         $this->viewBuilder()->setOption('serialize', ['servicegroups']);
     }
+
+    public function nagiosConfiguration() {
+
+        $servicegroupId = $this->request->getQuery('servicegroupId', null);
+
+        if (!empty($servicegroupId)) {
+
+            $TableName = "Servicegroups";
+            $confName = "servicegroups";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $servicegroupNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$servicegroupId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $servicegroupNagiosConfig = "Servicegroup Config Record not found.";
+        }
+
+        if (empty($servicegroupId) || gettype($servicegroupNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $servicegroupNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("servicegroupConfig", $servicegroupNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['servicegroupConfig']);
+
+
+    }
+
 }

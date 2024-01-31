@@ -220,10 +220,10 @@
                                                     <?php echo __('Used by'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('edit', 'commands')): ?>
+                                            <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'commands')): ?>
                                                 <a href="javascript:void(0);"
                                                    class="dropdown-item"
-                                                   ng-click="getNagiosConfiguration(command.Command.id)">
+                                                   ng-click="showNagiosConfiguration(command.Command.id)">
                                                     <i class="fa fa-file-code"></i>
                                                     <?php echo __('Configuration'); ?>
                                                 </a>

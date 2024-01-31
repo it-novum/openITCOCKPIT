@@ -32,12 +32,15 @@ use App\Model\Table\HostdependenciesTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostdependenciesFilter;
@@ -302,6 +305,41 @@ class HostdependenciesController extends AppController {
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
         $this->viewBuilder()->setOption('serialize', ['containers']);
+    }
+
+    public function nagiosConfiguration() {
+
+        $hostdependencyId = $this->request->getQuery('hostdependencyId', null);
+
+        if (!empty($hostdependencyId)) {
+
+            $TableName = "Hostdependencies";
+            $confName = "hostdependencies";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $hostdependencyNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$hostdependencyId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $hostdependencyNagiosConfig = "Host Dependency Config Record not found.";
+        }
+
+        if (empty($hostdependencyId) || gettype($hostdependencyNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $hostdependencyNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("hostdependencyConfig", $hostdependencyNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['hostdependencyConfig']);
+
+
     }
 
 }

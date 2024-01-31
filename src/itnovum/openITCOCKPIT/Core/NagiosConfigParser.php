@@ -24,7 +24,6 @@
 
 namespace itnovum\openITCOCKPIT\Core;
 
-use App\Lib\Constants;
 use Cake\Core\Configure;
 use Cake\Filesystem\Folder;
 use Cake\Log\Log;
@@ -263,54 +262,47 @@ class NagiosConfigParser {
 
         $result = [];
 
-        if (!$this->conf['minified'] || in_array($TableName, ['Hostdependencies', 'Hostescalations', 'Servicedependencies', 'Serviceescalations'])) {
-            // Model that are not saved as minified config files or minified configs asre tournd off
-            $file = new \SplFileInfo($this->conf['path'] . $this->conf[$confName] . $uuid . $this->conf['suffix']);
-            if ($file->isFile() && $file->isReadable()) {
-                $result[self::KEY_FILE] = $this->conf['path'] . $this->conf[$confName] . $uuid . $this->conf['suffix'];
-                $result[self::KEY_CONTENT] = $this->searchUuids($file->openFile()->fread($file->getSize()));
-            } else {
-                Log::error(sprintf('NagiosConfigParser: File not found! (%s)', $this->conf['path'] . $this->conf[$confName] . $uuid . $this->conf['suffix']));
-                return 'File not found! (' . $this->conf['path'] . $this->conf[$confName] . $uuid . $this->conf['suffix'] . ')';
-            }
-        } else {
-            $configFolder = new Folder($this->conf['path'] . $this->conf[$confName]);
-            $configFiles = $configFolder->find();
+        $configFolder = new Folder($this->conf['path'] . $this->conf[$confName]);
+        $configFiles = $configFolder->find();
 
-            // User want the file of an object, that is inside of an minified file, so we need to parse the minified config
-            if (!empty($configFiles)) {
-                foreach ($configFiles as $configFile) {
-                    $fileAsArray = file($configFolder->pwd() . $configFile);
+        // User want the file of an object, that is inside of an minified file, so we need to parse the minified config
+        if (!empty($configFiles)) {
+            foreach ($configFiles as $configFile) {
+                $fileAsArray = file($configFolder->pwd() . $configFile);
 
-                    $tableToNagios = [
-                        'Commands'         => 'command_name',
-                        'Contactgroups'    => 'contactgroup_name',
-                        'Contacts'         => 'contact_name',
-                        'Hosts'            => 'host_name',
-                        'Hostgroups'       => 'hostgroup_name',
-                        'Hosttemplates'    => 'host_name',
-                        'Services'         => 'service_description',
-                        'Servicegroups'    => 'servicegroup_name',
-                        'Servicetemplates' => 'service_description',
-                        'Timeperiods'      => 'timeperiod_name'
-                    ];
+                $tableToNagios = [
+                    'Commands'         => 'command_name',
+                    'Contactgroups'    => 'contactgroup_name',
+                    'Contacts'         => 'contact_name',
+                    'Hosts'            => 'host_name',
+                    'Hostgroups'       => 'hostgroup_name',
+                    'Hosttemplates'    => 'host_name',
+                    'Services'         => 'service_description',
+                    'Servicegroups'    => 'servicegroup_name',
+                    'Servicetemplates' => 'service_description',
+                    'Timeperiods'      => 'timeperiod_name'
+                ];
 
+                $needel = '';
+                if (!empty($tableToNagios[$TableName])) {
                     $needel = $tableToNagios[$TableName];
+                }
 
-                    $configContent = [];
-                    $breakForeach = false;
-                    $state = 'SEARCH_FOR_DEFINITION';
-                    foreach ($fileAsArray as $line) {
-                        $configContent[] = $line;
-                        switch ($state) {
-                            case 'SEARCH_FOR_DEFINITION':
-                                if (preg_match('/^define .*\{[\s\t]*$/', $line)) {
-                                    $state = 'SEARCH_FOR_OBJECT_NAME';
-                                }
-                                break;
+                $configContent = [];
+                $breakForeach = false;
+                $state = 'SEARCH_FOR_DEFINITION';
+                foreach ($fileAsArray as $line) {
+                    $configContent[] = $line;
+                    switch ($state) {
+                        case 'SEARCH_FOR_DEFINITION':
+                            if (preg_match('/^define .*\{[\s\t]*$/', $line)) {
+                                $state = 'SEARCH_FOR_OBJECT_NAME';
+                            }
+                            break;
 
-                            case 'SEARCH_FOR_OBJECT_NAME': //host_name, command_name, contact_name, etc
-                                if (preg_match('/' . $needel . '/', $line)) {
+                        case 'SEARCH_FOR_OBJECT_NAME': //host_name, command_name, contact_name, etc
+                            if (preg_match('/' . $needel . '/', $line)) {
+                                if (!empty($needel)) {
                                     $check = explode($needel, $line);
                                     if (sizeof($check) == 2) {
                                         if (trim($check[1]) == $uuid) {
@@ -319,60 +311,66 @@ class NagiosConfigParser {
                                             break;
                                         }
                                     }
-                                    //This is not the object we are searching for!
-                                    $state = 'SEARCH_FOR_END_OF_DEFENITION_AND_CONTINUE';
-                                }
-                                break;
-
-                            case 'SEARCH_FOR_END_OF_DEFENITION':
-                                if (trim($line) == '}') {
-                                    // We have the complete object now, so we can break out of switch and foreach
-                                    $breakForeach = true;
+                                } else if (str_contains($configFile, $uuid . $this->conf['suffix'])
+                                    && (!$this->conf['minified'] || in_array($TableName, ['Hostdependencies', 'Hostescalations', 'Servicedependencies', 'Serviceescalations']))) {
+                                    //this is the object we search for!
+                                    $state = 'SEARCH_FOR_END_OF_DEFENITION';
                                     break;
                                 }
-                                break;
-
-                            case 'SEARCH_FOR_END_OF_DEFENITION_AND_CONTINUE':
-                                // this was the wrong object, so throw everything away and continue with next definition
-                                if (trim($line) == '}') {
-                                    $configContent = [];
-                                    $state = 'SEARCH_FOR_DEFINITION';
-                                }
-                                break;
-                        }
-
-                        if ($breakForeach === true) {
+                                //This is not the object we are searching for!
+                                $state = 'SEARCH_FOR_END_OF_DEFENITION_AND_CONTINUE';
+                            }
                             break;
-                        }
+
+                        case 'SEARCH_FOR_END_OF_DEFENITION':
+                            if (trim($line) == '}') {
+                                // We have the complete object now, so we can break out of switch and foreach
+                                $breakForeach = true;
+                                break;
+                            }
+                            break;
+
+                        case 'SEARCH_FOR_END_OF_DEFENITION_AND_CONTINUE':
+                            // this was the wrong object, so throw everything away and continue with next definition
+                            if (trim($line) == '}') {
+                                $configContent = [];
+                                $state = 'SEARCH_FOR_DEFINITION';
+                            }
+                            break;
                     }
 
-                    if (!empty($configContent)) {
-                        $result[self::KEY_FILE] = $configFolder->pwd() . $configFile;
-                        $content = [];
-                        foreach ($configContent as $contentPart) {
-                            $trimmedContentPart = trim($this->searchUuids($contentPart));
-                            if (str_contains($trimmedContentPart, "    ")) {
-                                $keyAndValue = explode("    ", $trimmedContentPart);
-                                $key = str_replace(";", "",
-                                    str_replace(":", "",
-                                        trim($keyAndValue[0])
-                                    )
-                                );
-                                $value = trim($keyAndValue[count($keyAndValue) - 1]);
-                                $content[$key] = $value;
-                            }
-                        }
-                        $result[self::KEY_CONTENT] = $content;
-                        //break config files foreach.
+                    if ($breakForeach === true) {
                         break;
                     }
-
                 }
-            } else {
-                Log::error(sprintf('NagiosConfigParser: Folder %s is empty!', $configFolder->pwd()));
-                return 'Folder ' . $configFolder->pwd() . ' is empty!';
-            }
 
+                if (!empty($configContent)) {
+                    $result[self::KEY_FILE] = $configFolder->pwd() . $configFile;
+                    $content = [];
+                    foreach ($configContent as $contentPart) {
+                        $trimmedContentPart = trim($this->searchUuids($contentPart));
+                        if (!str_starts_with($trimmedContentPart, '#') && !str_starts_with($trimmedContentPart, ';') && str_contains($trimmedContentPart, "    ")) {
+                            $keyAndValue = explode("    ", $trimmedContentPart);
+                            $key = str_replace(":", "", trim($keyAndValue[0]));
+                            $value = trim($keyAndValue[count($keyAndValue) - 1]);
+                            $content[$key] = $value;
+                        }
+                    }
+
+                    if (empty($content)) {
+                        Log::error(sprintf('NagiosConfigParser: Config for [%s] not found!', $uuid));
+                        return 'No config for ' . $uuid . ' found!';
+                    }
+
+                    $result[self::KEY_CONTENT] = $content;
+                    //break config files foreach.
+                    break;
+                }
+
+            }
+        } else {
+            Log::error(sprintf('NagiosConfigParser: Folder %s is empty!', $configFolder->pwd()));
+            return 'Folder ' . $configFolder->pwd() . ' is empty!';
         }
 
         return $result;
@@ -406,7 +404,7 @@ class NagiosConfigParser {
                 }
 
             }
-            
+
             return "object not found in UUID cache[" . $match . "]";
         }
     }

@@ -17,6 +17,7 @@ angular.module('openITCOCKPIT')
 
         $scope.args = [];
         $scope.macros = [];
+        $scope.commandConfig = {};
 
         $scope.load = function(){
             $http.get("/commands/edit/" + $scope.id + ".json", {
@@ -234,8 +235,8 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.getNagiosConfiguration = function(commandId){
-            $http.get("/commands/getNagiosConfiguration.json?angular=true", {
+        $scope.showNagiosConfiguration = function(commandId){
+            $http.get("/commands/nagiosConfiguration.json", {
                 params: {
                     'angular': true,
                     'commandId': commandId

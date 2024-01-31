@@ -41,13 +41,16 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
 use AutoreportModule\Model\Table\AutoreportsTable;
+use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -583,4 +586,40 @@ class TimeperiodsController extends AppController {
         $this->set('timeperiods', $timeperiods);
         $this->viewBuilder()->setOption('serialize', ['timeperiods']);
     }
+
+    public function nagiosConfiguration() {
+
+        $timeperiodId = $this->request->getQuery('timeperiodId', null);
+
+        if (!empty($timeperiodId)) {
+
+            $TableName = "Timeperiods";
+            $confName = "timeperiods";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $timeperiodNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$timeperiodId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $timeperiodNagiosConfig = "Time period Config Record not found.";
+        }
+
+        if (empty($timeperiodId) || gettype($timeperiodNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $timeperiodNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("timeperiodConfig", $timeperiodNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['timeperiodConfig']);
+
+
+    }
+
 }

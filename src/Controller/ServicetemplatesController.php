@@ -42,13 +42,16 @@ use App\Model\Table\ServicetemplatecommandargumentvaluesTable;
 use App\Model\Table\ServicetemplateeventcommandargumentvaluesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Configure;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
@@ -879,4 +882,40 @@ class ServicetemplatesController extends AppController {
         $this->set('servicetemplates', $servicetemplates);
         $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
+
+    public function nagiosConfiguration() {
+
+        $servicetemplateId = $this->request->getQuery('servicetemplateId', null);
+
+        if (!empty($servicetemplateId)) {
+
+            $TableName = "Servicetemplates";
+            $confName = "servicetemplates";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $servicetemplateNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$servicetemplateId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $servicetemplateNagiosConfig = "Service template Config Record not found.";
+        }
+
+        if (empty($servicetemplateId) || gettype($servicetemplateNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $servicetemplateNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("servicetemplateConfig", $servicetemplateNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplateConfig']);
+
+
+    }
+
 }

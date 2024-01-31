@@ -34,12 +34,15 @@ use App\Model\Table\HostescalationsTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostescalationsFilter;
@@ -392,4 +395,40 @@ class HostescalationsController extends AppController {
         $this->set(compact(['excludedHostgroups']));
         $this->viewBuilder()->setOption('serialize', ['excludedHostgroups']);
     }
+
+    public function nagiosConfiguration() {
+
+        $hostescalationId = $this->request->getQuery('hostescalationId', null);
+
+        if (!empty($hostescalationId)) {
+
+            $TableName = "Hostescalations";
+            $confName = "hostescalations";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $hostescalationNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$hostescalationId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $hostescalationNagiosConfig = "Host escalations Config Record not found.";
+        }
+
+        if (empty($hostescalationId) || gettype($hostescalationNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $hostescalationNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("hostescalationConfig", $hostescalationNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['hostescalationConfig']);
+
+
+    }
+
 }

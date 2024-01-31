@@ -3646,7 +3646,7 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['host', 'objects', 'total']);
     }
 
-    public function getNagiosConfiguration() {
+    public function nagiosConfiguration() {
 
         $hostId = $this->request->getQuery('hostId', null);
 
@@ -3665,7 +3665,7 @@ class HostsController extends AppController {
 
         } else {
             Log::error('NagiosConfigParser: record not found.');
-            $hostNagiosConfig = "Command Config Record not found.";
+            $hostNagiosConfig = "Host Config Record not found.";
         }
 
         if (empty($hostId) || gettype($hostNagiosConfig) == "string") {

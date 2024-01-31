@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('CommandsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService){
+    .controller('CommandsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService, NotyService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Commands.name'));
@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
 
-        $scope.commandConfig = [];
+        $scope.commandConfig = {};
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -120,8 +120,8 @@ angular.module('openITCOCKPIT')
             return objects;
         };
 
-        $scope.getNagiosConfiguration = function(commandId){
-            $http.get("/commands/getNagiosConfiguration.json?angular=true", {
+        $scope.showNagiosConfiguration = function(commandId){
+            $http.get("/commands/nagiosConfiguration.json", {
                 params: {
                     'angular': true,
                     'commandId': commandId

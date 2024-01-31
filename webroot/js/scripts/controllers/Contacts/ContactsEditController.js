@@ -6,6 +6,8 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
 
+        $scope.contactConfig = {};
+
         $scope.data = {
             areContainersChangeable: false
         };
@@ -39,7 +41,7 @@ angular.module('openITCOCKPIT')
                 for(var i in $scope.containers){
                     if($scope.requiredContainers.indexOf($scope.containers[i].key) === -1){
                         $scope.containers[i].editable = true;
-                    } else{
+                    }else{
                         $scope.containers[i].editable = false;
                     }
                 }
@@ -172,6 +174,23 @@ angular.module('openITCOCKPIT')
             if(addCommand){
                 $scope.post.Contact.service_commands._ids.push($scope.servicePushComamndId);
             }
+        };
+
+        $scope.showNagiosConfiguration = function(contactId){
+            $http.get("/contacts/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'contactId': contactId
+                }
+            }).then(function(result){
+                $scope.contactConfig = result.data.contactConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         $scope.loadContainers();

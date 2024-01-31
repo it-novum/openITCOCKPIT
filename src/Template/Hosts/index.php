@@ -1059,10 +1059,10 @@
                                                     <?php echo __('Used by'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if ($this->Acl->hasPermission('edit', 'hosts')): ?>
+                                            <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'hosts')): ?>
                                                 <a href="javascript:void(0);"
                                                    class="dropdown-item"
-                                                   ng-click="getNagiosConfiguration(host.Host.id)">
+                                                   ng-click="showNagiosConfiguration(host.Host.id)">
                                                     <i class="fa fa-file-code"></i>
                                                     <?php echo __('Configuration'); ?>
                                                 </a>
