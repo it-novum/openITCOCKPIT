@@ -161,7 +161,7 @@
                                     <div class="col-12 text-truncate">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
-                                                <div ng-if="item.acknowledgedProblemsText">
+                                                <div ng-if="item.acknowledgedProblemsText && item.cumulatedColorId > 0">
                                                     <i class="far fa-user"></i>
                                                     {{item.acknowledgedProblemsText}}
                                                 </div>
@@ -224,7 +224,7 @@
                                     <!-- end of current downtimes -->
 
                                     <!-- handle plant downtime comments -->
-                                    <div class="col-12 text-truncate" ng-if="item.plannedDowntimeData">
+                                    <div class="col-12 text-truncate" ng-if="item.plannedDowntimeData.length > 0">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
                                                 <i class="fa fa-power-off"></i>
