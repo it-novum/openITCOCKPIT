@@ -25,7 +25,6 @@
 
 /**
  * @var \App\View\AppView $this
- * @var \App\Model\Entity\Statuspage $statuspage
  */
 
 ?>
@@ -161,37 +160,37 @@
                                     <div class="col-12 text-truncate">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
-                                                <div ng-if="item.acknowledgedProblemsText && item.cumulatedColorId > 0">
+                                                <div ng-if="item.acknowledgedProblemsText && item.cumulatedColorId > 0 && Statuspage.statuspage.showAcknowledgements">
                                                     <i class="far fa-user"></i>
                                                     {{item.acknowledgedProblemsText}}
                                                 </div>
-                                                <div ng-if="item.acknowledgeComment">
+                                                <div ng-if="item.acknowledgeComment && Statuspage.statuspage.showAcknowledgements">
                                                     <?php echo __('Comment'); ?>: {{item.acknowledgeComment}}
                                                 </div>
-                                                <div ng-if="item.hostgroupHostAcknowledgementText">
+                                                <div ng-if="item.hostgroupHostAcknowledgementText && Statuspage.statuspage.showAcknowledgements">
                                                     <i class="far fa-user"></i>
                                                     {{item.hostgroupHostAcknowledgementText}}
                                                 </div>
-                                                <div ng-if="item.hostgroupServiceAcknowledgementText">
+                                                <div ng-if="item.hostgroupServiceAcknowledgementText && Statuspage.statuspage.showAcknowledgements">
                                                     <i class="far fa-user"></i>
                                                     {{item.hostgroupServiceAcknowledgementText}}
                                                 </div>
-                                                <div ng-if="item.downtimeHostgroupHostText">
+                                                <div ng-if="item.downtimeHostgroupHostText && Statuspage.statuspage.showDowntimes">
 
                                                     <i class="fa fa-power-off"></i>
                                                     {{item.downtimeHostgroupHostText}}
                                                 </div>
-                                                <div ng-if="item.plannedDowntimeHostgroupHostText">
+                                                <div ng-if="item.plannedDowntimeHostgroupHostText && Statuspage.statuspage.showDowntimes">
 
                                                     <i class="fa fa-power-off"></i>
                                                     {{item.plannedDowntimeHostgroupHostText}}
                                                 </div>
-                                                <div ng-if="item.downtimeHostgroupServiceText">
+                                                <div ng-if="item.downtimeHostgroupServiceText && Statuspage.statuspage.showDowntimes">
 
                                                     <i class="fa fa-power-off"></i>
                                                     {{item.downtimeHostgroupServiceText}}
                                                 </div>
-                                                <div ng-if="item.plannedDowntimeHostgroupServiceText">
+                                                <div ng-if="item.plannedDowntimeHostgroupServiceText && Statuspage.statuspage.showDowntimes">
                                                     <i class="fa fa-power-off"></i>
                                                     {{item.plannedDowntimeHostgroupServiceText}}
                                                 </div>
@@ -202,7 +201,7 @@
 
 
                                     <!-- handle current downtime comments -->
-                                    <div class="col-12 text-truncate" ng-if="item.isInDowntime && item.downtimeData">
+                                    <div class="col-12 text-truncate" ng-if="item.isInDowntime && item.downtimeData && Statuspage.statuspage.showDowntimes">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
                                                 <div class="pt-1">
@@ -226,7 +225,7 @@
                                     <!-- end of current downtimes -->
 
                                     <!-- handle plant downtime comments -->
-                                    <div class="col-12 text-truncate" ng-if="item.plannedDowntimeData.length > 0">
+                                    <div class="col-12 text-truncate" ng-if="item.plannedDowntimeData.length > 0 && Statuspage.statuspage.showDowntimes">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
                                                 <div class="pt-1">

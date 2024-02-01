@@ -90,129 +90,134 @@
                                         <!-- end of status name -->
 
                                         <!-- Handle acknowledgement comments -->
-                                        <div class="col-12 ">
-                                            <div class="row">
-                                                <div class="col-12 ">
-                                                    <?php if (!empty($item['acknowledgedProblemsText'])): ?>
-                                                        <div>
-                                                            <i class="far fa-user"></i>
-                                                            <?= h($item['acknowledgedProblemsText']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                        <?php if ($statuspage['statuspage']['showAcknowledgements']): ?>
+                                            <div class="col-12 ">
+                                                <div class="row">
+                                                    <div class="col-12 ">
+                                                        <?php if (!empty($item['acknowledgedProblemsText'])): ?>
+                                                            <div>
+                                                                <i class="far fa-user"></i>
+                                                                <?= h($item['acknowledgedProblemsText']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
 
-                                                    <?php if (!empty($item['acknowledgeComment'])): ?>
-                                                        <div>
-                                                            <?php echo __('Comment'); ?>:
-                                                            <?= h($item['acknowledgeComment']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                                        <?php if (!empty($item['acknowledgeComment'])): ?>
+                                                            <div>
+                                                                <?php echo __('Comment'); ?>:
+                                                                <?= h($item['acknowledgeComment']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
 
-                                                    <?php if (!empty($item['hostgroupHostAcknowledgementText'])): ?>
-                                                        <div>
-                                                            <i class="far fa-user"></i>
-                                                            <?= h($item['hostgroupHostAcknowledgementText']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                                        <?php if (!empty($item['hostgroupHostAcknowledgementText'])): ?>
+                                                            <div>
+                                                                <i class="far fa-user"></i>
+                                                                <?= h($item['hostgroupHostAcknowledgementText']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
 
-                                                    <?php if (!empty($item['hostgroupServiceAcknowledgementText'])): ?>
-                                                        <div>
-                                                            <i class="far fa-user"></i>
-                                                            <?= h($item['hostgroupServiceAcknowledgementText']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                                        <?php if (!empty($item['hostgroupServiceAcknowledgementText'])): ?>
+                                                            <div>
+                                                                <i class="far fa-user"></i>
+                                                                <?= h($item['hostgroupServiceAcknowledgementText']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
 
-                                                    <?php if (!empty($item['downtimeHostgroupHostText'])): ?>
-                                                        <div>
-                                                            <i class="fa fa-power-off"></i>
-                                                            <?= h($item['downtimeHostgroupHostText']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                                        <?php if (!empty($item['downtimeHostgroupHostText'])): ?>
+                                                            <div>
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?= h($item['downtimeHostgroupHostText']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
 
-                                                    <?php if (!empty($item['plannedDowntimeHostgroupHostText'])): ?>
-                                                        <div>
-                                                            <i class="fa fa-power-off"></i>
-                                                            <?= h($item['plannedDowntimeHostgroupHostText']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                                        <?php if (!empty($item['plannedDowntimeHostgroupHostText'])): ?>
+                                                            <div>
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?= h($item['plannedDowntimeHostgroupHostText']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
 
-                                                    <?php if (!empty($item['downtimeHostgroupServiceText'])): ?>
-                                                        <div>
-                                                            <i class="fa fa-power-off"></i>
-                                                            <?= h($item['downtimeHostgroupServiceText']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                                        <?php if (!empty($item['downtimeHostgroupServiceText'])): ?>
+                                                            <div>
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?= h($item['downtimeHostgroupServiceText']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
 
-                                                    <?php if (!empty($item['plannedDowntimeHostgroupServiceText'])): ?>
-                                                        <div>
-                                                            <i class="fa fa-power-off"></i>
-                                                            <?= h($item['plannedDowntimeHostgroupServiceText']); ?>
-                                                        </div>
-                                                    <?php endif; ?>
+                                                        <?php if (!empty($item['plannedDowntimeHostgroupServiceText'])): ?>
+                                                            <div>
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?= h($item['plannedDowntimeHostgroupServiceText']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        <?php endif; ?>
                                         <!-- end of acknowledgements -->
 
 
                                         <!-- handle current downtime comments -->
-                                        <?php if (!empty($item['isInDowntime']) && !empty($item['downtimeData'])): ?>
-                                            <div class="col-12 ">
-                                                <div class="row">
-                                                    <div class="col-12 ">
-                                                        <div class="pt-1">
-                                                            <i class="fa fa-power-off"></i>
-                                                            <?= __('Is currently in a planned maintenance period'); ?>
-                                                        </div>
-                                                        <div class="row">
-                                                            <div class="col-xs-12 col-md-3">
-                                                                <?= __('Start'); ?>:
-                                                                <?= h($item['downtimeData']['scheduledStartTime']); ?>
+                                        <?php if ($statuspage['statuspage']['showDowntimes']): ?>
+                                            <?php if (!empty($item['isInDowntime']) && !empty($item['downtimeData'])): ?>
+                                                <div class="col-12 ">
+                                                    <div class="row">
+                                                        <div class="col-12 ">
+                                                            <div class="pt-1">
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?= __('Is currently in a planned maintenance period'); ?>
                                                             </div>
-                                                            <div class="col-xs-12 col-md-3">
-                                                                <?= __('End'); ?>:
-                                                                <?= h($item['downtimeData']['scheduledEndTime']); ?>
-                                                            </div>
-                                                            <div class="col-xs-12 col-md-3">
-                                                                <?= __('Comment'); ?>:
-                                                                <?= h($item['downtimeData']['comment']); ?>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        <?php endif; ?>
-                                        <!-- end of current downtimes -->
-
-                                        <!-- handle plant downtime comments -->
-                                        <?php if (!empty($item['plannedDowntimeData'])): ?>
-                                            <div class="col-12 ">
-                                                <div class="row">
-                                                    <div class="col-12 ">
-                                                        <div class="pt-1">
-                                                            <i class="fa fa-power-off"></i>
-                                                            <?= __('Planned Downtimes for the next 10 days:'); ?>
-                                                        </div>
-                                                        <?php foreach ($item['plannedDowntimeData'] as $downtime): ?>
                                                             <div class="row">
                                                                 <div class="col-xs-12 col-md-3">
                                                                     <?= __('Start'); ?>:
-                                                                    <?= h($downtime['scheduledStartTime']); ?>
+                                                                    <?= h($item['downtimeData']['scheduledStartTime']); ?>
                                                                 </div>
                                                                 <div class="col-xs-12 col-md-3">
                                                                     <?= __('End'); ?>:
-                                                                    <?= h($downtime['scheduledEndTime']); ?>
+                                                                    <?= h($item['downtimeData']['scheduledEndTime']); ?>
                                                                 </div>
                                                                 <div class="col-xs-12 col-md-3">
                                                                     <?= __('Comment'); ?>:
-                                                                    <?= h($downtime['comment']); ?>
+                                                                    <?= h($item['downtimeData']['comment']); ?>
                                                                 </div>
                                                             </div>
-                                                        <?php endforeach; ?>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            <?php endif; ?>
+
+                                            <!-- end of current downtimes -->
+
+                                            <!-- handle plant downtime comments -->
+                                            <?php if (!empty($item['plannedDowntimeData'])): ?>
+                                                <div class="col-12 ">
+                                                    <div class="row">
+                                                        <div class="col-12 ">
+                                                            <div class="pt-1">
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?= __('Planned Downtimes for the next 10 days:'); ?>
+                                                            </div>
+                                                            <?php foreach ($item['plannedDowntimeData'] as $downtime): ?>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 col-md-3">
+                                                                        <?= __('Start'); ?>:
+                                                                        <?= h($downtime['scheduledStartTime']); ?>
+                                                                    </div>
+                                                                    <div class="col-xs-12 col-md-3">
+                                                                        <?= __('End'); ?>:
+                                                                        <?= h($downtime['scheduledEndTime']); ?>
+                                                                    </div>
+                                                                    <div class="col-xs-12 col-md-3">
+                                                                        <?= __('Comment'); ?>:
+                                                                        <?= h($downtime['comment']); ?>
+                                                                    </div>
+                                                                </div>
+                                                            <?php endforeach; ?>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endif; ?>
+                                            <!-- end of planed downtimes -->
                                         <?php endif; ?>
-                                        <!-- end of planed downtimes -->
 
 
                                     </div>
