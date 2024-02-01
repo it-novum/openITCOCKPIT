@@ -266,13 +266,13 @@
                                             <?php if ($this->Acl->hasPermission('view', 'statuspages')): ?>
                                                 <a ui-sref="StatuspagesView({id: statuspage.id})"
                                                    class="dropdown-item">
-                                                    <i class="fas fa-calendar-week"></i>
+                                                    <i class="fas fa-eye"></i>
                                                     <?php echo __('View'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <a href="/statuspages/publicView/{{statuspage.id}}" target="_blank"
                                                class="dropdown-item" ng-show="statuspage.public">
-                                                <i class="fas fa-eye"></i>
+                                                <i class="fa-solid fa-users-rectangle"></i>
                                                 <?php echo __('Public View'); ?>
                                             </a>
                                             <?php if ($this->Acl->hasPermission('delete', 'statuspages')): ?>
