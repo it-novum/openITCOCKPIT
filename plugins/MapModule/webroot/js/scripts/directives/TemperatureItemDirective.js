@@ -98,7 +98,23 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
 
                 var thresholds = [];
 
-                if(perfdata.warning !== null && perfdata.critical !== null){
+                if($scope.perfdata.isMultiple && perfdata.hiInverted && perfdata.loInverted){
+                    thresholds = [
+                        {from: perfdata.warnHi, to: perfdata.max, color: '#449D44'},
+                        {from: perfdata.critHi, to: perfdata.warnHi, color: '#DF8F1D'},
+                        {from: perfdata.critical, to: perfdata.critHi, color: '#C9302C'},
+                        {from: perfdata.warning, to: perfdata.critical, color: '#DF8F1D'},
+                        {from: perfdata.min, to: perfdata.warning, color: '#449D44'},
+                    ];
+                }else if($scope.perfdata.isMultiple){
+                    thresholds = [
+                        {from: perfdata.min, to: perfdata.critical, color: '#C9302C'},
+                        {from: perfdata.critical, to: perfdata.warning, color: '#DF8F1D'},
+                        {from: perfdata.warning, to: perfdata.warnHi, color: '#449D44'},
+                        {from: perfdata.warnHi, to: perfdata.critHi, color: '#DF8F1D'},
+                        {from: perfdata.critHi, to: perfdata.max, color: '#C9302C'},
+                    ];
+                }else if(perfdata.warning !== null && perfdata.critical !== null){
                     thresholds = [
                         {from: perfdata.min, to: perfdata.warning, color: '#449D44'},
                         {from: perfdata.warning, to: perfdata.critical, color: '#DF8F1D'},
@@ -200,9 +216,14 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     }
                 }
 
+                $scope.perfdata.warnHi = parseFloat(($scope.perfdata.warning || '').split(':')[1]);
+                $scope.perfdata.critHi = parseFloat(($scope.perfdata.critical || '').split(':')[1]);
                 $scope.perfdata.current = parseFloat($scope.perfdata.current);
-                $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
-                $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
+                $scope.perfdata.hiInverted = ("" + ($scope.perfdata.warning || '')).charAt(0) === '@';
+                $scope.perfdata.loInverted = ("" + ($scope.perfdata.critical || '')).charAt(0) === '@';
+                $scope.perfdata.isMultiple = ("" + ($scope.perfdata.warning || '')).includes(':');
+                $scope.perfdata.warning = parseFloat($scope.perfdata.warning.replace('@', ''));
+                $scope.perfdata.critical = parseFloat($scope.perfdata.critical.replace('@', ''));
                 $scope.perfdata.min = parseFloat($scope.perfdata.min);
                 $scope.perfdata.max = parseFloat($scope.perfdata.max);
             };
