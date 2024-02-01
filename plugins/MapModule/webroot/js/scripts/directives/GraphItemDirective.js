@@ -182,51 +182,154 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 var GraphDefaultsObj = new GraphDefaults();
 
                 var defaultColor = GraphDefaultsObj.defaultFillColor;
-
                 if(performance_data.datasource.warn !== "" &&
                     performance_data.datasource.crit !== "" &&
                     performance_data.datasource.warn !== null &&
                     performance_data.datasource.crit !== null){
 
-                    var warn = parseFloat(performance_data.datasource.warn);
-                    var crit = parseFloat(performance_data.datasource.crit);
+                    let loInverted = performance_data.datasource.warn.charAt(0) === '@',
+                        warnLo = parseFloat(performance_data.datasource.warn.replace('@', '')),
+                        warnHi = parseFloat(performance_data.datasource.warn.split(':')[1]),
+                        hiInverted = performance_data.datasource.crit.charAt(0) === '@',
+                        critLo = parseFloat(performance_data.datasource.crit.replace('@', '')),
+                        critHi = parseFloat(performance_data.datasource.crit.split(':')[1]);
 
-                    //Add warning and critical line to chart
-                    thresholdLines.push({
-                        color: GraphDefaultsObj.warningBorderColor,
-                        yaxis: {
-                            from: warn,
-                            to: warn
-                        }
-                    });
+                    // Min & Max Thresholds
+                    if(critHi > warnHi && warnLo > critLo){
 
-                    thresholdLines.push({
-                        color: GraphDefaultsObj.criticalBorderColor,
-                        yaxis: {
-                            from: crit,
-                            to: crit
-                        }
-                    });
+                        //Add warning and critical line to chart
+                        thresholdLines.push({
+                            color: GraphDefaultsObj.criticalBorderColor,
+                            yaxis: {
+                                from: critLo,
+                                to: critLo
+                            }
+                        });
 
-                    //Change color of the area chart for warning and critical
-                    if(warn > crit){
-                        defaultColor = GraphDefaultsObj.okFillColor;
+                        thresholdLines.push({
+                            color: GraphDefaultsObj.warningBorderColor,
+                            yaxis: {
+                                from: warnLo,
+                                to: warnLo
+                            }
+                        });
+
+                        thresholdLines.push({
+                            color: GraphDefaultsObj.warningBorderColor,
+                            yaxis: {
+                                from: warnHi,
+                                to: warnHi
+                            }
+                        });
+
+                        thresholdLines.push({
+                            color: GraphDefaultsObj.criticalBorderColor,
+                            yaxis: {
+                                from: critHi,
+                                to: critHi
+                            }
+                        });
+
+                        defaultColor = GraphDefaultsObj.criticalFillColor;
                         thresholdAreas.push({
-                            below: warn,
+                            below: critHi,
                             color: GraphDefaultsObj.warningFillColor
                         });
                         thresholdAreas.push({
-                            below: crit,
+                            below: warnHi,
+                            color: GraphDefaultsObj.okFillColor
+                        });
+                        thresholdAreas.push({
+                            below: warnLo,
+                            color: GraphDefaultsObj.warningFillColor
+                        });
+                        thresholdAreas.push({
+                            below: critLo,
+                            color: GraphDefaultsObj.criticalFillColor
+                        });
+
+                        //Change color of the area chart for warning and critical
+                    }
+                    // Other way round
+                    else if(loInverted && hiInverted){
+
+                        // OK: Everything above.
+                        defaultColor = GraphDefaultsObj.okFillColor;
+
+                        // WARN: EVERYTHING BELOW
+                        thresholdLines.push({
+                            color: GraphDefaultsObj.warningBorderColor,
+                            yaxis: {
+                                from: warnHi,
+                                to: warnHi
+                            }
+                        });
+                        thresholdAreas.push({
+                            below: warnHi,
+                            color: GraphDefaultsObj.warningFillColor
+                        });
+
+                        // CRIT: EVERYTHING BELOW
+                        thresholdLines.push({
+                            color: GraphDefaultsObj.criticalBorderColor,
+                            yaxis: {
+                                from: critHi,
+                                to: critHi
+                            }
+                        });
+                        thresholdAreas.push({
+                            below: critHi,
+                            color: GraphDefaultsObj.criticalFillColor
+                        });
+
+                        // WARN: EVERYTHING BELOW
+                        thresholdLines.push({
+                            color: GraphDefaultsObj.criticalBorderColor,
+                            yaxis: {
+                                from: critLo,
+                                to: critLo
+                            }
+                        });
+                        thresholdAreas.push({
+                            below: critLo,
+                            color: GraphDefaultsObj.warningFillColor
+                        });
+
+                        // OKAY: EVERYTHING BELOW
+                        thresholdLines.push({
+                            color: GraphDefaultsObj.warningBorderColor,
+                            yaxis: {
+                                from: warnLo,
+                                to: warnLo
+                            }
+                        });
+
+
+                        thresholdAreas.push({
+                            below: critLo,
+                            color: GraphDefaultsObj.okFillColor
+                        });
+
+                    }
+                    // Only two (regular) thresholds
+                    else if(warnLo > critLo){
+                        defaultColor = GraphDefaultsObj.okFillColor;
+                        thresholdAreas.push({
+                            below: warnLo,
+                            color: GraphDefaultsObj.warningFillColor
+                        });
+                        thresholdAreas.push({
+                            below: critLo,
                             color: GraphDefaultsObj.criticalFillColor
                         });
                     }else{
                         defaultColor = GraphDefaultsObj.criticalFillColor;
                         thresholdAreas.push({
-                            below: crit,
+                            below: critLo,
                             color: GraphDefaultsObj.warningFillColor
                         });
                         thresholdAreas.push({
-                            below: warn,
+                            below: warnLo,
                             color: GraphDefaultsObj.okFillColor
                         });
                     }

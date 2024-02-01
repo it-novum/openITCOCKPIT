@@ -61,6 +61,10 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
             });
 
             var renderGauge = function(perfdataName, perfdata){
+                if(typeof perfdata === 'undefined'){
+                    return;
+                }
+
                 var units = perfdata.unit;
                 var label = perfdataName;
 
@@ -82,7 +86,6 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     }
                 }
 
-
                 if(isNaN(perfdata.warning) || isNaN(perfdata.critical)){
                     perfdata.warning = null;
                     perfdata.critical = null;
@@ -97,9 +100,26 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     perfdata.max = 100;
                 }
 
-                var thresholds = [];
 
-                if(perfdata.warning !== null && perfdata.critical !== null){
+
+                var thresholds = [];
+                if($scope.perfdata.isMultiple && perfdata.hiInverted && perfdata.loInverted){
+                    thresholds = [
+                        {from: perfdata.warnHi, to: perfdata.max, color: '#449D44'},
+                        {from: perfdata.critHi, to: perfdata.warnHi, color: '#DF8F1D'},
+                        {from: perfdata.critical, to: perfdata.critHi, color: '#C9302C'},
+                        {from: perfdata.warning, to: perfdata.critical, color: '#DF8F1D'},
+                        {from: perfdata.min, to: perfdata.warning, color: '#449D44'},
+                    ];
+                }else if($scope.perfdata.isMultiple){
+                    thresholds = [
+                        {from: perfdata.min, to: perfdata.critical, color: '#C9302C'},
+                        {from: perfdata.critical, to: perfdata.warning, color: '#DF8F1D'},
+                        {from: perfdata.warning, to: perfdata.warnHi, color: '#449D44'},
+                        {from: perfdata.warnHi, to: perfdata.critHi, color: '#DF8F1D'},
+                        {from: perfdata.critHi, to: perfdata.max, color: '#C9302C'},
+                    ];
+                }else if(perfdata.warning !== null && perfdata.critical !== null){
                     thresholds = [
                         {from: perfdata.min, to: perfdata.warning, color: '#449D44'},
                         {from: perfdata.warning, to: perfdata.critical, color: '#DF8F1D'},
@@ -151,7 +171,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     highlights: thresholds,
                     animationDuration: 700,
                     animationRule: 'elastic',
-                    majorTicks: getMajorTicks(perfdata.max, 5)
+                    majorTicks: getMajorTicks(perfdata.min, perfdata.max, 5)
                 });
 
                 gauge.draw();
@@ -160,17 +180,18 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                 //gauge.value = 1337;
             };
 
-            var getMajorTicks = function(perfdataMax, numberOfTicks){
-                var tickSize = Math.ceil((perfdataMax / numberOfTicks));
-                if(perfdataMax < numberOfTicks){
-                    numberOfTicks = perfdataMax;
+            var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
+                numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
+                let tickSize = (perfdataMax - perfdataMin) / numberOfTicks,
+                    tickArr = [],
+                    myTick = perfdataMin;
+
+                for(let index = 0; index <= numberOfTicks; index++){
+                    tickArr.push(myTick);
+
+                    myTick += tickSize;
                 }
 
-                var tickArr = [];
-                for(var i = 0; i < numberOfTicks; i++){
-                    tickArr.push((i * tickSize));
-                }
-                tickArr.push(perfdataMax);
                 return tickArr;
             };
 
@@ -201,9 +222,15 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     }
                 }
 
+
+                $scope.perfdata.warnHi = parseFloat(($scope.perfdata.warning || '').split(':')[1]);
+                $scope.perfdata.critHi = parseFloat(($scope.perfdata.critical || '').split(':')[1]);
                 $scope.perfdata.current = parseFloat($scope.perfdata.current);
-                $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
-                $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
+                $scope.perfdata.hiInverted = ("" + ($scope.perfdata.warning || '')).charAt(0) === '@';
+                $scope.perfdata.loInverted = ("" + ($scope.perfdata.critical || '')).charAt(0) === '@';
+                $scope.perfdata.isMultiple = ("" + ($scope.perfdata.warning || '')).includes(':');
+                $scope.perfdata.warning = parseFloat($scope.perfdata.warning.replace('@', ''));
+                $scope.perfdata.critical = parseFloat($scope.perfdata.critical.replace('@', ''));
                 $scope.perfdata.min = parseFloat($scope.perfdata.min);
                 $scope.perfdata.max = parseFloat($scope.perfdata.max);
             };

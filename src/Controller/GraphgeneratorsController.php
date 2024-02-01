@@ -87,7 +87,16 @@ class GraphgeneratorsController extends AppController {
                 $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
                 $start = (int)$start;
                 $end = (int)$end;
+                $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
+
+                $serviceForJs['Perfdata'] = $perfdata;
+
+                $metric = array_keys($perfdata)[0];
+                $perfdata = $perfdata[$metric];
+                $perfdata['metric'] = $metric;
                 $performance_data = $PrometheusPerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug, $gauge);
+                $performance_data[0]['datasource']['warn'] = $perfdata['warning'];
+                $performance_data[0]['datasource']['crit'] = $perfdata['critical'];
             } else {
                 $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, $aggregation, $gauge, $scale, $forcedUnit, $debug);
                 $this->set('performance_data', $performance_data);

@@ -37,6 +37,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -1411,6 +1412,22 @@ class DashboardsController extends AppController {
 
                 $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
                 $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
+
+
+                if (Plugin::isLoaded('PrometheusModule') && $service->service_type === PROMETHEUS_SERVICE) {
+                    // Query Prometheus to get all metrics
+                    $ServiceObj = new Service($service->toArray());
+
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj, false, true);
+
+                    $serviceForJs['Perfdata'] = $perfdata;
+
+                    $metric = array_keys($perfdata)[0];
+                    $perfdata = $perfdata[$metric];
+                    $perfdata['metric'] = $metric;
+                    $serviceForJs['Servicestatus']['perfdata'] = "{$perfdata['metric']}={$perfdata['current']}{$perfdata['unit']};{$perfdata['warning']};{$perfdata['critical']};-50;50;";
+                }
                 return $serviceForJs;
             }
         }
@@ -1606,22 +1623,29 @@ class DashboardsController extends AppController {
         }
 
         $service = $ServicesTable->getServiceById($serviceId);
+        $perfdata = [];
         if ($service) {
             if ($this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
-                $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-                $ServicestatusFields->perfdata();
-                $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+                if (Plugin::isLoaded('PrometheusModule') && $service->service_type === PROMETHEUS_SERVICE) {
+                    // Query Prometheus to get all metrics
+                    $ServiceObj = new Service($service->toArray());
 
-                if (!empty($servicestatus)) {
-                    $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-                    $this->set('perfdata', $PerfdataParser->parse());
-                    $this->viewBuilder()->setOption('serialize', ['perfdata']);
-                    return;
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj, false, true);
+                } else {
+                    $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                    $ServicestatusFields->perfdata();
+                    $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+
+                    if (!empty($servicestatus)) {
+                        $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+                        $perfdata = $PerfdataParser->parse();
+                    }
                 }
             }
         }
 
-        $this->set('perfdata', []);
+        $this->set('perfdata', $perfdata);
         $this->viewBuilder()->setOption('serialize', ['perfdata']);
     }
 
