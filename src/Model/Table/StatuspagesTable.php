@@ -667,6 +667,8 @@ class StatuspagesTable extends Table {
                 if ($statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] > 0 &&
                     in_array($objectType, ['hosts', 'hostgroups'], true)) {
                     // Host is down or unreachable - use the host status only
+                    // +1 shifts a host state into a service state so we can use a single array
+                    $item['cumulatedColorId'] = $cumulatedStateId + 1;
                     if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0) {
                         $item['isAcknowledge'] = true;
                         $item['acknowledgedProblemsText'] = __('State is acknowledged');
