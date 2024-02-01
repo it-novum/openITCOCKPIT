@@ -90,7 +90,7 @@
                                         <!-- end of status name -->
 
                                         <!-- Handle acknowledgement comments -->
-                                        <?php if ($statuspage['statuspage']['showAcknowledgements']): ?>
+                                        <?php if ($statuspage['statuspage']['showAcknowledgements'] && $item['cumulatedColorId'] > 0): ?>
                                             <div class="col-12 ">
                                                 <div class="row">
                                                     <div class="col-12 ">
