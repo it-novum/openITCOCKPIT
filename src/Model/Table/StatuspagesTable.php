@@ -598,9 +598,7 @@ class StatuspagesTable extends Table {
                     'name'                     => $name,
                     'cumulatedStateName'       => $stateNames['hosts'][-1], // State for humans
                     'cumulatedColorId'         => -1, // Numeric state representation
-                    'cumulatedColor'           => 'not-monitored', // For text
-                    'background'               => 'bg-not-monitored', // For backgrounds
-                    'background_css'           => 'primary', // For openITCOCKPIT-Mobile (for shadows)
+                    'cumulatedColor'           => 'not-monitored', // For texts, backgrounds and shadows
                     'isAcknowledge'            => false,
                     'acknowledgedProblemsText' => __('State is not acknowledged'),
                     'acknowledgeComment'       => null,
@@ -639,8 +637,6 @@ class StatuspagesTable extends Table {
                 $item['cumulatedStateName'] = $cumulatedStateName;
                 $item['cumulatedColorId'] = $cumulatedStateId;
                 $item['cumulatedColor'] = $stateColors['hosts'][$cumulatedStateId];
-                $item['background'] = 'bg-' . $stateColors['hosts'][$cumulatedStateId];
-                $item['background_css'] = $stateColors['hosts'][$cumulatedStateId]; // For openITCOCKPIT-Mobile
 
                 //only relevant for host and host groups
                 if (in_array($objectType, ['hosts', 'hostgroups'], true)) {
@@ -698,8 +694,6 @@ class StatuspagesTable extends Table {
                         $item['cumulatedStateName'] = $cumulatedStateName;
                         $item['cumulatedColorId'] = $cumulatedStateId;
                         $item['cumulatedColor'] = $stateColors['services'][$cumulatedStateId];
-                        $item['background'] = 'bg-' . $stateColors['services'][$cumulatedStateId];
-                        $item['background_css'] = $stateColors['services'][$cumulatedStateId]; // For openITCOCKPIT-Mobile
                     }
                     // All hosts are up - Is there a service with an issue?
                     if ($statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] > 0) {
@@ -708,8 +702,6 @@ class StatuspagesTable extends Table {
                         $item['cumulatedStateName'] = $cumulatedStateName;
                         $item['cumulatedColorId'] = $cumulatedStateId;
                         $item['cumulatedColor'] = $stateColors['services'][$cumulatedStateId];
-                        $item['background'] = 'bg-' . $stateColors['services'][$cumulatedStateId];
-                        $item['background_css'] = $stateColors['services'][$cumulatedStateId]; // For openITCOCKPIT-Mobile
 
                         if ($objectGroup['state_summary']['services']['acknowledgements'] > 0) {
                             $item['isAcknowledge'] = true;
@@ -788,8 +780,6 @@ class StatuspagesTable extends Table {
                     'cumulatedColor'              => 'primary',
                     'cumulatedHumanStatus'        => __('Not in Monitoring'),
                     'cumulatedIcon'               => 'fa-solid fa-eye-low-vision',
-                    'background'                  => 'bg-primary',
-                    'background_css'              => 'primary'
                 ],
                 'items'      => [],
             ];
@@ -810,8 +800,6 @@ class StatuspagesTable extends Table {
                 'cumulatedColor'              => $items[0]['cumulatedColor'],
                 'cumulatedHumanStatus'        => $items[0]['cumulatedStateName'],
                 'cumulatedIcon'               => $stateIcons[$items[0]['cumulatedColorId']] ?? 'fa-solid fa-eye-low-vision',
-                'background'                  => $items[0]['background'],
-                'background_css'              => $items[0]['background_css'], // For openITCOCKPIT-Mobile
             ],
             'items'      => $items,
         ];
