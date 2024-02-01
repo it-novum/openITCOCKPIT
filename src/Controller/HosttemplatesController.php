@@ -774,7 +774,25 @@ class HosttemplatesController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $hosttemplateId = $this->request->getQuery('hosttemplateId', null);
+
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!$HosttemplatesTable->existsById($hosttemplateId)) {
+            throw new NotFoundException(__('Host template not found'));
+        }
+
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForEdit($hosttemplateId);
+
+        if (!$this->allowedByContainerId($hosttemplate['Hosttemplate']['container_id'], false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($hosttemplateId)) {
 

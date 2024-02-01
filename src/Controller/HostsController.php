@@ -3648,7 +3648,25 @@ class HostsController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $hostId = $this->request->getQuery('hostId', null);
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException(__('Host not found'));
+        }
+
+        $host = $HostsTable->getHostForEdit($hostId);
+
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'], false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($hostId)) {
 

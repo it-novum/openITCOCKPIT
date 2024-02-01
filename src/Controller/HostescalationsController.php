@@ -398,7 +398,24 @@ class HostescalationsController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $hostescalationId = $this->request->getQuery('hostescalationId', null);
+
+        /** @var HostescalationsTable $HostescalationsTable */
+        $HostescalationsTable = TableRegistry::getTableLocator()->get('Hostescalations');
+        if (!$HostescalationsTable->existsById($hostescalationId)) {
+            throw new NotFoundException('Host escalation not found');
+        }
+
+        $hostescalation = $HostescalationsTable->get($hostescalationId);
+
+        if (!$this->allowedByContainerId($hostescalation->get('container_id'), false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($hostescalationId)) {
 

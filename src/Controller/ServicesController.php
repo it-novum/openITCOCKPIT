@@ -3200,7 +3200,27 @@ class ServicesController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $serviceId = $this->request->getQuery('serviceId', null);
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if (!$ServicesTable->existsById($serviceId)) {
+            throw new NotFoundException(__('Service not found'));
+        }
+
+        $service = $ServicesTable->getServiceForEdit($serviceId);
+        $host = $HostsTable->getHostForServiceEdit($service['Service']['host_id']);
+
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'], false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($serviceId)) {
 

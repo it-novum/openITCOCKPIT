@@ -309,7 +309,23 @@ class HostdependenciesController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $hostdependencyId = $this->request->getQuery('hostdependencyId', null);
+
+        /** @var HostdependenciesTable $HostdependenciesTable */
+        $HostdependenciesTable = TableRegistry::getTableLocator()->get('Hostdependencies');
+        if (!$HostdependenciesTable->existsById($hostdependencyId)) {
+            throw new NotFoundException('Host dependency not found');
+        }
+        $hostdependency = $HostdependenciesTable->get($hostdependencyId);
+
+        if (!$this->allowedByContainerId($hostdependency->get('container_id'), false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($hostdependencyId)) {
 

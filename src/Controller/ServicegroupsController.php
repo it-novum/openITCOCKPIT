@@ -1093,7 +1093,25 @@ class ServicegroupsController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $servicegroupId = $this->request->getQuery('servicegroupId', null);
+
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        if (!$ServicegroupsTable->existsById($servicegroupId)) {
+            throw new NotFoundException(__('Invalid Servicegroup'));
+        }
+
+        $servicegroup = $ServicegroupsTable->getServicegroupForEdit($servicegroupId);
+
+        if (!$this->allowedByContainerId($servicegroup['Servicegroup']['container']['parent_id'], false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($servicegroupId)) {
 

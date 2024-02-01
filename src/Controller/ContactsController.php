@@ -717,7 +717,27 @@ class ContactsController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $contactId = $this->request->getQuery('contactId', null);
+
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        if (!$ContactsTable->existsById($contactId)) {
+            throw new NotFoundException(__('Contact not found'));
+        }
+
+        $contact = $ContactsTable->getContactForEdit($contactId);
+
+        $contactForChangeLog = $contact;
+
+        if (!$this->allowedByContainerId($contact['Contact']['containers']['_ids'], false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($contactId)) {
 

@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('TimeperiodsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService){
+    .controller('TimeperiodsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService, NotyService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Timeperiods.name'));

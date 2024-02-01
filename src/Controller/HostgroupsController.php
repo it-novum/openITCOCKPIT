@@ -1112,7 +1112,25 @@ class HostgroupsController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $hostgroupId = $this->request->getQuery('hostgroupId', null);
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        if (!$HostgroupsTable->existsById($hostgroupId)) {
+            throw new NotFoundException(__('Invalid Hostgroup'));
+        }
+
+        $hostgroup = $HostgroupsTable->getHostgroupForEdit($hostgroupId);
+
+        if (!$this->allowedByContainerId($hostgroup['Hostgroup']['container']['parent_id'], false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($hostgroupId)) {
 

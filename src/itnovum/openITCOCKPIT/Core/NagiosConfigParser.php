@@ -226,8 +226,8 @@ class NagiosConfigParser {
                         $result = $parseResult;
                     }
                 } else {
-                    Log::error(sprintf('NagiosConfigParser: record %s not found.', $id));
-                    return 'No record ' . $id . ' found in ' . $TableName;
+                    Log::error(sprintf('NagiosConfigParser: No record [%s] found. in [%s]', $id, $TableName));
+                    return 'No record found in database!';
                 }
             } else {
                 if (sizeof($result) == 1) {
@@ -238,14 +238,14 @@ class NagiosConfigParser {
                         $result = $parseResult;
                     }
                 } else {
-                    Log::error(sprintf('NagiosConfigParser: record %s not found.', $id));
-                    return 'No record ' . $id . ' found in ' . $TableName;
+                    Log::error(sprintf('NagiosConfigParser: No record [%s] found. in [%s]', $id, $TableName));
+                    return 'No record found in database!';
                 }
             }
 
         } else {
             Log::error(sprintf('NagiosConfigParser: Unknown Model %s!.', $TableName));
-            return "Unknown Model " . $TableName . "!";
+            return "Unknown Model!";
         }
 
         return $result;
@@ -357,11 +357,6 @@ class NagiosConfigParser {
                         }
                     }
 
-                    if (empty($content)) {
-                        Log::error(sprintf('NagiosConfigParser: Config for [%s] not found!', $uuid));
-                        return 'No config for ' . $uuid . ' found!';
-                    }
-
                     $result[self::KEY_CONTENT] = $content;
                     //break config files foreach.
                     break;
@@ -370,7 +365,12 @@ class NagiosConfigParser {
             }
         } else {
             Log::error(sprintf('NagiosConfigParser: Folder %s is empty!', $configFolder->pwd()));
-            return 'Folder ' . $configFolder->pwd() . ' is empty!';
+            return 'No config found!';
+        }
+
+        if (empty($result)) {
+            Log::error(sprintf('NagiosConfigParser: Config for [%s] not found!', $uuid));
+            return 'No config found';
         }
 
         return $result;

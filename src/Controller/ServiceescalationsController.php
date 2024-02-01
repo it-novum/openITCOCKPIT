@@ -398,7 +398,24 @@ class ServiceescalationsController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $serviceescalationId = $this->request->getQuery('serviceescalationId', null);
+
+        /** @var ServiceescalationsTable $ServiceescalationsTable */
+        $ServiceescalationsTable = TableRegistry::getTableLocator()->get('Serviceescalations');
+        if (!$ServiceescalationsTable->existsById($serviceescalationId)) {
+            throw new NotFoundException('Service escalation not found');
+        }
+
+        $serviceescalation = $ServiceescalationsTable->get($serviceescalationId);
+
+        if (!$this->allowedByContainerId($serviceescalation->get('container_id'), false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($serviceescalationId)) {
 

@@ -42,6 +42,7 @@ use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -635,7 +636,25 @@ class ContactgroupsController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $contactgroupId = $this->request->getQuery('contactgroupId', null);
+
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+        if (!$ContactgroupsTable->existsById($contactgroupId)) {
+            throw new NotFoundException(__('Contact group not found'));
+        }
+
+        $contactgroup = $ContactgroupsTable->getContactgroupForEdit($contactgroupId);
+
+        if (!$this->allowedByContainerId($contactgroup['Contactgroup']['container']['parent_id'], false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($contactgroupId)) {
 

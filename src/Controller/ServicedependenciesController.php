@@ -292,7 +292,23 @@ class ServicedependenciesController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $servicedependencyId = $this->request->getQuery('servicedependencyId', null);
+
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+        if (!$ServicedependenciesTable->existsById($servicedependencyId)) {
+            throw new NotFoundException('Service dependency not found');
+        }
+        $servicedependency = $ServicedependenciesTable->get($servicedependencyId);
+
+        if (!$this->allowedByContainerId($servicedependency->get('container_id'), false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($servicedependencyId)) {
 

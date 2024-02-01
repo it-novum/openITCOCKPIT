@@ -885,7 +885,25 @@ class ServicetemplatesController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $servicetemplateId = $this->request->getQuery('servicetemplateId', null);
+
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if (!$ServicetemplatesTable->existsById($servicetemplateId)) {
+            throw new NotFoundException(__('Service template not found'));
+        }
+
+        $servicetemplate = $ServicetemplatesTable->getServicetemplateForEdit($servicetemplateId);
+
+        if (!$this->allowedByContainerId($servicetemplate['Servicetemplate']['container_id'], false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($servicetemplateId)) {
 

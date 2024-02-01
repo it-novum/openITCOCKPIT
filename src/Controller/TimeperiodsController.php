@@ -589,7 +589,24 @@ class TimeperiodsController extends AppController {
 
     public function nagiosConfiguration() {
 
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
         $timeperiodId = $this->request->getQuery('timeperiodId', null);
+
+        /** @var TimeperiodsTable $TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        if (!$TimeperiodsTable->existsById($timeperiodId)) {
+            throw new NotFoundException('Time period not found');
+        }
+        $timeperiod = $TimeperiodsTable->getTimeperiodForEdit($timeperiodId);
+
+        if (!$this->allowedByContainerId($timeperiod->get('container_id'), false)) {
+            $this->render403();
+            return;
+        }
 
         if (!empty($timeperiodId)) {
 
