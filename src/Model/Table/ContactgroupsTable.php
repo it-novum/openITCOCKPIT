@@ -161,7 +161,6 @@ class ContactgroupsTable extends Table {
             ->first();
 
         $result = $this->formatFirstResultAsCake2($query, true);
-        unset($result['Container'], $result['Contactstocontactgroup']);
         return $result;
     }
 
