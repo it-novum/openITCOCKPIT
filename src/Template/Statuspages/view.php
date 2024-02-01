@@ -254,7 +254,7 @@
                                 </div>
                             </div>
 
-                            <div class="p-2">
+                            <div class="p-2 hidden-md-down">
                                 <div
                                     class="h-100 status-line bg-{{item.cumulatedColor}} shadow-{{item.cumulatedColor}}"></div>
                             </div>
