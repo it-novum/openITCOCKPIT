@@ -149,37 +149,29 @@
                                 <th class="no-sort sorting_disabled width-15">
                                     <i class="fa fa-check-square"></i>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Statuspages.name')">
+                                <th class="no-sort col-4" ng-click="orderBy('Statuspages.name')">
                                     <i class="fa" ng-class="getSortClass('Statuspages.name')"></i>
                                     <?php echo __('Status page name'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Statuspages.description')">
+                                <th class="no-sort col-4" ng-click="orderBy('Statuspages.description')">
                                     <i class="fa" ng-class="getSortClass('Statuspages.description')"></i>
                                     <?php echo __('Description'); ?>
                                 </th>
-                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.show_downtimes')">
+                                <th class="no-sort" ng-click="orderBy('Statuspages.show_downtimes')">
                                     <i class="fa" ng-class="getSortClass('Statuspages.show_downtimes')"></i>
-                                    <?php echo __('Show Downtimes'); ?>
+                                    <?php echo __('Show downtimes'); ?>
                                 </th>
-                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.show_downtime_comments')">
-                                    <i class="fa" ng-class="getSortClass('Statuspages.show_downtime_comments')"></i>
-                                    <?php echo __('Downtime Comments'); ?>
-                                </th>
-                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.show_acknowledgements')">
+
+                                <th class="no-sort" ng-click="orderBy('Statuspages.show_acknowledgements')">
                                     <i class="fa" ng-class="getSortClass('Statuspages.show_acknowledgements')"></i>
-                                    <?php echo __('Show Acknowledgements'); ?>
+                                    <?php echo __('Show acknowledgements'); ?>
                                 </th>
-                                <th class="no-sort width-95"
-                                    ng-click="orderBy('Statuspages.show_acknowledgement_comments')">
-                                    <i class="fa"
-                                       ng-class="getSortClass('Statuspages.show_acknowledgement_comments')"></i>
-                                    <?php echo __('Acknowledgement Comments'); ?>
-                                </th>
-                                <th class="no-sort width-95" ng-click="orderBy('Statuspages.public')">
+
+                                <th class="no-sort" ng-click="orderBy('Statuspages.public')">
                                     <i class="fa" ng-class="getSortClass('Statuspages.public')"></i>
                                     <?php echo __('Public'); ?>
                                 </th>
-                                <th class="no-sort text-center">
+                                <th class="no-sort text-center width-50">
                                     <i class="fa fa-cog"></i>
                                 </th>
                             </tr>
@@ -205,27 +197,45 @@
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-truncate text-truncate-sm">{{statuspage.description}}</td>
-                                <td>
-                                    <i class="fas fa-check text-success" ng-show="statuspage.show_downtimes"></i>
-                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_downtimes"></i>
+                                <td class="text-center">
+                                    <span class="badge border border-danger text-danger"
+                                          ng-hide="statuspage.show_downtimes">
+                                        <?= __('No'); ?>
+                                    </span>
+                                    <span class="badge border border-success text-success"
+                                          ng-show="statuspage.show_downtimes && !statuspage.show_downtime_comments">
+                                        <?= __('Yes'); ?>
+                                    </span>
+                                    <span class="badge border border-success text-success"
+                                          ng-show="statuspage.show_downtimes && statuspage.show_downtime_comments">
+                                        <?= __('Yes with comments'); ?>
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge border border-danger text-danger"
+                                          ng-hide="statuspage.show_acknowledgements">
+                                        <?= __('No'); ?>
+                                    </span>
+                                    <span class="badge border border-success text-success"
+                                          ng-show="statuspage.show_acknowledgements && !statuspage.show_downtime_comments">
+                                        <?= __('Yes'); ?>
+                                    </span>
+                                    <span class="badge border border-success text-success"
+                                          ng-show="statuspage.show_acknowledgements && statuspage.show_downtime_comments">
+                                        <?= __('Yes with comments'); ?>
+                                    </span>
+                                </td>
+
+                                <td class="text-center">
+                                    <span class="badge border border-primary text-primary" ng-show="statuspage.public">
+                                        <?= __('Yes'); ?>
+                                    </span>
+                                    <span class="badge border border-secondary text-secondary"
+                                          ng-show="!statuspage.public">
+                                        <?= __('No'); ?>
+                                    </span>
                                 </td>
                                 <td>
-                                    <i class="fas fa-check text-success" ng-show="statuspage.show_downtime_comments"></i>
-                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_downtime_comments"></i>
-                                </td>
-                                <td>
-                                    <i class="fas fa-check text-success" ng-show="statuspage.show_acknowledgements"></i>
-                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_acknowledgements"></i>
-                                </td>
-                                <td>
-                                    <i class="fas fa-check text-success" ng-show="statuspage.show_acknowledgement_comments"></i>
-                                    <i class="fas fa-times text-danger" ng-show="!statuspage.show_acknowledgement_comments"></i>
-                                </td>
-                                <td>
-                                    <i class="fas fa-check text-success" ng-show="statuspage.public"></i>
-                                    <i class="fas fa-times text-danger" ng-show="!statuspage.public"></i>
-                                </td>
-                                <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'statuspages')): ?>
                                             <a ui-sref="StatuspagesEdit({id: statuspage.id})"
