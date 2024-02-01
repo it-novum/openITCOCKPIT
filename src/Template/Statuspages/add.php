@@ -152,7 +152,7 @@
                                                id="showDowntimes"
                                                ng-model="post.Statuspage.show_downtimes">
                                         <label class="custom-control-label" for="showDowntimes">
-                                            <?php echo __('Show Downtimes'); ?>
+                                            <?php echo __('Show downtimes'); ?>
                                         </label>
                                     </div>
                                     <div class="help-block mt-0">
@@ -166,9 +166,10 @@
                                         <input type="checkbox"
                                                class="custom-control-input"
                                                id="showDowntimeComments"
+                                               ng-disabled="!post.Statuspage.show_downtimes"
                                                ng-model="post.Statuspage.show_downtime_comments">
                                         <label class="custom-control-label" for="showDowntimeComments">
-                                            <?php echo __('Show Downtime Comment'); ?>
+                                            <?php echo __('Show downtime comment'); ?>
                                         </label>
                                     </div>
                                     <div class="help-block mt-0">
@@ -187,7 +188,7 @@
                                                id="showAcknowledgements"
                                                ng-model="post.Statuspage.show_acknowledgements">
                                         <label class="custom-control-label" for="showAcknowledgements">
-                                            <?php echo __('Show Acknowledgements'); ?>
+                                            <?php echo __('Show acknowledgements'); ?>
                                         </label>
                                     </div>
                                     <div class="help-block mt-0">
@@ -201,9 +202,10 @@
                                         <input type="checkbox"
                                                class="custom-control-input"
                                                id="showAcknowledgementComments"
+                                               ng-disabled="!post.Statuspage.show_acknowledgements"
                                                ng-model="post.Statuspage.show_acknowledgement_comments">
                                         <label class="custom-control-label" for="showAcknowledgementComments">
-                                            <?php echo __('Show Acknowledgement comments'); ?>
+                                            <?php echo __('Show acknowledgement comments'); ?>
                                         </label>
                                     </div>
                                     <div class="help-block mt-0">
