@@ -6,9 +6,7 @@ use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\QueryExpression;
-use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Log\Log;
@@ -18,7 +16,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use CustomalertModule\Model\Table\CustomalertRulesTable;
-use CustomalertModule\Model\Table\CustomalertsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardsTable;
 use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 use MapModule\Model\Table\MapsTable;
@@ -559,14 +556,19 @@ class ContainersTable extends Table {
 
     /**
      * @param int $id
+     * @param bool $flat =false If set to true, the result will be flattened into an int[]
+     *
      * @return array
      */
-    public function getPathById($id) {
+    public function getPathById($id, bool $flat = false) {
         try {
             $path = $this->find('path', ['for' => $id])
                 ->disableHydration()
                 ->all()
                 ->toArray();
+            if ($flat) {
+                return Hash::extract($path, '{n}.id');
+            }
             return $path;
         } catch (RecordNotFoundException $e) {
             return [];
@@ -605,6 +607,19 @@ class ContainersTable extends Table {
         }
 
         return $delimiter . implode($delimiter, $nodes);
+    }
+
+    /**
+     * I will solely check whether the given $newContainerId is in the path of the $oldContainerId.
+     *
+     * @param int $newContainerId
+     * @param int $oldContainerId
+     *
+     * @return bool
+     */
+    final public function isNewContainerInPathOfOldContainer(int $newContainerId, int $oldContainerId): bool {
+        $paths = $this->getPathById($oldContainerId, true);
+        return in_array($newContainerId, $paths, true);
     }
 
     public function getAllContainerByParentId($parentContainerId) {

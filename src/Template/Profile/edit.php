@@ -469,8 +469,11 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <div class="col-xs-12 col-md-1 bold">
                             <?php echo __('ID'); ?>
                         </div>
-                        <div class="col-xs-12 col-md-9 bold">
+                        <div class="col-xs-12 col-md-7 bold">
                             <?php echo __('Description'); ?>
+                        </div>
+                        <div class="col-xs-12 col-md-2 bold">
+                            <?php echo __('Last Use'); ?>
                         </div>
                         <div class="col-xs-12 col-md-2 bold">
                             <?php echo __('Show'); ?>
@@ -480,8 +483,11 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <div class="col-xs-12 col-md-1">
                             {{apikey.id}}
                         </div>
-                        <div class="col-xs-12 col-md-9">
+                        <div class="col-xs-12 col-md-7">
                             {{apikey.description}}
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            {{apikey.last_use}}
                         </div>
                         <div class="col-xs-12 col-md-2">
                             <button class="btn btn-primary btn-xs btn-block" ng-click="editApiKey(apikey.id)">

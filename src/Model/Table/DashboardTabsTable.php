@@ -337,7 +337,15 @@ class DashboardTabsTable extends Table {
         // Traverse the allocations and copy / update the allocated tabs.
         foreach ($allocatedTabIds as $allocatedTabId) {
             $Entity = $this->get($allocatedTabId);
-            $Author = $UsersTable->get($Entity->user_id);
+            try {
+                $Author = $UsersTable->get($Entity->user_id);
+            } catch (RecordNotFoundException $exception) {
+                // If the author is gone, just for sake of stability, remove the entire tab.
+                // This should not happen without fiddling the database.
+                // But... better safe than sorry.
+                $this->delete($Entity);
+                continue;
+            }
 
             // Find Copy
             $copy = $this->findAllocatedTab($userId, $allocatedTabId);

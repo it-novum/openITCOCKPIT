@@ -32,6 +32,8 @@ use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Cake\Database\Query;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
+use Cake\I18n\FrozenTime;
+use Cake\Log\Log;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -434,6 +436,7 @@ class UsersTable extends Table {
             'Users.is_active',
             'Users.samaccountname',
             'Users.is_oauth',
+            'Users.last_login',
             'Usergroups.id',
             'Usergroups.name',
             'full_name' => $query->func()->concat([
@@ -1420,8 +1423,46 @@ class UsersTable extends Table {
         return $orphanedUsers;
     }
 
+    /**
+     * Gets the record by api key and saves the last login date
+     *  Returns true for successful
+     *
+     * @param string $email
+     * @return bool
+     */
+    public function saveLastLoginDate($email) {
+        if (!str_contains($email, '@')) {
+            $userIdQuery = $this->find()->select(['id'])->where(['samaccountname' => $email])->first();
+        } else {
+            $userIdQuery = $this->find()->select(['id'])->where(['email' => $email])->first();
+        }
+
+        if (!empty($userIdQuery)) {
+            $userToUpdate = $this->get($userIdQuery->id);
+            $userToUpdate->set('last_login', FrozenTime::now());
+            if (!$this->save($userToUpdate)) {
+                Log::error(sprintf(
+                    'UserTable: Could not save user [%s] %s',
+                    $userToUpdate->id,
+                    $userToUpdate->last_login
+                ));
+                Log::error(json_encode($userToUpdate->getErrors()));
+                return false;
+            }
+
+        } else {
+            Log::error(sprintf(
+                'UserTable: Could not save user %s',
+                $email
+            ));
+            return false;
+        }
+
+        return true;
+    }
+
     public function getAllocatedTabsByUserId(int $userId): array {
-        $dashboards= $this
+        $dashboards = $this
             ->find()
             ->contain(['DashboardTabs'])
             ->where(['id' => $userId])
