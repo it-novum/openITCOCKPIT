@@ -487,6 +487,16 @@ class Menu {
                     [__('message'), __('news'), __('information')],
                     4
                 ))
+                ->addLink(new MenuLink(
+                    __('Dashboard Allocation'),
+                    'DashboardAllocation',
+                    'dashboards',
+                    'allocationManager',
+                    '',
+                    'fa fa-table',
+                    [],
+                    5
+                ))
             )
             ->addCategory((new MenuCategory(
                 'container_mgmt_category',

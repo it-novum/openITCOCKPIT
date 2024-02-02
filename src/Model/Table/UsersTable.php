@@ -115,6 +115,15 @@ class UsersTable extends Table {
             'targetForeignKey' => 'usercontainerrole_id',
             //'saveStrategy'     => 'replace'
         ]);
+
+        $this->belongsToMany('DashboardTabs', [
+            'className'        => 'DashboardTabs',
+            'joinTable'        => 'users_to_dashboard_tabs',
+            'foreignKey'       => 'user_id',
+            'targetForeignKey' => 'dashboard_tab_id',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
+        ]);
     }
 
     /**
@@ -1452,4 +1461,14 @@ class UsersTable extends Table {
         return true;
     }
 
+    public function getAllocatedTabsByUserId(int $userId): array {
+        $dashboards = $this
+            ->find()
+            ->contain(['DashboardTabs'])
+            ->where(['id' => $userId])
+            ->disableHydration()
+            ->all()
+            ->toArray()[0]['dashboard_tabs'] ?? [];
+        return Hash::extract($dashboards, '{n}.id');
+    }
 }

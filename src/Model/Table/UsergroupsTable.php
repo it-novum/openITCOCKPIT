@@ -65,6 +65,15 @@ class UsergroupsTable extends Table {
             'targetForeignKey' => 'ldapgroup_id',
             'saveStrategy'     => 'replace'
         ]);
+
+        $this->belongsToMany('DashboardTabs', [
+            'className'        => 'DashboardTabs',
+            'joinTable'        => 'usergroups_to_dashboard_tabs',
+            'foreignKey'       => 'usergroup_id',
+            'targetForeignKey' => 'dashboard_tab_id',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
+        ]);
     }
 
     /**
@@ -274,5 +283,21 @@ class UsergroupsTable extends Table {
         ];
 
         return $usergroup;
+    }
+
+    /**
+     * I will return an array of DashboardTabs that were allocated to the given $usergroupId.
+     * @param int $usergroupId
+     * @return array
+     */
+    public function getAllocatedTabsByUsergroupId(int $usergroupId): array {
+        $dashboards = $this
+            ->find()
+            ->contain(['DashboardTabs'])
+            ->where(['id' => $usergroupId])
+            ->disableHydration()
+            ->all()
+            ->toArray()[0]['dashboard_tabs'] ?? [];
+        return Hash::extract($dashboards, '{n}.id');
     }
 }

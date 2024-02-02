@@ -9,13 +9,43 @@ angular.module('openITCOCKPIT')
         $scope.errors = {};
         $scope.intervalText = 'disabled';
         $scope.dashboardIsLocked = false;
+        $scope.Usergroup = {};
+        $scope.User = {};
+        $scope.hideModifications = 0;
+        $scope.isPinned = false;
+        $scope.userId = 0;
+
+        $scope.flags = {
+            exists: 1 << 0,
+        };
 
         $scope.data = {
             newTabName: '',
             createTabFromSharedTabId: null,
             viewTabRotateInterval: 0,
             renameTabName: '',
-            renameWidgetTitle: ''
+            renameWidgetTitle: '',
+            users: [],
+            usergroups: [],
+            flags: 0,
+            Container: {
+                _ids: []
+            }
+        };
+
+        // I am the object that is being transported to JSON API to modify the DashboardTab allocation.
+        $scope.allocation = {
+            DashboardTab: {
+                id: 0,
+                usergroups: {
+                    _ids: []
+                },
+                allocated_users: {
+                    _ids: []
+                },
+                flags: 0,
+                container_id: 0
+            }
         };
 
         $scope.gridsterOpts = {
@@ -114,6 +144,12 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.activeTab = tabId;
+                $scope.data.User = result.data.widgets.allocated_users._ids || [];
+                $scope.data.Usergroup = result.data.widgets.Usergroup._ids || [];
+
+                // ITC-3037
+                $scope.isReadonly = result.data.isReadonly ? 1 : 0;
+                $scope.hideModifications = 0;
 
                 for(var k in $scope.tabs){
                     if($scope.tabs[k].id === $scope.activeTab){
@@ -125,6 +161,12 @@ angular.module('openITCOCKPIT')
                             $scope.dashboardIsLocked = false;
                             $scope.gridsterOpts.resizable.enabled = true;
                             $scope.gridsterOpts.draggable.enabled = true;
+                        }
+                        if(($scope.tabs[k].source || '') === 'ALLOCATED'){
+                            $scope.hideModifications = 1;
+                            $scope.dashboardIsLocked = true;
+                            $scope.gridsterOpts.resizable.enabled = false;
+                            $scope.gridsterOpts.draggable.enabled = false;
                         }
                         break;
                     }
@@ -142,7 +184,8 @@ angular.module('openITCOCKPIT')
                         icon: result.data.widgets.Widget[i].icon,
                         title: result.data.widgets.Widget[i].title,
                         color: result.data.widgets.Widget[i].color,
-                        directive: result.data.widgets.Widget[i].directive
+                        directive: result.data.widgets.Widget[i].directive,
+                        isReadonly: $scope.hideModifications
                     });
                 }
 
@@ -457,6 +500,119 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.allocateDashboard = function(tabId){
+            // I am initing the view rn.
+            $scope.allocationInitializing = true;
+
+            // Fetch Containers.
+            $scope.loadContainer();
+
+            // Fetch UserGroups.
+            $scope.loadUsergroups();
+
+            // Fetch Current Allocation setup.
+            $scope.fetchAllocation(tabId);
+
+            // Show the modal.
+            $('#allocateDashboardModal').modal('show');
+        }
+
+        // I will load the current allocation status.
+        $scope.fetchAllocation = function(tabId){
+            // Fetch the desired Dashboard.
+            $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result){
+                $scope.dashboard = result.data.dashboardTabs[0];
+                $scope.allocation.DashboardTab.id = result.data.dashboardTabs[0].id;
+                $scope.allocation.DashboardTab.container_id = result.data.dashboardTabs[0].container_id;
+                $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
+                $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
+                $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
+                $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
+                $scope.userId = result.data.userId;
+
+                // I'm done.
+                $scope.allocationInitializing = false;
+            });
+        }
+
+        // I will load all users.
+        $scope.loadUsers = function(){
+            if($scope.allocation.DashboardTab.container_id === 0){
+                return;
+            }
+            $http.get("/users/loadUsersByContainerId.json", {
+                params: {
+                    'angular': true,
+                    'containerId': $scope.allocation.DashboardTab.container_id
+                }
+            }).then(function(result){
+                $scope.users = [];
+
+                for(let index in result.data.users){
+                    let myUser = result.data.users[index];
+                    if(myUser.key !== $scope.userId){
+                        $scope.users.push(myUser);
+                    }
+                }
+
+                // Reset the selected users after changing the container.
+                if($scope.allocationInitializing){
+                    $scope.allocation.DashboardTab.allocated_users._ids = [];
+                }
+            });
+        };
+
+        // I will load all containers.
+        $scope.loadContainer = function(){
+            return $http.get("/users/loadContainersForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.containers = result.data.containers;
+            });
+        };
+
+        // I will load all Usergroups.
+        $scope.loadUsergroups = function(){
+            $http.get("/usergroups/index.json", {
+                params: {
+                    'angular': true,
+                    'sort': 'Usergroups.name',
+                    'direction': 'asc'
+                }
+            }).then(function(result){
+                $scope.usergroups = result.data.allUsergroups;
+            });
+        };
+
+        // If the containerId is changed, reload the users!
+        $scope.$watch('allocation.DashboardTab.container_id', function(){
+            if($scope.allocation.DashboardTab.container_id > 0){
+                // Load new users from the container.
+                $scope.loadUsers();
+            }
+        }, true);
+
+        // If the [pinned] flag is switched, pass it to the flag int.
+        $scope.$watch('isPinned', function(val){
+            if(val){
+                $scope.allocation.DashboardTab.flags |= 1;
+                return;
+            }
+            $scope.allocation.DashboardTab.flags ^= 1;
+        });
+
+        // I will store the allocation details.
+        $scope.saveAllocation = function(){
+            $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function(){
+                genericSuccess();
+                $('#allocateDashboardModal').modal('hide');
+            }, function errorCallback(result){
+                $scope.errors = result.data.error;
+                genericError();
+            });
+        }
 
         $scope.saveTabRotateInterval = function(){
             $http.post("/dashboards/saveTabRotateInterval.json?angular=true",
@@ -607,6 +763,7 @@ angular.module('openITCOCKPIT')
 
             tabSortCreated = true;
             $('.nav-tabs').sortable({
+                items: "> .ui-sortable-handle",
                 update: function(){
                     var $tabbar = $(this);
                     var $tabs = $tabbar.children();
@@ -728,7 +885,6 @@ angular.module('openITCOCKPIT')
         });
 
         $scope.$watch('activeWidgets', function(){
-            //console.log(disableWatch);
             if($scope.init === true || disableWatch === true){
                 return;
             }
