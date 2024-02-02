@@ -182,7 +182,6 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                         {from: perfdata.warnHi, to: perfdata.critHi, color: '#DF8F1D'},
                         {from: perfdata.critHi, to: perfdata.max, color: '#C9302C'},
                     ];
-                    console.warn(perfdata);
                 }else if(perfdata.warning !== null && perfdata.critical !== null){
                     thresholds = [
                         {from: perfdata.min, to: perfdata.warning, color: '#449D44'},
