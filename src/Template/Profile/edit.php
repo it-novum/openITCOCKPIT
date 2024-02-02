@@ -457,7 +457,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="panel-content">
 
                     <div class="row">
-                        <div class="col-12 card card-body text-center text-info padding-10" ng-show="apikeys.length == 0">
+                        <div class="col-12 card card-body text-center text-info padding-10"
+                             ng-show="apikeys.length == 0">
                             <i class="fa fa-info-circle"></i>
                             <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
                             <br/>
@@ -473,7 +474,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                             <?php echo __('Description'); ?>
                         </div>
                         <div class="col-xs-12 col-md-2 bold">
-                            <?php echo __('Last Use'); ?>
+                            <?php echo __('Last used'); ?>
                         </div>
                         <div class="col-xs-12 col-md-2 bold">
                             <?php echo __('Show'); ?>
