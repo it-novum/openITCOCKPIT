@@ -361,33 +361,13 @@ class DashboardTabsTable extends Table {
                 // or maybe update the existing copy if needed.
                 $this->updateAllocatedTab($allocatedTabId, $copy['id']);
             }
-
-            // add the copied dashboard tab to the response.
-            $forJs[] = [
-                'id'                => $copy['id'],
-                'position'          => (int)$copy['position'],
-                'name'              => $copy['name'],
-                'shared'            => (bool)$copy['shared'],
-                'source_tab_id'     => (int)$copy['source_tab_id'],
-                'check_for_updates' => (bool)$copy['check_for_updates'],
-                'last_update'       => (int)$copy['last_update'],
-                'locked'            => (bool)$copy['locked'],
-                'source'            => 'ALLOCATED',
-                'modified'          => $copy['modified'],
-                'flags'             => (int)$copy['flags'],
-                'title'             => sprintf(__('Dieses Dashboard wird von %s %s verwaltet.'), h($Author->firstname), h($Author->lastname)),
-                'isPinned'          => (bool)($Entity->flags & DashboardTab::TAB_PINNED),
-                'isReadonly'        => true
-            ];
         }
 
         $result = $this->find()
             ->where([
-                'DashboardTabs.user_id'  => $userId,
-                'DashboardTabs.flags !=' => 2
+                'DashboardTabs.user_id' => $userId
             ])
             ->order([
-                'DashboardTabs.flags'    => 'DESC',
                 'DashboardTabs.position' => 'ASC',
             ])
             ->disableHydration()
@@ -403,9 +383,11 @@ class DashboardTabsTable extends Table {
                 'check_for_updates' => (bool)$row['check_for_updates'],
                 'last_update'       => (int)$row['last_update'],
                 'locked'            => (bool)$row['locked'],
-                'source'            => null,
                 'modified'          => $row['modified'],
-                'flags'             => 0
+                'flags'             => (int)$row['flags'],
+                'isPinned'          => (bool)($row['flags'] & 2),
+                'isReadonly'        => (bool)($row['flags'] & 4),
+                'source'            => (bool)($row['flags'] & 4) ? 'ALLOCATED' : ''
             ];
         }
 
@@ -425,7 +407,7 @@ class DashboardTabsTable extends Table {
             ->where([
                 'user_id'       => $userId,
                 'source_tab_id' => $allocatedTabId,
-                'flags'         => 2
+                'flags >='      => 4
             ])
             ->disableHydration()
             ->first() ?? [];
@@ -584,7 +566,6 @@ class DashboardTabsTable extends Table {
         $newTab = $this->newEntity([
             'name'   => $sourceTab->get('name'),
             'locked' => $sourceTab->get('locked'),
-
             'user_id'           => $userId,
             'position'          => $this->getNextPosition($userId),
             'shared'            => 0,
@@ -628,17 +609,21 @@ class DashboardTabsTable extends Table {
                 'color'      => $widget->get('color'),
                 'directive'  => $widget->get('directive'),
                 'icon'       => $widget->get('icon'),
-                'json_data'  => $widget->get('json_data')
+                'json_data'  => $widget->get('json_data'),
             ];
         }
 
+        $nextPosition = $this->getNextPosition($userId);
+        if ($sourceTab->get('flags') & 2) {
+            $nextPosition = -1;
+        }
         $newTab = $this->newEntity([
             'name'              => $sourceTab->get('name'),
             'locked'            => true,
             'user_id'           => $userId,
-            'position'          => $this->getNextPosition($userId),
+            'position'          => $nextPosition,
             'shared'            => 0,
-            'flags'             => 2,
+            'flags'             => $sourceTab->get('flags') + 4,
             'source_tab_id'     => $tabId,
             'check_for_updates' => 0,
             'last_update'       => time(),
@@ -689,14 +674,20 @@ class DashboardTabsTable extends Table {
 
         $Entity = $this->get($copyTabId);
 
+        $nextPosition = $this->getNextPosition($Entity->user_id);
+        if ($sourceTab->get('flags') & 2) {
+            $nextPosition = -1;
+        }
         $patch = [
             'name'              => $sourceTab->get('name'),
             'locked'            => $sourceTab->get('locked'),
             'shared'            => 0,
             'source_tab_id'     => $originalTabId,
+            'position'          => $nextPosition,
             'check_for_updates' => 0,
             'last_update'       => time(),
-            'widgets'           => $widgets
+            'widgets'           => $widgets,
+            'flags'             => $sourceTab->get('flags') + 4
         ];
 
         $Entity = $this->patchEntity($Entity, $patch);
