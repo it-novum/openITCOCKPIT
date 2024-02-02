@@ -28,7 +28,6 @@ angular.module('openITCOCKPIT')
             Apikey: {
                 apikey: '',
                 description: '',
-                last_use: ''
             }
         };
 
