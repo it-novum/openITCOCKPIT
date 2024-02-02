@@ -3164,6 +3164,169 @@ class HostsTable extends Table {
     }
 
     /**
+     * @param array $MY_RIGHTS
+     * @param array $conditions
+     * @return int
+     */
+    public function getHostIdsBySelectedStatusExtendedStatusengine3($MY_RIGHTS, $conditions) {
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Hosts.id'
+            ])
+            ->innerJoinWith('Hosttemplates')
+            ->join([
+                'b' => [
+                    'table'      => 'statusengine_hoststatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Hoststatus',
+                    'conditions' => 'Hoststatus.hostname = Hosts.uuid',
+                ]
+            ])
+            ->where([
+                'Hosts.disabled' => 0
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $where = [];
+
+        $where['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
+
+        if ($where['Hoststatus.current_state'] > 0) {
+            if ($conditions['Hoststatus']['acknowledged'] ^ $conditions['Hoststatus']['not_acknowledged']) {
+                $hasBeenAcknowledged = (int)($conditions['Hoststatus']['acknowledged'] === true);
+                $where['Hoststatus.problem_has_been_acknowledged'] = $hasBeenAcknowledged;
+            }
+
+            if ($conditions['Hoststatus']['in_downtime'] ^ $conditions['Hoststatus']['not_in_downtime']) {
+                $inDowntime = $conditions['Hoststatus']['in_downtime'] === true;
+                if ($inDowntime === false) {
+                    $where['Hoststatus.scheduled_downtime_depth'] = 0;
+                } else {
+                    $where['Hoststatus.scheduled_downtime_depth > '] = 0;
+                }
+            }
+        }
+
+        if (!empty($conditions['Hostgroup']['_ids'])) {
+            $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
+            $query->select([
+                'hostgroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                    GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
+                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
+                'count'         => $query->newExpr(
+                    'SELECT COUNT(hostgroups.id)
+                                FROM hostgroups
+                                WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                                GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
+                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
+                                AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
+            ]);
+            $query->join([
+                'hosts_to_hostgroups'         => [
+                    'table'      => 'hosts_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HostToHostgroups',
+                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
+                ],
+                'hosttemplates_to_hostgroups' => [
+                    'table'      => 'hosttemplates_to_hostgroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'HosttemplatesToHostgroups',
+                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosts.hosttemplate_id',
+                ]
+            ]);
+            $query->having([
+                'hostgroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+            $query->group('Hosts.id');
+        }
+
+        if (!empty($conditions['Host']['name'])) {
+            if (isset($conditions['Host']['name_regex']) && $conditions['Host']['name_regex'] === true || $conditions['Host']['name_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['Host']['name'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                // Use LIKE
+                $where[] = new Comparison(
+                    'Hosts.name',
+                    sprintf('%%%s%%', $conditions['Host']['name']),
+                    'string',
+                    'LIKE'
+                );
+            }
+        }
+
+        if (!empty($conditions['Host']['address'])) {
+            if (isset($conditions['Host']['address_regex']) && $conditions['Host']['address_regex'] === true || $conditions['Host']['address_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['address'])) {
+                    $where[] = new Comparison(
+                        'Hosts.address',
+                        $conditions['Host']['address'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                $where['Hosts.address LIKE'] = sprintf('%%%s%%', $conditions['Host']['address']);
+            }
+        }
+
+        if (!empty($conditions['Host']['keywords'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $conditions['Host']['keywords'],
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($conditions['Host']['not_keywords'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $conditions['Host']['not_keywords'],
+                'string',
+                'NOT RLIKE'
+            );
+        }
+
+        if (!empty($conditions['Hoststatus']['state_older_than']) && is_numeric($conditions['Hoststatus']['state_older_than']) && $conditions['Hoststatus']['state_older_than'] > 0) {
+            $intervalUnit = 'MINUTE';
+            if (in_array($conditions['Hoststatus']['state_older_than_unit'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
+                $intervalUnit = $conditions['Hoststatus']['state_older_than_unit'];
+            }
+            $query->where([
+                //  sprintf('Hoststatus.last_state_change <= NOW() - INTERVAL %s %s',
+                sprintf('Hoststatus.last_state_change <= UNIX_TIMESTAMP(DATE(NOW() - INTERVAL %s %s))',
+                    $conditions['Hoststatus']['state_older_than'],
+                    $intervalUnit
+                )
+            ]);
+        }
+        $query->andWhere($where)
+            ->group(['Hosts.id'])
+            ->disableHydration();
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull(Hash::extract($result->toArray(), '{n}.id'));
+    }
+
+    /**
      * @param int $timeperiodId
      * @return bool
      */

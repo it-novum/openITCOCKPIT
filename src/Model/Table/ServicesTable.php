@@ -3458,6 +3458,197 @@ class ServicesTable extends Table {
     }
 
     /**
+     * @param array $MY_RIGHTS
+     * @param array $conditions
+     * @return int
+     */
+    public function getServiceIdsBySelectedStatusExtendedStatusengine3($MY_RIGHTS, $conditions) {
+
+        $query = $this->find();
+        $query
+            ->select([
+                'Services.id'
+            ])
+            ->innerJoinWith('Servicetemplates')
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Services.host_id = Hosts.id'])
+            ->innerJoin(
+                ['Hosttemplates' => 'hosttemplates'],
+                ['Hosts.hosttemplate_id = Hosttemplates.id'])
+            ->join([
+                'b' => [
+                    'table'      => 'statusengine_servicestatus',
+                    'type'       => 'INNER',
+                    'alias'      => 'Servicestatus',
+                    'conditions' => 'Servicestatus.service_description = Services.uuid',
+                ]
+            ])
+            ->where([
+                'Services.disabled' => 0,
+                'Hosts.disabled'    => 0
+            ]);
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $where = [];
+
+        $where['Servicestatus.current_state'] = $conditions['Servicestatus']['current_state'];
+
+        if ($where['Servicestatus.current_state'] > 0) {
+            if ($conditions['Servicestatus']['acknowledged'] ^ $conditions['Servicestatus']['not_acknowledged']) {
+                $hasBeenAcknowledged = (int)($conditions['Servicestatus']['acknowledged'] === true);
+                $where['Servicestatus.problem_has_been_acknowledged'] = $hasBeenAcknowledged;
+            }
+
+            if ($conditions['Servicestatus']['in_downtime'] ^ $conditions['Servicestatus']['not_in_downtime']) {
+                $inDowntime = $conditions['Servicestatus']['in_downtime'] === true;
+                if ($inDowntime === false) {
+                    $where['Servicestatus.scheduled_downtime_depth'] = 0;
+                } else {
+                    $where['Servicestatus.scheduled_downtime_depth > '] = 0;
+                }
+            }
+        }
+
+        if (!empty($conditions['Servicegroup']['_ids'])) {
+            $servicegroupIds = explode(',', $conditions['Servicegroup']['_ids']);
+            $query->select([
+                'servicegroup_ids' => $query->newExpr(
+                    'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
+                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
+                    GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
+                'count'            => $query->newExpr(
+                    'SELECT COUNT(servicegroups.id)
+                                FROM servicegroups
+                                WHERE FIND_IN_SET (servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
+                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
+                                GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
+                                AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
+            ]);
+            $query->join([
+                'services_to_servicegroups'         => [
+                    'table'      => 'services_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServiceToServicegroups',
+                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
+                ],
+                'servicetemplates_to_servicegroups' => [
+                    'table'      => 'servicetemplates_to_servicegroups',
+                    'type'       => 'LEFT',
+                    'alias'      => 'ServicetemplatesToServicegroups',
+                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Services.servicetemplate_id',
+                ]
+            ]);
+            $query->having([
+                'servicegroup_ids IS NOT NULL',
+                'count > 0'
+            ]);
+            $query->group('Services.id');
+        }
+        if (!empty($conditions['Host']['name'])) {
+            if (isset($conditions['Host']['name_regex']) && $conditions['Host']['name_regex'] === true || $conditions['Host']['name_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Host']['name'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['Host']['name'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                // Use LIKE
+                $where[] = new Comparison(
+                    'Hosts.name',
+                    sprintf('%%%s%%', $conditions['Host']['name']),
+                    'string',
+                    'LIKE'
+                );
+            }
+        }
+
+        if (!empty($conditions['Service']['servicename'])) {
+            if (isset($conditions['Service']['servicename_regex']) && $conditions['Service']['servicename_regex'] === true || $conditions['Service']['servicename_regex'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['Service']['servicename'])) {
+                    $where[] = new Comparison(
+                        'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                        $conditions['Service']['servicename'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                $where[] = new Comparison(
+                    'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                    sprintf('%%%s%%', $conditions['Service']['servicename']),
+                    'string',
+                    'LIKE'
+                );
+            }
+        }
+
+        if (!empty($conditions['Host']['keywords'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $conditions['Host']['keywords'],
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($conditions['Host']['not_keywords'])) {
+            $where[] = new Comparison(
+                'IF((Hosts.tags IS NULL OR Hosts.tags=""), Hosttemplates.tags, Hosts.tags)',
+                $conditions['Host']['not_keywords'],
+                'string',
+                'NOT RLIKE'
+            );
+        }
+        if (!empty($conditions['Service']['keywords'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $conditions['Service']['keywords'],
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($conditions['Service']['not_keywords'])) {
+            $where[] = new Comparison(
+                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
+                $conditions['Service']['not_keywords'],
+                'string',
+                'NOT RLIKE'
+            );
+        }
+
+        if (!empty($conditions['Servicestatus']['state_older_than']) && is_numeric($conditions['Servicestatus']['state_older_than']) && $conditions['Servicestatus']['state_older_than'] > 0) {
+            $intervalUnit = 'MINUTE';
+            if (in_array($conditions['Servicestatus']['state_older_than_unit'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
+                $intervalUnit = $conditions['Servicestatus']['state_older_than_unit'];
+            }
+            $query->where([
+                sprintf('Servicestatus.last_state_change <= UNIX_TIMESTAMP(DATE(NOW() - INTERVAL %s %s))',
+                    $conditions['Servicestatus']['state_older_than'],
+                    $intervalUnit
+                )
+            ]);
+        }
+        $query->andWhere($where)
+            ->group(['Services.id'])
+            ->disableHydration();
+        $result = $query->all();
+
+        return $this->emptyArrayIfNull(Hash::extract($result->toArray(), '{n}.id'));
+    }
+
+
+    /**
      * @param int $timeperiodId
      * @return bool
      */

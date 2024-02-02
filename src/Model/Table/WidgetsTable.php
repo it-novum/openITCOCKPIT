@@ -317,6 +317,14 @@ class WidgetsTable extends Table {
                 'height'    => 15
             ];
             $widgets[] = [
+                'type_id'   => 14,
+                'title'     => __('Host status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'host-status-overview-extended-widget',
+                'width'     => 3,
+                'height'    => 15
+            ];
+            $widgets[] = [
                 'type_id'   => 21,
                 'title'     => __('Tactical overview for hosts'),
                 'icon'      => 'fas fa-th-list',
@@ -348,6 +356,14 @@ class WidgetsTable extends Table {
                 'title'     => __('Service status overview'),
                 'icon'      => 'fas fa-info-circle',
                 'directive' => 'service-status-overview-widget',
+                'width'     => 3,
+                'height'    => 15
+            ];
+            $widgets[] = [
+                'type_id'   => 20,
+                'title'     => __('Service status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'service-status-overview-extended-widget',
                 'width'     => 3,
                 'height'    => 15
             ];

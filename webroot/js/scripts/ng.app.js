@@ -388,6 +388,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     servicename: {
                         value: null
                     },
+                    servicename_regex: {
+                        value: null
+                    },
                     servicestate: {
                         value: null,
                         array: true,
@@ -429,7 +432,13 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     hostname: {
                         value: null
                     },
+                    hostname_regex: {
+                        value: null
+                    },
                     keywords: {
+                        value: null
+                    },
+                    not_keywords: {
                         value: null
                     },
                     filter: {
@@ -1154,7 +1163,13 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     hostname: {
                         value: null
                     },
+                    name_regex: {
+                        value: null
+                    },
                     address: {
+                        value: null
+                    },
+                    address_regex: {
                         value: null
                     },
                     hoststate: {
@@ -1191,6 +1206,9 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         value: null
                     },
                     keywords: {
+                        value: null
+                    },
+                    not_keywords: {
                         value: null
                     },
                 },
