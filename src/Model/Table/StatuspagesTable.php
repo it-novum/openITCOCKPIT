@@ -648,7 +648,7 @@ class StatuspagesTable extends Table {
                             $downtimePlannedDataHost['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
                             $downtimePlannedDataHost['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
                             $downtimePlannedDataHost['comment'] = ($showDowntimeComments)
-                                ? $planned['comment_data'] : __('Work in progress');
+                                ? $planned['comment_data'] : __('Upcoming maintenance');
                             $plannedDowntimeDataHosts[] = $downtimePlannedDataHost;
                         }
                         $plannedDowntimeDataHosts = Hash::sort(
@@ -669,7 +669,7 @@ class StatuspagesTable extends Table {
                         $item['isAcknowledge'] = true;
                         $item['acknowledgedProblemsText'] = __('State is acknowledged');
                         $item['acknowledgeComment'] = ($showAcknowledgementComments)
-                            ? $objectGroup['state_summary']['hosts']['acknowledgement_details'][0]['comment_data'] : __('Work in progress');
+                            ? $objectGroup['state_summary']['hosts']['acknowledgement_details'][0]['comment_data'] : __('Investigating issue');
                     }
 
                     $problems = $objectGroup['state_summary']['hosts']['problems'];
@@ -709,7 +709,7 @@ class StatuspagesTable extends Table {
                             $item['isAcknowledge'] = true;
                             $item['acknowledgedProblemsText'] = __('State is acknowledged');
                             $item['acknowledgeComment'] = ($showAcknowledgementComments)
-                                ? $objectGroup['state_summary']['services']['acknowledgement_details'][0]['comment_data'] : __('Work in progress');
+                                ? $objectGroup['state_summary']['services']['acknowledgement_details'][0]['comment_data'] : __('Investigating issue');
                         }
 
                         $problems = $objectGroup['state_summary']['services']['problems'];
@@ -748,7 +748,7 @@ class StatuspagesTable extends Table {
                             $downtimePlannedDataService['scheduledStartTime'] = $UserTime->format($planned['scheduled_start_time'] ?? 0);
                             $downtimePlannedDataService['scheduledEndTime'] = $UserTime->format($planned['scheduled_end_time'] ?? 0);
                             $downtimePlannedDataService['comment'] = ($showDowntimeComments)
-                                ? $planned['comment_data'] : __('Work in progress');
+                                ? $planned['comment_data'] : __('Upcoming maintenance');
                             $plannedDowntimeDataServices[] = $downtimePlannedDataService;
                         }
                         if (!empty($item['plannedDowntimeData'])) {
