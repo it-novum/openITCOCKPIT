@@ -122,8 +122,10 @@ angular.module('openITCOCKPIT')
 
         // If the containerId is changed, reload the users!
         $scope.$watch('allocation.DashboardTab.container_id', function(){
-            // Load new users from the container.
-            $scope.loadUsers();
+            if($scope.allocation.DashboardTab.container_id > 0){
+                // Load new users from the container.
+                $scope.loadUsers();
+            }
         }, true);
 
         // If the [pinned] flag is switched, pass it to the flag int.
