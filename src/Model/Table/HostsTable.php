@@ -2713,7 +2713,9 @@ class HostsTable extends Table {
                 )
             );
         }
-
+        if (!empty($HostConditions->getHostIds())) {
+            $query->where(['Hosts.id IN' => $HostConditions->getHostIds()]);
+        }
         if ($type === 'count') {
             $count = $query->count();
             return $count;

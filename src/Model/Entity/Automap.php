@@ -12,6 +12,7 @@ use Cake\ORM\Entity;
  * @property int $container_id
  * @property string|null $description
  * @property string|null $host_regex
+ * @property string|null $hostgroup_regex
  * @property string|null $service_regex
  * @property bool $show_ok
  * @property bool $show_warning
@@ -43,6 +44,7 @@ class Automap extends Entity {
         'container_id'      => true,
         'description'       => true,
         'host_regex'        => true,
+        'hostgroup_regex'  => true,
         'service_regex'     => true,
         'show_ok'           => true,
         'show_warning'      => true,

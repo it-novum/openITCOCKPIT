@@ -3133,6 +3133,25 @@ class ServicesTable extends Table {
             'servicename REGEXP' => $ServiceConditions->getServicenameRegex()
         ]);
 
+        $hostIdsFromServiceCondition = [];
+        if (!empty($ServiceConditions->getHostId())) {
+            $hostIdsFromServiceCondition[$ServiceConditions->getHostId()] = $ServiceConditions->getHostId();
+        }
+        if (!empty($ServiceConditions->getHostIds())) {
+            $hostIds = $ServiceConditions->getHostIds();
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+            }
+            $hostIdsFromServiceCondition = array_merge(
+                $hostIdsFromServiceCondition,
+                $hostIds
+            );
+        }
+
+        if (!empty($hostIdsFromServiceCondition)) {
+            $query->where(['Hosts.id IN' => $hostIdsFromServiceCondition]);
+        }
+
         if ($type === 'all') {
             $query->order([
                 'servicename' => 'asc',
@@ -3236,6 +3255,23 @@ class ServicesTable extends Table {
             'servicename REGEXP' => $ServiceConditions->getServicenameRegex()
         ]);
 
+        $hostIdsFromServiceCondition = [];
+        if (!empty($ServiceConditions->getHostId())) {
+            $hostIdsFromServiceCondition[$ServiceConditions->getHostId()] = $ServiceConditions->getHostId();
+        }
+        if (!empty($ServiceConditions->getHostIds())) {
+            $hostIds = $ServiceConditions->getHostIds();
+            if (!is_array($hostIds)) {
+                $hostIds = [$hostIds];
+            }
+            $hostIdsFromServiceCondition = array_merge(
+                $hostIdsFromServiceCondition,
+                $hostIds
+            );
+        }
+        if (!empty($hostIdsFromServiceCondition)) {
+            $query->where(['Hosts.id IN' => $hostIdsFromServiceCondition]);
+        }
         if ($type === 'all') {
             $query->order([
                 'Hosts.name'  => 'asc',
