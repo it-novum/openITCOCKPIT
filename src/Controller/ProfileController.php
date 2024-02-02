@@ -70,17 +70,12 @@ class ProfileController extends AppController {
         unset($user['User']['containers']);
         unset($user['User']['usercontainerroles_containerids']);
         unset($user['User']['ContainersUsersMemberships']);
+        unset($user['User']['apikeys']);
 
         $FileUploadSize = new FileUploadSize();
 
         if ($this->request->is('get') && $this->isAngularJsRequest()) {
             //Return profile information
-            if (!empty($user['User']['apikeys'])) {
-                foreach ($user['User']['apikeys'] as $index => $apiKey) {
-                    $apiKey['last_use'] = $UserTime->format($apiKey['last_use']->getTimestamp());
-                    $user['User']['apikeys'][$index] = $apiKey;
-                }
-            }
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('maxUploadLimit', $FileUploadSize->toArray());

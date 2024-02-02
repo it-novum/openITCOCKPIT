@@ -51,7 +51,7 @@ class AddLastLoginToUsersAndLastUseToApiKeys extends AbstractMigration {
                     'after'   => 'is_oauth',
                     'default' => null,
                     'limit'   => null,
-                    'null'    => false,
+                    'null'    => true,
                 ])
                 ->update();
         }
@@ -62,7 +62,7 @@ class AddLastLoginToUsersAndLastUseToApiKeys extends AbstractMigration {
                     'after'   => 'description',
                     'default' => null,
                     'limit'   => null,
-                    'null'    => false,
+                    'null'    => true,
                 ])
                 ->update();
         }
