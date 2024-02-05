@@ -42,11 +42,11 @@ class PushNotificationsCommand extends Command {
     public function execute(Arguments $args, ConsoleIo $io) {
         $io->out('Starting push notifications service');
         $io->info('Exit with [STRG] + [C]');
-        $this->fireUpWebSocketServer();
+        $this->fireUpWebSocketServer($io);
     }
 
-    private function fireUpWebSocketServer() {
-        $MessageInterface = new PushNotificationsMessageInterface();
+    private function fireUpWebSocketServer(ConsoleIo $io) {
+        $MessageInterface = new PushNotificationsMessageInterface($io);
         $loop = \React\EventLoop\Loop::get();
         $loop->addPeriodicTimer(0.01, [$MessageInterface, 'eventLoop']);
         $Server = new IoServer(
