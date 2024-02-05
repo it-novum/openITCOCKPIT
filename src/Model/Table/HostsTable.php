@@ -4970,41 +4970,6 @@ class HostsTable extends Table {
             'HostsToContainersSharing'
         ]);
 
-        if (!empty($conditions['Hostgroup']['_ids'])) {
-            $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
-            $query->select([
-                'hostgroup_ids' => $query->newExpr(
-                    'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                    GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
-                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
-                'count'         => $query->newExpr(
-                    'SELECT COUNT(hostgroups.id)
-                                FROM hostgroups
-                                WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                                GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
-                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))
-                                AND hostgroups.id IN (' . implode(', ', $hostgroupIds) . ')')
-            ]);
-            $query->join([
-                'hosts_to_hostgroups'         => [
-                    'table'      => 'hosts_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HostToHostgroups',
-                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
-                ],
-                'hosttemplates_to_hostgroups' => [
-                    'table'      => 'hosttemplates_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HosttemplatesToHostgroups',
-                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
-                ]
-            ]);
-            $query->having([
-                'hostgroup_ids IS NOT NULL',
-                'count > 0'
-            ]);
-        }
-
         $where = [];
 
         if (!empty($conditions['filter[Hosts.name]'])) {
