@@ -5180,7 +5180,43 @@ class ServicesTable extends Table {
         }
 
         $where = [];
+
+        if (!empty($conditions['filter[Hosts.name]'])) {
+            if (isset($conditions['filter[Hosts.name_regex]']) && $conditions['filter[Hosts.name_regex]'] === true || $conditions['filter[Hosts.name_regex]'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['filter[Hosts.name]'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['filter[Hosts.name]'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['filter[Hosts.name]']);
+            }
+        }
+
+        if (!empty($conditions['filter[servicename]'])) {
+            if (isset($conditions['filter[servicename_regex]']) && $conditions['filter[servicename_regex]'] === true || $conditions['filter[servicename_regex]'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['filter[servicename]'])) {
+                    $query->having([
+                        new Comparison(
+                            'servicename',
+                            $conditions['filter[servicename]'],
+                            'string',
+                            'RLIKE'
+                        )
+                    ]);
+                }
+            } else {
+                $query->having([
+                    'servicename LIKE' => sprintf('%%%s%%', $conditions['filter[servicename]'])
+                ]);
+            }
+        }
+
         $where[] = ['Servicestatus.current_state IN' => $conditions['filter[Servicestatus.current_state][]']];
+
         if ($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Servicestatus.problem_has_been_acknowledged' => $conditions['filter[Servicestatus.problem_has_been_acknowledged]']];
         }

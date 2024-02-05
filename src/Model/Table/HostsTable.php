@@ -5006,6 +5006,38 @@ class HostsTable extends Table {
         }
 
         $where = [];
+
+        if (!empty($conditions['filter[Hosts.name]'])) {
+            if (isset($conditions['filter[Hosts.name_regex]']) && $conditions['filter[Hosts.name_regex]'] === true || $conditions['filter[Hosts.name_regex]'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['filter[Hosts.name]'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['filter[Hosts.name]'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                // Use LIKE
+                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['filter[Hosts.name]']);
+            }
+        }
+
+        if (!empty($conditions['filter[Hosts.address]'])) {
+            if (isset($conditions['filter[Hosts.address_regex']) && $conditions['filter[Hosts.address_regex]'] === true || $conditions['filter[Hosts.address_regex]'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['filter[Hosts.address]'])) {
+                    $where[] = new Comparison(
+                        'Hosts.address',
+                        $conditions['filter[Hosts.address]'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                $where['Hosts.address LIKE'] = sprintf('%%%s%%', $conditions['filter[Hosts.address]']);
+            }
+        }
+
         $where[] = ['Hoststatus.current_state IN' => $conditions['filter[Hoststatus.current_state][]']];
         if ($conditions['filter[Hoststatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Hoststatus.problem_has_been_acknowledged' => $conditions['filter[Hoststatus.problem_has_been_acknowledged]']];
