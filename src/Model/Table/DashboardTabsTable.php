@@ -337,8 +337,11 @@ class DashboardTabsTable extends Table {
         // Traverse the allocations and copy / update the allocated tabs.
         foreach ($allocatedTabIds as $allocatedTabId) {
             $Entity = $this->get($allocatedTabId);
+            if ($Entity->user_id === $userId) {
+                continue;
+            }
             try {
-                $Author = $UsersTable->get($Entity->user_id);
+                $UsersTable->get($Entity->user_id);
             } catch (RecordNotFoundException $exception) {
                 // If the author is gone, just for sake of stability, remove the entire tab.
                 // This should not happen without fiddling the database.
@@ -564,8 +567,8 @@ class DashboardTabsTable extends Table {
         }
 
         $newTab = $this->newEntity([
-            'name'   => $sourceTab->get('name'),
-            'locked' => $sourceTab->get('locked'),
+            'name'              => $sourceTab->get('name'),
+            'locked'            => $sourceTab->get('locked'),
             'user_id'           => $userId,
             'position'          => $this->getNextPosition($userId),
             'shared'            => 0,
@@ -581,7 +584,7 @@ class DashboardTabsTable extends Table {
 
 
     /**
-     * @param int $id
+     * @param int $tabId
      * @param int $userId
      * @throws RecordNotFoundException
      */
