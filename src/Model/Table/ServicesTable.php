@@ -5370,44 +5370,44 @@ class ServicesTable extends Table {
                 return $q;
             });
         }
+        $where = [];
 
-        if (!empty($conditions['Servicegroup']['_ids'])) {
-            $servicegroupIds = explode(',', $conditions['Servicegroup']['_ids']);
-            $query->select([
-                'servicegroup_ids' => $query->newExpr(
-                    'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
-                    GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
-                'count'            => $query->newExpr(
-                    'SELECT COUNT(servicegroups.id)
-                                FROM servicegroups
-                                WHERE FIND_IN_SET (servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
-                                GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))
-                                AND servicegroups.id IN (' . implode(', ', $servicegroupIds) . ')')
-            ]);
-            $query->join([
-                'services_to_servicegroups'         => [
-                    'table'      => 'services_to_servicegroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'ServiceToServicegroups',
-                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
-                ],
-                'servicetemplates_to_servicegroups' => [
-                    'table'      => 'servicetemplates_to_servicegroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'ServicetemplatesToServicegroups',
-                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
-                ]
-            ]);
-            $query->having([
-                'servicegroup_ids IS NOT NULL',
-                'count > 0'
-            ]);
+        if (!empty($conditions['filter[Hosts.name]'])) {
+            if (isset($conditions['filter[Hosts.name_regex]']) && $conditions['filter[Hosts.name_regex]'] === true || $conditions['filter[Hosts.name_regex]'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['filter[Hosts.name]'])) {
+                    $where[] = new Comparison(
+                        'Hosts.name',
+                        $conditions['filter[Hosts.name]'],
+                        'string',
+                        'RLIKE'
+                    );
+                }
+            } else {
+                $where['Hosts.name LIKE'] = sprintf('%%%s%%', $conditions['filter[Hosts.name]']);
+            }
         }
 
-        $where = [];
+        if (!empty($conditions['filter[servicename]'])) {
+            if (isset($conditions['filter[servicename_regex]']) && $conditions['filter[servicename_regex]'] === true || $conditions['filter[servicename_regex]'] === 'true') {
+                if ($this->isValidRegularExpression($conditions['filter[servicename]'])) {
+                    $query->having([
+                        new Comparison(
+                            'servicename',
+                            $conditions['filter[servicename]'],
+                            'string',
+                            'RLIKE'
+                        )
+                    ]);
+                }
+            } else {
+                $query->having([
+                    'servicename LIKE' => sprintf('%%%s%%', $conditions['filter[servicename]'])
+                ]);
+            }
+        }
+
         $where[] = ['Servicestatus.current_state IN' => $conditions['filter[Servicestatus.current_state][]']];
+
         if ($conditions['filter[Servicestatus.problem_has_been_acknowledged]'] != 'ignore') {
             $where[] = ['Servicestatus.problem_has_been_acknowledged' => $conditions['filter[Servicestatus.problem_has_been_acknowledged]']];
         }
