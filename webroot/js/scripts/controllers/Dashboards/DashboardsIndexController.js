@@ -1,5 +1,8 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval){
+        $scope.flags = {
+            'isPinned' : 2
+        }
 
         /** public vars **/
         $scope.init = true;
@@ -523,7 +526,7 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
                 $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
-                $scope.isPinned = ($scope.allocation.DashboardTab.flags & 2) === 2;
+                $scope.isPinned = ($scope.allocation.DashboardTab.flags & $scope.flags.isPinned) === 2;
                 $scope.userId = result.data.userId;
 
                 // I'm done.

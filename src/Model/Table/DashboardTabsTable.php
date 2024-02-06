@@ -388,9 +388,9 @@ class DashboardTabsTable extends Table {
                 'locked'            => (bool)$row['locked'],
                 'modified'          => $row['modified'],
                 'flags'             => (int)$row['flags'],
-                'isPinned'          => (bool)($row['flags'] & 2),
-                'isReadonly'        => (bool)($row['flags'] & 4),
-                'source'            => (bool)($row['flags'] & 4) ? 'ALLOCATED' : ''
+                'isPinned'          => ($row['flags'] & DashboardTab::FLAG_ALLOCATED) && ($row['flags'] & DashboardTab::FLAG_PINNED),
+                'isReadonly'        => (bool)($row['flags'] & DashboardTab::FLAG_ALLOCATED),
+                'source'            => (bool)($row['flags'] & DashboardTab::FLAG_ALLOCATED) ? 'ALLOCATED' : ''
             ];
         }
 
@@ -410,7 +410,7 @@ class DashboardTabsTable extends Table {
             ->where([
                 'user_id'       => $userId,
                 'source_tab_id' => $allocatedTabId,
-                'flags >='      => 4
+                'flags & '      => DashboardTab::FLAG_ALLOCATED
             ])
             ->disableHydration()
             ->first() ?? [];
@@ -617,7 +617,8 @@ class DashboardTabsTable extends Table {
         }
 
         $nextPosition = $this->getNextPosition($userId);
-        if ($sourceTab->get('flags') & 2) {
+        // If tab is pinned, force negative position.
+        if ($sourceTab->get('flags') & DashboardTab::FLAG_PINNED) {
             $nextPosition = -1;
         }
         $newTab = $this->newEntity([
@@ -626,7 +627,7 @@ class DashboardTabsTable extends Table {
             'user_id'           => $userId,
             'position'          => $nextPosition,
             'shared'            => 0,
-            'flags'             => $sourceTab->get('flags') + 4,
+            'flags'             => $sourceTab->get('flags') + DashboardTab::FLAG_ALLOCATED,
             'source_tab_id'     => $tabId,
             'check_for_updates' => 0,
             'last_update'       => time(),
@@ -678,7 +679,7 @@ class DashboardTabsTable extends Table {
         $Entity = $this->get($copyTabId);
 
         $nextPosition = $this->getNextPosition($Entity->user_id);
-        if ($sourceTab->get('flags') & 2) {
+        if ($sourceTab->get('flags') & DashboardTab::FLAG_PINNED) {
             $nextPosition = -1;
         }
         $patch = [
