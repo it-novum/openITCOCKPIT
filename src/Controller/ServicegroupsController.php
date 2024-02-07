@@ -987,7 +987,9 @@ class ServicegroupsController extends AppController {
             ->lastHardStateChange()
             ->lastStateChange()
             ->lastCheck()
-            ->nextCheck();
+            ->nextCheck()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
