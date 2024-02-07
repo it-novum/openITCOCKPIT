@@ -690,6 +690,7 @@ class StatuspagesTable extends Table {
                                     $downtimeDataHosts,
                                     '{n}.scheduledStartTimestamp', 'asc'
                                 );
+                                $item['isInDowntime'] = true;
                                 $item['downtimeData'] = $downtimeDataHosts;
                             }
                         }
