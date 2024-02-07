@@ -29771,6 +29771,12 @@ msgstr ""
 msgid "Performance Issues"
 msgstr ""
 
+msgid "Not in Monitoring"
+msgstr ""
+
+msgid "All services are operational"
+msgstr ""
+
 msgid "Operational"
 msgstr ""
 

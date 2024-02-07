@@ -29773,6 +29773,12 @@ msgstr "Schwerer Ausfall"
 msgid "Performance Issues"
 msgstr "Leistungsprobleme"
 
+msgid "Not in Monitoring"
+msgstr "Nicht in Überwachung"
+
+msgid "All services are operational"
+msgstr "Alle Services funktional"
+
 msgid "Operational"
 msgstr "Funktional"
 

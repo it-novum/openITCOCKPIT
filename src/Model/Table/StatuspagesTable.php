@@ -558,13 +558,13 @@ class StatuspagesTable extends Table {
         $stateNames = [
             'hosts'    => [
                 -1 => __('Not in Monitoring'),
-                0  => __('All services are operational'),
+                0  => __('Operational'),
                 1  => __('Major Outage'),
                 2  => __('Unknown'),
             ],
             'services' => [
                 -1 => __('Not in Monitoring'),
-                0  => __('All services are operational'),
+                0  => __('Operational'),
                 1  => __('Performance Issues'),
                 2  => __('Major Outage'),
                 3  => __('Unknown'),
