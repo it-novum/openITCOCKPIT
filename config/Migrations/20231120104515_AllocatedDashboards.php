@@ -71,11 +71,13 @@ class AllocatedDashboards extends AbstractMigration {
         if ($this->hasTable('dashboard_tabs')) {
             $this->table('dashboard_tabs')
                 ->addColumn('container_id', 'integer', [
+                    'after'   => 'locked',
                     'default' => null,
                     'limit'   => 11,
                     'null'    => true,
                 ])
                 ->addColumn('flags', 'integer', [
+                    'after'   => 'locked',
                     'default' => 0,
                     'limit'   => 11,
                     'null'    => false,
