@@ -58,7 +58,7 @@ class GraphgeneratorsController extends AppController {
         $start = (int)$this->request->getQuery('start', '');
         $end = (int)$this->request->getQuery('end', '');
         $jsTimestamp = (bool)$this->request->getQuery('jsTimestamp', 0);
-        $gauge = $this->request->getQuery('gauge', '');
+        $gauge = urldecode($this->request->getQuery('gauge', ''));
         $scale = $this->request->getQuery('scale', 'true') === 'true';
         $forcedUnit = $this->request->getQuery('forcedUnit', null);
         $aggregation = $this->request->getQuery('aggregation', 'avg');
