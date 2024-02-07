@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Entity\DashboardTab;
+use App\Model\Entity\Usergroup;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
@@ -36,6 +37,7 @@ use App\Model\Table\ParenthostsTable;
 use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\ForbiddenException;
@@ -43,6 +45,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Locator\LocatorAwareTrait;
+use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\CalendarTime;
@@ -1920,7 +1923,7 @@ class DashboardsController extends AppController {
                 $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
                 $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
                 // Is it pinned?
-                $dashboardTabs[$dashboardTabIndex]['isPinned'] =(bool) (($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
+                $dashboardTabs[$dashboardTabIndex]['isPinned'] = (bool)(($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
             }
 
             $this->set('dashboardTabs', $dashboardTabs);
@@ -1935,22 +1938,71 @@ class DashboardsController extends AppController {
             /** @var DashboardTabsTable $DashboardTabsTable */
             $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
+            $Obj = $DashboardTabsTable->find()
+                ->where(['id' => $dashboardTab['id']])
+                ->contain('AllocatedUsers')
+                ->contain('Usergroups')
+                ->toArray();
+
+            // I am the list of users where to clean the dashboard flags.
+            $cleanUserIds = [];
+
+            foreach (Hash::extract($Obj[0], 'allocated_users.{n}.id') as $userId) {
+                // Check if the user is added explicitly.
+                if (in_array($userId, $dashboardTab['allocated_users']['_ids'], true)) {
+                    continue;
+                }
+                $cleanUserIds[] = $userId;
+            }
+
+            /** @var UsersTable $UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+            foreach (Hash::extract($Obj[0], 'usergroups.{n}.id') as $usergroupId) {
+                // Skip if the usergroup is still available!
+                if (in_array($usergroupId, $dashboardTab['usergroups']['_ids'], true)) {
+                    continue;
+                }
+
+                $Users = $UsersTable
+                    ->find()
+                    ->contain('Usergroups')
+                    ->where(['Usergroups.id' => $usergroupId])
+                    ->toArray();
+                foreach (Hash::extract($Users, '{n}.id') as $userId) {
+                    // Check if the user is added explicitly.
+                    if (in_array($userId, $dashboardTab['allocated_users']['_ids'], true)) {
+                        continue;
+                    }
+                    // Check if the assignment already is found
+                    if (in_array($userId, $cleanUserIds, true)) {
+                        continue;
+                    }
+                    $cleanUserIds[] = $userId;
+                }
+            }
+            if (!empty ($cleanUserIds)) {
+                /** @var DashboardTab[] $CopyEntities */
+                $CopyEntities = $DashboardTabsTable->find()->where([
+                    'source_tab_id' => $dashboardTab['id'],
+                    'flags & '      => DashboardTab::FLAG_ALLOCATED,
+                    'user_id IN'    => $cleanUserIds
+
+                ])->all();
+
+                foreach ($CopyEntities as $CopyEntity) {
+                    $copyPatch = [
+                        'flags' => $CopyEntity->flags & DashboardTab::FLAG_BLANK,
+                    ];
+                    $CopyEntity = $DashboardTabsTable->patchEntity($CopyEntity, $copyPatch);
+                    $DashboardTabsTable->save($CopyEntity);
+                }
+            }
+
             // Fetch from DB
             $Entity = $DashboardTabsTable->get($dashboardTab['id']);
             $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
             // Save
             $DashboardTabsTable->save($Entity);
-
-            // Cleanup
-            $Copies = $DashboardTabsTable->find()->where([
-                'source_tab_id' => $dashboardTab['id'],
-                'flags & ' => DashboardTab::FLAG_ALLOCATED
-            ])->all();
-
-            // Force celanup
-            foreach ($Copies as $copy) {
-                $DashboardTabsTable->delete($copy);
-            }
         }
     }
 
@@ -2008,7 +2060,7 @@ class DashboardsController extends AppController {
             $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
             $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
             // Is it pinned?
-            $dashboardTabs[$dashboardTabIndex]['isPinned'] =(bool) (($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
+            $dashboardTabs[$dashboardTabIndex]['isPinned'] = (bool)(($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
         }
 
         $this->set('dashboardTabs', $dashboardTabs);
