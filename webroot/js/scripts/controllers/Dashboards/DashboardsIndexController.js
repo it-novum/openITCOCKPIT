@@ -598,10 +598,10 @@ angular.module('openITCOCKPIT')
         // If the [pinned] flag is switched, pass it to the flag int.
         $scope.$watch('isPinned', function(val){
             if(val){
-                $scope.allocation.DashboardTab.flags |= 2;
+                $scope.allocation.DashboardTab.flags |= $scope.flags.isPinned;
                 return;
             }
-            $scope.allocation.DashboardTab.flags ^= 2;
+            $scope.allocation.DashboardTab.flags ^= $scope.flags.isPinned;
         });
 
         // I will store the allocation details.
