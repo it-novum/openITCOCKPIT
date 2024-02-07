@@ -27,6 +27,7 @@ angular.module('openITCOCKPIT')
                             name: result.data.automaps[key].name,
                             description: result.data.automaps[key].description,
                             host_regex: result.data.automaps[key].host_regex,
+                            hostgroup_regex: result.data.automaps[key].hostgroup_regex,
                             service_regex: result.data.automaps[key].service_regex
                         }
                     });

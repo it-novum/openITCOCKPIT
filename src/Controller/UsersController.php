@@ -413,7 +413,6 @@ class UsersController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-
             $data = $this->request->getData('User', []);
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
@@ -500,7 +499,6 @@ class UsersController extends AppController {
                 $data['password'] = '';
                 $data['confirm_password'] = '';
             }
-
             //prevent multiple hash of password
             if ($data['password'] === '' && $data['confirm_password'] === '') {
                 unset($data['password']);

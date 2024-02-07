@@ -1,5 +1,4 @@
 <?php
-
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -28,15 +27,15 @@ declare(strict_types=1);
 use Migrations\AbstractMigration;
 
 /**
- * Class AddLastLoginToUsersAndLastUseToApiKeys
+ * Class HostGroupAutomaps
  *
  * Created:
- * oitc migrations create AddLastLoginToUsersAndLastUseToApiKeys
+ * oitc migrations create HostGroupAutomaps
  *
  * Usage:
  * openitcockpit-update
  */
-class AddLastLoginToUsersAndLastUseToApiKeys extends AbstractMigration {
+class HostGroupAutomaps extends AbstractMigration {
     /**
      * Change Method.
      *
@@ -45,26 +44,15 @@ class AddLastLoginToUsersAndLastUseToApiKeys extends AbstractMigration {
      * @return void
      */
     public function change(): void {
-        if ($this->hasTable('users')) {
-            $this->table('users')
-                ->addColumn('last_login', 'datetime', [
-                    'after'   => 'is_oauth',
-                    'default' => null,
-                    'limit'   => null,
-                    'null'    => true,
-                ])
-                ->update();
-        }
 
-        if ($this->hasTable('apikeys')) {
-            $this->table('apikeys')
-                ->addColumn('last_use', 'datetime', [
-                    'after'   => 'description',
-                    'default' => null,
-                    'limit'   => null,
-                    'null'    => true,
-                ])
-                ->update();
+        if ($this->hasTable('automaps')) {
+            $table = $this->table('automaps');
+            $table->addColumn('hostgroup_regex', 'string', [
+                'after'   => 'host_regex',
+                'default' => null,
+                'limit'   => 255,
+                'null'    => true,
+            ])->update();
         }
 
     }
