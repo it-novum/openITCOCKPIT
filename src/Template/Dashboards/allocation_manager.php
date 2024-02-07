@@ -209,7 +209,7 @@
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete selected'); ?>
+                                    <?php echo __('Remove Allocations'); ?>
                                 </span>
                             </div>
                         </div>

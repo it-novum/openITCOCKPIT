@@ -1,7 +1,8 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsAllocateController', function($scope, $http, $stateParams, RedirectService){
         $scope.flags = {
-            'isPinned' : 2
+            'isAllocated': 1,
+            'isPinned': 2,
         }
 
         // I am initing the view rn.
@@ -66,7 +67,7 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
                 $scope.userId = result.data.userId;
-                $scope.isPinned = ($scope.allocation.DashboardTab.flags & $scope.flags.isPinned) === 2;
+                $scope.isPinned = ($scope.allocation.DashboardTab.flags & $scope.flags.isPinned) === $scope.flags.isPinned;
 
                 // I'm done.
                 $scope.allocationInitializing = false;
