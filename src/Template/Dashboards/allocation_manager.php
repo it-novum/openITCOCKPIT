@@ -159,7 +159,7 @@
                                         </span>
                                 </td>
                                 <td class="width-50">
-                                    <i class="fa fa-lock" ng-show="dashboardTab.flags === 1"></i>
+                                    <i class="fa fa-lock" ng-show="dashboardTab.flags & flags.isPinned"></i>
                                 </td>
 
                                 <td class="width-50">

@@ -1,5 +1,8 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsAllocationManagerController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, NotyService){
+        $scope.flags = {
+            'isPinned' : 2
+        }
         //
         SortService.setSort(QueryStringService.getValue('sort', 'name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));

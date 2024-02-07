@@ -691,7 +691,7 @@ class DashboardTabsTable extends Table {
             'check_for_updates' => 0,
             'last_update'       => time(),
             'widgets'           => $widgets,
-            'flags'             => $sourceTab->get('flags') + 4
+            'flags'             => $sourceTab->get('flags') | DashboardTab::FLAG_ALLOCATED
         ];
 
         $Entity = $this->patchEntity($Entity, $patch);
