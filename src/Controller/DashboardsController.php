@@ -1938,65 +1938,13 @@ class DashboardsController extends AppController {
             /** @var DashboardTabsTable $DashboardTabsTable */
             $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
-            $Obj = $DashboardTabsTable->find()
-                ->where(['id' => $dashboardTab['id']])
-                ->contain('AllocatedUsers')
-                ->contain('Usergroups')
-                ->toArray();
 
-            // I am the list of users where to clean the dashboard flags.
-            $cleanUserIds = [];
-
-            foreach (Hash::extract($Obj[0], 'allocated_users.{n}.id') as $userId) {
-                // Check if the user is added explicitly.
-                if (in_array($userId, $dashboardTab['allocated_users']['_ids'], true)) {
-                    continue;
-                }
-                $cleanUserIds[] = $userId;
-            }
-
-            /** @var UsersTable $UsersTable */
-            $UsersTable = TableRegistry::getTableLocator()->get('Users');
-            foreach (Hash::extract($Obj[0], 'usergroups.{n}.id') as $usergroupId) {
-                // Skip if the usergroup is still available!
-                if (in_array($usergroupId, $dashboardTab['usergroups']['_ids'], true)) {
-                    continue;
-                }
-
-                $Users = $UsersTable
-                    ->find()
-                    ->contain('Usergroups')
-                    ->where(['Usergroups.id' => $usergroupId])
-                    ->toArray();
-                foreach (Hash::extract($Users, '{n}.id') as $userId) {
-                    // Check if the user is added explicitly.
-                    if (in_array($userId, $dashboardTab['allocated_users']['_ids'], true)) {
-                        continue;
-                    }
-                    // Check if the assignment already is found
-                    if (in_array($userId, $cleanUserIds, true)) {
-                        continue;
-                    }
-                    $cleanUserIds[] = $userId;
-                }
-            }
-            if (!empty ($cleanUserIds)) {
-                /** @var DashboardTab[] $CopyEntities */
-                $CopyEntities = $DashboardTabsTable->find()->where([
-                    'source_tab_id' => $dashboardTab['id'],
-                    'flags & '      => DashboardTab::FLAG_ALLOCATED,
-                    'user_id IN'    => $cleanUserIds
-
-                ])->all();
-
-                foreach ($CopyEntities as $CopyEntity) {
-                    $copyPatch = [
-                        'flags' => $CopyEntity->flags & DashboardTab::FLAG_BLANK,
-                    ];
-                    $CopyEntity = $DashboardTabsTable->patchEntity($CopyEntity, $copyPatch);
-                    $DashboardTabsTable->save($CopyEntity);
-                }
-            }
+            // Wipe behind me to ensure users with clones keep them and can work with them still.
+            $DashboardTabsTable->cleanup(
+                (int)$dashboardTab['id'],
+                (array)$dashboardTab['allocated_users']['_ids'],
+                (array)$dashboardTab['usergroups']['_ids']
+            );
 
             // Fetch from DB
             $Entity = $DashboardTabsTable->get($dashboardTab['id']);

@@ -1471,4 +1471,13 @@ class UsersTable extends Table {
             ->toArray()[0]['dashboard_tabs'] ?? [];
         return Hash::extract($dashboards, '{n}.id');
     }
+
+    public function getUserIdsByUsergroupId(int $usergroupId) : array {
+        $Users = $this
+            ->find()
+            ->contain('Usergroups')
+            ->where(['Usergroups.id' => $usergroupId])
+            ->toArray();
+        return Hash::extract($Users, '{n}.id');
+    }
 }

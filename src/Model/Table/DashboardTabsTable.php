@@ -702,4 +702,102 @@ class DashboardTabsTable extends Table {
         return $Entity;
     }
 
+    public function cleanup(int $dashboardTabId, array $newUserIds, array $newUsergroupIds): void {
+        // Get normalized array of userIds where the $dashboardTabId will remain.
+        $cleanUserIds = $this->fetchUserIdsToClean(
+            $dashboardTabId,
+            $newUserIds,
+            $newUsergroupIds
+        );
+        // Early return
+        if (empty ($cleanUserIds)) {
+            return;
+        }
+
+        foreach ($this->findAllocations($dashboardTabId, $cleanUserIds) as $CopyEntity) {
+            $copyPatch = [
+                'flags'         => $CopyEntity->flags & DashboardTab::FLAG_BLANK,
+                'source_tab_id' => null,
+                'locked'        => 0
+            ];
+            $CopyEntity = $this->patchEntity($CopyEntity, $copyPatch);
+            $this->save($CopyEntity);
+        }
+    }
+
+    /**
+     * I will find all allocated instances of the given $dashboardTabId.
+     * If you pass the $userIds, I will filter for those.
+     *
+     * @param int $dashboardTabId
+     * @param array $userIds
+     *
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function findAllocations(int $dashboardTabId, array $userIds = []) {
+        $query = $this->find()->where([
+            'source_tab_id' => $dashboardTabId,
+            'flags & '      => DashboardTab::FLAG_ALLOCATED
+        ]);
+        if (!empty($userIds)) {
+            $query->where(['user_id IN' => $userIds]);
+        }
+
+        return $query->all();
+    }
+
+    /**
+     * I will return a set of UserIds whose copies of given $dashboardTabId will remain after cleanup.
+     * This also regards the UserGroups.
+     * @param int $dashboardTabId
+     * @param array $newUserIds
+     * @param array $newUsergroupIds
+     * @return array
+     */
+    public function fetchUserIdsToClean(int $dashboardTabId, array $newUserIds, array $newUsergroupIds): array {
+
+        // Fetch current setup.
+        $Obj = $this->find()
+            ->where(['id' => $dashboardTabId])
+            ->contain('AllocatedUsers')
+            ->contain('Usergroups')
+            ->toArray();
+
+        $currentUserIds = Hash::extract($Obj[0], 'allocated_users.{n}.id');
+        $currentGroupIds = Hash::extract($Obj[0], 'usergroups.{n}.id');
+
+
+        $cleanUserIds = [];
+
+        // Traverse users and see if any one is mentioned in the new users.
+        foreach ($currentUserIds as $userId) {
+            if (!in_array($userId, $newUserIds)) {
+                $cleanUserIds[] = $userId;
+            }
+        }
+
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        // Traverse usergroups and do the same.
+        foreach ($currentGroupIds as $usergroupId) {
+            if (in_array($usergroupId, $newUsergroupIds)) {
+                continue;
+            }
+
+            $userIds = $UsersTable->getUserIdsByUsergroupId($usergroupId);
+
+            foreach ($userIds as $userId) {
+                // Check if the user is added explicitly.
+                // Check if the assignment already is found
+                if (in_array($userId, $newUserIds)) {
+                    continue;
+                }
+                $cleanUserIds[] = $userId;
+            }
+        }
+        return array_unique($cleanUserIds);
+    }
+
 }
