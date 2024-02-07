@@ -529,9 +529,6 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
                 $scope.isPinned = ($scope.allocation.DashboardTab.flags & $scope.flags.isPinned) === $scope.flags.isPinned;
 
-                console.warn($scope.isPinned);
-                console.warn($scope.allocation.DashboardTab.flags);
-                console.warn($scope.flags.isPinned);
                 $scope.userId = result.data.userId;
 
                 // I'm done.

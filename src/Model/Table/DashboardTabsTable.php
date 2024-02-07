@@ -346,7 +346,9 @@ class DashboardTabsTable extends Table {
                 // If the author is gone, just for sake of stability, remove the entire tab.
                 // This should not happen without fiddling the database.
                 // But... better safe than sorry.
-                $this->delete($Entity);
+                if (isset($Entity)) {
+                    $this->delete($Entity);
+                }
                 continue;
             }
 

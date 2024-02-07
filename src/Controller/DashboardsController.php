@@ -1940,6 +1940,17 @@ class DashboardsController extends AppController {
             $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
             // Save
             $DashboardTabsTable->save($Entity);
+
+            // Cleanup
+            $Copies = $DashboardTabsTable->find()->where([
+                'source_tab_id' => $dashboardTab['id'],
+                'flags & ' => DashboardTab::FLAG_ALLOCATED
+            ])->all();
+
+            // Force celanup
+            foreach ($Copies as $copy) {
+                $DashboardTabsTable->delete($copy);
+            }
         }
     }
 
