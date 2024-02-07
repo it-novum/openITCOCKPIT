@@ -29757,15 +29757,8 @@ msgstr "In Arbeit"
 
 #: .-src/Model/Table/StatuspagesTable.php:573
 msgid "{0} of {1} problems acknowledged"
-msgstr "{0} of {1} Probleme bestätigt"
+msgstr "{0} von {1} Problem(en) bestätigt"
 
-#: .-src/Model/Table/StatuspagesTable.php:677
-msgid "{0} of {1} Hostproblems are acknowledged"
-msgstr "{0} of {1} Hostprobleme sind bestätigt"
-
-#: .-src/Model/Table/StatuspagesTable.php:682
-msgid "{0} of {1} Serviceproblems are acknowledged"
-msgstr "{0} of {1} Serviceprobleme sind bestätigt"
 
 #: .-src/Template/Statuspages/index.php:244
 msgid "Public View"
@@ -29782,3 +29775,21 @@ msgstr "Leistungsprobleme"
 
 msgid "Operational"
 msgstr "Funktional"
+
+msgid "Investigating issue"
+msgstr "Problem unter Beobachtung"
+
+msgid "Upcoming maintenance"
+msgstr "geplante Wartung"
+
+msgid "Currently under maintenance."
+msgstr "in Wartung"
+
+msgid "Scheduled maintenance for the next 10 days:"
+msgstr "geplante Wartungen in den nächsten 10 Tagen:"
+
+msgid "{0} current downtimes."
+msgstr "{0} laufende Wartung(en)."
+
+msgid "{0} downtimes planned for next 10 days"
+msgstr "{0} Wartung(en) für die nächsten 10 Tage geplant"

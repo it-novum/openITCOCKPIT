@@ -179,7 +179,9 @@ class AcknowledgementHostsTable extends Table implements AcknowledgementHostsTab
 
         $result = [];
         foreach ($acks as $ack) {
-            $result[$ack['hostname']] = $ack;
+            if(!isset($result[$ack['hostname']])) {
+                $result[$ack['hostname']] = $ack;
+            }
         }
 
         return $result;

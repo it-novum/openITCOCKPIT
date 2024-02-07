@@ -179,7 +179,9 @@ class AcknowledgementServicesTable extends Table implements AcknowledgementServi
         $acks = $query->toArray();
         $result = [];
         foreach ($acks as $ack) {
-            $result[$ack['service_description']] = $ack;
+            if(!isset($result[$ack['service_description']])) {
+                $result[$ack['service_description']] = $ack;
+            }
         }
 
         return $result;

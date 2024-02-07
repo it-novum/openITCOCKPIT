@@ -165,58 +165,43 @@
                                                     {{item.acknowledgedProblemsText}}
                                                 </div>
                                                 <div ng-if="item.acknowledgeComment && Statuspage.statuspage.showAcknowledgements">
-                                                    <?php echo __('Comment'); ?>: {{item.acknowledgeComment}}
+                                                    <div ng-if="item.type === 'host' || item.type === 'service'" >
+                                                        <?php echo __('Comment'); ?>: {{item.acknowledgeComment}}
+                                                    </div>
                                                 </div>
-                                                <div ng-if="item.hostgroupHostAcknowledgementText && Statuspage.statuspage.showAcknowledgements">
-                                                    <i class="far fa-user"></i>
-                                                    {{item.hostgroupHostAcknowledgementText}}
-                                                </div>
-                                                <div ng-if="item.hostgroupServiceAcknowledgementText && Statuspage.statuspage.showAcknowledgements">
-                                                    <i class="far fa-user"></i>
-                                                    {{item.hostgroupServiceAcknowledgementText}}
-                                                </div>
-                                                <div ng-if="item.downtimeHostgroupHostText && Statuspage.statuspage.showDowntimes">
-
+                                                <!-- end of acknowledgements -->
+                                                <!-- handle downtime summary -->
+                                                <div ng-if="item.downtimeSummary && Statuspage.statuspage.showDowntimes">
                                                     <i class="fa fa-power-off"></i>
-                                                    {{item.downtimeHostgroupHostText}}
+                                                    {{item.downtimeSummary}}
                                                 </div>
-                                                <div ng-if="item.plannedDowntimeHostgroupHostText && Statuspage.statuspage.showDowntimes">
-
+                                                <div ng-if="item.plannedDowntimeSummary && Statuspage.statuspage.showDowntimes">
                                                     <i class="fa fa-power-off"></i>
-                                                    {{item.plannedDowntimeHostgroupHostText}}
+                                                    {{item.plannedDowntimeSummary}}
                                                 </div>
-                                                <div ng-if="item.downtimeHostgroupServiceText && Statuspage.statuspage.showDowntimes">
-
-                                                    <i class="fa fa-power-off"></i>
-                                                    {{item.downtimeHostgroupServiceText}}
-                                                </div>
-                                                <div ng-if="item.plannedDowntimeHostgroupServiceText && Statuspage.statuspage.showDowntimes">
-                                                    <i class="fa fa-power-off"></i>
-                                                    {{item.plannedDowntimeHostgroupServiceText}}
-                                                </div>
+                                                <!-- end handle downtime summary -->
                                             </div>
                                         </div>
                                     </div>
-                                    <!-- end of acknowledgements -->
-
 
                                     <!-- handle current downtime comments -->
-                                    <div class="col-12 text-truncate" ng-if="item.isInDowntime && item.downtimeData && Statuspage.statuspage.showDowntimes">
+                                    <div class="col-12 text-truncate" ng-if="item.downtimeData.length > 0 && Statuspage.statuspage.showDowntimes">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
                                                 <div class="pt-1">
                                                     <i class="fa fa-power-off"></i>
                                                     <?= __('Currently under maintenance.'); ?>
                                                 </div>
-                                                <div class="row">
+
+                                                <div class="row" ng-repeat="downtime in item.downtimeData">
                                                     <div class="col-xs-12 col-md-3">
-                                                        <?= __('Start'); ?>: {{item.downtimeData.scheduledStartTime}}
+                                                        <?= __('Start'); ?>: {{downtime.scheduledStartTime}}
                                                     </div>
                                                     <div class="col-xs-12 col-md-3">
-                                                        <?= __('End'); ?>: {{item.downtimeData.scheduledEndTime}}
+                                                        <?= __('End'); ?>: {{downtime.scheduledEndTime}}
                                                     </div>
                                                     <div class="col-xs-12 col-md-3">
-                                                        <?= __('Comment'); ?>: {{item.downtimeData.comment}}
+                                                        <?= __('Comment'); ?>: {{downtime.comment}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -224,7 +209,7 @@
                                     </div>
                                     <!-- end of current downtimes -->
 
-                                    <!-- handle plant downtime comments -->
+                                    <!-- handle planed downtimes -->
                                     <div class="col-12 text-truncate" ng-if="item.plannedDowntimeData.length > 0 && Statuspage.statuspage.showDowntimes">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
