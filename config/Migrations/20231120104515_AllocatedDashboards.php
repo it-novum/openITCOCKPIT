@@ -9,10 +9,7 @@ declare(strict_types=1);
 use Migrations\AbstractMigration;
 
 /**
- * Class AddFlagsToImportedHosts
- *
- * Created:
- * oitc migrations create AddModuleFlagToChangelogs
+ * Class AllocatedDashboards
  *
  * Usage:
  * openitcockpit-update
@@ -79,7 +76,7 @@ class AllocatedDashboards extends AbstractMigration {
                     'null'    => true,
                 ])
                 ->addColumn('flags', 'integer', [
-                    'default' => 1,
+                    'default' => 0,
                     'limit'   => 11,
                     'null'    => false,
                 ])
