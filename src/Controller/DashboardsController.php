@@ -28,6 +28,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Entity\DashboardTab;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
@@ -1918,6 +1919,8 @@ class DashboardsController extends AppController {
                 $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
                 $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
                 $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+                // Is it pinned?
+                $dashboardTabs[$dashboardTabIndex]['isPinned'] =(bool) (($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
             }
 
             $this->set('dashboardTabs', $dashboardTabs);
@@ -1993,6 +1996,8 @@ class DashboardsController extends AppController {
             $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
             $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
             $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+            // Is it pinned?
+            $dashboardTabs[$dashboardTabIndex]['isPinned'] =(bool) (($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
         }
 
         $this->set('dashboardTabs', $dashboardTabs);
