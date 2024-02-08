@@ -76,6 +76,12 @@ use Cake\Core\Plugin;
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="loadHost()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
                     </button>
+                    <?php if ($this->Acl->hasPermission('index', 'hosts')): ?>
+                        <a back-button href="javascript:void(0);" fallback-state='HostsIndex'
+                           class="btn btn-default btn-xs mr-1 shadow-0">
+                            <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
+                        </a>
+                    <?php endif; ?>
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">
                         <li class="nav-item pointer">
                             <a class="nav-link active" data-toggle="tab" ng-click="selectedTab = 'tab1'; hideTimeline()"
@@ -968,7 +974,8 @@ use Cake\Core\Plugin;
 
                                                         <a ng-if="objects.Instantreports.length > 0"
                                                            ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                           <span
+                                                               class="badge border margin-right-10 border-generic text-generic">
                                                                 <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?> ({{objects.Instantreports.length}})
                                                            </span>
                                                         </a>
@@ -976,7 +983,8 @@ use Cake\Core\Plugin;
                                                         <?php if (Plugin::isLoaded('AutoreportModule')): ?>
                                                             <a ng-if="objects.Autoreports.length > 0"
                                                                ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                               <span
+                                                                   class="badge border margin-right-10 border-generic text-generic">
                                                                     <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?> ({{objects.Autoreports.length}})
                                                                </span>
                                                             </a>
@@ -984,7 +992,8 @@ use Cake\Core\Plugin;
                                                         <?php if (Plugin::isLoaded('EventcorrelationModule')): ?>
                                                             <a ng-if="objects.Eventcorrelations.length > 0"
                                                                ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                                <span class="badge border margin-right-10 border-generic text-generic">
+                                                                <span
+                                                                    class="badge border margin-right-10 border-generic text-generic">
                                                                     <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?> ({{objects.Eventcorrelations.length}})
                                                                 </span>
                                                             </a>
@@ -993,7 +1002,8 @@ use Cake\Core\Plugin;
                                                         <?php if (Plugin::isLoaded('MapModule')): ?>
                                                             <a ng-if="objects.Maps.length > 0"
                                                                ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                               <span class="badge border margin-right-10 border-generic text-generic">
+                                                               <span
+                                                                   class="badge border margin-right-10 border-generic text-generic">
                                                                     <i class="fa fa-map-marker"></i> <?= __('Map') ?> ({{objects.Maps.length}})
                                                                </span>
                                                             </a>
@@ -1001,7 +1011,8 @@ use Cake\Core\Plugin;
 
                                                         <a ng-if="objects.Hostgroups.length > 0"
                                                            ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                           <span class="badge border margin-right-10 border-generic text-generic">
+                                                           <span
+                                                               class="badge border margin-right-10 border-generic text-generic">
                                                                 <i class="fas fa-server"></i> <?php echo __('Host Groups'); ?> ({{objects.Hostgroups.length}})
                                                            </span>
                                                         </a>
