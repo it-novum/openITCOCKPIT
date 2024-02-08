@@ -53,7 +53,6 @@
                                 </h2>
                             </li>
                             <li class="nav-item" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
-                                ng-click="loadTabContent(tab.id)"
                                 ng-class="{'active':activeTab === tab.id, 'ui-sortable-handle':  !tab.isPinned}">
                                 <a class="nav-link"
                                    href="javascript:void(0);"
@@ -62,6 +61,7 @@
                                    title="{{tab.title}}"
                                    role="tab">
                                 <span class="text"
+                                      ng-click="loadTabContent(tab.id)"
                                       ng-class="{ 'text-primary': tab.shared === true}">
                                     <span ng-show="tab.isPinned">
                                         <i class="fa fa-lock"></i>
