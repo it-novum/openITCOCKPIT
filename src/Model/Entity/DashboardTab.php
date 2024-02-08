@@ -30,8 +30,9 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Widget[] $widgets
  */
 class DashboardTab extends Entity {
-
-    public const TAB_PINNED = 1 << 0;
+    public const FLAG_BLANK = 0 << 0;
+    public const FLAG_ALLOCATED = 1 << 0;
+    public const FLAG_PINNED = 1 << 1;
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().

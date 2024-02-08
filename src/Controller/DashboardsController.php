@@ -28,6 +28,8 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Entity\DashboardTab;
+use App\Model\Entity\Usergroup;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
@@ -35,6 +37,7 @@ use App\Model\Table\ParenthostsTable;
 use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
+use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\ForbiddenException;
@@ -42,6 +45,7 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Locator\LocatorAwareTrait;
+use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\CalendarTime;
@@ -1918,6 +1922,8 @@ class DashboardsController extends AppController {
                 $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
                 $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
                 $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+                // Is it pinned?
+                $dashboardTabs[$dashboardTabIndex]['isPinned'] = (bool)(($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
             }
 
             $this->set('dashboardTabs', $dashboardTabs);
@@ -1931,6 +1937,14 @@ class DashboardsController extends AppController {
 
             /** @var DashboardTabsTable $DashboardTabsTable */
             $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+
+            // Wipe behind me to ensure users with clones keep them and can work with them still.
+            $DashboardTabsTable->cleanup(
+                (int)$dashboardTab['id'],
+                (array)$dashboardTab['allocated_users']['_ids'],
+                (array)$dashboardTab['usergroups']['_ids']
+            );
 
             // Fetch from DB
             $Entity = $DashboardTabsTable->get($dashboardTab['id']);
@@ -1993,6 +2007,8 @@ class DashboardsController extends AppController {
             $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
             $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
             $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
+            // Is it pinned?
+            $dashboardTabs[$dashboardTabIndex]['isPinned'] = (bool)(($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
         }
 
         $this->set('dashboardTabs', $dashboardTabs);

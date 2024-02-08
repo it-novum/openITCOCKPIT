@@ -1,5 +1,10 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsAllocateController', function($scope, $http, $stateParams, RedirectService){
+        $scope.flags = {
+            'isAllocated': 1,
+            'isPinned': 2,
+        }
+
         // I am initing the view rn.
         $scope.allocationInitializing = true;
 
@@ -62,7 +67,7 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
                 $scope.userId = result.data.userId;
-                $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
+                $scope.isPinned = ($scope.allocation.DashboardTab.flags & $scope.flags.isPinned) === $scope.flags.isPinned;
 
                 // I'm done.
                 $scope.allocationInitializing = false;
@@ -131,10 +136,10 @@ angular.module('openITCOCKPIT')
         // If the [pinned] flag is switched, pass it to the flag int.
         $scope.$watch('isPinned', function(val){
             if(val){
-                $scope.allocation.DashboardTab.flags |= 1;
+                $scope.allocation.DashboardTab.flags |= $scope.flags.isPinned;
                 return;
             }
-            $scope.allocation.DashboardTab.flags ^= 1;
+            $scope.allocation.DashboardTab.flags ^= $scope.flags.isPinned;
         });
 
         // I will store the allocation details.

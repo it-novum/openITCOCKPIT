@@ -1,5 +1,9 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval){
+        $scope.flags = {
+            'isAllocated': 1,
+            'isPinned': 2,
+        }
 
         /** public vars **/
         $scope.init = true;
@@ -14,10 +18,6 @@ angular.module('openITCOCKPIT')
         $scope.hideModifications = 0;
         $scope.isPinned = false;
         $scope.userId = 0;
-
-        $scope.flags = {
-            exists: 1 << 0,
-        };
 
         $scope.data = {
             newTabName: '',
@@ -527,7 +527,8 @@ angular.module('openITCOCKPIT')
                 $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
                 $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
                 $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
-                $scope.isPinned = Boolean($scope.allocation.DashboardTab.flags & 1);
+                $scope.isPinned = ($scope.allocation.DashboardTab.flags & $scope.flags.isPinned) === $scope.flags.isPinned;
+
                 $scope.userId = result.data.userId;
 
                 // I'm done.
@@ -597,10 +598,10 @@ angular.module('openITCOCKPIT')
         // If the [pinned] flag is switched, pass it to the flag int.
         $scope.$watch('isPinned', function(val){
             if(val){
-                $scope.allocation.DashboardTab.flags |= 1;
+                $scope.allocation.DashboardTab.flags |= $scope.flags.isPinned;
                 return;
             }
-            $scope.allocation.DashboardTab.flags ^= 1;
+            $scope.allocation.DashboardTab.flags ^= $scope.flags.isPinned;
         });
 
         // I will store the allocation details.

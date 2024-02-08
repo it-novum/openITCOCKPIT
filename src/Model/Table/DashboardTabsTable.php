@@ -336,14 +336,19 @@ class DashboardTabsTable extends Table {
 
         // Traverse the allocations and copy / update the allocated tabs.
         foreach ($allocatedTabIds as $allocatedTabId) {
-            $Entity = $this->get($allocatedTabId);
             try {
-                $Author = $UsersTable->get($Entity->user_id);
+                $Entity = $this->get($allocatedTabId);
+                if ($Entity->user_id === $userId) {
+                    continue;
+                }
+                $UsersTable->get($Entity->user_id);
             } catch (RecordNotFoundException $exception) {
                 // If the author is gone, just for sake of stability, remove the entire tab.
                 // This should not happen without fiddling the database.
                 // But... better safe than sorry.
-                $this->delete($Entity);
+                if (isset($Entity)) {
+                    $this->delete($Entity);
+                }
                 continue;
             }
 
@@ -361,33 +366,13 @@ class DashboardTabsTable extends Table {
                 // or maybe update the existing copy if needed.
                 $this->updateAllocatedTab($allocatedTabId, $copy['id']);
             }
-
-            // add the copied dashboard tab to the response.
-            $forJs[] = [
-                'id'                => $copy['id'],
-                'position'          => (int)$copy['position'],
-                'name'              => $copy['name'],
-                'shared'            => (bool)$copy['shared'],
-                'source_tab_id'     => (int)$copy['source_tab_id'],
-                'check_for_updates' => (bool)$copy['check_for_updates'],
-                'last_update'       => (int)$copy['last_update'],
-                'locked'            => (bool)$copy['locked'],
-                'source'            => 'ALLOCATED',
-                'modified'          => $copy['modified'],
-                'flags'             => (int)$copy['flags'],
-                'title'             => sprintf(__('Dieses Dashboard wird von %s %s verwaltet.'), h($Author->firstname), h($Author->lastname)),
-                'isPinned'          => (bool)($Entity->flags & DashboardTab::TAB_PINNED),
-                'isReadonly'        => true
-            ];
         }
 
         $result = $this->find()
             ->where([
-                'DashboardTabs.user_id'  => $userId,
-                'DashboardTabs.flags !=' => 2
+                'DashboardTabs.user_id' => $userId
             ])
             ->order([
-                'DashboardTabs.flags'    => 'DESC',
                 'DashboardTabs.position' => 'ASC',
             ])
             ->disableHydration()
@@ -403,9 +388,11 @@ class DashboardTabsTable extends Table {
                 'check_for_updates' => (bool)$row['check_for_updates'],
                 'last_update'       => (int)$row['last_update'],
                 'locked'            => (bool)$row['locked'],
-                'source'            => null,
                 'modified'          => $row['modified'],
-                'flags'             => 0
+                'flags'             => (int)$row['flags'],
+                'isPinned'          => ($row['flags'] & DashboardTab::FLAG_ALLOCATED) && ($row['flags'] & DashboardTab::FLAG_PINNED),
+                'isReadonly'        => (bool)($row['flags'] & DashboardTab::FLAG_ALLOCATED),
+                'source'            => (bool)($row['flags'] & DashboardTab::FLAG_ALLOCATED) ? 'ALLOCATED' : ''
             ];
         }
 
@@ -425,7 +412,7 @@ class DashboardTabsTable extends Table {
             ->where([
                 'user_id'       => $userId,
                 'source_tab_id' => $allocatedTabId,
-                'flags'         => 2
+                'flags & '      => DashboardTab::FLAG_ALLOCATED
             ])
             ->disableHydration()
             ->first() ?? [];
@@ -582,9 +569,8 @@ class DashboardTabsTable extends Table {
         }
 
         $newTab = $this->newEntity([
-            'name'   => $sourceTab->get('name'),
-            'locked' => $sourceTab->get('locked'),
-
+            'name'              => $sourceTab->get('name'),
+            'locked'            => $sourceTab->get('locked'),
             'user_id'           => $userId,
             'position'          => $this->getNextPosition($userId),
             'shared'            => 0,
@@ -600,7 +586,7 @@ class DashboardTabsTable extends Table {
 
 
     /**
-     * @param int $id
+     * @param int $tabId
      * @param int $userId
      * @throws RecordNotFoundException
      */
@@ -628,17 +614,22 @@ class DashboardTabsTable extends Table {
                 'color'      => $widget->get('color'),
                 'directive'  => $widget->get('directive'),
                 'icon'       => $widget->get('icon'),
-                'json_data'  => $widget->get('json_data')
+                'json_data'  => $widget->get('json_data'),
             ];
         }
 
+        $nextPosition = $this->getNextPosition($userId);
+        // If tab is pinned, force negative position.
+        if ($sourceTab->get('flags') & DashboardTab::FLAG_PINNED) {
+            $nextPosition = -1;
+        }
         $newTab = $this->newEntity([
             'name'              => $sourceTab->get('name'),
             'locked'            => true,
             'user_id'           => $userId,
-            'position'          => $this->getNextPosition($userId),
+            'position'          => $nextPosition,
             'shared'            => 0,
-            'flags'             => 2,
+            'flags'             => $sourceTab->get('flags') + DashboardTab::FLAG_ALLOCATED,
             'source_tab_id'     => $tabId,
             'check_for_updates' => 0,
             'last_update'       => time(),
@@ -689,20 +680,124 @@ class DashboardTabsTable extends Table {
 
         $Entity = $this->get($copyTabId);
 
+        $nextPosition = $this->getNextPosition($Entity->user_id);
+        if ($sourceTab->get('flags') & DashboardTab::FLAG_PINNED) {
+            $nextPosition = -1;
+        }
         $patch = [
             'name'              => $sourceTab->get('name'),
             'locked'            => $sourceTab->get('locked'),
             'shared'            => 0,
             'source_tab_id'     => $originalTabId,
+            'position'          => $nextPosition,
             'check_for_updates' => 0,
             'last_update'       => time(),
-            'widgets'           => $widgets
+            'widgets'           => $widgets,
+            'flags'             => $sourceTab->get('flags') | DashboardTab::FLAG_ALLOCATED
         ];
 
         $Entity = $this->patchEntity($Entity, $patch);
 
         $this->save($Entity);
         return $Entity;
+    }
+
+    public function cleanup(int $dashboardTabId, array $newUserIds, array $newUsergroupIds): void {
+        // Get normalized array of userIds where the $dashboardTabId will remain.
+        $cleanUserIds = $this->fetchUserIdsToClean(
+            $dashboardTabId,
+            $newUserIds,
+            $newUsergroupIds
+        );
+        // Early return
+        if (empty ($cleanUserIds)) {
+            return;
+        }
+
+        foreach ($this->findAllocations($dashboardTabId, $cleanUserIds) as $CopyEntity) {
+            $copyPatch = [
+                'flags'         => $CopyEntity->flags & DashboardTab::FLAG_BLANK,
+                'source_tab_id' => null,
+                'locked'        => 0
+            ];
+            $CopyEntity = $this->patchEntity($CopyEntity, $copyPatch);
+            $this->save($CopyEntity);
+        }
+    }
+
+    /**
+     * I will find all allocated instances of the given $dashboardTabId.
+     * If you pass the $userIds, I will filter for those.
+     *
+     * @param int $dashboardTabId
+     * @param array $userIds
+     *
+     * @return \Cake\Datasource\ResultSetInterface
+     */
+    public function findAllocations(int $dashboardTabId, array $userIds = []) {
+        $query = $this->find()->where([
+            'source_tab_id' => $dashboardTabId,
+            'flags & '      => DashboardTab::FLAG_ALLOCATED
+        ]);
+        if (!empty($userIds)) {
+            $query->where(['user_id IN' => $userIds]);
+        }
+
+        return $query->all();
+    }
+
+    /**
+     * I will return a set of UserIds whose copies of given $dashboardTabId will remain after cleanup.
+     * This also regards the UserGroups.
+     * @param int $dashboardTabId
+     * @param array $newUserIds
+     * @param array $newUsergroupIds
+     * @return array
+     */
+    public function fetchUserIdsToClean(int $dashboardTabId, array $newUserIds, array $newUsergroupIds): array {
+
+        // Fetch current setup.
+        $Obj = $this->find()
+            ->where(['id' => $dashboardTabId])
+            ->contain('AllocatedUsers')
+            ->contain('Usergroups')
+            ->toArray();
+
+        $currentUserIds = Hash::extract($Obj[0], 'allocated_users.{n}.id');
+        $currentGroupIds = Hash::extract($Obj[0], 'usergroups.{n}.id');
+
+
+        $cleanUserIds = [];
+
+        // Traverse users and see if any one is mentioned in the new users.
+        foreach ($currentUserIds as $userId) {
+            if (!in_array($userId, $newUserIds)) {
+                $cleanUserIds[] = $userId;
+            }
+        }
+
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+        // Traverse usergroups and do the same.
+        foreach ($currentGroupIds as $usergroupId) {
+            if (in_array($usergroupId, $newUsergroupIds)) {
+                continue;
+            }
+
+            $userIds = $UsersTable->getUserIdsByUsergroupId($usergroupId);
+
+            foreach ($userIds as $userId) {
+                // Check if the user is added explicitly.
+                // Check if the assignment already is found
+                if (in_array($userId, $newUserIds)) {
+                    continue;
+                }
+                $cleanUserIds[] = $userId;
+            }
+        }
+        return array_unique($cleanUserIds);
     }
 
 }

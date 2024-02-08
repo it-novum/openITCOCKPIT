@@ -1,5 +1,9 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsAllocationManagerController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, NotyService){
+        $scope.flags = {
+            'isAllocated': 1,
+            'isPinned': 2,
+        }
         //
         SortService.setSort(QueryStringService.getValue('sort', 'name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
@@ -11,6 +15,7 @@ angular.module('openITCOCKPIT')
         $scope.massChange = {};
         $scope.selectedElements = 0;
         $scope.deleteUrl = '/dashboards/deallocate/';
+        $scope.useScroll = true;
 
         // I am the filter transport object.
         $scope.filter = {
@@ -65,7 +70,6 @@ angular.module('openITCOCKPIT')
         $scope.getObjectForDelete = function(dashboardTab){
             var object = {};
             object[dashboardTab.id] = dashboardTab.name;
-            console.log(object);
             return object;
         };
 
@@ -132,4 +136,8 @@ angular.module('openITCOCKPIT')
             $scope.load();
         }, true);
 
+        $scope.$watch('massChange', function(){
+            MassChangeService.setSelected($scope.massChange);
+            $scope.selectedElements = MassChangeService.getCount();
+        }, true);
     });

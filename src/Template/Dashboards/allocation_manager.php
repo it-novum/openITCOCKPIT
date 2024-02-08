@@ -108,80 +108,81 @@
                     <div class="frame-wrap">
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
-                                <tr>
-                                    <th class="no-sort width-15">
-                                        <i class="fa fa-check-square"></i>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('name')">
-                                        <i class="fa" ng-class="getSortClass('name')"></i>
-                                        <?php echo __('Name'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('full_name')">
-                                        <i class="fa" ng-class="getSortClass('full_name')"></i>
-                                        <?php echo __('Full Name'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <i class="fa"></i>
-                                        <?php echo __('Usergroups'); ?>
-                                    </th>
-                                    <th class="no-sort">
-                                        <i class="fa"></i>
-                                        <?php echo __('Users'); ?>
-                                    </th>
-                                    <th class="no-sort" ng-click="orderBy('Flags')">
-                                        <i class="fa" ng-class="getSortClass('Flags')"></i>
-                                        <?php echo __('Pinned'); ?>
-                                    </th>
-                                    <th class="no-sort text-center">
-                                        <i class="fa fa-cog"></i>
-                                    </th>
-                                </tr>
+                            <tr>
+                                <th class="no-sort width-15">
+                                    <i class="fa fa-check-square"></i>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('name')">
+                                    <i class="fa" ng-class="getSortClass('name')"></i>
+                                    <?php echo __('Name'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('full_name')">
+                                    <i class="fa" ng-class="getSortClass('full_name')"></i>
+                                    <?php echo __('Full Name'); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <i class="fa"></i>
+                                    <?php echo __('Usergroups'); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <i class="fa"></i>
+                                    <?php echo __('Users'); ?>
+                                </th>
+                                <th class="no-sort" ng-click="orderBy('Flags')">
+                                    <i class="fa" ng-class="getSortClass('Flags')"></i>
+                                    <?php echo __('Pinned'); ?>
+                                </th>
+                                <th class="no-sort text-center">
+                                    <i class="fa fa-cog"></i>
+                                </th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="dashboardTab in dashboardTabs">
-                                    <td class="text-center" class="width-15">
-                                        <input type="checkbox"
-                                               ng-model="massChange[dashboardTab.id]">
-                                    </td>
-                                    <td>{{dashboardTab.name}}</td>
-                                    <td>{{dashboardTab.full_name}}</td>
-                                    <td>
-                                        {{dashboardTab.usergroups_count}}
-                                        <span class="badge badge-primary" ng-repeat="name in dashboardTab.usergroups_names">
+                            <tr ng-repeat="dashboardTab in dashboardTabs">
+                                <td class="text-center width-15">
+                                    <input type="checkbox"
+                                           ng-model="massChange[dashboardTab.id]">
+                                </td>
+                                <td>{{dashboardTab.name}}</td>
+                                <td>{{dashboardTab.full_name}}</td>
+                                <td>
+                                    {{dashboardTab.usergroups_count}}
+                                    <span class="badge badge-primary" ng-repeat="name in dashboardTab.usergroups_names">
                                             {{name}}
                                         </span>
-                                    </td>
-                                    <td>
-                                        {{dashboardTab.allocated_users_count}}
-                                        <span class="badge badge-primary" ng-repeat="name in dashboardTab.allocated_users_names">
+                                </td>
+                                <td>
+                                    {{dashboardTab.allocated_users_count}}
+                                    <span class="badge badge-primary"
+                                          ng-repeat="name in dashboardTab.allocated_users_names">
                                             {{name}}
                                         </span>
-                                    </td>
-                                    <td class="width-50">
-                                        <i class="fa fa-lock" ng-show="dashboardTab.flags === 1"></i>
-                                    </td>
+                                </td>
+                                <td class="width-50">
+                                    <i class="fa fa-lock" ng-show="dashboardTab.isPinned"></i>
+                                </td>
 
-                                    <td class="width-50">
-                                        <div class="btn-group btn-group-xs" role="group">
-                                            <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"
-                                               class="btn btn-default btn-lower-padding">
-                                                <i class="fa fa-cog"></i>
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs" role="group">
+                                        <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"
+                                           class="btn btn-default btn-lower-padding">
+                                            <i class="fa fa-cog"></i>
+                                        </a>
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <a ng-click="confirmDelete(getObjectForDelete(dashboardTab))"
+                                               class="dropdown-item txt-color-red">
+                                                <i class="fa fa-trash"></i>
+                                                <?php echo __('Delete'); ?>
                                             </a>
-                                            <button type="button"
-                                                    class="btn btn-default dropdown-toggle btn-lower-padding"
-                                                    data-toggle="dropdown">
-                                                <i class="caret"></i>
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-right">
-                                                <a ng-click="confirmDelete(getObjectForDelete(dashboardTab))"
-                                                   class="dropdown-item txt-color-red">
-                                                    <i class="fa fa-trash"></i>
-                                                    <?php echo __('Delete'); ?>
-                                                </a>
-                                            </div>
                                         </div>
-                                    </td>
-                                </tr>
+                                    </div>
+                                </td>
+                            </tr>
                             </tbody>
                         </table>
                         <div class="margin-top-10" ng-show="dashboardTabs.length == 0">
@@ -208,7 +209,7 @@
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fas fa-trash"></i>
-                                    <?php echo __('Delete selected'); ?>
+                                    <?php echo __('Remove Allocations'); ?>
                                 </span>
                             </div>
                         </div>
@@ -221,7 +222,6 @@
         </div>
     </div>
 </div>
-
 
 
 <!-- ANGAULAR DIRECTIVES -->

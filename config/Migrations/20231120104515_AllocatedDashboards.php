@@ -9,10 +9,7 @@ declare(strict_types=1);
 use Migrations\AbstractMigration;
 
 /**
- * Class AddFlagsToImportedHosts
- *
- * Created:
- * oitc migrations create AddModuleFlagToChangelogs
+ * Class AllocatedDashboards
  *
  * Usage:
  * openitcockpit-update
@@ -74,12 +71,14 @@ class AllocatedDashboards extends AbstractMigration {
         if ($this->hasTable('dashboard_tabs')) {
             $this->table('dashboard_tabs')
                 ->addColumn('container_id', 'integer', [
+                    'after'   => 'locked',
                     'default' => null,
                     'limit'   => 11,
                     'null'    => true,
                 ])
                 ->addColumn('flags', 'integer', [
-                    'default' => 1,
+                    'after'   => 'locked',
+                    'default' => 0,
                     'limit'   => 11,
                     'null'    => false,
                 ])
