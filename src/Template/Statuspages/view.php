@@ -169,15 +169,27 @@
                                                         <?php echo __('Comment'); ?>: {{item.acknowledgeComment}}
                                                     </div>
                                                 </div>
+                                                <div ng-if="item.serviceAcknowledgedProblemsText && item.cumulatedColorId > 0 && Statuspage.statuspage.showAcknowledgements">
+                                                    <i class="far fa-user"></i>
+                                                        {{item.serviceAcknowledgedProblemsText}}
+                                                </div>
                                                 <!-- end of acknowledgements -->
                                                 <!-- handle downtime summary -->
                                                 <div ng-if="item.downtimeSummary && Statuspage.statuspage.showDowntimes">
                                                     <i class="fa fa-power-off"></i>
                                                     {{item.downtimeSummary}}
                                                 </div>
+                                                <div ng-if="item.serviceDowntimeSummary && Statuspage.statuspage.showDowntimes">
+                                                <i class="fa fa-power-off"></i>
+                                                {{item.serviceDowntimeSummary}}
+                                            </div>
                                                 <div ng-if="item.plannedDowntimeSummary && Statuspage.statuspage.showDowntimes">
                                                     <i class="fa fa-power-off"></i>
                                                     {{item.plannedDowntimeSummary}}
+                                                </div>
+                                                <div ng-if="item.servicePlannedDowntimeSummary && Statuspage.statuspage.showDowntimes">
+                                                    <i class="fa fa-power-off"></i>
+                                                    {{item.servicePlannedDowntimeSummary}}
                                                 </div>
                                                 <!-- end handle downtime summary -->
                                             </div>

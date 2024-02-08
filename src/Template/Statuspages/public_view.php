@@ -100,13 +100,20 @@
                                                                 <?= h($item['acknowledgedProblemsText']); ?>
                                                             </div>
                                                         <?php endif; ?>
-
                                                         <?php if (!empty($item['acknowledgeComment']) && in_array($item['type'], ['host','service'])): ?>
                                                             <div>
                                                                 <?php echo __('Comment'); ?>:
                                                                 <?= h($item['acknowledgeComment']); ?>
                                                             </div>
                                                         <?php endif; ?>
+
+                                                        <?php if (!empty($item['serviceAcknowledgedProblemsText'])): ?>
+                                                            <div>
+                                                                <i class="far fa-user"></i>
+                                                                <?= h($item['serviceAcknowledgedProblemsText']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
+
                                                         <!-- Handle acknowledgement comments -->
                                                         <!-- start handle downtime summary -->
                                                         <?php if ( !empty($item['downtimeSummary']) && $statuspage['statuspage']['showDowntimes']): ?>
@@ -115,11 +122,23 @@
                                                                 <?= h($item['downtimeSummary']); ?>
                                                            </div>
                                                         <?php endif; ?>
+                                                        <?php if ( !empty($item['serviceDowntimeSummary']) && $statuspage['statuspage']['showDowntimes']): ?>
+                                                            <div>
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?= h($item['serviceDowntimeSummary']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
 
                                                         <?php if( !empty($item['plannedDowntimeSummary'] ) && $statuspage['statuspage']['showDowntimes'] ): ?>
                                                             <div>
                                                                 <i class="fa fa-power-off"></i>
                                                                 <?= h($item['plannedDowntimeSummary']); ?>
+                                                            </div>
+                                                        <?php endif; ?>
+                                                        <?php if( !empty($item['servicePlannedDowntimeSummary'] ) && $statuspage['statuspage']['showDowntimes'] ): ?>
+                                                            <div>
+                                                                <i class="fa fa-power-off"></i>
+                                                                <?= h($item['servicePlannedDowntimeSummary']); ?>
                                                             </div>
                                                         <?php endif; ?>
                                                         <!-- end handle downtime summary -->

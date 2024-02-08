@@ -29797,3 +29797,12 @@ msgstr ""
 
 msgid "{0} downtimes planned for next 10 days"
 msgstr ""
+
+msgid "{0} service(s) in current downtime."
+msgstr ""
+
+msgid "{0} service downtimes planned for next 10 days"
+msgstr ""
+
+msgid "{0} of {1} service problems acknowledged"
+msgstr ""

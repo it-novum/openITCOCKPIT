@@ -605,7 +605,7 @@ class StatuspagesTable extends Table {
                     'cumulatedColorId'         => -1, // Numeric state representation
                     'cumulatedColor'           => 'not-monitored', // For texts, backgrounds and shadows
                     'isAcknowledge'            => false,
-                    'acknowledgedProblemsText' => __('State is not acknowledged'),
+                    //'acknowledgedProblemsText' => __('State is not acknowledged'),
                     'acknowledgeComment'       => null,
                     'scheduledStartTime'       => null,
                     'scheduledEndTime'         => null,
@@ -695,14 +695,6 @@ class StatuspagesTable extends Table {
                             }
                         }
                     }
-                }
-
-
-                if ($statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] > 0 &&
-                    in_array($objectType, ['hosts', 'hostgroups'], true)) {
-                    // Host is down or unreachable - use the host status only
-                    // +1 shifts a host state into a service state so we can use a single array
-                    $item['cumulatedColorId'] = $cumulatedStateId + 1;
                     if($showAcknowledgements) {
                         if($objectType === 'hosts') {
                             if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0 && $showAcknowledgements) {
@@ -720,6 +712,16 @@ class StatuspagesTable extends Table {
                             }
                         }
                     }
+
+                }
+
+
+                if ($statuspage[$objectType][$index]['state_summary']['hosts']['cumulatedStateId'] > 0 &&
+                    in_array($objectType, ['hosts', 'hostgroups'], true)) {
+                    // Host is down or unreachable - use the host status only
+                    // +1 shifts a host state into a service state so we can use a single array
+                    $item['cumulatedColorId'] = $cumulatedStateId + 1;
+
                 } else {
                     // Set initial state for service or service groups
                     if (in_array($objectType, ['services', 'servicegroups'], true)) {
@@ -729,6 +731,7 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColorId'] = $cumulatedStateId;
                         $item['cumulatedColor'] = $stateColors['services'][$cumulatedStateId];
                     }
+                }
                     // All hosts are up - Is there a service with an issue?
                     if ($statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] > 0) {
                         $cumulatedStateId = $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'];
@@ -737,19 +740,20 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColorId'] = $cumulatedStateId;
                         $item['cumulatedColor'] = $stateColors['services'][$cumulatedStateId];
                         if ($showAcknowledgements) {
-                            if ($objectType === 'services') {
+                            if (in_array($objectType, ['services'])) {
                                 if ($objectGroup['state_summary']['services']['acknowledgements'] > 0 && $showAcknowledgements) {
                                     $item['isAcknowledge'] = true;
                                     $item['acknowledgedProblemsText'] = __('State is acknowledged');
                                     $item['acknowledgeComment'] = ($showAcknowledgementComments)
                                         ? $objectGroup['state_summary']['services']['acknowledgement_details'][0]['comment_data'] : __('Investigating issue');
                                 }
-                            } else {
+                            }
+                            if(in_array($objectType, ['servicegroups', 'hostgroups', 'hosts'])) {
                                 //eg. host is up, but serviceproblems
                                 $problems = $objectGroup['state_summary']['services']['problems'];
                                 if ($problems > 0) {
                                     $problemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
-                                    $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
+                                    $item['serviceAcknowledgedProblemsText'] = __('{0} of {1} service problems acknowledged', $problemsAcknowledged, $problems);
                                 }
                             }
                         }
@@ -794,19 +798,19 @@ class StatuspagesTable extends Table {
                                 $item['plannedDowntimeData'] = $plannedDowntimeDataServices;
                             }
                         }
-                        if ($objectType === 'servicegroups' && $showDowntimes) {
+                        if (in_array($objectType, ['servicegroups', 'hostgroups', 'hosts']) && $showDowntimes) {
                             if (count($objectGroup['state_summary']['services']['downtime_details']) > 0) {
                                 $count = count($objectGroup['state_summary']['services']['downtime_details']);
-                                $item['downtimeSummary'] = __('{0} current downtimes.', $count);
+                                $item['serviceDowntimeSummary'] = __('{0} service(s) in current downtime.', $count);
                             }
 
                             if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
                                 $count = count($objectGroup['state_summary']['services']['planned_downtime_details']);
-                                $item['plannedDowntimeSummary'] = __('{0} downtimes planned for next 10 days', $count);
+                                $item['servicePlannedDowntimeSummary'] = __('{0} service downtimes planned for next 10 days', $count);
                             }
                         }
                     }
-                }
+               // }
                 $items[] = $item;
             }
         }
