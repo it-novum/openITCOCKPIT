@@ -52,7 +52,7 @@ class ServicetemplateFilter extends Filter {
     public function ajaxFilter() {
         $filters = [
             'like' => [
-                'Servicetemplates.name',
+                'Servicetemplates.template_name',
             ]
         ];
 
