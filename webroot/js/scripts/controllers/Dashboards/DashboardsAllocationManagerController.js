@@ -1,9 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsAllocationManagerController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService, NotyService){
-        $scope.flags = {
-            'isAllocated': 1,
-            'isPinned': 2,
-        }
+    .controller('DashboardsAllocationManagerController', function($scope, $http, $rootScope, SortService, MassChangeService, QueryStringService){
         //
         SortService.setSort(QueryStringService.getValue('sort', 'name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
@@ -89,7 +85,6 @@ angular.module('openITCOCKPIT')
         };
 
         SortService.setCallback($scope.load);
-        $scope.load();
 
         // Trigger filter show / Hide.
         $scope.triggerFilter = function(){
@@ -132,7 +127,6 @@ angular.module('openITCOCKPIT')
 
         $scope.$watch('filter', function(){
             $scope.currentPage = 1;
-            $scope.undoSelection();
             $scope.load();
         }, true);
 

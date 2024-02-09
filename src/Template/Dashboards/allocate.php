@@ -69,12 +69,12 @@
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                    id="UserContainers"
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    ng-options="container.key as container.value for container in containers"
-                                    ng-model="allocation.DashboardTab.container_id">
+                                id="UserContainers"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-options="container.key as container.value for container in containers"
+                                ng-model="dashboard.container_id">
                             </select>
                             <div ng-repeat="error in errors.containers">
                                 <div class="help-block text-danger">{{ error }}</div>
@@ -89,12 +89,12 @@
                                         <?php echo __('Allocated Users'); ?>
                                     </label>
                                     <select
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="users"
-                                            ng-options="user.key as user.value for user in users"
-                                            ng-model="allocation.DashboardTab.allocated_users._ids"
-                                            multiple="multiple">
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="users"
+                                        ng-options="user.key as user.value for user in users"
+                                        ng-model="dashboard.allocated_users._ids"
+                                        multiple="multiple">
                                     </select>
                                 </div>
                             </div>
@@ -108,12 +108,12 @@
                                         <?php echo __('Allocated Roles'); ?>
                                     </label>
                                     <select
-                                            data-placeholder="<?php echo __('Please choose'); ?>"
-                                            class="form-control"
-                                            chosen="usergroups"
-                                            ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
-                                            ng-model="allocation.DashboardTab.usergroups._ids"
-                                            multiple="multiple">
+                                        data-placeholder="<?php echo __('Please choose'); ?>"
+                                        class="form-control"
+                                        chosen="usergroups"
+                                        ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
+                                        ng-model="dashboard.usergroups._ids"
+                                        multiple="multiple">
                                     </select>
                                 </div>
                             </div>
@@ -132,7 +132,8 @@
                                             <?php echo __('Pin Dashboard'); ?>
                                         </label>
                                     </div>
-                                    <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?></div>
+                                    <div
+                                        class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?></div>
                                 </div>
                             </div>
                         </div>
