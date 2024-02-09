@@ -36,6 +36,7 @@ use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
+use PrometheusModule\Lib\PerformanceDataSetupFactory;
 
 
 /**
@@ -65,7 +66,6 @@ class GraphgeneratorsController extends AppController {
         $aggregation = $this->request->getQuery('aggregation', 'avg');
         $debug = $this->request->getQuery('debug', 'false') === 'true';
 
-        $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
         if (is_numeric($hours)) {
             $hours = (int)$hours;
             $start = time() - ($hours * 3600);
@@ -86,10 +86,14 @@ class GraphgeneratorsController extends AppController {
 
             if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
                 $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
-                $start = (int)$start;
-                $end = (int)$end;
+                $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
+                $metric = array_keys($perfdata)[0];
+                $perfdata = $perfdata[$metric];
+                $perfdata['metric'] = $metric;
                 $performance_data = $PrometheusPerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug, $gauge);
+                $performance_data[0]['datasource']['setup'] = PerformanceDataSetupFactory::fromPrometheus($Service, $performance_data[0]['datasource'])->toArray();
             } else {
+                $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
                 $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, $aggregation, $gauge, $scale, $forcedUnit, $debug);
                 $performance_data[0]['datasource']['setup'] = PerformanceDataSetup::fromNagios($performance_data[0]['datasource'])->toArray();
                 $this->set('performance_data', $performance_data);

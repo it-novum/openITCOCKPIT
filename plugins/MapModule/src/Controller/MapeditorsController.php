@@ -64,6 +64,7 @@ use MapModule\Model\Table\MapsTable;
 use MapModule\Model\Table\MapsummaryitemsTable;
 use MapModule\Model\Table\MaptextsTable;
 use MapModule\Model\Table\MapUploadsTable;
+use PrometheusModule\Lib\PerformanceDataSetupFactory;
 use RuntimeException;
 use Statusengine\PerfdataParser;
 use Symfony\Component\Finder\Finder;
@@ -451,9 +452,16 @@ class MapeditorsController extends AppController {
                 throw new RuntimeException('Unknown map item type');
                 break;
         }
-        $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
-        $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
-        $properties['Perfdata']["'value'"]['datasource']['setup'] = PerformanceDataSetup::fromNagios($performance_data[0]['datasource'])->toArray();
+
+        if (Plugin::isLoaded('PrometheusModule') && $service->service_type === PROMETHEUS_SERVICE) {
+            $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+            $Service = new Service($service);
+            $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
+        } else {
+            $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
+            $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
+            $properties['Perfdata']["'value'"]['datasource']['setup'] = PerformanceDataSetup::fromNagios($performance_data[0]['datasource'])->toArray();
+        }
 
         return [
             'type'      => $type,

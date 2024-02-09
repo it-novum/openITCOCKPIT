@@ -389,10 +389,6 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 var thresholdLines = $scope.getThresholdLines(performance_data.datasource.setup, GraphDefaultsObj);
                 var thresholdAreas = $scope.getThresholdAreas(performance_data.datasource.setup, GraphDefaultsObj);
 
-                console.warn(performance_data.datasource.setup);
-                console.warn(thresholdLines);
-                console.warn(thresholdAreas);
-
                 var graph_data = [];
 
                 var gaugeData = [];

@@ -65,6 +65,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use MapModule\Model\Entity\Map;
+use PrometheusModule\Lib\PerformanceDataSetupFactory;
 use Statusengine\PerfdataParser;
 
 /**
@@ -760,6 +761,10 @@ class MapsTable extends Table {
 
             $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
             $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj);
+            $metric   = array_keys($perfdata)[0];
+            $perfdata = $perfdata[$metric];
+            $perfdata[0]['datasource']['setup'] = PerformanceDataSetupFactory::fromPrometheus($ServiceObj, $perfdata)->toArray();
+            // Query Prometheus to get all metrics
         } else {
             // Classic service - parse Naemon perfdata string to get current perfdata information
             $PerfdataParser = new PerfdataParser($servicestatus->getPerfdata());

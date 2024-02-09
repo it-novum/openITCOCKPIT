@@ -54,8 +54,8 @@ class PerformanceDataSetup {
         $warnHi   = isset($warnArr[1]) && strlen($warnArr[1]) > 0 ? (float)str_replace('@', '', $warnArr[1]) : null;
         $critLo   = isset($critArr[0]) && strlen($critArr[0]) > 0 ? (float)str_replace('@', '', $critArr[0]) : null;
         $critHi   = isset($critArr[1]) && strlen($critArr[1]) > 0 ? (float)str_replace('@', '', $critArr[1]) : null;
-        $scaleMin = isset($performanceData['min']) ? (float)$performanceData['min'] : -50;
-        $scaleMax = isset($performanceData['max']) ? (float)$performanceData['max'] : 50;
+        $scaleMin = isset($performanceData['min']) ? (float)$performanceData['min'] : -30;
+        $scaleMax = isset($performanceData['max']) ? (float)$performanceData['max'] : 30;
         $current  = (float)$performanceData['act'];
         $unit     = (string)$performanceData['unit'];
         $name     = (string)$performanceData['name'];

@@ -2,6 +2,7 @@
 
 namespace itnovum\openITCOCKPIT\Perfdata;
 
+use \InvalidArgumentException;
 
 class ScaleType {
     /**
@@ -53,11 +54,24 @@ class ScaleType {
         self::O_W_C_W_O,
     ];
 
-    private static function validateOrder($a) {
+    /**
+     * I will validate if all params are numeric values and if they are in order.
+     *
+     * If any of the passed arguments is not a number, FALSE will be returned.
+     *
+     * @return bool
+     *
+     * @example:
+     *      validateOrder(0, 1, 2, 3,    4, 5.6, 6.7, 7.89, 9)  => true  // They are ovisously in order.
+     *      validateOrder(0, 1, 2, 2,    2,   2, 6.7, 7.89, 9)  => true  // 2 is repeated, but that's fine
+     *      validateOrder(0, 1, 2, 3,    4,   4, 6.7, 7.89, 1)  => false // 1 at the end is not in order.
+     *      validateOrder(0, 1, 2, 3, null, 5.6, 6.7, 7.89, 9)  => false // There's a NULL value in here. FALSE
+     */
+    private static function validateOrder() {
         $last = null;
         $values = func_get_args();
         foreach ($values as $value) {
-            if ($value === null) {
+            if (!is_numeric($value)) {
                 return false;
             }
 
@@ -70,7 +84,19 @@ class ScaleType {
         return true;
     }
 
+    /**
+     * For the given $invert flag and both given Thresholds, I will interprete the correct ScaleType to use.
+     *
+     * @param bool $invert
+     * @param Threshold $warn
+     * @param Threshold $crit
+     *
+     * @throws InvalidArgumentException in case the given parameters don't match into a valid ScaleType.
+     *
+     * @return string
+     */
     public static function get(bool $invert, Threshold $warn, Threshold $crit): string {
+        # echo "$crit->low < $warn->low < $warn->high < $crit->high";
         if (false) {
             // Just for legibility
         } else if ($invert && self::validateOrder($crit->low, $warn->low, $warn->high, $crit->high)) {
@@ -89,6 +115,6 @@ class ScaleType {
             return ScaleType::O;
         }
 
-        throw new \InvalidArgumentException("This setup is unknown to me. See details.");
+        throw new InvalidArgumentException("This setup is unknown to me. See details.");
     }
 }

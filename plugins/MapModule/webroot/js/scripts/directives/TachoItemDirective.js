@@ -107,33 +107,6 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                             {from: setup.warn.high,   to: setup.crit.high, color: '#DF8F1D'},
                             {from: setup.crit.high,   to: setup.scale.max, color: '#449D44'}
                         ];
-                        console.error(setup);
-                        console.error(thresholdAreas);
-                        /*
-
-
-
-thresholdAreas.push({
-    below: 99999999999999999999999999,
-    color: GraphDefaultsObj.okFillColor
-});
-thresholdAreas.push({
-    below: setup.crit.high,
-    color: GraphDefaultsObj.warningFillColor
-});
-thresholdAreas.push({
-    below: setup.warn.high,
-    color: GraphDefaultsObj.criticalFillColor
-});
-thresholdAreas.push({
-    below: setup.warn.low,
-    color: GraphDefaultsObj.warningFillColor
-});
-thresholdAreas.push({
-    below: setup.crit.low,
-    color: GraphDefaultsObj.okFillColor
-});
-                         */
                         break;
                     case "O":
                     default:

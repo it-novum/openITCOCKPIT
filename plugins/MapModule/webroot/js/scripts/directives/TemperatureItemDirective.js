@@ -172,17 +172,13 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     showDecimalDigitsGauge = 1;
                 }
 
-                var gauge = new LinearGauge({
+                let settings ={
                     renderTo: 'map-temperature-' + $scope.item.id,
                     height: $scope.height,
                     width: $scope.width,
                     value: perfdata.datasource.setup.metric.value,
                     minValue: perfdata.datasource.setup.scale.min,
                     maxValue: perfdata.datasource.setup.scale.max,
-                    from: perfdata.datasource.setup.scale.min,
-                    to: perfdata.datasource.setup.scale.max,
-                    min: perfdata.datasource.setup.scale.min,
-                    max: perfdata.datasource.setup.scale.max,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -193,7 +189,11 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     animationDuration: 700,
                     animationRule: 'elastic',
                     majorTicks: getMajorTicks(perfdata.max, 5)
-                });
+                };
+
+
+
+                var gauge = new LinearGauge(settings);
 
                 gauge.draw();
 
