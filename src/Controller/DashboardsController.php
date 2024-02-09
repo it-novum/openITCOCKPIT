@@ -106,8 +106,8 @@ class DashboardsController extends AppController {
 
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-        $user = $UsersTable->get($User->getId());
-        $tabRotationInterval = (int)$user->dashboard_tab_rotation;
+        $UserEntity = $UsersTable->get($User->getId());
+        $tabRotationInterval = (int)$UserEntity->dashboard_tab_rotation;
 
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
@@ -115,7 +115,7 @@ class DashboardsController extends AppController {
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
         // If user has neither OWN or allocated tabs, create the default tab.
-        if (!$DashboardTabsTable->hasUserATab($User->getId())) {
+        if (!$DashboardTabsTable->hasUserATab($UserEntity)) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {
                 //Create default widgets
@@ -127,7 +127,7 @@ class DashboardsController extends AppController {
             }
         }
 
-        $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
+        $tabs = $DashboardTabsTable->getAllTabsByUserId($UserEntity);
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
 

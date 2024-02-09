@@ -24,6 +24,21 @@
 //	confirmation.
 
 ?>
+<ol class="breadcrumb page-breadcrumb">
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardsIndex">
+            <i class="fa fa-home"></i> <?php echo __('Home'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <a ui-sref="DashboardAllocation">
+            <i class="fa fa-table"></i> <?php echo __('Dashboard Allocation'); ?>
+        </a>
+    </li>
+    <li class="breadcrumb-item">
+        <i class="fa fa-table"></i> <?php echo __('Allocate Dashboard'); ?>
+    </li>
+</ol>
 
 <div class="row">
     <div class="col-xl-12">
