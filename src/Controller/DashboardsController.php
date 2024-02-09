@@ -115,7 +115,7 @@ class DashboardsController extends AppController {
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
         // If user has neither OWN or allocated tabs, create the default tab.
-        if (!$DashboardTabsTable->hasUserATab($UserEntity)) {
+        if (!$DashboardTabsTable->hasUserATab($User)) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {
                 //Create default widgets
@@ -127,7 +127,7 @@ class DashboardsController extends AppController {
             }
         }
 
-        $tabs = $DashboardTabsTable->getAllTabsByUserId($UserEntity);
+        $tabs = $DashboardTabsTable->getAllTabsByUserId($User);
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
 

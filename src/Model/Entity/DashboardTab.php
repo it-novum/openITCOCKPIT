@@ -32,7 +32,7 @@ use Cake\ORM\Entity;
 class DashboardTab extends Entity {
     public const FLAG_BLANK = 0 << 0;        // 0
     public const FLAG_ALLOCATED = 1 << 0;    // 1
-    public const FLAG_PINNED = 1 << 2;       // 2
+    public const FLAG_PINNED = 1 << 1;       // 2
 
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().

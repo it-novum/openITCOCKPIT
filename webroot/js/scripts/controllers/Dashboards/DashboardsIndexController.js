@@ -1,8 +1,9 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval){
         $scope.flags = {
-            'isAllocated': 1,
-            'isPinned': 2,
+            blank: 0 << 0,  // 0
+            isAllocated: 1 << 0,  // 1
+            isPinned: 1 << 1      // 2
         }
 
         /** public vars **/

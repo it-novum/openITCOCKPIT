@@ -266,14 +266,14 @@ class DashboardTabsTable extends Table {
     }
 
     /**
-     * @param User $UserEntity
-     * @return bool
+     * @param \itnovum\openITCOCKPIT\Core\ValueObjects\User $User
+     * @return bool|void
      */
-    public function hasUserATab(User $UserEntity) {
+    public function hasUserATab(\itnovum\openITCOCKPIT\Core\ValueObjects\User $User) {
         try {
             $result = $this->find()
                 ->where([
-                    'DashboardTabs.user_id' => $UserEntity->id,
+                    'DashboardTabs.user_id' => $User->getId(),
                 ])
                 ->first();
             if (!empty($result)) {
@@ -285,17 +285,16 @@ class DashboardTabsTable extends Table {
             $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
             // User has an allocated dashboard?
-            $result = $UsersTable->getAllocatedTabsByUserId($UserEntity->id);
+            $result = $UsersTable->getAllocatedTabsByUserId($User->getId());
             if (!empty($result)) {
                 return true;
             }
 
 
             // Usergroup has an allocated dashboard?
-            // todo does this work with LDAP?
             /** @var UsergroupsTable $UsergroupsTable */
             $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
-            $result = $UsergroupsTable->getAllocatedTabsByUsergroupId($UserEntity->usergroup_id);
+            $result = $UsergroupsTable->getAllocatedTabsByUsergroupId($User->getUsergroupId());
 
             if (!empty ($result)) {
                 return true;
@@ -306,10 +305,10 @@ class DashboardTabsTable extends Table {
     }
 
     /**
-     * @param User $UserEntity
-     * @return array|null
+     * @param \itnovum\openITCOCKPIT\Core\ValueObjects\User $User
+     * @return array
      */
-    public function getAllTabsByUserId(User $UserEntity) {
+    public function getAllTabsByUserId(\itnovum\openITCOCKPIT\Core\ValueObjects\User $User) {
         $forJs = [];
 
         /** @var UsersTable $UsersTable */
@@ -322,10 +321,10 @@ class DashboardTabsTable extends Table {
         $allocatedTabIds = [];
 
         // Add Usergroup Allocations.
-        $allocatedTabIds += $UsergroupsTable->getAllocatedTabsByUsergroupId($UserEntity->usergroup_id);
+        $allocatedTabIds += $UsergroupsTable->getAllocatedTabsByUsergroupId($User->getUsergroupId());
 
         // Add User Allocations.
-        $allocatedTabIds += $UsersTable->getAllocatedTabsByUserId($UserEntity->id);
+        $allocatedTabIds += $UsersTable->getAllocatedTabsByUserId($User->getId());
 
         // Make unique, just for sanity.
         $allocatedTabIds = array_unique($allocatedTabIds);
@@ -334,7 +333,7 @@ class DashboardTabsTable extends Table {
         foreach ($allocatedTabIds as $allocatedTabId) {
             try {
                 $Entity = $this->get($allocatedTabId);
-                if ($Entity->user_id === $UserEntity->id) {
+                if ($Entity->user_id === $User->getId()) {
                     continue;
                 }
                 $UsersTable->get($Entity->user_id);
@@ -349,14 +348,14 @@ class DashboardTabsTable extends Table {
             }
 
             // Find Copy
-            $copy = $this->findAllocatedTab($UserEntity->id, $allocatedTabId);
+            $copy = $this->findAllocatedTab($User->getId(), $allocatedTabId);
 
             if (empty($copy)) {
                 // Create new copy
-                $this->copyAllocatedTab($allocatedTabId, $UserEntity->id);
+                $this->copyAllocatedTab($allocatedTabId, $User->getId());
 
                 // Find Copy (again, duh...)
-                $copy = $this->findAllocatedTab($UserEntity->id, $allocatedTabId);
+                $copy = $this->findAllocatedTab($User->getId(), $allocatedTabId);
 
             } else if ($copy['modified']->getTimestamp() <= $Entity->modified->getTimestamp()) {
                 // or maybe update the existing copy if needed.
@@ -366,7 +365,7 @@ class DashboardTabsTable extends Table {
 
         $result = $this->find()
             ->where([
-                'DashboardTabs.user_id' => $UserEntity->id
+                'DashboardTabs.user_id' => $User->getId()
             ])
             ->order([
                 'DashboardTabs.position' => 'ASC',
