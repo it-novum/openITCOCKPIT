@@ -90,7 +90,7 @@
                                         <!-- end of status name -->
 
                                         <!-- Handle acknowledgement comments -->
-                                        <?php if ($statuspage['statuspage']['showAcknowledgements'] && $item['cumulatedColorId'] > 0): ?>
+                                        <?php if (!empty($item['acknowledgedProblemsText']) && $statuspage['statuspage']['showAcknowledgements'] && $item['cumulatedColorId'] > 0): ?>
                                             <div class="col-12 ">
                                                 <div class="row">
                                                     <div class="col-12 ">
@@ -100,53 +100,19 @@
                                                                 <?= h($item['acknowledgedProblemsText']); ?>
                                                             </div>
                                                         <?php endif; ?>
-                                                        <?php if (!empty($item['acknowledgeComment']) && in_array($item['type'], ['host','service'])): ?>
-                                                            <div>
-                                                                <?php echo __('Comment'); ?>:
-                                                                <?= h($item['acknowledgeComment']); ?>
-                                                            </div>
-                                                        <?php endif; ?>
-
-                                                        <?php if (!empty($item['serviceAcknowledgedProblemsText'])): ?>
-                                                            <div>
-                                                                <i class="far fa-user"></i>
-                                                                <?= h($item['serviceAcknowledgedProblemsText']); ?>
-                                                            </div>
+                                                        <?php if (!empty($item['acknowledgeComment'])): ?>
+                                                        <?php foreach ($item['acknowledgeComment'] as $comment): ?>
+                                                                <div class="text-truncate">
+                                                                    <?php echo __('Comment'); ?>:  <?= h($comment); ?>
+                                                                </div>
+                                                        <?php endforeach; ?>
                                                         <?php endif; ?>
 
                                                         <!-- Handle acknowledgement comments -->
-                                                        <!-- start handle downtime summary -->
-                                                        <?php if ( !empty($item['downtimeSummary']) && $statuspage['statuspage']['showDowntimes']): ?>
-                                                           <div>
-                                                                <i class="fa fa-power-off"></i>
-                                                                <?= h($item['downtimeSummary']); ?>
-                                                           </div>
-                                                        <?php endif; ?>
-                                                        <?php if ( !empty($item['serviceDowntimeSummary']) && $statuspage['statuspage']['showDowntimes']): ?>
-                                                            <div>
-                                                                <i class="fa fa-power-off"></i>
-                                                                <?= h($item['serviceDowntimeSummary']); ?>
-                                                            </div>
-                                                        <?php endif; ?>
-
-                                                        <?php if( !empty($item['plannedDowntimeSummary'] ) && $statuspage['statuspage']['showDowntimes'] ): ?>
-                                                            <div>
-                                                                <i class="fa fa-power-off"></i>
-                                                                <?= h($item['plannedDowntimeSummary']); ?>
-                                                            </div>
-                                                        <?php endif; ?>
-                                                        <?php if( !empty($item['servicePlannedDowntimeSummary'] ) && $statuspage['statuspage']['showDowntimes'] ): ?>
-                                                            <div>
-                                                                <i class="fa fa-power-off"></i>
-                                                                <?= h($item['servicePlannedDowntimeSummary']); ?>
-                                                            </div>
-                                                        <?php endif; ?>
-                                                        <!-- end handle downtime summary -->
                                                     </div>
                                                 </div>
                                             </div>
                                         <?php endif; ?>
-
 
                                         <!-- handle current downtime comments -->
                                         <?php if ($statuspage['statuspage']['showDowntimes']): ?>
@@ -182,7 +148,7 @@
                                             <!-- end of current downtimes -->
 
                                             <!-- handle plant downtime comments -->
-                                            <?php if (!empty($item['plannedDowntimeData'])): ?>
+                                            <?php if (!empty($item['plannedDowntimeData'])  && count($item['plannedDowntimeData']) > 0): ?>
                                                 <div class="col-12 ">
                                                     <div class="row">
                                                         <div class="col-12 ">
@@ -227,10 +193,6 @@
                     <?php endforeach; ?>
                 </div>
             </div>
-
-
         </div>
-
-
     </div>
 </div>

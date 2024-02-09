@@ -164,39 +164,21 @@
                                                     <i class="far fa-user"></i>
                                                     {{item.acknowledgedProblemsText}}
                                                 </div>
-                                                <div ng-if="item.acknowledgeComment && Statuspage.statuspage.showAcknowledgements">
-                                                    <div ng-if="item.type === 'host' || item.type === 'service'" >
-                                                        <?php echo __('Comment'); ?>: {{item.acknowledgeComment}}
-                                                    </div>
-                                                </div>
-                                                <div ng-if="item.serviceAcknowledgedProblemsText && item.cumulatedColorId > 0 && Statuspage.statuspage.showAcknowledgements">
-                                                    <i class="far fa-user"></i>
-                                                        {{item.serviceAcknowledgedProblemsText}}
+                                                <div ng-if="item.acknowledgeComment">
+                                                   <!-- <div ng-if="Statuspage.statuspage.showAcknowledgementComments">-->
+                                                        <div ng-repeat="comment in item.acknowledgeComment track by $index">
+                                                            <div class="text-truncate">
+                                                                <?php echo __('Comment'); ?>:  {{comment}}
+                                                            </div>
+                                                        </div>
+                                                   <!-- </div>-->
                                                 </div>
                                                 <!-- end of acknowledgements -->
-                                                <!-- handle downtime summary -->
-                                                <div ng-if="item.downtimeSummary && Statuspage.statuspage.showDowntimes">
-                                                    <i class="fa fa-power-off"></i>
-                                                    {{item.downtimeSummary}}
-                                                </div>
-                                                <div ng-if="item.serviceDowntimeSummary && Statuspage.statuspage.showDowntimes">
-                                                <i class="fa fa-power-off"></i>
-                                                {{item.serviceDowntimeSummary}}
-                                            </div>
-                                                <div ng-if="item.plannedDowntimeSummary && Statuspage.statuspage.showDowntimes">
-                                                    <i class="fa fa-power-off"></i>
-                                                    {{item.plannedDowntimeSummary}}
-                                                </div>
-                                                <div ng-if="item.servicePlannedDowntimeSummary && Statuspage.statuspage.showDowntimes">
-                                                    <i class="fa fa-power-off"></i>
-                                                    {{item.servicePlannedDowntimeSummary}}
-                                                </div>
-                                                <!-- end handle downtime summary -->
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- handle current downtime comments -->
+                                    <!-- handle current downtimes -->
                                     <div class="col-12 text-truncate" ng-if="item.downtimeData.length > 0 && Statuspage.statuspage.showDowntimes">
                                         <div class="row">
                                             <div class="col-12 text-truncate">
@@ -246,7 +228,6 @@
                                     </div>
                                     <!-- end of planed downtimes -->
 
-
                                 </div>
                             </div>
 
@@ -259,8 +240,6 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 </div>

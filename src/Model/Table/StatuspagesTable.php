@@ -606,7 +606,7 @@ class StatuspagesTable extends Table {
                     'cumulatedColor'           => 'not-monitored', // For texts, backgrounds and shadows
                     'isAcknowledge'            => false,
                     //'acknowledgedProblemsText' => __('State is not acknowledged'),
-                    'acknowledgeComment'       => null,
+                    'acknowledgeComment'       => [],
                     'scheduledStartTime'       => null,
                     'scheduledEndTime'         => null,
                     'comment'                  => null,
@@ -647,11 +647,6 @@ class StatuspagesTable extends Table {
                 if (in_array($objectType, ['hosts', 'hostgroups'], true)) {
                     if($showDowntimes) {
                         if (count($objectGroup['state_summary']['hosts']['planned_downtime_details']) > 0) {
-                            //hostgroups only show summary
-                            if($objectType === 'hostgroups' ){
-                                $count = count($objectGroup['state_summary']['hosts']['planned_downtime_details']);
-                                $item['plannedDowntimeSummary'] = __('{0} downtimes planned for next 10 days', $count);
-                            } else {
                                 $plannedDowntimeDataHosts = [];
                                 foreach ($objectGroup['state_summary']['hosts']['planned_downtime_details'] as $planned) {
                                     $downtimePlannedDataHost = [];
@@ -666,16 +661,10 @@ class StatuspagesTable extends Table {
                                     $plannedDowntimeDataHosts,
                                     '{n}.scheduledStartTimestamp', 'asc'
                                 );
-
                                 $item['plannedDowntimeData'] = $plannedDowntimeDataHosts;
-                            }
                         }
 
                         if (count($objectGroup['state_summary']['hosts']['downtime_details']) > 0 ) {
-                            if ($objectType === 'hostgroups') {
-                                $count = count($objectGroup['state_summary']['hosts']['downtime_details']);
-                                $item['downtimeSummary'] = __('{0} current downtimes', $count);
-                            } else {
                                 $downtimeDataHosts = [];
                                 foreach ($objectGroup['state_summary']['hosts']['downtime_details'] as $currentDowntime) {
                                     $downtimeDataHost = [];
@@ -692,25 +681,25 @@ class StatuspagesTable extends Table {
                                 );
                                 $item['isInDowntime'] = true;
                                 $item['downtimeData'] = $downtimeDataHosts;
-                            }
                         }
                     }
                     if($showAcknowledgements) {
-                        if($objectType === 'hosts') {
-                            if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0 && $showAcknowledgements) {
-                                $item['isAcknowledge'] = true;
-                                $item['acknowledgedProblemsText'] = __('State is acknowledged');
-                                $item['acknowledgeComment'] = ($showAcknowledgementComments)
-                                    ? $objectGroup['state_summary']['hosts']['acknowledgement_details'][0]['comment_data'] : __('Investigating issue');
-                            }
-                        } else {
+                            if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0) {
+                                if ($objectType === 'hosts') {
+                                    $item['isAcknowledge'] = true;
+                                }
+                                foreach ($objectGroup['state_summary']['hosts']['acknowledgement_details'] as $currentAcknowledgement) {
+                                    // $item['acknowledgedProblemsText'] = __('State is acknowledged');
+                                    $item['acknowledgeComment'][] = ($showAcknowledgementComments)
+                                        ? $currentAcknowledgement['comment_data'] : __('Investigating issue');
+                                }
 
-                            $problems = $objectGroup['state_summary']['hosts']['problems'];
-                            if ($problems > 0) {
-                                $problemsAcknowledged = $objectGroup['state_summary']['hosts']['acknowledgements'];
-                                $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
+                                $problems = $objectGroup['state_summary']['hosts']['problems'];
+                                if ($problems > 0) {
+                                    $problemsAcknowledged = $objectGroup['state_summary']['hosts']['acknowledgements'];
+                                    $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $problemsAcknowledged, $problems);
+                                }
                             }
-                        }
                     }
 
                 }
@@ -740,39 +729,74 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColorId'] = $cumulatedStateId;
                         $item['cumulatedColor'] = $stateColors['services'][$cumulatedStateId];
                         if ($showAcknowledgements) {
-                            if (in_array($objectType, ['services'])) {
-                                if ($objectGroup['state_summary']['services']['acknowledgements'] > 0 && $showAcknowledgements) {
-                                    $item['isAcknowledge'] = true;
-                                    $item['acknowledgedProblemsText'] = __('State is acknowledged');
-                                    $item['acknowledgeComment'] = ($showAcknowledgementComments)
-                                        ? $objectGroup['state_summary']['services']['acknowledgement_details'][0]['comment_data'] : __('Investigating issue');
-                                }
-                            }
-                            if(in_array($objectType, ['servicegroups', 'hostgroups', 'hosts'])) {
+                            if(in_array($objectType, ['hostgroups', 'hosts'])) {
                                 //eg. host is up, but serviceproblems
-                                $problems = $objectGroup['state_summary']['services']['problems'];
+                                $serviceProblems = $objectGroup['state_summary']['services']['problems'];
+                                $hostProblems = $objectGroup['state_summary']['hosts']['problems'];
+                                $problems = $serviceProblems + $hostProblems;
                                 if ($problems > 0) {
-                                    $problemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
-                                    $item['serviceAcknowledgedProblemsText'] = __('{0} of {1} service problems acknowledged', $problemsAcknowledged, $problems);
+                                    $serviceProblemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
+                                    $hostProblemsAcknowledged = $objectGroup['state_summary']['hosts']['acknowledgements'];
+                                    $acknwledged = $serviceProblemsAcknowledged + $hostProblemsAcknowledged;
+                                    $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $acknwledged, $problems);
+                                }
+
+                                if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0
+                                || $objectGroup['state_summary']['services']['acknowledgements'] > 0) {
+                                    foreach ($objectGroup['state_summary']['services']['acknowledgement_details'] as $currentAcknowledgement) {
+                                        // $item['acknowledgedProblemsText'] = __('State is acknowledged');
+                                        $item['acknowledgeComment'][] = ($showAcknowledgementComments)
+                                            ? $currentAcknowledgement['comment_data'] : __('Investigating issue');
+                                    }
                                 }
                             }
+                            if(in_array($objectType, ['servicegroups', 'services'])) {
+                                //eg. host is up, but serviceproblems
+                                $serviceProblems = $objectGroup['state_summary']['services']['problems'];
+                                if ($serviceProblems  > 0) {
+                                    $serviceProblemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
+                                    $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $serviceProblemsAcknowledged, $serviceProblems );
+                                }
+
+                                if ($objectGroup['state_summary']['services']['acknowledgements'] > 0) {
+                                    foreach ($objectGroup['state_summary']['services']['acknowledgement_details'] as $currentAcknowledgement) {
+                                        // $item['acknowledgedProblemsText'] = __('State is acknowledged');
+                                        $item['acknowledgeComment'][] = ($showAcknowledgementComments)
+                                            ? $currentAcknowledgement['comment_data'] : __('Investigating issue');
+                                    }
+                                }
+                            }
+
                         }
                     }
-                    //only type services shows detailed service downtimes,
-                    // type hosts shows only host downtimes,
-                    //type hostgroups show only host owntime summarry
-                    // type servicegroup groups show only service dontime summary
+
                     if($showDowntimes) {
-                        if ($objectType === 'services') {
-                            if ($objectGroup['state_summary']['services']['downtimes'] === 1) {
-                                $downtimeDataService = [];
-                                $downtimeDataService['scheduledStartTimestamp'] = $objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'];
-                                $downtimeDataService['scheduledStartTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledStartTime'] ?? 0);
-                                $downtimeDataService['scheduledEndTime'] = $UserTime->format($objectGroup['state_summary']['services']['downtime_details'][0]['scheduledEndTime'] ?? 0);
-                                $downtimeDataService['comment'] = ($showDowntimeComments)
-                                    ? $objectGroup['state_summary']['services']['downtime_details'][0]['commentData'] : __('Work in progress');
-                                $item['isInDowntime'] = true;
-                                $item['downtimeData'][] = $downtimeDataService;
+                        if (in_array($objectType,['services', 'hosts', 'servicegroups', 'hostgroups'])) {
+                            if ($objectGroup['state_summary']['services']['downtimes'] > 0 ) {
+                                $downtimeDataServices = [];
+                                foreach ($objectGroup['state_summary']['services']['downtime_details'] as $downtime) {
+                                    $downtimeDataService = [];
+                                    $downtimeDataService['scheduledStartTimestamp'] = $downtime['scheduledStartTime'];
+                                    $downtimeDataService['scheduledStartTime'] = $UserTime->format($downtime['scheduledStartTime'] ?? 0);
+                                    $downtimeDataService['scheduledEndTime'] = $UserTime->format($downtime['scheduledEndTime'] ?? 0);
+                                    $downtimeDataService['comment'] = ($showDowntimeComments)
+                                        ? $downtime['commentData'] : __('Work in progress');
+                                    if ($objectType === 'services') {
+                                        $item['isInDowntime'] = true;
+                                    }
+                                    $downtimeDataServices[] = $downtimeDataService;
+                                }
+                                if (!empty($item['downtimeData'])) {
+                                    $downtimeDataServices = array_merge(
+                                        $downtimeDataServices,
+                                        $item['downtimeData']
+                                    );
+                                }
+                                $downtimeDataServices = Hash::sort(
+                                    $downtimeDataServices,
+                                    '{n}.scheduledStartTimestamp', 'asc'
+                                );
+                                $item['downtimeData'] = $downtimeDataServices;
                             }
                             if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
                                 $plannedDowntimeDataServices = [];
@@ -798,19 +822,8 @@ class StatuspagesTable extends Table {
                                 $item['plannedDowntimeData'] = $plannedDowntimeDataServices;
                             }
                         }
-                        if (in_array($objectType, ['servicegroups', 'hostgroups', 'hosts']) && $showDowntimes) {
-                            if (count($objectGroup['state_summary']['services']['downtime_details']) > 0) {
-                                $count = count($objectGroup['state_summary']['services']['downtime_details']);
-                                $item['serviceDowntimeSummary'] = __('{0} service(s) in current downtime.', $count);
-                            }
-
-                            if (count($objectGroup['state_summary']['services']['planned_downtime_details']) > 0) {
-                                $count = count($objectGroup['state_summary']['services']['planned_downtime_details']);
-                                $item['servicePlannedDowntimeSummary'] = __('{0} service downtimes planned for next 10 days', $count);
-                            }
-                        }
                     }
-               // }
+
                 $items[] = $item;
             }
         }
