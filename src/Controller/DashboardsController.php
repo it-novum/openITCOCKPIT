@@ -29,7 +29,6 @@ namespace App\Controller;
 
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Entity\DashboardTab;
-use App\Model\Entity\Usergroup;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
@@ -37,7 +36,6 @@ use App\Model\Table\ParenthostsTable;
 use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
-use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Http\Exception\ForbiddenException;
@@ -45,7 +43,6 @@ use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Locator\LocatorAwareTrait;
-use Cake\ORM\Locator\TableLocator;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\CalendarTime;
@@ -1898,47 +1895,20 @@ class DashboardsController extends AppController {
         if (!$this->isApiRequest()) {
             return;
         }
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         if ($this->request->is('get')) {
 
-            /** @var DashboardTabsTable $DashboardTabsTable */
-            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-
             // Fetch them all (not allocated ones, tho...)
-            $dashboardTabs = $DashboardTabsTable->find()
-                ->where(['DashboardTabs.id' => $id])
-                ->contain('Usergroups')
-                ->contain('AllocatedUsers')
-                ->contain('Containers')
-                ->disableHydration()
-                ->toArray();
+            $dashboardTab = $DashboardTabsTable->getDashboardTabForAllocate($id);
 
-            // Clean up the mess surrounding the allocation info.
-            foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
-                // Condense the users
-                $dashboardTabs[$dashboardTabIndex]['allocated_users_names'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.firstname');
-                $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
-                $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
-                // Condense the usergroups
-                $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
-                $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
-                $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
-                // Is it pinned?
-                $dashboardTabs[$dashboardTabIndex]['isPinned'] = (bool)(($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
-            }
-
-            $this->set('dashboardTabs', $dashboardTabs);
+            $this->set('dashboardTab', $dashboardTab);
             $this->set('userId', (new User($this->getUser()))->getId());
-            $this->viewBuilder()->setOption('serialize', ['dashboardTabs', 'userId']);
-
+            $this->viewBuilder()->setOption('serialize', ['dashboardTab', 'userId']);
             return;
         }
         if ($this->request->is('post')) {
             $dashboardTab = $this->request->getData('DashboardTab');
-
-            /** @var DashboardTabsTable $DashboardTabsTable */
-            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-
-
             // Wipe behind me to ensure users with clones keep them and can work with them still.
             $DashboardTabsTable->cleanup(
                 (int)$dashboardTab['id'],
@@ -1960,24 +1930,55 @@ class DashboardsController extends AppController {
      * @return void
      */
     public function deallocate($id = null): void {
-        $id = (int)$id;
-        if ($id <= 0) {
+
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        if (!$DashboardTabsTable->existsById($id)) {
+            throw new NotFoundException(__('Dashboard tab not found'));
+        }
+
+        $Entity = $DashboardTabsTable->get($id);
+        if (!$this->allowedByContainerId($Entity->get('container_id'))) {
+            $this->render403();
             return;
         }
 
         $dashboardTab = [
             'allocated_users' => ['_ids' => []],
             'usergroups'      => ['_ids' => []],
+            'flags'         => DashboardTab::FLAG_BLANK
         ];
 
-        /** @var DashboardTabsTable $DashboardTabsTable */
-        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-
         // Fetch from DB
-        $Entity = $DashboardTabsTable->get($id);
         $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
         // Save
         $DashboardTabsTable->save($Entity);
+        #
+        if ($Entity->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->serializeCake4ErrorMessage($Entity);
+            return;
+        } else {
+            /*
+             * Soft delete if needed
+            $DashboardTabsTable->updateAll([
+                'source_tab_id' => null,
+                'flags'         => DashboardTab::FLAG_BLANK
+            ], [
+                'source_tab_id' => $id
+            ]);
+            */
+
+            //No errors
+            $DashboardTabsTable->deleteAll([
+                'source_tab_id' => $id
+            ]);
+        }
     }
 
     /**
@@ -1994,23 +1995,7 @@ class DashboardsController extends AppController {
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         $DashboardsTabsFilter = new DashboardTabsFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $DashboardsTabsFilter->getPage());
-
         $dashboardTabs = $DashboardTabsTable->getDashboardTabsIndex($DashboardsTabsFilter, $PaginateOMat);
-
-        // Clean up the mess surrounding the allocation info.
-        foreach ($dashboardTabs as $dashboardTabIndex => $dashboardTab) {
-            // Condense the users
-            $dashboardTabs[$dashboardTabIndex]['allocated_users_names'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.firstname');
-            $dashboardTabs[$dashboardTabIndex]['allocated_users_count'] = count($dashboardTabs[$dashboardTabIndex]['allocated_users']);
-            $dashboardTabs[$dashboardTabIndex]['allocated_users'] = Hash::extract($dashboardTab['allocated_users'] ?? [], '{n}.id');
-            // Condense the usergroups
-            $dashboardTabs[$dashboardTabIndex]['usergroups_names'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.name');
-            $dashboardTabs[$dashboardTabIndex]['usergroups_count'] = count($dashboardTabs[$dashboardTabIndex]['usergroups']);
-            $dashboardTabs[$dashboardTabIndex]['usergroups'] = Hash::extract($dashboardTab['usergroups'] ?? [], '{n}.id');
-            // Is it pinned?
-            $dashboardTabs[$dashboardTabIndex]['isPinned'] = (bool)(($dashboardTabs[$dashboardTabIndex]['flags'] & DashboardTab::FLAG_PINNED) === DashboardTab::FLAG_PINNED);
-        }
-
         $this->set('dashboardTabs', $dashboardTabs);
         $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
 

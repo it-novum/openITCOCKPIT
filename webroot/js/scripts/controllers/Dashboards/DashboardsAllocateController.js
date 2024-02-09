@@ -1,18 +1,15 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsAllocateController', function($scope, $http, $stateParams, RedirectService){
         $scope.flags = {
-            'isAllocated': 1,
-            'isPinned': 2,
-        }
-
-        // I am initing the view rn.
-        $scope.allocationInitializing = true;
+            isAllocated: 1 << 0,
+            isPinned: 1 << 1
+        };
 
         // I am the ID that will be allocated.
         $scope.id = $stateParams.id;
 
         // I am the array of available dashboardTabs.
-        $scope.dashboardTabs = [];
+        $scope.dashboardTab = [];
 
         // I am the list of containers.
         $scope.containers = [];
@@ -30,28 +27,24 @@ angular.module('openITCOCKPIT')
         $scope.isPinned = true;
 
         // I am the object that is being transported to JSON API to modify the DashboardTab allocation.
-        $scope.allocation = {
-            DashboardTab: {
-                id: 0,
-                usergroups: {
-                    _ids: []
-                },
-                allocated_users: {
-                    _ids: []
-                },
-                flags: 0,
-                container_id: 0
-            }
+        $scope.dashboard = {
+            usergroups: {
+                _ids: []
+            },
+            allocated_users: {
+                _ids: []
+            },
+            flags: $scope.flags.isPinned,
+            container_id: 0
         };
+        $scope.init = true;
 
         // I will prepeare the view.
         $scope.load = function(){
             // Fetch Containers.
             $scope.loadContainer();
-
             // Fetch UserGroups.
             $scope.loadUsergroups();
-
             // Fetch Allocation Setup.
             $scope.fetchAllocation($scope.id);
         }
@@ -59,45 +52,29 @@ angular.module('openITCOCKPIT')
         // I will load the current allocation status.
         $scope.fetchAllocation = function(tabId){
             // Fetch the desired Dashboard.
-            $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result){
-                $scope.dashboard = result.data.dashboardTabs[0];
-                $scope.allocation.DashboardTab.id = result.data.dashboardTabs[0].id;
-                $scope.allocation.DashboardTab.container_id = result.data.dashboardTabs[0].container_id;
-                $scope.allocation.DashboardTab.usergroups._ids = result.data.dashboardTabs[0].usergroups;
-                $scope.allocation.DashboardTab.allocated_users._ids = result.data.dashboardTabs[0].allocated_users;
-                $scope.allocation.DashboardTab.flags = result.data.dashboardTabs[0].flags;
+            $http.get("/dashboards/allocate/" + $scope.id + ".json?angular=true").then(function(result){
+                $scope.dashboard = result.data.dashboardTab;
                 $scope.userId = result.data.userId;
-                $scope.isPinned = ($scope.allocation.DashboardTab.flags & $scope.flags.isPinned) === $scope.flags.isPinned;
-
-                // I'm done.
-                $scope.allocationInitializing = false;
+                $scope.isPinned = $scope.dashboard.flags & $scope.flags.isPinned ? true : false;
+                $scope.init = false;
             });
         }
 
         // I will load all users.
         $scope.loadUsers = function(){
-            if($scope.allocation.DashboardTab.container_id === 0){
+            if($scope.dashboard.container_id === 0){
                 return;
             }
             $http.get("/users/loadUsersByContainerId.json", {
                 params: {
                     'angular': true,
-                    'containerId': $scope.allocation.DashboardTab.container_id
+                    'containerId': $scope.dashboard.container_id
                 }
             }).then(function(result){
-                $scope.users = [];
-
-                for(let index in result.data.users){
-                    let myUser = result.data.users[index];
-                    if($scope.dashboard.user_id !== myUser.key){
-                        $scope.users.push(myUser);
-                    }
-                }
-
-                // Reset the selected users after changing the container.
-                if($scope.allocationInitializing){
-                    $scope.allocation.DashboardTab.allocated_users._ids = [];
-                }
+                $scope.users = result.data.users;
+                $scope.users = _.filter($scope.users, function(user){
+                    return user.key !== $scope.dashboard.user_id;
+                });
             });
         };
 
@@ -126,8 +103,11 @@ angular.module('openITCOCKPIT')
         };
 
         // If the containerId is changed, reload the users!
-        $scope.$watch('allocation.DashboardTab.container_id', function(){
-            if($scope.allocation.DashboardTab.container_id > 0){
+        $scope.$watch('dashboard.container_id', function(){
+            if($scope.init){
+                return;
+            }
+            if($scope.dashboard.container_id > 0){
                 // Load new users from the container.
                 $scope.loadUsers();
             }
@@ -136,15 +116,21 @@ angular.module('openITCOCKPIT')
         // If the [pinned] flag is switched, pass it to the flag int.
         $scope.$watch('isPinned', function(val){
             if(val){
-                $scope.allocation.DashboardTab.flags |= $scope.flags.isPinned;
+                $scope.dashboard.flags |= $scope.flags.isPinned;
                 return;
             }
-            $scope.allocation.DashboardTab.flags ^= $scope.flags.isPinned;
+            $scope.dashboard.flags ^= $scope.flags.isPinned;
         });
 
         // I will store the allocation details.
         $scope.saveAllocation = function(){
-            $http.post("/dashboards/allocate.json?angular=true", $scope.allocation).then(function(){
+            $scope.dashboard.allocated_users._ids = _.intersection(
+                _.map($scope.users, 'key'),
+                $scope.dashboard.allocated_users._ids
+            );
+            $http.post("/dashboards/allocate.json?angular=true",
+                {'DashboardTab': $scope.dashboard}
+            ).then(function(){
                 genericSuccess();
                 RedirectService.redirectWithFallback('DashboardAllocation');
             }, function errorCallback(result){

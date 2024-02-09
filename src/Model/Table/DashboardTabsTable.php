@@ -129,10 +129,26 @@ class DashboardTabsTable extends Table {
                 ])
 
             ])
-            ->where(['source_tab_id IS' => null])
-            ->contain('Usergroups')
-            ->contain('AllocatedUsers')
+            ->contain([
+                'Usergroups'     => function (Query $query) {
+                    return $query->select([
+                        'Usergroups.id',
+                        'Usergroups.name'
+                    ]);
+                },
+                'AllocatedUsers' => function (Query $query) {
+                    return $query->select([
+                        'AllocatedUsers.id',
+                        'full_name' => $query->func()->concat([
+                            'AllocatedUsers.firstname' => 'literal',
+                            ' ',
+                            'AllocatedUsers.lastname'  => 'literal'
+                        ])
+                    ]);
+                },
+            ])
             ->contain('Users')
+            ->whereNull('source_tab_id')
             ->disableHydration();
         $where = $DashboardTabsFilter->indexFilter();
         if (isset($where['full_name LIKE'])) {
@@ -147,8 +163,7 @@ class DashboardTabsTable extends Table {
                 $DashboardTabsFilter->getOrderForPaginator('DashboardTabs.name', 'asc'),
                 ['DashboardTabs.name' => 'asc']
             )
-        )
-            ->where($where);
+        )->where($where);
 
         if ($PaginateOMat === null) {
             $result = $query->toArray();
@@ -717,8 +732,7 @@ class DashboardTabsTable extends Table {
         foreach ($this->findAllocations($dashboardTabId, $cleanUserIds) as $CopyEntity) {
             $copyPatch = [
                 'flags'         => $CopyEntity->flags & DashboardTab::FLAG_BLANK,
-                'source_tab_id' => null,
-                'locked'        => 0
+                'source_tab_id' => null
             ];
             $CopyEntity = $this->patchEntity($CopyEntity, $copyPatch);
             $this->save($CopyEntity);
@@ -800,4 +814,38 @@ class DashboardTabsTable extends Table {
         return array_unique($cleanUserIds);
     }
 
+    public function getDashboardTabForAllocate($id) {
+        $query = $this->find();
+        $query->select([
+            'id',
+            'name',
+            'flags',
+            'container_id',
+            'user_id',
+        ])->contain([
+            'Usergroups'     => function (Query $query) {
+                return $query->select([
+                    'Usergroups.id'
+                ]);
+            },
+            'AllocatedUsers' => function (Query $query) {
+                return $query->select([
+                    'AllocatedUsers.id'
+                ]);
+            },
+            'Users'
+        ])->where(['DashboardTabs.id' => $id])
+            ->disableHydration();
+
+        $dashboard = $query->firstOrFail();
+
+        $dashboard['allocated_users'] = [
+            '_ids' => Hash::extract($dashboard['allocated_users'], '{n}.id')
+        ];
+        $dashboard['usergroups'] = [
+            '_ids' => Hash::extract($dashboard['usergroups'], '{n}.id')
+        ];
+
+        return $dashboard;
+    }
 }

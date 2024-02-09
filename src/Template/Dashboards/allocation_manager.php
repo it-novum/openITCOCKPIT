@@ -22,6 +22,7 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use App\Model\Entity\DashboardTab;
 
 ?>
 <ol class="breadcrumb page-breadcrumb">
@@ -32,7 +33,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="UsersIndex">
-            <i class="fa fa-table"></i> <?php echo __('Users'); ?>
+            <i class="fa fa-user"></i> <?php echo __('Users'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -59,7 +60,6 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-
                     <!-- Start Filter -->
                     <div class="list-filter card margin-bottom-10" ng-show="showFilter">
                         <div class="card-header">
@@ -88,7 +88,7 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by full name'); ?>"
+                                                   placeholder="<?php echo __('Filter by owner'); ?>"
                                                    ng-model="filter.full_name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
@@ -118,17 +118,17 @@
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('full_name')">
                                     <i class="fa" ng-class="getSortClass('full_name')"></i>
-                                    <?php echo __('Full Name'); ?>
+                                    <?php echo __('Owner'); ?>
                                 </th>
                                 <th class="no-sort">
                                     <i class="fa"></i>
-                                    <?php echo __('Usergroups'); ?>
+                                    <?php echo __('User roles'); ?>
                                 </th>
                                 <th class="no-sort">
                                     <i class="fa"></i>
                                     <?php echo __('Users'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Flags')">
+                                <th class="no-sort col-1" ng-click="orderBy('Flags')">
                                     <i class="fa" ng-class="getSortClass('Flags')"></i>
                                     <?php echo __('Pinned'); ?>
                                 </th>
@@ -146,40 +146,56 @@
                                 <td>{{dashboardTab.name}}</td>
                                 <td>{{dashboardTab.full_name}}</td>
                                 <td>
-                                    {{dashboardTab.usergroups_count}}
-                                    <span class="badge badge-primary" ng-repeat="name in dashboardTab.usergroups_names">
-                                            {{name}}
+                                    {{dashboardTab.usergroups.length}}
+                                    <span class="badge badge-primary mx-1"
+                                          ng-repeat="usergroup in dashboardTab.usergroups">
+                                            {{usergroup.name}}
                                         </span>
                                 </td>
                                 <td>
-                                    {{dashboardTab.allocated_users_count}}
-                                    <span class="badge badge-primary"
-                                          ng-repeat="name in dashboardTab.allocated_users_names">
-                                            {{name}}
+                                    {{dashboardTab.allocated_users.length}}
+                                    <span class="badge badge-primary mx-1"
+                                          ng-repeat="allocated_user in dashboardTab.allocated_users">
+                                            {{allocated_user.full_name}}
                                         </span>
                                 </td>
-                                <td class="width-50">
-                                    <i class="fa fa-lock" ng-show="dashboardTab.isPinned"></i>
+                                <td class="text-center">
+                                    <i class="fa fa-lock"
+                                       ng-show="hasFlag(dashboardTab.flags, <?= DashboardTab::FLAG_PINNED; ?>)"></i>
                                 </td>
 
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">
-                                        <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"
-                                           class="btn btn-default btn-lower-padding">
-                                            <i class="fa fa-cog"></i>
-                                        </a>
+                                        <?php if ($this->Acl->hasPermission('allocate', 'dashboards')): ?>
+                                            <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default disabled btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                        <?php endif; ?>
                                         <button type="button"
                                                 class="btn btn-default dropdown-toggle btn-lower-padding"
                                                 data-toggle="dropdown">
                                             <i class="caret"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
+                                            <?php if ($this->Acl->hasPermission('allocate', 'dashboards')): ?>
+                                            <a ui-sref="DashboardsAllocate({id: dashboardTab.id})"
+                                               class="dropdown-item">
+                                                <i class="fa fa-cog"></i>
+                                                <?php echo __('Edit'); ?>
+                                            </a>
                                             <a ng-click="confirmDelete(getObjectForDelete(dashboardTab))"
                                                class="dropdown-item txt-color-red">
                                                 <i class="fa fa-trash"></i>
-                                                <?php echo __('Delete'); ?>
+                                                <?php echo __('Delete all allocations'); ?>
                                             </a>
                                         </div>
+                                    <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
@@ -209,7 +225,7 @@
                             <div class="col-xs-12 col-md-2 txt-color-red">
                                 <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
                                     <i class="fas fa-trash"></i>
-                                    <?php echo __('Remove Allocations'); ?>
+                                    <?php echo __('Delete allocations'); ?>
                                 </span>
                             </div>
                         </div>
