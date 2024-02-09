@@ -54,6 +54,8 @@ use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
 use MapModule\Model\Table\MapgadgetsTable;
 use MapModule\Model\Table\MapiconsTable;
 use MapModule\Model\Table\MapitemsTable;
@@ -259,6 +261,7 @@ class MapeditorsController extends AppController {
             case 'service':
                 $includeServiceOutput = $includeServiceOutput === 'true';
                 $service = $ServicesTable->getServiceByIdWithHostAndServicetemplate($objectId);
+                $host = $service->host;
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
@@ -448,6 +451,9 @@ class MapeditorsController extends AppController {
                 throw new RuntimeException('Unknown map item type');
                 break;
         }
+        $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
+        $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
+        $properties['Perfdata']["'value'"]['datasource']['setup'] = PerformanceDataSetup::fromNagios($performance_data[0]['datasource'])->toArray();
 
         return [
             'type'      => $type,
@@ -539,11 +545,11 @@ class MapeditorsController extends AppController {
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         $MY_RIGHTS = $this->hasRootPrivileges ? [] : $this->MY_RIGHTS;
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         switch ($this->request->getQuery('type')) {
             case 'host':
-                /** @var HostsTable $HostsTable */
-                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
                 $host = $HostsTable->getHostsWithServicesByIdsForMapeditor($objectId, $MY_RIGHTS, true);
 
@@ -570,6 +576,7 @@ class MapeditorsController extends AppController {
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
                 $service = $ServicesTable->getServiceById($objectId)->toArray();
+                $host = $HostsTable->getHostById($service['host_id']);
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {

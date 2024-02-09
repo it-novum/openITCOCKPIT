@@ -60,7 +60,94 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                 $scope.stop();
             });
 
+
+            $scope.getThresholdAreas = function(setup){
+                var thresholdAreas = [];
+                switch(setup.scale.type){
+                    case "W<O":
+                        thresholdAreas = [
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.scale.max, color: '#449D44'}
+                        ];
+                        break;
+                    case "C<W<O":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#C9302C'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.scale.max, color: '#449D44'}
+                        ];
+                        break;
+                    case "O<W":
+                        thresholdAreas = [
+                            {from: setup.scale.min, to: setup.warn.low,  color: '#449D44'},
+                            {from: setup.warn.low,  to: setup.scale.max, color: '#DF8F1D'}
+                        ];
+                        break;
+                    case "O<W<C":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.warn.low,  color: '#449D44'},
+                            {from: setup.warn.low,    to: setup.crit.low,  color: '#DF8F1D'},
+                            {from: setup.crit.low,    to: setup.scale.max, color: '#C9302C'}
+                        ];
+                        break;
+                    case "C<W<O<W<C":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#C9302C'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.warn.high, color: '#449D44'},
+                            {from: setup.warn.high,   to: setup.crit.high, color: '#DF8F1D'},
+                            {from: setup.crit.high,   to: setup.scale.max, color: '#C9302C'}
+                        ];
+                        break;
+                    case "O<W<C<W<O":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#449D44'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.warn.high, color: '#C9302C'},
+                            {from: setup.warn.high,   to: setup.crit.high, color: '#DF8F1D'},
+                            {from: setup.crit.high,   to: setup.scale.max, color: '#449D44'}
+                        ];
+                        console.error(setup);
+                        console.error(thresholdAreas);
+                        /*
+
+
+
+thresholdAreas.push({
+    below: 99999999999999999999999999,
+    color: GraphDefaultsObj.okFillColor
+});
+thresholdAreas.push({
+    below: setup.crit.high,
+    color: GraphDefaultsObj.warningFillColor
+});
+thresholdAreas.push({
+    below: setup.warn.high,
+    color: GraphDefaultsObj.criticalFillColor
+});
+thresholdAreas.push({
+    below: setup.warn.low,
+    color: GraphDefaultsObj.warningFillColor
+});
+thresholdAreas.push({
+    below: setup.crit.low,
+    color: GraphDefaultsObj.okFillColor
+});
+                         */
+                        break;
+                    case "O":
+                    default:
+                        break;
+                }
+                return thresholdAreas;
+            }
+
+
             var renderGauge = function(perfdataName, perfdata){
+                if(typeof perfdata === 'undefined'){
+                    return;
+                }
+
                 var units = perfdata.unit;
                 var label = perfdataName;
 
@@ -82,7 +169,6 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     }
                 }
 
-
                 if(isNaN(perfdata.warning) || isNaN(perfdata.critical)){
                     perfdata.warning = null;
                     perfdata.critical = null;
@@ -97,24 +183,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     perfdata.max = 100;
                 }
 
-                var thresholds = [];
-
-                if(perfdata.warning !== null && perfdata.critical !== null){
-                    thresholds = [
-                        {from: perfdata.min, to: perfdata.warning, color: '#449D44'},
-                        {from: perfdata.warning, to: perfdata.critical, color: '#DF8F1D'},
-                        {from: perfdata.critical, to: perfdata.max, color: '#C9302C'}
-                    ];
-
-                    //HDD usage for example
-                    if(perfdata.warning > perfdata.critical){
-                        thresholds = [
-                            {from: perfdata.min, to: perfdata.critical, color: '#C9302C'},
-                            {from: perfdata.critical, to: perfdata.warning, color: '#DF8F1D'},
-                            {from: perfdata.warning, to: perfdata.max, color: '#449D44'}
-                        ];
-                    }
-                }
+                var thresholds = $scope.getThresholdAreas(perfdata.datasource.setup);
 
                 var maxDecimalDigits = 3;
                 var currentValueAsString = perfdata.current.toString();
@@ -139,9 +208,9 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     renderTo: 'map-tacho-' + $scope.item.id,
                     height: $scope.height,
                     width: $scope.width,
-                    value: perfdata.current,
-                    minValue: perfdata.min,
-                    maxValue: perfdata.max,
+                    value: perfdata.datasource.setup.metric.value,
+                    minValue: perfdata.datasource.setup.scale.min,
+                    maxValue: perfdata.datasource.setup.scale.max,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -151,7 +220,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     highlights: thresholds,
                     animationDuration: 700,
                     animationRule: 'elastic',
-                    majorTicks: getMajorTicks(perfdata.max, 5)
+                    majorTicks: getMajorTicks(perfdata.datasource.setup.scale.min,perfdata.datasource.setup.scale.max, 5)
                 });
 
                 gauge.draw();
@@ -160,17 +229,18 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                 //gauge.value = 1337;
             };
 
-            var getMajorTicks = function(perfdataMax, numberOfTicks){
-                var tickSize = Math.ceil((perfdataMax / numberOfTicks));
-                if(perfdataMax < numberOfTicks){
-                    numberOfTicks = perfdataMax;
+            var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
+                numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
+                let tickSize = (perfdataMax - perfdataMin) / numberOfTicks,
+                    tickArr = [],
+                    myTick = perfdataMin;
+
+                for(let index = 0; index <= numberOfTicks; index++){
+                    tickArr.push(myTick);
+
+                    myTick += tickSize;
                 }
 
-                var tickArr = [];
-                for(var i = 0; i < numberOfTicks; i++){
-                    tickArr.push((i * tickSize));
-                }
-                tickArr.push(perfdataMax);
                 return tickArr;
             };
 
@@ -182,7 +252,8 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     critical: 90,
                     min: 0,
                     max: 100,
-                    unit: 'n/a'
+                    unit: 'n/a',
+                    setup: {}
                 };
                 $scope.perfdataName = 'No data available';
 

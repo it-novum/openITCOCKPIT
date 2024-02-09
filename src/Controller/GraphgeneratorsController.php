@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
 use App\Model\Table\ServicesTable;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -90,6 +91,7 @@ class GraphgeneratorsController extends AppController {
                 $performance_data = $PrometheusPerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug, $gauge);
             } else {
                 $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, $aggregation, $gauge, $scale, $forcedUnit, $debug);
+                $performance_data[0]['datasource']['setup'] = PerformanceDataSetup::fromNagios($performance_data[0]['datasource'])->toArray();
                 $this->set('performance_data', $performance_data);
             }
             $this->viewBuilder()->setOption('serialize', ['performance_data']);
@@ -104,6 +106,5 @@ class GraphgeneratorsController extends AppController {
 
         $this->set('performance_data', $performance_data);
         $this->viewBuilder()->setOption('serialize', ['performance_data']);
-
     }
 }

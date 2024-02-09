@@ -59,6 +59,61 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 $scope.stop();
             });
 
+
+            $scope.getThresholdAreas = function(setup){
+                var thresholdAreas = [];
+                switch(setup.scale.type){
+                    case "W<O":
+                        thresholdAreas = [
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.scale.max, color: '#449D44'}
+                        ];
+                        break;
+                    case "C<W<O":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#C9302C'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.scale.max, color: '#449D44'}
+                        ];
+                        break;
+                    case "O<W":
+                        thresholdAreas = [
+                            {from: setup.scale.min, to: setup.warn.low,  color: '#449D44'},
+                            {from: setup.warn.low,  to: setup.scale.max, color: '#DF8F1D'}
+                        ];
+                        break;
+                    case "O<W<C":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.warn.low,  color: '#449D44'},
+                            {from: setup.warn.low,    to: setup.crit.low,  color: '#DF8F1D'},
+                            {from: setup.crit.low,    to: setup.scale.max, color: '#C9302C'}
+                        ];
+                        break;
+                    case "C<W<O<W<C":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#C9302C'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.warn.high, color: '#449D44'},
+                            {from: setup.warn.high,   to: setup.crit.high, color: '#DF8F1D'},
+                            {from: setup.crit.high,   to: setup.scale.max, color: '#C9302C'}
+                        ];
+                        break;
+                    case "O<W<C<W<O":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#449D44'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.warn.high, color: '#C9302C'},
+                            {from: setup.warn.high,   to: setup.crit.high, color: '#DF8F1D'},
+                            {from: setup.crit.high,   to: setup.scale.max, color: '#449D44'}
+                        ];
+                        break;
+                    case "O":
+                    default:
+                        break;
+                }
+                return thresholdAreas;
+            }
+
             var renderGauge = function(perfdataName, perfdata){
                 var units = perfdata.unit;
                 var label = perfdataName;
@@ -96,24 +151,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     perfdata.max = 100;
                 }
 
-                var thresholds = [];
-
-                if(perfdata.warning !== null && perfdata.critical !== null){
-                    thresholds = [
-                        {from: perfdata.min, to: perfdata.warning, color: '#449D44'},
-                        {from: perfdata.warning, to: perfdata.critical, color: '#DF8F1D'},
-                        {from: perfdata.critical, to: perfdata.max, color: '#C9302C'}
-                    ];
-
-                    //HDD usage for example
-                    if(perfdata.warning > perfdata.critical){
-                        thresholds = [
-                            {from: perfdata.min, to: perfdata.critical, color: '#C9302C'},
-                            {from: perfdata.critical, to: perfdata.warning, color: '#DF8F1D'},
-                            {from: perfdata.warning, to: perfdata.max, color: '#449D44'}
-                        ];
-                    }
-                }
+                var thresholds = $scope.getThresholdAreas(perfdata.datasource.setup);
 
                 var maxDecimalDigits = 3;
                 var currentValueAsString = perfdata.current.toString();
@@ -138,9 +176,13 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     renderTo: 'map-temperature-' + $scope.item.id,
                     height: $scope.height,
                     width: $scope.width,
-                    value: perfdata.current,
-                    minValue: perfdata.min,
-                    maxValue: perfdata.max,
+                    value: perfdata.datasource.setup.metric.value,
+                    minValue: perfdata.datasource.setup.scale.min,
+                    maxValue: perfdata.datasource.setup.scale.max,
+                    from: perfdata.datasource.setup.scale.min,
+                    to: perfdata.datasource.setup.scale.max,
+                    min: perfdata.datasource.setup.scale.min,
+                    max: perfdata.datasource.setup.scale.max,
                     units: units,
                     strokeTicks: true,
                     title: label,
