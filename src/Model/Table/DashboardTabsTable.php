@@ -90,25 +90,6 @@ class DashboardTabsTable extends Table {
     }
 
     /**
-     * @inheritDoc
-     * I take care to remove the tabs where the given $entity is the source_tab.
-     */
-    protected function _processDelete(EntityInterface $entity, ArrayObject $options): bool {
-        $parentSuccess = parent::_processDelete($entity, $options);
-
-        if ($parentSuccess) {
-            $children = $this->find()->where(['source_tab_id' => $entity->id])->all();
-
-            foreach ($children as $child) {
-                $this->delete($child);
-            }
-        }
-
-        return $parentSuccess;
-    }
-
-
-    /**
      * @param DashboardTabsFilter $DashboardTabsFilter
      * @param PaginateOMat|null $PaginateOMat
      * @return array

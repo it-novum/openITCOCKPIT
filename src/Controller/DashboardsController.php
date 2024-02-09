@@ -1951,7 +1951,7 @@ class DashboardsController extends AppController {
         $dashboardTab = [
             'allocated_users' => ['_ids' => []],
             'usergroups'      => ['_ids' => []],
-            'flags'         => DashboardTab::FLAG_BLANK
+            'flags'           => DashboardTab::FLAG_BLANK
         ];
 
         // Fetch from DB
@@ -1976,7 +1976,8 @@ class DashboardsController extends AppController {
 
             //No errors
             $DashboardTabsTable->deleteAll([
-                'source_tab_id' => $id
+                'source_tab_id' => $id,
+                'flags &'       => DashboardTab::FLAG_ALLOCATED
             ]);
         }
     }
