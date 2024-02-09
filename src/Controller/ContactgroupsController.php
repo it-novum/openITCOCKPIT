@@ -99,7 +99,7 @@ class ContactgroupsController extends AppController {
         }
 
         $contactgroup = $ContactgroupsTable->getContactgroupById($id);
-        if (!$this->allowedByContainerId($contactgroup['Contactgroup']['container']['parent_id'])) {
+        if (!$this->allowedByContainerId($contactgroup['container']['parent_id'])) {
             throw new ForbiddenException('403 Forbidden');
         }
 

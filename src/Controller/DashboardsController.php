@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewExtendedJson;
+use App\itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewExtendedJson;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Entity\DashboardTab;
 use App\Model\Entity\Usergroup;
@@ -1465,6 +1467,15 @@ class DashboardsController extends AppController {
                 throw new RuntimeException('Invalid widget id');
             }
 
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                /** @var $ContainersTable ContainersTable */
+                //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+                //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+
             $widget = $WidgetsTable->get($widgetId);
 
             $data = [];
@@ -1477,7 +1488,7 @@ class DashboardsController extends AppController {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $count = $HostsTable->getHoststatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $count = $HostsTable->getHoststatusCountBySelectedStatus($MY_RIGHTS, $config);
             }
 
             if ($this->DbBackend->isCrateDb()) {
@@ -1488,7 +1499,7 @@ class DashboardsController extends AppController {
                 /** @var HostsTable $HostsTable */
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-                $count = $HostsTable->getHoststatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                $count = $HostsTable->getHoststatusCountBySelectedStatusStatusengine3($MY_RIGHTS, $config);
             }
             $this->set('config', $config);
             $this->set('statusCount', $count);
@@ -1498,6 +1509,101 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('post')) {
             $config = $HostStatusOverviewJson->standardizedData($this->request->getData());
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function hostStatusOverviewExtendedWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $HostStatusOverviewExtendedJson = new HostStatusOverviewExtendedJson();
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                /** @var $ContainersTable ContainersTable */
+                //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+                //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+
+            $widget = $WidgetsTable->get($widgetId);
+
+            $data = [];
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
+            }
+            $config = $HostStatusOverviewExtendedJson->standardizedData($data);
+            $conditions = $config;
+            // Migrate keyword / tags from JSON string to SQL RLIKE query string
+            foreach (['keywords', 'not_keywords'] as $field) {
+                if (empty($conditions['Host'][$field])) {
+                    $conditions['Host'][$field] = [];
+                }
+                if (isset($conditions['Host'][$field]) && is_string($conditions['Host'][$field])) {
+                    $arr = explode(',', $conditions['Host'][$field]);
+                    $conditions['Host'][$field] = [];
+                    if (!empty($arr)) {
+                        $conditions['Host'][$field] = sprintf('.*(%s).*', implode('|', $arr));
+                    }
+                }
+            }
+            $hostIds = [];
+            if ($this->DbBackend->isNdoUtils()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                /** @var HostsTable $HostsTable */
+                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+                $hostIds = $HostsTable->getHostIdsBySelectedStatusExtendedStatusengine3($MY_RIGHTS, $conditions);
+            }
+
+            $this->set('config', $config);
+            $this->set('statusCount', sizeof($hostIds));
+            $this->set('hostIds', $hostIds);
+            $this->viewBuilder()->setOption('serialize', ['config', 'statusCount', 'hostIds']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $HostStatusOverviewExtendedJson->standardizedData($this->request->getData());
             $widgetId = (int)$this->request->getData('Widget.id', 0);
 
             if (!$WidgetsTable->existsById($widgetId)) {
@@ -1538,6 +1644,15 @@ class DashboardsController extends AppController {
                 throw new RuntimeException('Invalid widget id');
             }
 
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                /** @var $ContainersTable ContainersTable */
+                //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+                //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+
             $widget = $WidgetsTable->get($widgetId);
 
             $data = [];
@@ -1550,20 +1665,18 @@ class DashboardsController extends AppController {
                 /** @var ServicesTable $ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-                $count = $ServicesTable->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
+                $count = $ServicesTable->getServicestatusCountBySelectedStatus($MY_RIGHTS, $config);
             }
 
             if ($this->DbBackend->isCrateDb()) {
                 throw new MissingDbBackendException('MissingDbBackendException');
-                //$query = $this->Servicestatus->getServicestatusCountBySelectedStatus($this->MY_RIGHTS, $config);
-                //$modelName = 'Servicestatus';
             }
 
             if ($this->DbBackend->isStatusengine3()) {
                 /** @var ServicesTable $ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-                $count = $ServicesTable->getServicestatusCountBySelectedStatusStatusengine3($this->MY_RIGHTS, $config);
+                $count = $ServicesTable->getServicestatusCountBySelectedStatusStatusengine3($MY_RIGHTS, $config);
             }
             $this->set('config', $config);
             $this->set('statusCount', $count);
@@ -1595,6 +1708,104 @@ class DashboardsController extends AppController {
             return;
         }
 
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function serviceStatusOverviewExtendedWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $ServiceStatusOverviewExtendedJson = new ServiceStatusOverviewExtendedJson();
+
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                /** @var $ContainersTable ContainersTable */
+                //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+                //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+                // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+
+            $widget = $WidgetsTable->get($widgetId);
+
+            $data = [];
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
+            }
+            $config = $ServiceStatusOverviewExtendedJson->standardizedData($data);
+            $conditions = $config;
+            foreach (['Host', 'Service'] as $tableName) {
+                foreach (['keywords', 'not_keywords'] as $field) {
+                    if (empty($conditions[$tableName][$field])) {
+                        $conditions[$tableName][$field] = [];
+                    }
+
+                    if (isset($conditions[$tableName][$field]) && is_string($conditions[$tableName][$field])) {
+                        $arr = explode(',', $conditions[$tableName][$field]);
+                        $conditions[$tableName][$field] = [];
+                        if (!empty($arr)) {
+                            $conditions[$tableName][$field] = sprintf('.*(%s).*', implode('|', $arr));
+                        }
+                    }
+                }
+            }
+            $serviceIds = [];
+            if ($this->DbBackend->isNdoUtils()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
+
+            if ($this->DbBackend->isCrateDb()) {
+                throw new MissingDbBackendException('MissingDbBackendException');
+            }
+
+            if ($this->DbBackend->isStatusengine3()) {
+                /** @var ServicesTable $ServicesTable */
+                $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+                $serviceIds = $ServicesTable->getServiceIdsBySelectedStatusExtendedStatusengine3($MY_RIGHTS, $conditions);
+            }
+
+            $this->set('config', $config);
+            $this->set('statusCount', sizeof($serviceIds));
+            $this->set('serviceIds', $serviceIds);
+            $this->viewBuilder()->setOption('serialize', ['config', 'statusCount', 'serviceIds']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $ServiceStatusOverviewExtendedJson->standardizedData($this->request->getData());
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
 
         throw new MethodNotAllowedException();
     }

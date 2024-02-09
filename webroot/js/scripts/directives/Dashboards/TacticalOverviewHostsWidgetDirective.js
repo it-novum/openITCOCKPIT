@@ -10,6 +10,7 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
             $scope.interval = null;
             $scope.init = true;
             $scope.hoststatusSummary = null;
+<<<<<<< HEAD
 
             // ITC-3037
             var $widgetContent = $('#widget-content-' + $scope.widget.id);
@@ -17,6 +18,8 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
 
             var $widget = $('#widget-' + $scope.widget.id);
 
+=======
+>>>>>>> development
             $scope.hostListTimeout = null;
 
 
