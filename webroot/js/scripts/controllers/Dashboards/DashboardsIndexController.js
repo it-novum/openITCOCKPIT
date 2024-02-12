@@ -40,6 +40,7 @@ angular.module('openITCOCKPIT')
             container_id: 0,
             is_pinned: false,
         };
+        $scope.init = true;
 
         $scope.gridsterOpts = {
             minRows: 2, // the minimum height of the grid, in rows
@@ -575,9 +576,6 @@ angular.module('openITCOCKPIT')
 
         // If the containerId is changed, reload the users!
         $scope.$watch('dashboard.container_id', function(){
-            if($scope.init){
-                return;
-            }
             if($scope.dashboard.container_id > 0){
                 // Load new users from the container.
                 $scope.loadUsers();
