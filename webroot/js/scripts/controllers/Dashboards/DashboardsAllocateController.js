@@ -1,10 +1,5 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsAllocateController', function($scope, $http, $stateParams, RedirectService){
-        $scope.flags = {
-            isAllocated: 1 << 0,
-            isPinned: 1 << 1
-        };
-
         // I am the ID that will be allocated.
         $scope.id = $stateParams.id;
 
@@ -23,9 +18,6 @@ angular.module('openITCOCKPIT')
         // I am the array of available usergroups.
         $scope.usergroups = [];
 
-        // I am the pinned flag.
-        $scope.isPinned = true;
-
         // I am the object that is being transported to JSON API to modify the DashboardTab allocation.
         $scope.dashboard = {
             usergroups: {
@@ -34,8 +26,8 @@ angular.module('openITCOCKPIT')
             allocated_users: {
                 _ids: []
             },
-            flags: $scope.flags.isPinned,
-            container_id: 0
+            container_id: 0,
+            is_pinned: false,
         };
         $scope.init = true;
 
@@ -55,7 +47,6 @@ angular.module('openITCOCKPIT')
             $http.get("/dashboards/allocate/" + $scope.id + ".json?angular=true").then(function(result){
                 $scope.dashboard = result.data.dashboardTab;
                 $scope.userId = result.data.userId;
-                $scope.isPinned = $scope.dashboard.flags & $scope.flags.isPinned ? true : false;
                 $scope.init = false;
             });
         }
@@ -113,15 +104,6 @@ angular.module('openITCOCKPIT')
             }
         }, true);
 
-        // If the [pinned] flag is switched, pass it to the flag int.
-        $scope.$watch('isPinned', function(val){
-            if(val){
-                $scope.dashboard.flags |= $scope.flags.isPinned;
-                return;
-            }
-            $scope.dashboard.flags ^= $scope.flags.isPinned;
-        });
-
         // I will store the allocation details.
         $scope.saveAllocation = function(){
             $scope.dashboard.allocated_users._ids = _.intersection(
@@ -129,7 +111,9 @@ angular.module('openITCOCKPIT')
                 $scope.dashboard.allocated_users._ids
             );
             $http.post("/dashboards/allocate.json?angular=true",
-                {'DashboardTab': $scope.dashboard}
+                {
+                    'DashboardTab': $scope.dashboard
+                }
             ).then(function(){
                 genericSuccess();
                 RedirectService.redirectWithFallback('DashboardAllocation');

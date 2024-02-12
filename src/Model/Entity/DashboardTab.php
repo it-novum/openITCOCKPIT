@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\Entity;
 
+use App\Lib\Traits\BitFlagTrait;
 use Cake\ORM\Entity;
 
 /**
@@ -29,6 +30,9 @@ use Cake\ORM\Entity;
  * @property \App\Model\Entity\Widget[] $widgets
  */
 class DashboardTab extends Entity {
+
+    use BitFlagTrait;
+
     public const FLAG_BLANK = 0 << 0;        // 0
     public const FLAG_ALLOCATED = 1 << 0;    // 1
     public const FLAG_PINNED = 1 << 1;       // 2

@@ -2112,10 +2112,15 @@ class DashboardsController extends AppController {
 
             // Fetch them all (not allocated ones, tho...)
             $dashboardTab = $DashboardTabsTable->getDashboardTabForAllocate($id);
+            $is_pinned = ($dashboardTab['flags'] & DashboardTab::FLAG_PINNED) > 0;
+            $dashboardTab['is_pinned'] = $is_pinned;
 
             $this->set('dashboardTab', $dashboardTab);
             $this->set('userId', (new User($this->getUser()))->getId());
-            $this->viewBuilder()->setOption('serialize', ['dashboardTab', 'userId']);
+            $this->viewBuilder()->setOption('serialize', [
+                'dashboardTab',
+                'userId'
+            ]);
             return;
         }
         if ($this->request->is('post')) {
@@ -2130,6 +2135,16 @@ class DashboardsController extends AppController {
             // Fetch from DB
             $Entity = $DashboardTabsTable->get($dashboardTab['id']);
             $Entity = $DashboardTabsTable->patchEntity($Entity, $dashboardTab);
+
+            $Entity->removeAllFlags();
+
+            if (!empty($dashboardTab['allocated_users']['_ids']) || !empty($dashboardTab['usergroups']['_ids'])) {
+                $Entity->addFlag(DashboardTab::FLAG_ALLOCATED);
+                if (isset($dashboardTab['is_pinned']) && $dashboardTab['is_pinned']) {
+                    $Entity->addFlag(DashboardTab::FLAG_PINNED);
+                }
+            }
+
             // Save
             $DashboardTabsTable->save($Entity);
         }

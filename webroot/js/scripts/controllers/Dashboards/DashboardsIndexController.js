@@ -1,10 +1,5 @@
 angular.module('openITCOCKPIT')
     .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval){
-        $scope.flags = {
-            blank: 0 << 0,  // 0
-            isAllocated: 1 << 0,  // 1
-            isPinned: 1 << 1      // 2
-        }
 
         /** public vars **/
         $scope.init = true;
@@ -17,7 +12,6 @@ angular.module('openITCOCKPIT')
         $scope.Usergroup = {};
         $scope.User = {};
         $scope.hideModifications = 0;
-        $scope.isPinned = false;
         $scope.userId = 0;
 
         $scope.data = {
@@ -43,7 +37,8 @@ angular.module('openITCOCKPIT')
                 _ids: []
             },
             flags: 0,
-            container_id: 0
+            container_id: 0,
+            is_pinned: false,
         };
 
         $scope.gridsterOpts = {
@@ -520,7 +515,6 @@ angular.module('openITCOCKPIT')
             // Fetch the desired Dashboard.
             $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result){
                 $scope.dashboard = result.data.dashboardTab;
-                $scope.isPinned = $scope.dashboard.flags & $scope.flags.isPinned ? true : false;
                 $scope.userId = result.data.userId;
 
                 // I'm done.
@@ -589,15 +583,6 @@ angular.module('openITCOCKPIT')
                 $scope.loadUsers();
             }
         }, true);
-
-        // If the [pinned] flag is switched, pass it to the flag int.
-        $scope.$watch('isPinned', function(val){
-            if(val){
-                $scope.dashboard.flags |= $scope.flags.isPinned;
-                return;
-            }
-            $scope.dashboard.flags ^= $scope.flags.isPinned;
-        });
 
         // I will store the allocation details.
         $scope.saveAllocation = function(){

@@ -674,7 +674,7 @@
                                         class="form-control"
                                         chosen="users"
                                         ng-options="user.key as user.value for user in users"
-                                        ng-model="allocation.DashboardTab.allocated_users._ids"
+                                        ng-model="dashboard.allocated_users._ids"
                                         multiple="multiple">
                                 </select>
                             </div>
@@ -693,7 +693,7 @@
                                         class="form-control"
                                         chosen="usergroups"
                                         ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
-                                        ng-model="allocation.DashboardTab.usergroups._ids"
+                                        ng-model="dashboard.usergroups._ids"
                                         multiple="multiple">
                                 </select>
                             </div>
@@ -708,7 +708,7 @@
                                     <input type="checkbox"
                                            class="custom-control-input"
                                            id="pinDashboard"
-                                           ng-model="isPinned">
+                                           ng-model="dashboard.is_pinned">
                                     <label class="custom-control-label" for="pinDashboard">
                                         <?php echo __('Pin Dashboard'); ?>
                                     </label>

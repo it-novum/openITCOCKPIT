@@ -320,11 +320,14 @@ class DashboardTabsTable extends Table {
         /** @var int[] $allocatedTabIds */
         $allocatedTabIds = [];
 
+        // For safety, I go with array_merge in this case
+        // https://stitcher.io/blog/array-merge-vs+
+
         // Add Usergroup Allocations.
-        $allocatedTabIds += $UsergroupsTable->getAllocatedTabsByUsergroupId($User->getUsergroupId());
+        $allocatedTabIds = array_merge($allocatedTabIds, $UsergroupsTable->getAllocatedTabsByUsergroupId($User->getUsergroupId()));
 
         // Add User Allocations.
-        $allocatedTabIds += $UsersTable->getAllocatedTabsByUserId($User->getId());
+        $allocatedTabIds = array_merge($allocatedTabIds, $UsersTable->getAllocatedTabsByUserId($User->getId()));
 
         // Make unique, just for sanity.
         $allocatedTabIds = array_unique($allocatedTabIds);

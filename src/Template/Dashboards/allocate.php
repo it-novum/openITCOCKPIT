@@ -127,7 +127,7 @@
                                         <input type="checkbox"
                                                class="custom-control-input"
                                                id="pinDashboard"
-                                               ng-model="isPinned">
+                                               ng-model="dashboard.is_pinned">
                                         <label class="custom-control-label" for="pinDashboard">
                                             <?php echo __('Pin Dashboard'); ?>
                                         </label>
