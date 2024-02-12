@@ -151,18 +151,27 @@ class ContactgroupsTable extends Table {
      * @param array $contain
      * @return array
      */
-    public function getContactgroupById($id, $contain = ['Containers', 'Contacts']) {
+    public function getContactgroupById($id) {
         $query = $this->find()
+            ->select([
+                'Contactgroups.id',
+                'Contactgroups.container_id',
+                'Contactgroups.uuid',
+                'Contactgroups.description',
+
+                'Containers.name',
+                'Containers.parent_id',
+            ])
             ->where([
                 'Contactgroups.id' => $id
             ])
-            ->contain($contain)
+            ->contain([
+                'Containers'
+            ])
             ->disableHydration()
             ->first();
 
-        $result = $this->formatFirstResultAsCake2($query, true);
-        unset($result['Container'], $result['Contactstocontactgroup']);
-        return $result;
+        return $this->emptyArrayIfNull($query);
     }
 
     /**

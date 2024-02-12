@@ -557,6 +557,7 @@ class UnitScaler {
             'wps',  // Writes per second
 
             'W',       // Watt
+            'Wh',      // Watthour
             'V',       // Volt
             'volts',   // Prometheus
             'A',       // Amper

@@ -70,7 +70,7 @@ class HostgroupConditions {
     public function getConditionsForFind() {
         $conditions = $this->conditions;
         if (!empty($this->containerIds)) {
-            if(!is_array($this->containerIds)){
+            if (!is_array($this->containerIds)) {
                 $this->containerIds = [$this->containerIds];
             }
 

@@ -26,7 +26,10 @@
 
 namespace itnovum\openITCOCKPIT\Grafana;
 
-
+/**
+ * This class is a PHP representation of the default Grafana Units.
+ * It is used to create a Select box of all Grafana Units for the Grafana User Dashboard Editor.
+ */
 class GrafanaTargetUnits {
 
     /**

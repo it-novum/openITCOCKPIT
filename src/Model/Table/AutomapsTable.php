@@ -85,6 +85,11 @@ class AutomapsTable extends Table {
             ->notEmptyString('host_regex');
 
         $validator
+            ->scalar('hostgroup_regex')
+            ->maxLength('hostgroup_regex', 255)
+            ->allowEmptyString('hostgroup_regex');
+
+        $validator
             ->scalar('service_regex')
             ->maxLength('service_regex', 255)
             ->notEmptyString('service_regex');
