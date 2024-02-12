@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Hostgroup;
+use Cake\Database\Expression\Comparison;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -1026,6 +1027,62 @@ class HostgroupsTable extends Table {
     }
 
     /**
+     * @param string $hostgroupRegex
+     * @return array
+     */
+    public function getHostIdsByHostgroupNameRegex($hostgroupRegex, $containerIds) {
+        $hostGroupIds = $this->getHostgroupIdsByNameRegex($hostgroupRegex, $containerIds);
+        $allHostIdsArray = [];
+        foreach ($hostGroupIds as $hostGroupId) {
+            $hostIds = $this->getHostIdsByHostgroupId($hostGroupId);
+            foreach ($hostIds as $hostId) {
+                $allHostIdsArray[$hostId] = $hostId;
+            }
+        }
+        return $allHostIdsArray;
+
+    }
+
+    /**
+     * @param string $hostgroupRegex
+     * @param array|mixed $containerIds
+     * @param @param string $type (all or count, list is NOT supported!)
+     * @return array|int
+     */
+    public function getHostgroupIdsByNameRegex(string $hostgroupRegex, $containerIds, $type = 'all') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id',
+            ])
+            ->contain(['Containers'])
+            ->where(['Containers.parent_id IN' => $containerIds])
+            ->disableHydration();
+        $where = [];
+
+        if ($this->isValidRegularExpression($hostgroupRegex)) {
+            $where[] = new Comparison(
+                'Containers.name',
+                $hostgroupRegex,
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+        if ($type === 'count') {
+            return $query->count();
+        }
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull(Hash::extract($result->toArray(), '{n}.id'));
+    }
+
+    /**
      * @param $id
      * @param $satelliteId
      * @return array
@@ -1672,5 +1729,13 @@ class HostgroupsTable extends Table {
         }
 
         return $hostAnServiceUuids;
+    }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
     }
 }

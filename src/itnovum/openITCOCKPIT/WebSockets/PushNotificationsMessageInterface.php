@@ -26,6 +26,7 @@ namespace itnovum\openITCOCKPIT\WebSockets;
 
 
 use App;
+use Cake\Console\ConsoleIo;
 use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use GearmanWorker;
@@ -33,6 +34,7 @@ use itnovum\openITCOCKPIT\Core\PushNotificationClientRepository;
 use itnovum\openITCOCKPIT\Core\UUID;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
+use Ratchet\WebSocket\WsConnection;
 
 /**
  * Class PushNotificationsMessageInterface
@@ -61,9 +63,14 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
     private $ClientsRepository;
 
     /**
+     * @var ConsoleIo
+     */
+    private $io;
+
+    /**
      * PushNotificationsMessageInterface constructor.
      */
-    public function __construct() {
+    public function __construct(ConsoleIo $io) {
         /** @var App\Model\Table\SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsettings = $SystemsettingsTable->findAsArray();
@@ -75,6 +82,8 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
         $this->Worker = $this->getWorker();
 
         $this->ClientsRepository = new PushNotificationClientRepository();
+
+        $this->io = $io;
     }
 
     /**
@@ -97,10 +106,10 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
      * @param ConnectionInterface $conn
      */
     public function onOpen(ConnectionInterface $conn) {
-        //debug($conn->resourceId);
         $uuid = UUID::v4();
         $this->clients->attach($conn, $uuid);
 
+        $this->io->verbose('New client connected. Assign client UUID: ' . $uuid);
         $conn->send(json_encode([
             'type'    => 'connection',
             'message' => 'Connection established successfully',
@@ -115,6 +124,7 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
      */
     public function onClose(ConnectionInterface $conn) {
         $uuid = $this->clients->offsetGet($conn);
+        $this->io->verbose('Client ' . $uuid . ' disconnected');
         $this->ClientsRepository->removeClientByUuid($uuid);
         $this->clients->detach($conn);
     }
@@ -148,6 +158,7 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
                     $this->clients->detach($from);
                     return;
                 }
+                $this->io->verbose('Client ' . $message['uuid'] . ' for userId ' . $message['data']['userId'] . ' registered');
                 $this->ClientsRepository->addClient(
                     $message['data']['userId'],
                     $message['data']['browserUuid'],
@@ -171,7 +182,11 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
     public function send($userId, $message) {
         foreach ($this->ClientsRepository->getUniqueClientsForNotificationByUserId($userId) as $clientMetaData) {
             foreach ($this->clients as $client) {
-                if ($client->uuid === $clientMetaData['uuid']) {
+                /** @var WsConnection $client */
+                // Get client uuid from storage
+                $uuid = $this->clients->offsetGet($client);
+                if ($uuid === $clientMetaData['uuid']) {
+                    $this->io->verbose('Send push message to uuid: ' . $clientMetaData['uuid']);
                     $client->send($message);
                 }
             }
@@ -188,17 +203,20 @@ class PushNotificationsMessageInterface implements MessageComponentInterface {
     public function processNotification($job) {
         $notification = json_decode($job->workload(), true);
         if (!isset($notification['timestamp']) || !isset($notification['userId'])) {
+            $this->io->verbose('Drop message because timestamp or userId is not set');
             return;
         }
 
         //Drop notifications that are in the queue for >= 10 minutes
         if ($notification['timestamp'] < (time() - 60 * 10)) {
+            $this->io->verbose('Drop message because it is older than 10 minutes');
             return;
         }
 
         //Drop messages where the client is not connected
         $userId = (int)$notification['userId'];
         if (!$this->ClientsRepository->hasUserIdConnectedClients($userId)) {
+            $this->io->verbose('Drop message because no Client is connected for UserId: ' . $userId);
             return;
         }
 

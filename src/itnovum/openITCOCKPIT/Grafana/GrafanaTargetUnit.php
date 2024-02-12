@@ -57,6 +57,12 @@ class GrafanaTargetUnit {
     }
 
     /**
+     * This method converts common Naemon Metric Units into Grafana Units
+     * E.g.: "B" will return "bytes" as Grafana expect it.
+     *
+     * It has more or less nothing in common with \itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits as this calss
+     * is used to create a Selectbox of avaialbe Grafana Units while this function converts Naemon/Nagios units into Grafana units
+     *
      * @return string
      */
     public function getUnit() {

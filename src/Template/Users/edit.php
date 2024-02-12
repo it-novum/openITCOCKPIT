@@ -55,7 +55,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 </h2>
                 <div class="panel-toolbar">
                     <span ng-repeat="UserType in UserTypes"
-                        class="badge border margin-right-10 {{UserType.class}} {{UserType.color}}">
+                          class="badge border margin-right-10 {{UserType.class}} {{UserType.color}}">
                         {{UserType.title}}
                     </span>
 
@@ -653,8 +653,13 @@ containerMessage = '<?= __('Hidden due to insufficient permissions'); ?>'">
                                             <div class="help-block text-danger">{{ error }}</div>
                                         </div>
                                         <div class="help-block">
-                                            <?= __('Last use'); ?>
-                                            {{ apikey.last_use }}
+                                            <?= __('Last used:'); ?>
+                                            <span ng-show=" apikey.last_use" class="text-info">
+                                                {{ apikey.last_use }}
+                                            </span>
+                                            <span ng-hide="apikey.last_use" class="text-info">
+                                                <?= __('never'); ?>
+                                            </span>
                                         </div>
                                     </div>
                                     <div class="col-md-8 mb-3">
