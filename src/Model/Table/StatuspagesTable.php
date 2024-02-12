@@ -720,7 +720,7 @@ class StatuspagesTable extends Table {
                         $item['cumulatedColorId'] = $cumulatedStateId;
                         $item['cumulatedColor'] = $stateColors['services'][$cumulatedStateId];
                     }
-                }
+
                     // All hosts are up - Is there a service with an issue?
                     if ($statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'] > 0) {
                         $cumulatedStateId = $statuspage[$objectType][$index]['state_summary']['services']['cumulatedStateId'];
@@ -728,46 +728,47 @@ class StatuspagesTable extends Table {
                         $item['cumulatedStateName'] = $cumulatedStateName;
                         $item['cumulatedColorId'] = $cumulatedStateId;
                         $item['cumulatedColor'] = $stateColors['services'][$cumulatedStateId];
-                        if ($showAcknowledgements) {
-                            if(in_array($objectType, ['hostgroups', 'hosts'])) {
-                                //eg. host is up, but serviceproblems
-                                $serviceProblems = $objectGroup['state_summary']['services']['problems'];
-                                $hostProblems = $objectGroup['state_summary']['hosts']['problems'];
-                                $problems = $serviceProblems + $hostProblems;
-                                if ($problems > 0) {
-                                    $serviceProblemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
-                                    $hostProblemsAcknowledged = $objectGroup['state_summary']['hosts']['acknowledgements'];
-                                    $acknwledged = $serviceProblemsAcknowledged + $hostProblemsAcknowledged;
-                                    $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $acknwledged, $problems);
-                                }
-
-                                if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0
-                                || $objectGroup['state_summary']['services']['acknowledgements'] > 0) {
-                                    foreach ($objectGroup['state_summary']['services']['acknowledgement_details'] as $currentAcknowledgement) {
-                                        // $item['acknowledgedProblemsText'] = __('State is acknowledged');
-                                        $item['acknowledgeComment'][] = ($showAcknowledgementComments)
-                                            ? $currentAcknowledgement['comment_data'] : __('Investigating issue');
-                                    }
-                                }
-                            }
-                            if(in_array($objectType, ['servicegroups', 'services'])) {
-                                //eg. host is up, but serviceproblems
-                                $serviceProblems = $objectGroup['state_summary']['services']['problems'];
-                                if ($serviceProblems  > 0) {
-                                    $serviceProblemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
-                                    $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $serviceProblemsAcknowledged, $serviceProblems );
-                                }
-
-                                if ($objectGroup['state_summary']['services']['acknowledgements'] > 0) {
-                                    foreach ($objectGroup['state_summary']['services']['acknowledgement_details'] as $currentAcknowledgement) {
-                                        // $item['acknowledgedProblemsText'] = __('State is acknowledged');
-                                        $item['acknowledgeComment'][] = ($showAcknowledgementComments)
-                                            ? $currentAcknowledgement['comment_data'] : __('Investigating issue');
-                                    }
-                                }
+                    }
+                }
+                    if ($showAcknowledgements) {
+                        if(in_array($objectType, ['hostgroups', 'hosts'])) {
+                            //eg. host is up, but serviceproblems
+                            $serviceProblems = $objectGroup['state_summary']['services']['problems'];
+                            $hostProblems = $objectGroup['state_summary']['hosts']['problems'];
+                            $problems = $serviceProblems + $hostProblems;
+                            if ($problems > 0) {
+                                $serviceProblemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
+                                $hostProblemsAcknowledged = $objectGroup['state_summary']['hosts']['acknowledgements'];
+                                $acknwledged = $serviceProblemsAcknowledged + $hostProblemsAcknowledged;
+                                $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $acknwledged, $problems);
                             }
 
+                            if ($objectGroup['state_summary']['hosts']['acknowledgements'] > 0
+                            || $objectGroup['state_summary']['services']['acknowledgements'] > 0) {
+                                foreach ($objectGroup['state_summary']['services']['acknowledgement_details'] as $currentAcknowledgement) {
+                                    // $item['acknowledgedProblemsText'] = __('State is acknowledged');
+                                    $item['acknowledgeComment'][] = ($showAcknowledgementComments)
+                                        ? $currentAcknowledgement['comment_data'] : __('Investigating issue');
+                                }
+                            }
                         }
+                        if(in_array($objectType, ['servicegroups', 'services'])) {
+                            //eg. host is up, but serviceproblems
+                            $serviceProblems = $objectGroup['state_summary']['services']['problems'];
+                            if ($serviceProblems  > 0) {
+                                $serviceProblemsAcknowledged = $objectGroup['state_summary']['services']['acknowledgements'];
+                                $item['acknowledgedProblemsText'] = __('{0} of {1} problems acknowledged', $serviceProblemsAcknowledged, $serviceProblems );
+                            }
+
+                            if ($objectGroup['state_summary']['services']['acknowledgements'] > 0) {
+                                foreach ($objectGroup['state_summary']['services']['acknowledgement_details'] as $currentAcknowledgement) {
+                                    // $item['acknowledgedProblemsText'] = __('State is acknowledged');
+                                    $item['acknowledgeComment'][] = ($showAcknowledgementComments)
+                                        ? $currentAcknowledgement['comment_data'] : __('Investigating issue');
+                                }
+                            }
+                        }
+
                     }
 
                     if($showDowntimes) {
