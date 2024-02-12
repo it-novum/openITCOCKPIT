@@ -177,8 +177,8 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     height: $scope.height,
                     width: $scope.width,
                     value: perfdata.datasource.setup.metric.value,
-                    minValue: perfdata.datasource.setup.scale.min,
-                    maxValue: perfdata.datasource.setup.scale.max,
+                    minValue: perfdata.datasource.setup.scale.min || 0,
+                    maxValue: perfdata.datasource.setup.scale.max || 100,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -188,8 +188,10 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     highlights: thresholds,
                     animationDuration: 700,
                     animationRule: 'elastic',
-                    majorTicks: getMajorTicks(perfdata.max, 5)
+                    majorTicks: getMajorTicks(perfdata.datasource.setup.scale.min || 0, perfdata.datasource.setup.scale.max || 100, 5)
                 };
+
+                console.warn(settings);
 
 
 
@@ -201,17 +203,18 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 //gauge.value = 1337;
             };
 
-            var getMajorTicks = function(perfdataMax, numberOfTicks){
-                var tickSize = Math.ceil((perfdataMax / numberOfTicks));
-                if(perfdataMax < numberOfTicks){
-                    numberOfTicks = perfdataMax;
+            var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
+                numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
+                let tickSize = Math.ceil((perfdataMax - perfdataMin) / numberOfTicks),
+                    tickArr = [],
+                    myTick = perfdataMin;
+
+                for(let index = 0; index <= numberOfTicks; index++){
+                    tickArr.push(myTick);
+
+                    myTick += tickSize;
                 }
 
-                var tickArr = [];
-                for(var i = 0; i < numberOfTicks; i++){
-                    tickArr.push((i * tickSize));
-                }
-                tickArr.push(perfdataMax);
                 return tickArr;
             };
 
@@ -223,7 +226,8 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     critical: 90,
                     min: 0,
                     max: 100,
-                    unit: 'n/a'
+                    unit: 'n/a',
+                    setup: {}
                 };
                 $scope.perfdataName = 'No data available';
 

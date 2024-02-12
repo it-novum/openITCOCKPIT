@@ -25,6 +25,7 @@
 
 namespace MapModule\Controller;
 
+use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
@@ -55,7 +56,6 @@ use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
-use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
 use MapModule\Model\Table\MapgadgetsTable;
 use MapModule\Model\Table\MapiconsTable;
 use MapModule\Model\Table\MapitemsTable;
@@ -64,7 +64,7 @@ use MapModule\Model\Table\MapsTable;
 use MapModule\Model\Table\MapsummaryitemsTable;
 use MapModule\Model\Table\MaptextsTable;
 use MapModule\Model\Table\MapUploadsTable;
-use PrometheusModule\Lib\PerformanceDataSetupFactory;
+use PrometheusModule\Lib\PrometheusAdapter;
 use RuntimeException;
 use Statusengine\PerfdataParser;
 use Symfony\Component\Finder\Finder;
@@ -453,14 +453,20 @@ class MapeditorsController extends AppController {
                 break;
         }
 
-        if (Plugin::isLoaded('PrometheusModule') && $service->service_type === PROMETHEUS_SERVICE) {
+        $Service = new Service($service);
+        if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
             $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
-            $Service = new Service($service);
             $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
+
+            $adapter = new PrometheusAdapter();
+            $metric  = array_keys($perfdata)[0];
+            $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
         } else {
             $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
             $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
-            $properties['Perfdata']["'value'"]['datasource']['setup'] = PerformanceDataSetup::fromNagios($performance_data[0]['datasource'])->toArray();
+
+            $adapter = new NagiosAdapter();
+            $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $performance_data[0]['datasource'])->toArray();
         }
 
         return [

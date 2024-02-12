@@ -125,6 +125,60 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                 return url;
             };
 
+            $scope.getThresholdAreas = function(setup){
+                var thresholdAreas = [];
+                switch(setup.scale.type){
+                    case "W<O":
+                        thresholdAreas = [
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.scale.max, color: '#449D44'}
+                        ];
+                        break;
+                    case "C<W<O":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#C9302C'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.scale.max, color: '#449D44'}
+                        ];
+                        break;
+                    case "O<W":
+                        thresholdAreas = [
+                            {from: setup.scale.min, to: setup.warn.low,  color: '#449D44'},
+                            {from: setup.warn.low,  to: setup.scale.max, color: '#DF8F1D'}
+                        ];
+                        break;
+                    case "O<W<C":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.warn.low,  color: '#449D44'},
+                            {from: setup.warn.low,    to: setup.crit.low,  color: '#DF8F1D'},
+                            {from: setup.crit.low,    to: setup.scale.max, color: '#C9302C'}
+                        ];
+                        break;
+                    case "C<W<O<W<C":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#C9302C'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.warn.high, color: '#449D44'},
+                            {from: setup.warn.high,   to: setup.crit.high, color: '#DF8F1D'},
+                            {from: setup.crit.high,   to: setup.scale.max, color: '#C9302C'}
+                        ];
+                        break;
+                    case "O<W<C<W<O":
+                        thresholdAreas = [
+                            {from: setup.scale.min,   to: setup.crit.low,  color: '#449D44'},
+                            {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
+                            {from: setup.warn.low,    to: setup.warn.high, color: '#C9302C'},
+                            {from: setup.warn.high,   to: setup.crit.high, color: '#DF8F1D'},
+                            {from: setup.crit.high,   to: setup.scale.max, color: '#449D44'}
+                        ];
+                        break;
+                    case "O":
+                    default:
+                        break;
+                }
+                return thresholdAreas;
+            }
+
             var renderGauge = function(perfdataName, perfdata){
                 if(typeof perfdata === 'undefined'){
                     return;
@@ -166,24 +220,7 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     perfdata.max = 100;
                 }
 
-                var thresholds = [];
-
-                if(perfdata.warning !== null && perfdata.critical !== null){
-                    thresholds = [
-                        {from: perfdata.min, to: perfdata.warning, color: '#449D44'},
-                        {from: perfdata.warning, to: perfdata.critical, color: '#DF8F1D'},
-                        {from: perfdata.critical, to: perfdata.max, color: '#C9302C'}
-                    ];
-
-                    //HDD usage for example
-                    if(perfdata.warning > perfdata.critical){
-                        thresholds = [
-                            {from: perfdata.min, to: perfdata.critical, color: '#C9302C'},
-                            {from: perfdata.critical, to: perfdata.warning, color: '#DF8F1D'},
-                            {from: perfdata.warning, to: perfdata.max, color: '#449D44'}
-                        ];
-                    }
-                }
+                var thresholds = $scope.getThresholdAreas(perfdata.setup);
 
                 var maxDecimalDigits = 3;
                 var currentValueAsString = perfdata.current.toString();
@@ -208,9 +245,9 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     renderTo: 'tacho-' + $scope.widget.id,
                     height: $scope.height,
                     width: $scope.width,
-                    value: perfdata.current,
-                    minValue: perfdata.min,
-                    maxValue: perfdata.max,
+                    value: perfdata.setup.metric.value,
+                    minValue: perfdata.setup.scale.min || 0,
+                    maxValue: perfdata.setup.scale.max || 100,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -220,23 +257,24 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     highlights: thresholds,
                     animationDuration: 700,
                     animationRule: 'elastic',
-                    majorTicks: getMajorTicks(perfdata.max, 5)
+                    majorTicks: getMajorTicks(perfdata.setup.scale.min,perfdata.setup.scale.max, 5)
                 });
 
                 gauge.draw();
             };
 
-            var getMajorTicks = function(perfdataMax, numberOfTicks){
-                var tickSize = Math.ceil((perfdataMax / numberOfTicks));
-                if(perfdataMax < numberOfTicks){
-                    numberOfTicks = perfdataMax;
+            var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
+                numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
+                let tickSize = Math.ceil((perfdataMax - perfdataMin) / numberOfTicks),
+                    tickArr = [],
+                    myTick = perfdataMin;
+
+                for(let index = 0; index <= numberOfTicks; index++){
+                    tickArr.push(myTick);
+
+                    myTick += tickSize;
                 }
 
-                var tickArr = [];
-                for(var i = 0; i < numberOfTicks; i++){
-                    tickArr.push((i * tickSize));
-                }
-                tickArr.push(perfdataMax);
                 return tickArr;
             };
 
@@ -248,7 +286,8 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     critical: 90,
                     min: 0,
                     max: 100,
-                    unit: 'n/a'
+                    unit: 'n/a',
+                    setup: {}
                 };
                 $scope.perfdataName = 'No data available';
 

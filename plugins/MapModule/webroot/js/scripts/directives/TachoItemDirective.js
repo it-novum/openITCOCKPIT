@@ -182,8 +182,8 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     height: $scope.height,
                     width: $scope.width,
                     value: perfdata.datasource.setup.metric.value,
-                    minValue: perfdata.datasource.setup.scale.min,
-                    maxValue: perfdata.datasource.setup.scale.max,
+                    minValue: perfdata.datasource.setup.scale.min || 0,
+                    maxValue: perfdata.datasource.setup.scale.max || 100,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -204,7 +204,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
 
             var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
                 numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
-                let tickSize = (perfdataMax - perfdataMin) / numberOfTicks,
+                let tickSize = Math.round((perfdataMax - perfdataMin) / numberOfTicks),
                     tickArr = [],
                     myTick = perfdataMin;
 
