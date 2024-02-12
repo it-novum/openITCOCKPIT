@@ -83,7 +83,7 @@ class DashboardAllocationsController extends AppController {
             $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
 
             $allocation = $DashboardTabAllocationsTable->newEmptyEntity();
-            $allocation = $DashboardTabAllocationsTable->patchEntity($allocation, $this->request->getData('Allocation', []));
+            $allocation = $DashboardTabAllocationsTable->patchEntity($allocation, $this->request->getData('DashboardAllocation', []));
 
             // Set the author of the allocation
             $User = new User($this->getUser());

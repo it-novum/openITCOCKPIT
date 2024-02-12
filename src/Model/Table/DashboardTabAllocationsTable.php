@@ -126,8 +126,18 @@ class DashboardTabAllocationsTable extends Table {
             ->notEmptyString('user_id');
 
         $validator
-            ->integer('pinned')
+            ->boolean('pinned')
             ->notEmptyString('pinned');
+
+        $validator
+            ->notEmptyArray('users_to_dashboard_tab_allocations', __('You must at least specify at least one user or user role'), function ($context) {
+                return !empty($context['data']['usergroups_to_dashboard_tab_allocations']['_ids']) || !empty($context['data']['users_to_dashboard_tab_allocations']['_ids']);
+            });
+
+        $validator
+            ->notEmptyArray('usergroups_to_dashboard_tab_allocations', __('You must at least specify at least one user or user role'), function ($context) {
+                return !empty($context['data']['usergroups_to_dashboard_tab_allocations']['_ids']) || !empty($context['data']['users_to_dashboard_tab_allocations']['_ids']);
+            });
 
         return $validator;
     }

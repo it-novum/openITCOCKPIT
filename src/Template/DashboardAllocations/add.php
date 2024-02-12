@@ -45,9 +45,8 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <span><?= __('Create Dashboard Allocation') ?>:</span>
+                    <span><?= __('Create Dashboard Allocation') ?></span>
                     <span class="fw-300">
-                        {{dashboard.name}}
                     </span>
                 </h2>
                 <div class="panel-toolbar">
@@ -64,8 +63,21 @@
                     <form ng-submit="submit();"
                           ng-init="successMessage={objectName : '<?php echo __('Dashboard allocation'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
+                        <div class="form-group required" ng-class="{'has-error': errors.name}">
+                            <label class="control-label">
+                                <?php echo __('Name of the allocation'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.DashboardAllocation.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
                         <!-- Select Container -->
-                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                        <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                             <label class="control-label" for="UserContainers">
                                 <?php echo __('Container'); ?>
                             </label>
@@ -77,7 +89,7 @@
                                 ng-options="container.key as container.value for container in containers"
                                 ng-model="post.DashboardAllocation.container_id">
                             </select>
-                            <div ng-repeat="error in errors.containers">
+                            <div ng-repeat="error in errors.container_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -103,7 +115,8 @@
                         <!-- Select Users -->
                         <div class="row">
                             <div class="col-lg-12">
-                                <div class="form-group margin-top-20 padding-bottom-10">
+                                <div class="form-group margin-top-20 padding-bottom-10"
+                                     ng-class="{'has-error': errors.users_to_dashboard_tab_allocations}">
                                     <label class="control-label">
                                         <?php echo __('Allocated Users'); ?>
                                     </label>
@@ -115,6 +128,9 @@
                                         ng-model="post.DashboardAllocation.users_to_dashboard_tab_allocations._ids"
                                         multiple="multiple">
                                     </select>
+                                    <div ng-repeat="error in errors.users_to_dashboard_tab_allocations">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +138,8 @@
                         <!-- Select Roles -->
                         <div class="row">
                             <div class="col-lg-12">
-                                <div class="form-group margin-top-20 padding-bottom-10">
+                                <div class="form-group margin-top-20 padding-bottom-10"
+                                     ng-class="{'has-error': errors.usergroups_to_dashboard_tab_allocations}">
                                     <label class="control-label">
                                         <?php echo __('Allocated User roles'); ?>
                                     </label>
@@ -134,6 +151,9 @@
                                         ng-model="post.DashboardAllocation.usergroups_to_dashboard_tab_allocations._ids"
                                         multiple="multiple">
                                     </select>
+                                    <div ng-repeat="error in errors.usergroups_to_dashboard_tab_allocations">
+                                        <div class="help-block text-danger">{{ error }}</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -141,7 +161,8 @@
                         <!-- pinDashboard -->
                         <div class="row">
                             <div class="col-lg-12">
-                                <div class="form-group margin-top-20 padding-bottom-10">
+                                <div class="form-group margin-top-20 padding-bottom-10"
+                                     ng-class="{'has-error': errors.pinned}">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox"
                                                class="custom-control-input"
@@ -153,6 +174,9 @@
                                         <div
                                             class="help-block">
                                             <?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?>
+                                        </div>
+                                        <div ng-repeat="error in errors.pinned">
+                                            <div class="help-block text-danger">{{ error }}</div>
                                         </div>
                                     </div>
                                 </div>

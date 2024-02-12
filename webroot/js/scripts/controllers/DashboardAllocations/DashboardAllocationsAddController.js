@@ -51,7 +51,7 @@ angular.module('openITCOCKPIT')
             $http.post("/DashboardAllocations/add.json?angular=true",
                 $scope.post
             ).then(function(result){
-                var url = $state.href('DashboardAllocationsEdit', {id: result.data.id});
+                var url = $state.href('DashboardAllocationsEdit', {id: result.data.allocation.id});
                 NotyService.genericSuccess({
                     message: '<u><a href="' + url + '" class="txt-color-white"> '
                         + $scope.successMessage.objectName
