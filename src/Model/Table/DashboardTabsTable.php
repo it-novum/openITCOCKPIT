@@ -4,12 +4,14 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 /**
  * DashboardTabs Model
@@ -29,7 +31,7 @@ use Cake\Validation\Validator;
  * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class DashboardTabsTable extends Table {
-
+    use PaginationAndScrollIndexTrait;
     use Cake2ResultTableTrait;
 
     /**

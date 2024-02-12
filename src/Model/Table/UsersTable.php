@@ -99,6 +99,10 @@ class UsersTable extends Table {
             'foreignKey' => 'user_id'
         ]);
 
+        $this->hasMany('DashboardTabs', [
+            'foreignKey' => 'user_id'
+        ]);
+
         $this->belongsToMany('Containers', [
             'through'          => 'ContainersUsersMemberships',
             'className'        => 'Containers',
@@ -1459,5 +1463,44 @@ class UsersTable extends Table {
         }
 
         return true;
+    }
+
+    public function getDashboardTabsByContainerIdsAsList($containerIds, $MY_RIGHTS) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find();
+        $query->select([
+            'id'   => 'DashboardTabs.id',
+            'name' => $query->newExpr('CONCAT(DashboardTabs.name, " (", Users.firstname, " " ,Users.lastname,")")'),
+        ])->innerJoinWith('Containers')
+            ->innerJoinWith('DashboardTabs');
+
+        if (!empty($containerIds)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $containerIds
+            ]);
+        }
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->group(['DashboardTabs.id'])
+            ->disableHydration()
+            ->all();
+        $result = $this->emptyArrayIfNull($query->toArray());
+        if (empty($result)) {
+            return [];
+        }
+
+        $dashboardTabs = [];
+        foreach ($result as $resultSet) {
+            $dashboardTabs[$resultSet['id']] = $resultSet['name'];
+        }
+        return $dashboardTabs;
     }
 }

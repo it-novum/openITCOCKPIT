@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabAllocationsTable;
+use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -133,18 +134,26 @@ class DashboardAllocationsController extends AppController {
         }
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-
+/*
         $dashboardTabs = [
             20 => 'Default (Herbert Benutzer)'
         ];
         $dashboardTabs = Api::makeItJavaScriptAble($dashboardTabs);
-
+*/
 
         $users = $UsersTable->usersByContainerId($containerIds, 'list');
         $users = Api::makeItJavaScriptAble($users);
 
         $usergroups = $UsergroupsTable->getUsergroupsList();
         $usergroups = Api::makeItJavaScriptAble($usergroups);
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges === true) {
+            $MY_RIGHTS = [];
+        }
+
+        $dashboardTabs = $UsersTable->getDashboardTabsByContainerIdsAsList($containerIds, $MY_RIGHTS);
+        $dashboardTabs = Api::makeItJavaScriptAble($dashboardTabs);
 
         $this->set('users', $users);
         $this->set('usergroups', $usergroups);
