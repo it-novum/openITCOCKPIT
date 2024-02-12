@@ -489,9 +489,9 @@ class Menu {
                 ))
                 ->addLink(new MenuLink(
                     __('Dashboard Allocation'),
-                    'DashboardAllocation',
-                    'dashboards',
-                    'allocationManager',
+                    'DashboardAllocationsIndex',
+                    'DashboardAllocations',
+                    'index',
                     '',
                     'fa fa-table',
                     [],

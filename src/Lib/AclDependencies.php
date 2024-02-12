@@ -359,8 +359,10 @@ class AclDependencies {
             ->dependency('Currentstatereports', 'index', 'Currentstatereports', 'createHtmlReport');
 
         $this
-            ->dependency('Dashboards', 'allocate', 'Users', 'loadUsersByContainerId')
-            ->dependency('Dashboards', 'allocate', 'Dashboards', 'deallocate');
+            ->dependency('DashboardAllocations', 'add', 'DashboardAllocations', 'loadElementsByContainerId')
+            ->dependency('DashboardAllocations', 'edit', 'DashboardAllocations', 'loadElementsByContainerId')
+            ->dependency('DashboardAllocations', 'edit', 'Users', 'loadContainersForAngular')
+            ->dependency('DashboardAllocations', 'edit', 'Users', 'loadContainersForAngular');
 
         $this
             ->dependency('Downtimereports', 'index', 'Downtimereports', 'createPdfReport')
