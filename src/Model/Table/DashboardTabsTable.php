@@ -6,9 +6,6 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\DashboardTab;
-use App\Model\Entity\User;
-use ArrayObject;
-use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -65,27 +62,6 @@ class DashboardTabsTable extends Table {
         $this->hasMany('Widgets', [
             'foreignKey' => 'dashboard_tab_id',
             'dependent'  => true
-        ]);
-        $this->belongsToMany('Usergroups', [
-            'className'        => 'Usergroups',
-            'joinTable'        => 'usergroups_to_dashboard_tabs',
-            'foreignKey'       => 'dashboard_tab_id',
-            'targetForeignKey' => 'usergroup_id',
-            'saveStrategy'     => 'replace',
-            'dependent'        => true
-        ]);
-        $this->belongsTo('Containers', [
-            'foreignKey' => 'container_id',
-            'joinType'   => 'LEFT'
-        ]);
-        $this->belongsToMany('AllocatedUsers', [
-            'className'        => 'Users',
-            'joinTable'        => 'users_to_dashboard_tabs',
-            'foreignKey'       => 'dashboard_tab_id',
-            'targetForeignKey' => 'user_id',
-            'saveStrategy'     => 'replace',
-            'dependent'        => true,
-            'joinType'         => 'LEFT'
         ]);
 
     }
