@@ -58,7 +58,7 @@ class DashboardTabsTable extends Table {
             'dependent'  => true
         ]);
 
-        $this->hasOne('DashboardTabAllocation', [
+        $this->hasOne('DashboardTabAllocations', [
             'foreignKey' => 'dashboard_tab_id',
             'dependent'  => true
         ]);
