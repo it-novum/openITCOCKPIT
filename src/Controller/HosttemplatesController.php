@@ -121,7 +121,7 @@ class HosttemplatesController extends AppController {
         ]);
 
 
-        if (!$this->allowedByContainerId($hosttemplate['Hosttemplate']['container']['id'])) {
+        if (!$this->allowedByContainerId($hosttemplate['Container']['id'])) {
             throw new ForbiddenException('403 Forbidden');
         }
 

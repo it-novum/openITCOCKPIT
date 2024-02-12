@@ -110,6 +110,20 @@
                                 </div>
                             </div>
 
+                            <div class="form-group required" ng-class="{'has-error': sourceAutomap.Error.hostgroup_regex}">
+                                <label for="Automap{{$index}}HostgroupRegex" class="control-label required">
+                                    <?php echo __('Host group RegEx'); ?>
+                                </label>
+                                <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="sourceAutomap.Automap.hostgroup_regex"
+                                    id="Automap{{$index}}HostgroupRegex">
+                                <div ng-repeat="error in sourceAutomap.Error.hostgroup_regex">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+
                             <div class="form-group required"
                                  ng-class="{'has-error': sourceAutomap.Error.service_regex}">
                                 <label for="Automap{{$index}}ServiceRegex" class="control-label required">
