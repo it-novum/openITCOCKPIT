@@ -26,7 +26,6 @@ use Cake\ORM\Entity;
  *
  *
  * @property \App\Model\Entity\User $user
- * @property \App\Model\Entity\SourceTab $source_tab
  * @property \App\Model\Entity\Widget[] $widgets
  */
 class DashboardTab extends Entity {
