@@ -57,7 +57,7 @@
                                 <a class="nav-link"
                                    href="javascript:void(0);"
                                    ng-if="activeTab !== tab.id"
-                                   ng-class="{ 'bg-primary-50': tab.source === 'ALLOCATED',  'text-dark': tab.source === 'ALLOCATED'}"
+                                   ng-class="{ 'bg-primary-50 text-dark': !tab.isOwner}"
                                    title="{{tab.title}}"
                                    role="tab">
                                 <span class="text"
@@ -75,7 +75,7 @@
                                    data-toggle="dropdown"
                                    aria-expanded="false"
                                    ng-if="activeTab === tab.id"
-                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.source !== 'ALLOCATED',  'bg-primary-50': tab.source === 'ALLOCATED',  'text-dark': tab.source === 'ALLOCATED'}"
+                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.isOwner,  'bg-primary-50 text-dark': !tab.isOwner}"
                                    title="{{tab.title}}"
                                 >
                                     <span class="text"
@@ -88,7 +88,7 @@
                                     <b class="caret"></b>
                                 </a>
                                 <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}"
-                                    ng-hide="tab.source === 'ALLOCATED'">
+                                    ng-hide="!tab.isOwner">
                                     <li>
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="triggerRenameTabModal(tab.name)">

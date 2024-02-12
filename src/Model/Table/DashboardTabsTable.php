@@ -377,10 +377,16 @@ class DashboardTabsTable extends Table {
             ->all();
 
         foreach ($result as $row) {
+            // Dashboards are always own by the user
+            // ONLY if a dashboard was allocated
+            $isOwner = true;
+
+
             $forJs[] = [
                 'id'                => (int)$row['id'],
                 'position'          => (int)$row['position'],
                 'name'              => $row['name'],
+                'user_id'           => $row['user_id'],
                 'shared'            => (bool)$row['shared'],
                 'source_tab_id'     => (int)$row['source_tab_id'],
                 'check_for_updates' => (bool)$row['check_for_updates'],
@@ -388,9 +394,8 @@ class DashboardTabsTable extends Table {
                 'locked'            => (bool)$row['locked'],
                 'modified'          => $row['modified'],
                 'flags'             => (int)$row['flags'],
-                'isPinned'          => ($row['flags'] & DashboardTab::FLAG_ALLOCATED) && ($row['flags'] & DashboardTab::FLAG_PINNED),
-                'isReadonly'        => (bool)($row['flags'] & DashboardTab::FLAG_ALLOCATED),
-                'source'            => (bool)($row['flags'] & DashboardTab::FLAG_ALLOCATED) ? 'ALLOCATED' : ''
+                'isPinned'          => $isOwner && ($row['flags'] & DashboardTab::FLAG_PINNED) > 0,
+                'isOwner'           => $isOwner
             ];
         }
 

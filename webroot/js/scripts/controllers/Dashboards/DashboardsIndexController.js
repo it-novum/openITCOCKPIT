@@ -12,7 +12,7 @@ angular.module('openITCOCKPIT')
         $scope.Usergroup = {};
         $scope.User = {};
         $scope.hideModifications = 0;
-        $scope.userId = 0;
+        $scope.userId = 0; // UserId of the currently logged-in user
 
         $scope.data = {
             newTabName: '',
@@ -113,6 +113,7 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
 
                 $scope.tabs = result.data.tabs;
+                $scope.userId = result.data.userId;
                 if($scope.activeTab === null){
                     $scope.activeTab = $scope.tabs[0].id;
                 }
@@ -156,7 +157,7 @@ angular.module('openITCOCKPIT')
                             $scope.gridsterOpts.resizable.enabled = true;
                             $scope.gridsterOpts.draggable.enabled = true;
                         }
-                        if(($scope.tabs[k].source || '') === 'ALLOCATED'){
+                        if($scope.tabs[k].isOwner === false){
                             $scope.hideModifications = 1;
                             $scope.dashboardIsLocked = true;
                             $scope.gridsterOpts.resizable.enabled = false;
@@ -514,9 +515,8 @@ angular.module('openITCOCKPIT')
         // I will load the current allocation status.
         $scope.fetchAllocation = function(tabId){
             // Fetch the desired Dashboard.
-            $http.get("/dashboards/allocate/" + tabId + ".json?angular=true&id=").then(function(result){
+            $http.get("/dashboards/allocate/" + tabId + ".json?angular=true").then(function(result){
                 $scope.dashboard = result.data.dashboardTab;
-                $scope.userId = result.data.userId;
 
                 // I'm done.
                 $scope.allocationInitializing = false;

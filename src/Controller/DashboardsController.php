@@ -136,7 +136,8 @@ class DashboardsController extends AppController {
         $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);
         $this->set('tabRotationInterval', $tabRotationInterval);
-        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp']);
+        $this->set('userId', $User->getId());
+        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp', 'userId']);
     }
 
     /****************************
@@ -2125,12 +2126,8 @@ class DashboardsController extends AppController {
         }
         if ($this->request->is('post')) {
             $dashboardTab = $this->request->getData('DashboardTab');
-            // Wipe behind me to ensure users with clones keep them and can work with them still.
-            $DashboardTabsTable->cleanup(
-                (int)$dashboardTab['id'],
-                (array)$dashboardTab['allocated_users']['_ids'],
-                (array)$dashboardTab['usergroups']['_ids']
-            );
+            // Usergroups can be dynamically assigned through LDAP so we HAVE TO delete ALL current allocations
+
 
             // Fetch from DB
             $Entity = $DashboardTabsTable->get($dashboardTab['id']);
