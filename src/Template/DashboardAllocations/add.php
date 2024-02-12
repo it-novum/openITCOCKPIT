@@ -111,7 +111,7 @@
                                         class="form-control"
                                         chosen="users"
                                         ng-options="user.key as user.value for user in users"
-                                        ng-model="post.DashboardAllocation.usergroups_to_dashboard_tab_allocations._ids"
+                                        ng-model="post.DashboardAllocation.users_to_dashboard_tab_allocations._ids"
                                         multiple="multiple">
                                     </select>
                                 </div>
@@ -123,14 +123,14 @@
                             <div class="col-lg-12">
                                 <div class="form-group margin-top-20 padding-bottom-10">
                                     <label class="control-label">
-                                        <?php echo __('Allocated Roles'); ?>
+                                        <?php echo __('Allocated User roles'); ?>
                                     </label>
                                     <select
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="usergroups"
                                         ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
-                                        ng-model="post.DashboardAllocation.users_to_dashboard_tab_allocations._ids"
+                                        ng-model="post.DashboardAllocation.usergroups_to_dashboard_tab_allocations._ids"
                                         multiple="multiple">
                                     </select>
                                 </div>
