@@ -134,6 +134,12 @@ class DashboardAllocationsController extends AppController {
 
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
 
+        $dashboardTabs = [
+            20 => 'Default (Herbert Benutzer)'
+        ];
+        $dashboardTabs = Api::makeItJavaScriptAble($dashboardTabs);
+
+
         $users = $UsersTable->usersByContainerId($containerIds, 'list');
         $users = Api::makeItJavaScriptAble($users);
 
@@ -142,10 +148,12 @@ class DashboardAllocationsController extends AppController {
 
         $this->set('users', $users);
         $this->set('usergroups', $usergroups);
+        $this->set('dashboard_tabs', $dashboardTabs);
 
         $this->viewBuilder()->setOption('serialize', [
             'users',
             'usergroups',
+            'dashboard_tabs'
         ]);
     }
 

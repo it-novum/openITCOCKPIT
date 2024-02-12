@@ -64,8 +64,8 @@
                     <form ng-submit="saveAllocation();" class="form-horizontal">
 
                         <!-- Select Container -->
-                        <div class="form-group" ng-class="{'has-error': errors.containers}">
-                            <label class="control-label hintmark" for="UserContainers">
+                        <div class="form-group required" ng-class="{'has-error': errors.containers}">
+                            <label class="control-label" for="UserContainers">
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
@@ -77,6 +77,24 @@
                                 ng-model="post.DashboardAllocation.container_id">
                             </select>
                             <div ng-repeat="error in errors.containers">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
+
+                        <!-- Select Dashboard Tab to Share -->
+                        <div class="form-group required" ng-class="{'has-error': errors.dashboard_tab_id}">
+                            <label class="control-label" for="DashboardTab">
+                                <?php echo __('Dashboard to allocate'); ?>
+                            </label>
+                            <select
+                                id="DashboardTab"
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="dashboard_tabs"
+                                ng-options="dashboard_tab.key as dashboard_tab.value for dashboard_tab in dashboard_tabs"
+                                ng-model="post.DashboardAllocation.dashboard_tab_id">
+                            </select>
+                            <div ng-repeat="error in errors.dashboard_tab_id">
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
@@ -127,13 +145,15 @@
                                         <input type="checkbox"
                                                class="custom-control-input"
                                                id="pinDashboard"
-                                               ng-model="post.DashboardAllocation.is_pinned">
+                                               ng-model="post.DashboardAllocation.pinned">
                                         <label class="custom-control-label" for="pinDashboard">
                                             <?php echo __('Pin Dashboard'); ?>
                                         </label>
+                                        <div
+                                            class="help-block">
+                                            <?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?>
+                                        </div>
                                     </div>
-                                    <div
-                                        class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?></div>
                                 </div>
                             </div>
                         </div>

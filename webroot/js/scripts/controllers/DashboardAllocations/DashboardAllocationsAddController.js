@@ -4,7 +4,8 @@ angular.module('openITCOCKPIT')
             DashboardAllocation: {
                 name: '',
                 container_id: 0,
-                is_pinned: false,
+                dashboard_tab_id: 0,
+                pinned: false,
                 usergroups_to_dashboard_tab_allocations: {
                     _ids: [],
                 },
@@ -39,6 +40,7 @@ angular.module('openITCOCKPIT')
                     'angular': true
                 }
             }).then(function(result){
+                $scope.dashboard_tabs = result.data.dashboard_tabs;
                 $scope.users = result.data.users;
                 $scope.usergroups = result.data.usergroups;
             });
