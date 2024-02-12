@@ -116,11 +116,11 @@ class UsersTable extends Table {
             //'saveStrategy'     => 'replace'
         ]);
 
-        $this->belongsToMany('DashboardTabs', [
-            'className'        => 'DashboardTabs',
-            'joinTable'        => 'users_to_dashboard_tabs',
+        $this->belongsToMany('DashboardTabAllocations', [
+            'className'        => 'DashboardTabAllocations',
+            'joinTable'        => 'users_to_dashboard_tab_allocations',
             'foreignKey'       => 'user_id',
-            'targetForeignKey' => 'dashboard_tab_id',
+            'targetForeignKey' => 'dashboard_tab_allocation_id',
             'saveStrategy'     => 'replace',
             'dependent'        => true
         ]);
@@ -1459,25 +1459,5 @@ class UsersTable extends Table {
         }
 
         return true;
-    }
-
-    public function getAllocatedTabsByUserId(int $userId): array {
-        $dashboards = $this
-            ->find()
-            ->contain(['DashboardTabs'])
-            ->where(['id' => $userId])
-            ->disableHydration()
-            ->all()
-            ->toArray()[0]['dashboard_tabs'] ?? [];
-        return Hash::extract($dashboards, '{n}.id');
-    }
-
-    public function getUserIdsByUsergroupId(int $usergroupId) : array {
-        $Users = $this
-            ->find()
-            ->contain('Usergroups')
-            ->where(['Usergroups.id' => $usergroupId])
-            ->toArray();
-        return Hash::extract($Users, '{n}.id');
     }
 }

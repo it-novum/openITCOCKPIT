@@ -53,21 +53,17 @@
                                 </h2>
                             </li>
                             <li class="nav-item" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
-                                ng-class="{'active':activeTab === tab.id, 'ui-sortable-handle':  !tab.isPinned}">
+                                ng-class="{'active':activeTab === tab.id}">
                                 <a class="nav-link"
                                    href="javascript:void(0);"
                                    ng-if="activeTab !== tab.id"
-                                   ng-class="{ 'bg-primary-50 text-dark': !tab.isOwner}"
                                    title="{{tab.title}}"
                                    role="tab">
-                                <span class="text"
-                                      ng-click="loadTabContent(tab.id)"
-                                      ng-class="{ 'text-primary': tab.shared === true}">
-                                    <span ng-show="tab.isPinned">
-                                        <i class="fa fa-lock"></i>
+                                    <span class="text"
+                                          ng-click="loadTabContent(tab.id)"
+                                          ng-class="{ 'text-primary': tab.shared === true}">
+                                        {{tab.name}}
                                     </span>
-                                    {{tab.name}}
-                                </span>
                                 </a>
 
                                 <a href="javascript:void(0);"
@@ -75,20 +71,15 @@
                                    data-toggle="dropdown"
                                    aria-expanded="false"
                                    ng-if="activeTab === tab.id"
-                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.isOwner,  'bg-primary-50 text-dark': !tab.isOwner}"
-                                   title="{{tab.title}}"
-                                >
+                                   ng-class="{ 'text-primary': tab.shared}"
+                                   title="{{tab.title}}">
                                     <span class="text"
-                                          ng-class="{ 'text-primary': tab.shared === true}">
-                                    <span ng-show="tab.isPinned">
-                                        <i class="fa fa-lock"></i>
-                                    </span>
+                                          ng-class="{ 'text-primary': tab.shared === true, 'dropdown-toggle' : activeTab === tab.id}">
                                         {{tab.name}}
                                     </span>
                                     <b class="caret"></b>
                                 </a>
-                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}"
-                                    ng-hide="!tab.isOwner">
+                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
                                     <li>
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="triggerRenameTabModal(tab.name)">
@@ -131,7 +122,8 @@
                             </li>
                         </ul>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-xs-12 panel-toolbar pl-0 pr-0 pt-2 d-inline text-right">
+                    <div
+                        class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-xs-12 panel-toolbar pl-0 pr-0 pt-2 d-inline text-right">
                         <button class="btn btn-xs mr-1 shadow-0 btn-primary"
                                 title="<?php echo __('Setup tab rotation'); ?>"
                                 data-toggle="modal" data-target="#tabRotationModal">
@@ -318,7 +310,7 @@
                                          data-readonly="{{widget.isReadonly}}"
                                          style="height:100%; overflow: auto;" class="card-body">
                                         <ng-include
-                                                src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
+                                            src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
                                     </div>
                                 </div>
                                 <div ng-if="$last" ng-init="$last?enableWatch():null"></div>
@@ -394,9 +386,9 @@
                                 <?php echo __('Tab name'); ?>
                             </label>
                             <input
-                                    class="form-control"
-                                    type="text"
-                                    ng-model="data.newTabName">
+                                class="form-control"
+                                type="text"
+                                ng-model="data.newTabName">
                         </div>
                     </div>
                 </div>
@@ -421,11 +413,11 @@
                                 <?php echo __('Select shared tab'); ?>
                             </label>
                             <select
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="sharedTabs"
-                                    ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
-                                    ng-model="data.createTabFromSharedTabId">
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="sharedTabs"
+                                ng-options="sharedTab.id as sharedTab.name for sharedTab in sharedTabs"
+                                ng-model="data.createTabFromSharedTabId">
                             </select>
                         </div>
                     </div>
@@ -650,12 +642,12 @@
                             <?php echo __('Container'); ?>
                         </label>
                         <select
-                                id="UserContainers"
-                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                class="form-control"
-                                chosen="containers"
-                                ng-options="container.key as container.value for container in containers"
-                                ng-model="dashboard.container_id">
+                            id="UserContainers"
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="containers"
+                            ng-options="container.key as container.value for container in containers"
+                            ng-model="dashboard.container_id">
                         </select>
                         <div ng-repeat="error in errors.containers">
                             <div class="help-block text-danger">{{ error }}</div>
@@ -670,12 +662,12 @@
                                     <?php echo __('Allocated Users'); ?>
                                 </label>
                                 <select
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="users"
-                                        ng-options="user.key as user.value for user in users"
-                                        ng-model="dashboard.allocated_users._ids"
-                                        multiple="multiple">
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="users"
+                                    ng-options="user.key as user.value for user in users"
+                                    ng-model="dashboard.allocated_users._ids"
+                                    multiple="multiple">
                                 </select>
                             </div>
                         </div>
@@ -689,12 +681,12 @@
                                     <?php echo __('Allocated Roles'); ?>
                                 </label>
                                 <select
-                                        data-placeholder="<?php echo __('Please choose'); ?>"
-                                        class="form-control"
-                                        chosen="usergroups"
-                                        ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
-                                        ng-model="dashboard.usergroups._ids"
-                                        multiple="multiple">
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="usergroups"
+                                    ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
+                                    ng-model="dashboard.usergroups._ids"
+                                    multiple="multiple">
                                 </select>
                             </div>
                         </div>
@@ -713,7 +705,8 @@
                                         <?php echo __('Pin Dashboard'); ?>
                                     </label>
                                 </div>
-                                <div class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?></div>
+                                <div
+                                    class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?></div>
                             </div>
                         </div>
                     </div>

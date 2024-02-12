@@ -108,16 +108,17 @@ class DashboardsController extends AppController {
 
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
-        $UserEntity = $UsersTable->get($User->getId());
-        $tabRotationInterval = (int)$UserEntity->dashboard_tab_rotation;
+        $user = $UsersTable->get($User->getId());
+        $tabRotationInterval = (int)$user->dashboard_tab_rotation;
 
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
-        // If user has neither OWN or allocated tabs, create the default tab.
-        if (!$DashboardTabsTable->hasUserATab($User)) {
+
+        //Check if a tab exists for the given user
+        if ($DashboardTabsTable->hasUserATab($User->getId()) === false) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {
                 //Create default widgets
@@ -128,16 +129,14 @@ class DashboardsController extends AppController {
                 $DashboardTabsTable->save($entitiy);
             }
         }
-
-        $tabs = $DashboardTabsTable->getAllTabsByUserId($User);
+        $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
 
         $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);
         $this->set('tabRotationInterval', $tabRotationInterval);
-        $this->set('userId', $User->getId());
-        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp', 'userId']);
+        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp']);
     }
 
     /****************************

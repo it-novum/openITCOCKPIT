@@ -66,11 +66,11 @@ class UsergroupsTable extends Table {
             'saveStrategy'     => 'replace'
         ]);
 
-        $this->belongsToMany('DashboardTabs', [
-            'className'        => 'DashboardTabs',
-            'joinTable'        => 'usergroups_to_dashboard_tabs',
+        $this->belongsToMany('DashboardTabAllocation', [
+            'className'        => 'DashboardTabAllocation',
+            'joinTable'        => 'usergroups_to_dashboard_tab_allocations',
             'foreignKey'       => 'usergroup_id',
-            'targetForeignKey' => 'dashboard_tab_id',
+            'targetForeignKey' => 'dashboard_tab_allocation_id',
             'saveStrategy'     => 'replace',
             'dependent'        => true
         ]);
@@ -283,21 +283,5 @@ class UsergroupsTable extends Table {
         ];
 
         return $usergroup;
-    }
-
-    /**
-     * I will return an array of DashboardTabs that were allocated to the given $usergroupId.
-     * @param int $usergroupId
-     * @return array
-     */
-    public function getAllocatedTabsByUsergroupId(int $usergroupId): array {
-        $dashboards = $this
-            ->find()
-            ->contain(['DashboardTabs'])
-            ->where(['id' => $usergroupId])
-            ->disableHydration()
-            ->all()
-            ->toArray()[0]['dashboard_tabs'] ?? [];
-        return Hash::extract($dashboards, '{n}.id');
     }
 }
