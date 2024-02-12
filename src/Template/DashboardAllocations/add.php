@@ -61,7 +61,8 @@
             </div>
             <div class="panel-container show">
                 <div class="panel-content">
-                    <form ng-submit="saveAllocation();" class="form-horizontal">
+                    <form ng-submit="submit();"
+                          ng-init="successMessage={objectName : '<?php echo __('Dashboard allocation'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
 
                         <!-- Select Container -->
                         <div class="form-group required" ng-class="{'has-error': errors.containers}">
@@ -129,7 +130,7 @@
                                         data-placeholder="<?php echo __('Please choose'); ?>"
                                         class="form-control"
                                         chosen="usergroups"
-                                        ng-options="usergroup.id as usergroup.name for usergroup in usergroups"
+                                        ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
                                         ng-model="post.DashboardAllocation.usergroups_to_dashboard_tab_allocations._ids"
                                         multiple="multiple">
                                     </select>
