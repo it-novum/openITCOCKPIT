@@ -150,16 +150,29 @@ class DashboardTabAllocationsTable extends Table {
             ->notEmptyString('pinned');
 
         $validator
-            ->allowEmptyArray('users', __('You must at least specify at least one user or user role'), function ($context) {
-                return !empty($context['data']['users']['_ids']) || !empty($context['data']['usergroups']['_ids']);
-            });
+            ->add('users', 'custom', [
+                'rule'    => [$this, 'atLeastOneUserOrUsergroup'],
+                'message' => __('You have to choose at least one user or one user role.')
+            ]);
 
         $validator
-            ->allowEmptyArray('usergroups', __('You must at least specify at least one user or user role'), function ($context) {
-                return !empty($context['data']['usergroups']['_ids']) || !empty($context['data']['users']['_ids']);
-            });
+            ->add('usergroups', 'custom', [
+                'rule'    => [$this, 'atLeastOneUserOrUsergroup'],
+                'message' => __('You have to choose at least one user or one user role.')
+            ]);
 
         return $validator;
+    }
+
+    /**
+     * @param mixed $value
+     * @param array $context
+     * @return bool
+     *
+     * Custom validation rule for users and or user groups
+     */
+    public function atLeastOneUserOrUsergroup($value, $context) {
+        return !empty($context['data']['users']['_ids']) || !empty($context['data']['usergroups']['_ids']);
     }
 
     /**

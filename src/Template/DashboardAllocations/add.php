@@ -114,7 +114,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group margin-top-20 padding-bottom-10"
-                                     ng-class="{'has-error': errors.users_to_dashboard_tab_allocations}">
+                                     ng-class="{'has-error': errors.users}">
                                     <label class="control-label">
                                         <?php echo __('Allocated Users'); ?>
                                     </label>
@@ -126,7 +126,7 @@
                                         ng-model="post.DashboardAllocation.users._ids"
                                         multiple="multiple">
                                     </select>
-                                    <div ng-repeat="error in errors.users_to_dashboard_tab_allocations">
+                                    <div ng-repeat="error in errors.users">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
@@ -137,7 +137,7 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group margin-top-20 padding-bottom-10"
-                                     ng-class="{'has-error': errors.usergroups_to_dashboard_tab_allocations}">
+                                     ng-class="{'has-error': errors.usergroups}">
                                     <label class="control-label">
                                         <?php echo __('Allocated User roles'); ?>
                                     </label>
@@ -149,7 +149,7 @@
                                         ng-model="post.DashboardAllocation.usergroups._ids"
                                         multiple="multiple">
                                     </select>
-                                    <div ng-repeat="error in errors.usergroups_to_dashboard_tab_allocations">
+                                    <div ng-repeat="error in errors.usergroups">
                                         <div class="help-block text-danger">{{ error }}</div>
                                     </div>
                                 </div>
