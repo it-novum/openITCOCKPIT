@@ -39,7 +39,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     $scope.responsePerfdata = result.data.data.Perfdata;
 
                     processPerfdata();
-                    renderGauge($scope.perfdataName, $scope.perfdata);
+                    renderGauge($scope.perfdata);
 
                     initRefreshTimer();
 
@@ -115,36 +115,30 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 return thresholdAreas;
             }
 
-            var renderGauge = function(perfdataName, perfdata){
-                var units = perfdata.unit;
-                var label = perfdataName;
+            var renderGauge = function(perfdata){
+                var label = perfdata.datasource.setup.metric.name,
+                    units = '';
 
+
+                if($scope.item.show_label === true){
+                    if(typeof(perfdata.datasource.setup.metric.unit) !== "string" || perfdata.datasource.setup.metric.unit.length === 0){
+                        units = label;
+                    }else{
+                        units = label + ' in ' + perfdata.datasource.setup.metric.unit;
+                    }
+                    label = $scope.Host.hostname + '/' + $scope.Service.servicename;
+
+                    // ITC-3153: Strip hostname of too long
+                    if(label.length > 20){
+                        label = $scope.Service.servicename;
+                    }
+
+                }
+
+                // shorten label if required.
                 if(label.length > 20){
                     label = label.substr(0, 20);
                     label += '...';
-                }
-
-                if($scope.item.show_label === true){
-                    if(units === null){
-                        units = label;
-                    }else{
-                        units = label + ' in ' + units;
-                    }
-                    label = $scope.Host.hostname + '/' + $scope.Service.servicename;
-                    if(label.length > 20){
-                        label = label.substr(0, 20);
-                        label += '...';
-                    }
-                }
-
-
-                if(isNaN(perfdata.warning) || isNaN(perfdata.critical)){
-                    perfdata.warning = null;
-                    perfdata.critical = null;
-                }
-
-                if(isNaN(perfdata.datasource.setup.scale.max) && isNaN(perfdata.critical) === false){
-                    perfdata.datasource.setup.scale.max = perfdata.critical;
                 }
 
                 if(isNaN(perfdata.datasource.setup.scale.min) || isNaN(perfdata.datasource.setup.scale.max) || perfdata.datasource.setup.scale.min === null || perfdata.datasource.setup.scale.max === null){
@@ -155,7 +149,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 var thresholds = $scope.getThresholdAreas(perfdata.datasource.setup);
 
                 var maxDecimalDigits = 3;
-                var currentValueAsString = perfdata.current.toString();
+                var currentValueAsString = perfdata.datasource.setup.metric.value.toString();
                 var intergetDigits = currentValueAsString.length;
                 var decimalDigits = 0;
 
@@ -227,17 +221,14 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     unit: 'n/a',
                     setup: {}
                 };
-                $scope.perfdataName = 'No data available';
 
 
                 if($scope.responsePerfdata !== null){
                     if($scope.item.metric !== null && $scope.responsePerfdata.hasOwnProperty($scope.item.metric)){
-                        $scope.perfdataName = $scope.item.metric;
                         $scope.perfdata = $scope.responsePerfdata[$scope.item.metric];
                     }else{
                         //Use first metric.
                         for(var metricName in $scope.responsePerfdata){
-                            $scope.perfdataName = metricName;
                             $scope.perfdata = $scope.responsePerfdata[metricName];
                             break;
                         }
@@ -246,7 +237,6 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
 
                 $scope.perfdata.current = parseFloat($scope.perfdata.current);
                 $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
-                $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
             };
 
             var initRefreshTimer = function(){
@@ -267,7 +257,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 $scope.width = $scope.item.size_x;
                 $scope.height = $scope.item.size_y;
 
-                renderGauge($scope.perfdataName, $scope.perfdata);
+                renderGauge($scope.perfdata);
             });
 
             $scope.$watch('item.metric', function(){
@@ -276,7 +266,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 }
 
                 processPerfdata();
-                renderGauge($scope.perfdataName, $scope.perfdata);
+                renderGauge($scope.perfdata);
             });
 
             $scope.$watch('item.object_id', function(){
