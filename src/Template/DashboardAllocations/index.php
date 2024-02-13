@@ -158,8 +158,7 @@
                                         </span>
                                 </td>
                                 <td class="text-center">
-                                    <i class="fa fa-lock"
-                                       ng-show="dashboardtab_allocation.pinned"></i>
+                                    <i class="fa-solid fa-thumbtack" ng-show="dashboardtab_allocation.pinned"></i>
                                 </td>
 
                                 <td class="width-50">
