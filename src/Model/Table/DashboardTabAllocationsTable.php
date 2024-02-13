@@ -33,6 +33,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\DashboardTabAllocationsFilter;
 
@@ -207,7 +208,7 @@ class DashboardTabAllocationsTable extends Table {
     public function getDashboardTabAllocationsIndex(DashboardTabAllocationsFilter $DashboardTabAllocationsFilter, ?PaginateOMat $PaginateOMat, array $MY_RIGHTS = []) {
         $query = $this->find()
             ->contain([
-                'Author'     => function (Query $query) {
+                'Author'        => function (Query $query) {
                     return $query->select([
                         'author' => $query->func()->concat([
                             'Author.firstname' => 'literal',
@@ -216,7 +217,7 @@ class DashboardTabAllocationsTable extends Table {
                         ])
                     ]);
                 },
-                'Users'      => function (Query $query) {
+                'Users'         => function (Query $query) {
                     return $query->select([
                         'full_name' => $query->func()->concat([
                             'Users.firstname' => 'literal',
@@ -225,7 +226,7 @@ class DashboardTabAllocationsTable extends Table {
                         ])
                     ]);
                 },
-                'Usergroups' => function (Query $query) {
+                'Usergroups'    => function (Query $query) {
                     return $query->select([
                         'Usergroups.name'
                     ]);
@@ -262,7 +263,7 @@ class DashboardTabAllocationsTable extends Table {
     public function getDashboardTabAllocationForEdit($id) {
         $query = $this->find()
             ->contain([
-                'Author' => function(Query $q){
+                'Author' => function (Query $q) {
                     // User who created the allocation
                     // Do not leak any sensitive data like password (even if it is hashed)!
                     $q
@@ -298,4 +299,20 @@ class DashboardTabAllocationsTable extends Table {
             'DashboardAllocation' => $query
         ];
     }
+
+    public function getAllDashboardAllocationsByUser(User $User) {
+        $query = $this->find()
+            ->innerJoinWith('Users')
+            ->innerJoinWith('Usergroups');
+        $query->where(
+            [
+                'Users.id'   => $User->getId(),
+                'Usergroups' => $User->getUsergroupId()
+            ]
+        );
+        $query->disableHydration()
+            ->all();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
 }
