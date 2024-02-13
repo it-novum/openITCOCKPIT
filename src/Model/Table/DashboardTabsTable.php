@@ -61,8 +61,9 @@ class DashboardTabsTable extends Table {
         ]);
 
         $this->hasMany('DashboardTabAllocations', [
-            'foreignKey' => 'dashboard_tab_id',
-            'dependent'  => true
+            'foreignKey'       => 'dashboard_tab_id',
+            'dependent'        => true,
+            'cascadeCallbacks' => true // https://book.cakephp.org/4/en/orm/deleting-data.html#cascading-deletes
         ]);
 
     }
