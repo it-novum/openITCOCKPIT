@@ -28,13 +28,12 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
+use Cake\Database\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\DashboardTabAllocationsFilter;
-use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 /**
  * DashboardTabAllocations Model
@@ -197,7 +196,32 @@ class DashboardTabAllocationsTable extends Table {
      * @return array
      */
     public function getDashboardTabAllocationsIndex(DashboardTabAllocationsFilter $DashboardTabAllocationsFilter, ?PaginateOMat $PaginateOMat, array $MY_RIGHTS = []) {
-        $query = $this->find();
+        $query = $this->find()
+            ->contain([
+                'Author'     => function (Query $query) {
+                    return $query->select([
+                        'author' => $query->func()->concat([
+                            'Author.firstname' => 'literal',
+                            ' ',
+                            'Author.lastname'  => 'literal'
+                        ])
+                    ]);
+                },
+                'Users'      => function (Query $query) {
+                    return $query->select([
+                        'full_name' => $query->func()->concat([
+                            'Users.firstname' => 'literal',
+                            ' ',
+                            'Users.lastname'  => 'literal'
+                        ])
+                    ]);
+                },
+                'Usergroups' => function (Query $query) {
+                    return $query->select([
+                        'Usergroups.name'
+                    ]);
+                }
+            ]);
 
         $where = $DashboardTabAllocationsFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {

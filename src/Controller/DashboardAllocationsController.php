@@ -67,7 +67,11 @@ class DashboardAllocationsController extends AppController {
         }
 
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $DashboardTabAllocationsFilter->getPage());
-        $all_dashboardtab_allocations = $DashboardTabAllocationsTable->getDashboardTabAllocationsIndex($DashboardTabAllocationsFilter, $PaginateOMat, $MY_RIGHTS);
+        $all_dashboardtab_allocations = $DashboardTabAllocationsTable->getDashboardTabAllocationsIndex(
+            $DashboardTabAllocationsFilter,
+            $PaginateOMat,
+            $MY_RIGHTS
+        );
 
         $this->set('all_dashboardtab_allocations', $all_dashboardtab_allocations);
         $this->viewBuilder()->setOption('serialize', ['all_dashboardtab_allocations']);

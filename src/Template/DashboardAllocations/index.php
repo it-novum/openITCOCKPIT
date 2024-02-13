@@ -108,6 +108,22 @@
                                     <i class="fa" ng-class="getSortClass('DashboardTabAllocations.name')"></i>
                                     <?php echo __('Allocation Name'); ?>
                                 </th>
+                                <th class="no-sort" ng-click="orderBy('author')">
+                                    <i class="fa" ng-class="getSortClass('author')"></i>
+                                    <?php echo __('Author'); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <i class="fa"></i>
+                                    <?php echo __('User roles'); ?>
+                                </th>
+                                <th class="no-sort">
+                                    <i class="fa"></i>
+                                    <?php echo __('Users'); ?>
+                                </th>
+                                <th class="no-sort col-1" ng-click="orderBy('pinned')">
+                                    <i class="fa" ng-class="getSortClass('pinned')"></i>
+                                    <?php echo __('Pinned'); ?>
+                                </th>
 
                                 <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
@@ -120,11 +136,62 @@
                                     <input type="checkbox"
                                            ng-model="massChange[dashboardtab_allocation.id]">
                                 </td>
+                                <td>{{dashboardtab_allocation.name}}</td>
+                                <td>{{dashboardtab_allocation.author}}</td>
                                 <td>
-                                    {{dashboardtab_allocation.name}}
+                                    {{dashboardtab_allocation.usergroups.length}}
+                                    <span class="badge badge-primary mx-1"
+                                          ng-repeat="usergroup in dashboardtab_allocation.usergroups">
+                                            {{usergroup.name}}
+                                        </span>
                                 </td>
                                 <td>
-                                    EDIT
+                                    {{dashboardtab_allocation.users.length}}
+                                    <span class="badge badge-primary mx-1"
+                                          ng-repeat="allocated_user in dashboardtab_allocation.users">
+                                            {{allocated_user.full_name}}
+                                        </span>
+                                </td>
+                                <td class="text-center">
+                                    <i class="fa fa-lock"
+                                       ng-show="dashboardtab_allocation.pinned"></i>
+                                </td>
+
+                                <td class="width-50">
+                                    <div class="btn-group btn-group-xs" role="group">
+                                        <?php if ($this->Acl->hasPermission('edit', 'DashboardAllocations')): ?>
+                                            <a ui-sref="DashboardAllocationsEdit({id: dashboardtab_allocation.id})"
+                                               class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                        <?php else: ?>
+                                            <a href="javascript:void(0);"
+                                               class="btn btn-default disabled btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                        <?php endif; ?>
+                                        <button type="button"
+                                                class="btn btn-default dropdown-toggle btn-lower-padding"
+                                                data-toggle="dropdown">
+                                            <i class="caret"></i>
+                                        </button>
+                                        <div class="dropdown-menu dropdown-menu-right">
+                                            <?php if ($this->Acl->hasPermission('edit', 'DashboardAllocations')): ?>
+                                                <a ui-sref="DashboardAllocationsEdit({id: dashboardtab_allocation.id})"
+                                                   class="dropdown-item">
+                                                    <i class="fa fa-cog"></i>
+                                                    <?php echo __('Edit'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('delete', 'DashboardAllocations')): ?>
+                                                <a ng-click="confirmDelete(getObjectForDelete(dashboardTab))"
+                                                   class="dropdown-item txt-color-red">
+                                                    <i class="fa fa-trash"></i>
+                                                    <?php echo __('Delete all allocations'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
                                 </td>
 
                             </tr>
