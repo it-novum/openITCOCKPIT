@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
         $scope.init = true;
         $scope.hasError = null;
+        $scope.allocated_dashboard_tabs_ids = [];
 
         $scope.load = function(){
             $http.get("/DashboardAllocations/edit/" + $scope.id + ".json", {
@@ -50,6 +51,13 @@ angular.module('openITCOCKPIT')
                 $scope.dashboard_tabs = result.data.dashboard_tabs;
                 $scope.users = result.data.users;
                 $scope.usergroups = result.data.usergroups;
+                $scope.allocated_dashboard_tabs = result.data.allocated_dashboard_tabs;
+                $scope.allocated_dashboard_tabs_ids = [];
+                _.each($scope.allocated_dashboard_tabs, function(allocated_dashboard){
+                    if(allocated_dashboard.id != $scope.id){
+                        $scope.allocated_dashboard_tabs_ids.push(allocated_dashboard.dashboard_tab_id);
+                    }
+                });
             });
         };
 

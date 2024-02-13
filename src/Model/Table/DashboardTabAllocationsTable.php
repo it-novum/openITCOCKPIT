@@ -316,4 +316,32 @@ class DashboardTabAllocationsTable extends Table {
         return $this->emptyArrayIfNull($query->toArray());
     }
 
+    public function getAllocatedDashboardTabsIdsByContainerIdsAsList($containerIds, $MY_RIGHTS) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find();
+        $query->select([
+            'DashboardTabAllocations.id',
+            'DashboardTabAllocations.dashboard_tab_id'
+        ]);
+
+        if (!empty($containerIds)) {
+            $query->where([
+                'DashboardTabAllocations.container_id IN' => $containerIds
+            ]);
+        }
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'DashboardTabAllocations.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->group(['DashboardTabAllocations.dashboard_tab_id'])
+            ->disableHydration()
+            ->all();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

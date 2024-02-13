@@ -102,7 +102,7 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="dashboard_tabs"
-                                ng-options="dashboard_tab.key as dashboard_tab.value for dashboard_tab in dashboard_tabs"
+                                ng-options="dashboard_tab.key as ((allocated_dashboard_tabs_ids.indexOf(dashboard_tab.key) === -1) ?dashboard_tab.value :dashboard_tab.value + '🔐') disable when (allocated_dashboard_tabs_ids.indexOf(dashboard_tab.key) !== -1) for dashboard_tab in dashboard_tabs"
                                 ng-model="post.DashboardAllocation.dashboard_tab_id">
                             </select>
                             <div ng-repeat="error in errors.dashboard_tab_id">

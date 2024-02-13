@@ -27,10 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Model\Entity\DashboardTab;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabAllocationsTable;
-use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\UsergroupsTable;
 use App\Model\Table\UsersTable;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -41,7 +39,6 @@ use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\DashboardTabAllocationsFilter;
-use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
 
 /**
@@ -73,7 +70,7 @@ class DashboardAllocationsController extends AppController {
             $PaginateOMat,
             $MY_RIGHTS
         );
-        foreach ($all_dashboardtab_allocations as $key => $all_dashboardtab_allocation){
+        foreach ($all_dashboardtab_allocations as $key => $all_dashboardtab_allocation) {
             $all_dashboardtab_allocations[$key]['allowEdit'] = $this->isWritableContainer($all_dashboardtab_allocation['container_id']);
         }
 
@@ -213,6 +210,9 @@ class DashboardAllocationsController extends AppController {
         /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
+        /** @var DashboardTabAllocationsTable $DashboardTabAllocationsTable */
+        $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
+
         if (!$ContainersTable->existsById($containerId)) {
             throw new NotFoundException(__('Invalid container'));
         }
@@ -234,14 +234,18 @@ class DashboardAllocationsController extends AppController {
         $dashboardTabs = $UsersTable->getDashboardTabsByContainerIdsAsList($containerIds, $MY_RIGHTS);
         $dashboardTabs = Api::makeItJavaScriptAble($dashboardTabs);
 
+        $allAllocatedDashboardTabIds = $DashboardTabAllocationsTable->getAllocatedDashboardTabsIdsByContainerIdsAsList($containerIds, $MY_RIGHTS);
+
         $this->set('users', $users);
         $this->set('usergroups', $usergroups);
         $this->set('dashboard_tabs', $dashboardTabs);
+        $this->set('allocated_dashboard_tabs', $allAllocatedDashboardTabIds);
 
         $this->viewBuilder()->setOption('serialize', [
             'users',
             'usergroups',
-            'dashboard_tabs'
+            'dashboard_tabs',
+            'allocated_dashboard_tabs'
         ]);
     }
 
