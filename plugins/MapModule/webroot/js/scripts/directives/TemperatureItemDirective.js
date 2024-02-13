@@ -145,7 +145,6 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     setup.scale.max = 100;
                 }
 
-                var thresholds = $scope.getThresholdAreas(setup);
                 var maxDecimalDigits = 3;
                 var currentValueAsString = setup.metric.value.toString();
                 var intergetDigits = currentValueAsString.length;
@@ -165,13 +164,23 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     showDecimalDigitsGauge = 1;
                 }
 
+                // First, calculate ticks. This MAY cause irregular MAX values.
+                let majorTicks = getMajorTicks(setup, 5);
+
+                // So calculate the REAL max value so the thresholds are scaled properly.
+                setup.scale.max = getTickCorrectMax(setup, 5);
+
+                // Now create the threshold areas based on the new max.
+                var thresholds = $scope.getThresholdAreas(setup);
+
+
                 let settings ={
                     renderTo: 'map-temperature-' + $scope.item.id,
                     height: $scope.height,
                     width: $scope.width,
                     value: setup.metric.value,
                     minValue: setup.scale.min || 0,
-                    maxValue: setup.scale.max || 100,
+                    maxValue: setup.scale.max,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -181,7 +190,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     highlights: thresholds,
                     animationDuration: 700,
                     animationRule: 'elastic',
-                    majorTicks: getMajorTicks(setup, 5)
+                    majorTicks: majorTicks
                 };
 
 
@@ -193,6 +202,10 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 //gauge.value = 1337;
             };
 
+            var getTickCorrectMax = function (setup, numberOfTicks) {
+                let ticks = getMajorTicks(setup, numberOfTicks);
+                return ticks.at(ticks.length-1);
+            }
             var getMajorTicks = function(setup, numberOfTicks){
                 numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
                 let tickSize = Math.ceil((setup.scale.max - setup.scale.min) / numberOfTicks),
