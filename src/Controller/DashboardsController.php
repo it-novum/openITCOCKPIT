@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewExtendedJson;
 use App\itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewExtendedJson;
+use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
@@ -67,6 +68,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 use ParsedownExtra;
 use PrometheusModule\Lib\PrometheusAdapter;
 use RuntimeException;
@@ -1325,14 +1327,20 @@ class DashboardsController extends AppController {
             }
 
             $service = $this->getServicestatusByServiceId($serviceId);
-
             $data = [];
             $metric = array_keys($service['Perfdata'])[0];
 
             if (Plugin::isLoaded('PrometheusModule') && $service['Service']['serviceType'] === PROMETHEUS_SERVICE) {
                 // Query Prometheus to get all metrics
                 $adapter = new PrometheusAdapter();
-                $service['Perfdata'][$metric]['setup'] = $adapter->getPerformanceData(new Service($service), [])->toArray();
+                $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), [])->toArray();
+            } else {
+                $PerfdataParser = new PerfdataParser($service['Servicestatus']['perfdata']);
+                $perfdata       = $PerfdataParser->parse();
+                $metric         = array_keys($perfdata)[0];
+                $perfdata       = $perfdata[$metric];
+                $adapter       = new NagiosAdapter();
+                $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), $perfdata)->toArray();
             }
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);

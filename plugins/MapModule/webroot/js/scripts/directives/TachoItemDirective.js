@@ -117,6 +117,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
 
 
             var renderGauge = function(perfdataName, perfdata){
+                console.log(perfdata);
                 if(typeof perfdata === 'undefined'){
                     return;
                 }
@@ -147,19 +148,19 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     perfdata.critical = null;
                 }
 
-                if(isNaN(perfdata.max) && isNaN(perfdata.critical) === false){
-                    perfdata.max = perfdata.critical;
+                if(isNaN(perfdata.datasource.setup.scale.max) && isNaN(perfdata.critical) === false){
+                    perfdata.datasource.setup.scale.max = perfdata.critical;
                 }
 
-                if(isNaN(perfdata.min) || isNaN(perfdata.max) || perfdata.min === null || perfdata.max === null){
-                    perfdata.min = 0;
-                    perfdata.max = 100;
+                if(isNaN(perfdata.datasource.setup.scale.min) || isNaN(perfdata.datasource.setup.scale.max) || perfdata.datasource.setup.scale.min === null || perfdata.datasource.setup.scale.max === null){
+                    perfdata.datasource.setup.scale.min = 0;
+                    perfdata.datasource.setup.scale.max = 100;
                 }
 
                 var thresholds = $scope.getThresholdAreas(perfdata.datasource.setup);
 
                 var maxDecimalDigits = 3;
-                var currentValueAsString = perfdata.current.toString();
+                var currentValueAsString = perfdata.datasource.setup.metric.value.toString();
                 var intergetDigits = currentValueAsString.length;
                 var decimalDigits = 0;
 
@@ -173,7 +174,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                 }
 
                 var showDecimalDigitsGauge = 0;
-                if(decimalDigits > 0 || (perfdata.max - perfdata.min < 10)){
+                if(decimalDigits > 0 || (perfdata.datasource.setup.scale.max - perfdata.datasource.setup.scale.min < 10)){
                     showDecimalDigitsGauge = 1;
                 }
 
@@ -244,12 +245,6 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                         }
                     }
                 }
-
-                $scope.perfdata.current = parseFloat($scope.perfdata.current);
-                $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
-                $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
-                $scope.perfdata.min = parseFloat($scope.perfdata.min);
-                $scope.perfdata.max = parseFloat($scope.perfdata.max);
             };
 
             var initRefreshTimer = function(){

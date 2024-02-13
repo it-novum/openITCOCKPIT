@@ -91,9 +91,9 @@ class ScaleType {
      * @param Threshold $warn
      * @param Threshold $crit
      *
+     * @return string
      * @throws InvalidArgumentException in case the given parameters don't match into a valid ScaleType.
      *
-     * @return string
      */
     public static function get(bool $invert, Threshold $warn, Threshold $crit): string {
         # echo "$crit->low < $warn->low < $warn->high < $crit->high";
@@ -116,5 +116,33 @@ class ScaleType {
         }
 
         throw new InvalidArgumentException("This setup is unknown to me. See details.");
+    }
+
+    public static function findMin(): ?float {
+        $last   = INF;
+        $values = func_get_args();
+        foreach ($values as $value) {
+            if ($value < $last) {
+                $last = $value;
+            }
+        }
+        if ($last === null) {
+            return null;
+        }
+        return  (float)$last;
+    }
+
+    public static function findMax(): ?float {
+        $last = null;
+        $values = func_get_args();
+        foreach ($values as $value) {
+            if ($value > $last) {
+                $last = $value;
+            }
+        }
+        if ($last === null) {
+            return null;
+        }
+        return (float)$last;
     }
 }

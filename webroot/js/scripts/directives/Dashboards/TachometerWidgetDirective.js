@@ -205,25 +205,24 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     }
                 }
 
-
                 if(isNaN(perfdata.warning) || isNaN(perfdata.critical)){
                     perfdata.warning = null;
                     perfdata.critical = null;
                 }
 
-                if(isNaN(perfdata.max) && isNaN(perfdata.critical) === false){
-                    perfdata.max = perfdata.critical;
+                if(isNaN(perfdata.datasource.setup.scale.max) && isNaN(perfdata.critical) === false){
+                    perfdata.datasource.setup.scale.max = perfdata.critical;
                 }
 
-                if(isNaN(perfdata.min) || isNaN(perfdata.max) || perfdata.min === null || perfdata.max === null){
-                    perfdata.min = 0;
-                    perfdata.max = 100;
+                if(isNaN(perfdata.datasource.setup.scale.min) || isNaN(perfdata.datasource.setup.scale.max) || perfdata.datasource.setup.scale.min === null || perfdata.datasource.setup.scale.max === null){
+                    perfdata.datasource.setup.scale.min = 0;
+                    perfdata.datasource.setup.scale.max = 100;
                 }
 
-                var thresholds = $scope.getThresholdAreas(perfdata.setup);
+                var thresholds = $scope.getThresholdAreas(perfdata.datasource.setup);
 
                 var maxDecimalDigits = 3;
-                var currentValueAsString = perfdata.current.toString();
+                var currentValueAsString = perfdata.datasource.setup.metric.value.toString();
                 var intergetDigits = currentValueAsString.length;
                 var decimalDigits = 0;
 
@@ -237,7 +236,7 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                 }
 
                 var showDecimalDigitsGauge = 0;
-                if(decimalDigits > 0 || (perfdata.max - perfdata.min < 10)){
+                if(decimalDigits > 0 || (perfdata.datasource.setup.scale.max - perfdata.datasource.setup.scale.min < 10)){
                     showDecimalDigitsGauge = 1;
                 }
 
@@ -245,9 +244,9 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     renderTo: 'tacho-' + $scope.widget.id,
                     height: $scope.height,
                     width: $scope.width,
-                    value: perfdata.setup.metric.value,
-                    minValue: perfdata.setup.scale.min || 0,
-                    maxValue: perfdata.setup.scale.max || 100,
+                    value: perfdata.datasource.setup.metric.value,
+                    minValue: perfdata.datasource.setup.scale.min || 0,
+                    maxValue: perfdata.datasource.setup.scale.max || 100,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -257,10 +256,13 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                     highlights: thresholds,
                     animationDuration: 700,
                     animationRule: 'elastic',
-                    majorTicks: getMajorTicks(perfdata.setup.scale.min,perfdata.setup.scale.max, 5)
+                    majorTicks: getMajorTicks(perfdata.datasource.setup.scale.min,perfdata.datasource.setup.scale.max, 5)
                 });
 
                 gauge.draw();
+
+                //Update value
+                //gauge.value = 1337;
             };
 
             var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
@@ -305,12 +307,6 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                         }
                     }
                 }
-
-                $scope.perfdata.current = parseFloat($scope.perfdata.current);
-                $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
-                $scope.perfdata.critical = parseFloat($scope.perfdata.critical);
-                $scope.perfdata.min = parseFloat($scope.perfdata.min);
-                $scope.perfdata.max = parseFloat($scope.perfdata.max);
             };
 
 
