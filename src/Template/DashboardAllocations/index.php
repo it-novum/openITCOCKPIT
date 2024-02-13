@@ -108,6 +108,10 @@
                                     <i class="fa" ng-class="getSortClass('DashboardTabAllocations.name')"></i>
                                     <?php echo __('Allocation Name'); ?>
                                 </th>
+                                <th class="no-sort" ng-click="orderBy('DashboardTabs.name')">
+                                    <i class="fa" ng-class="getSortClass('DashboardTabs.name')"></i>
+                                    <?php echo __('Dashboard tab'); ?>
+                                </th>
                                 <th class="no-sort" ng-click="orderBy('author')">
                                     <i class="fa" ng-class="getSortClass('author')"></i>
                                     <?php echo __('Author'); ?>
@@ -137,6 +141,7 @@
                                            ng-model="massChange[dashboardtab_allocation.id]">
                                 </td>
                                 <td>{{dashboardtab_allocation.name}}</td>
+                                <td>{{dashboardtab_allocation.dashboard_tab.name}}</td>
                                 <td>{{dashboardtab_allocation.author}}</td>
                                 <td>
                                     {{dashboardtab_allocation.usergroups.length}}
