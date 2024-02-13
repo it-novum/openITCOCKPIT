@@ -133,24 +133,18 @@ class DashboardAllocationsController extends AppController {
             throw new NotFoundException(__('Invalid container'));
         }
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges === true) {
+            $MY_RIGHTS = [];
+        }
+
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-/*
-        $dashboardTabs = [
-            20 => 'Default (Herbert Benutzer)'
-        ];
-        $dashboardTabs = Api::makeItJavaScriptAble($dashboardTabs);
-*/
 
         $users = $UsersTable->usersByContainerId($containerIds, 'list');
         $users = Api::makeItJavaScriptAble($users);
 
         $usergroups = $UsergroupsTable->getUsergroupsList();
         $usergroups = Api::makeItJavaScriptAble($usergroups);
-
-        $MY_RIGHTS = $this->MY_RIGHTS;
-        if ($this->hasRootPrivileges === true) {
-            $MY_RIGHTS = [];
-        }
 
         $dashboardTabs = $UsersTable->getDashboardTabsByContainerIdsAsList($containerIds, $MY_RIGHTS);
         $dashboardTabs = Api::makeItJavaScriptAble($dashboardTabs);
