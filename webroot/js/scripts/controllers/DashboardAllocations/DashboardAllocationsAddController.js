@@ -6,10 +6,10 @@ angular.module('openITCOCKPIT')
                 container_id: 0,
                 dashboard_tab_id: 0,
                 pinned: false,
-                users_to_dashboard_tab_allocations: {
+                users: {
                     _ids: []
                 },
-                usergroups_to_dashboard_tab_allocations: {
+                usergroups: {
                     _ids: [],
                 }
             }

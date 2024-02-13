@@ -125,7 +125,7 @@
                                         class="form-control"
                                         chosen="users"
                                         ng-options="user.key as user.value for user in users"
-                                        ng-model="post.DashboardAllocation.users_to_dashboard_tab_allocations._ids"
+                                        ng-model="post.DashboardAllocation.users._ids"
                                         multiple="multiple">
                                     </select>
                                     <div ng-repeat="error in errors.users_to_dashboard_tab_allocations">
@@ -148,7 +148,7 @@
                                         class="form-control"
                                         chosen="usergroups"
                                         ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
-                                        ng-model="post.DashboardAllocation.usergroups_to_dashboard_tab_allocations._ids"
+                                        ng-model="post.DashboardAllocation.usergroups._ids"
                                         multiple="multiple">
                                     </select>
                                     <div ng-repeat="error in errors.usergroups_to_dashboard_tab_allocations">

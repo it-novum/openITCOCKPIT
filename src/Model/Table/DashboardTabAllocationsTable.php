@@ -84,20 +84,34 @@ class DashboardTabAllocationsTable extends Table {
             'foreignKey' => 'dashboard_tab_id',
             'joinType'   => 'INNER',
         ]);
+
         $this->belongsTo('Containers', [
             'foreignKey' => 'container_id',
             'joinType'   => 'INNER',
         ]);
-        $this->belongsTo('Users', [
+
+        $this->belongsTo('Author', [
+            'className'  => 'Users',
             'foreignKey' => 'user_id',
             'joinType'   => 'INNER',
         ]);
-        $this->hasMany('UsergroupsToDashboardTabAllocations', [
-            'foreignKey' => 'dashboard_tab_allocation_id',
+
+        $this->belongsToMany('Users', [
+            'foreignKey'       => 'dashboard_tab_allocation_id',
+            'targetForeignKey' => 'user_id',
+            'joinTable'        => 'users_to_dashboard_tab_allocations',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
         ]);
-        $this->hasMany('UsersToDashboardTabAllocations', [
-            'foreignKey' => 'dashboard_tab_allocation_id',
+
+        $this->belongsToMany('Usergroups', [
+            'foreignKey'       => 'dashboard_tab_allocation_id',
+            'targetForeignKey' => 'usergroup_id',
+            'joinTable'        => 'usergroups_to_dashboard_tab_allocations',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
         ]);
+
     }
 
     /**
@@ -115,28 +129,34 @@ class DashboardTabAllocationsTable extends Table {
 
         $validator
             ->integer('dashboard_tab_id')
-            ->notEmptyString('dashboard_tab_id');
+            ->requirePresence('dashboard_tab_id', 'create')
+            ->allowEmptyString('dashboard_tab_id', null, false)
+            ->greaterThanOrEqual('dashboard_tab_id', 1);
 
         $validator
             ->integer('container_id')
-            ->notEmptyString('container_id');
+            ->requirePresence('container_id', 'create')
+            ->allowEmptyString('container_id', null, false)
+            ->greaterThanOrEqual('container_id', 1);
 
         $validator
             ->integer('user_id')
-            ->notEmptyString('user_id');
+            ->requirePresence('user_id', 'create')
+            ->allowEmptyString('user_id', null, false)
+            ->greaterThanOrEqual('user_id', 1);
 
         $validator
             ->boolean('pinned')
             ->notEmptyString('pinned');
 
         $validator
-            ->notEmptyArray('users_to_dashboard_tab_allocations', __('You must at least specify at least one user or user role'), function ($context) {
-                return !empty($context['data']['usergroups_to_dashboard_tab_allocations']['_ids']) || !empty($context['data']['users_to_dashboard_tab_allocations']['_ids']);
+            ->allowEmptyArray('users', __('You must at least specify at least one user or user role'), function ($context) {
+                return !empty($context['data']['users']['_ids']) || !empty($context['data']['usergroups']['_ids']);
             });
 
         $validator
-            ->notEmptyArray('usergroups_to_dashboard_tab_allocations', __('You must at least specify at least one user or user role'), function ($context) {
-                return !empty($context['data']['usergroups_to_dashboard_tab_allocations']['_ids']) || !empty($context['data']['users_to_dashboard_tab_allocations']['_ids']);
+            ->allowEmptyArray('usergroups', __('You must at least specify at least one user or user role'), function ($context) {
+                return !empty($context['data']['usergroups']['_ids']) || !empty($context['data']['users']['_ids']);
             });
 
         return $validator;
