@@ -33,6 +33,7 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\DashboardTabAllocationsFilter;
@@ -316,6 +317,11 @@ class DashboardTabAllocationsTable extends Table {
         return $this->emptyArrayIfNull($query->toArray());
     }
 
+    /**
+     * @param $containerIds
+     * @param $MY_RIGHTS
+     * @return array
+     */
     public function getAllocatedDashboardTabsIdsByContainerIdsAsList($containerIds, $MY_RIGHTS) {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
@@ -343,5 +349,36 @@ class DashboardTabAllocationsTable extends Table {
             ->disableHydration()
             ->all();
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param int $tabId
+     * @param User $User
+     * @return array
+     */
+    public function getDashboardAllocationTabIdForUser(int $tabId, User $User): array {
+        $query = $this->find()
+            ->leftJoinWith('Users')
+            ->leftJoinWith('Usergroups')
+            ->contain('DashboardTabs');
+        $query->where([
+                'OR' => [
+                    'UsersToDashboardTabAllocations.user_id'           => $User->getId(),
+                    'UsergroupsToDashboardTabAllocations.usergroup_id' => $User->getUsergroupId()
+                ]
+            ]
+        );
+        $query->andWhere([
+            'DashboardTabAllocations.dashboard_tab_id' => $tabId
+        ]);
+
+        $query->disableHydration();
+        $result = $query->first();
+
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
     }
 }
