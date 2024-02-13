@@ -230,6 +230,7 @@ class DashboardAllocationsController extends AppController {
         $usergroups = $UsergroupsTable->getUsergroupsList();
         $usergroups = Api::makeItJavaScriptAble($usergroups);
 
+        // todo implement User Container Roles
         $dashboardTabs = $UsersTable->getDashboardTabsByContainerIdsAsList($containerIds, $MY_RIGHTS);
         $dashboardTabs = Api::makeItJavaScriptAble($dashboardTabs);
 

@@ -13,6 +13,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
  * DashboardTabs Model
@@ -180,14 +181,14 @@ class DashboardTabsTable extends Table {
     }
 
     /**
-     * @param int $userId
+     * @param User $User
      * @return bool
      */
-    public function hasUserATab($userId) {
+    public function hasUserATab(User $User) {
         try {
             $result = $this->find()
                 ->where([
-                    'DashboardTabs.user_id' => $userId,
+                    'DashboardTabs.user_id' => $User->getId(),
                 ])
                 ->first();
             if (!empty($result)) {
@@ -195,44 +196,38 @@ class DashboardTabsTable extends Table {
             }
 
             // Check for allocated Dashboards!
-            /** @var UsersTable $UsersTable */
-            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+            /** @var DashboardTabAllocationsTable $DashboardTabAllocationsTable */
+            $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
 
-            // User has an allocated dashboard?
-            $result = $UsersTable->getAllocatedTabsByUserId($userId);
-            if (!empty($result)) {
-                return true;
-            }
-            $User = $UsersTable->get($userId);
+            $allocations = []; // todo ask the $DashboardTabAllocationsTable
 
-
-            // Usergroup has an allocated dashboard?
-            /** @var UsergroupsTable $UsergroupsTable */
-            $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
-            $result = $UsergroupsTable->getAllocatedTabsByUsergroupId($User->usergroup_id);
-
-            if (!empty ($result)) {
+            if (!empty ($allocations)) {
                 return true;
             }
         } catch (RecordNotFoundException $e) {
-            return false;
+
         }
+        return false;
     }
 
     /**
-     * @param $userId
+     * @param User $User
      * @return array|null
      */
-    public function getAllTabsByUserId($userId) {
+    public function getAllTabsByUser(User $User) {
+        // Get all Dashboard Tabs from the user
         $result = $this->find()
             ->where([
-                'DashboardTabs.user_id' => $userId
+                'DashboardTabs.user_id' => $User->getId()
             ])
             ->order([
                 'DashboardTabs.position' => 'ASC',
             ])
             ->disableHydration()
             ->all();
+
+        // Check for allocated Dashboards
+        $allocations = [];
 
         $forJs = [];
         foreach ($result as $row) {
