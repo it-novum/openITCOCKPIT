@@ -191,7 +191,7 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'DashboardAllocations')): ?>
-                                                <a ng-click="confirmDelete(getObjectForDelete(dashboardTab))"
+                                                <a ng-click="confirmDelete(getObjectForDelete(dashboardtab_allocation))"
                                                    ng-if="dashboardtab_allocation.allowEdit"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>

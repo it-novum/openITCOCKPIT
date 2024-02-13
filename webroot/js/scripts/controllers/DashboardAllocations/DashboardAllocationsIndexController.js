@@ -18,7 +18,7 @@ angular.module('openITCOCKPIT')
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
-        $scope.deleteUrl = '/DashboardTabAllocations/delete/';
+        $scope.deleteUrl = '/DashboardAllocations/delete/';
 
         $scope.init = true;
         $scope.showFilter = false;
@@ -67,9 +67,9 @@ angular.module('openITCOCKPIT')
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(command){
+        $scope.getObjectForDelete = function(allocation){
             var object = {};
-            object[command.Command.id] = command.Command.name;
+            object[allocation.id] = allocation.name;
             return object;
         };
 
