@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\DashboardTab;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabAllocationsTable;
 use App\Model\Table\DashboardTabsTable;
@@ -106,6 +107,55 @@ class DashboardAllocationsController extends AppController {
     }
 
     public function edit($id = null) {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template for angular
+            return;
+        }
+
+        /** @var DashboardTabAllocationsTable $DashboardTabAllocationsTable */
+        $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
+
+        if (!$DashboardTabAllocationsTable->existsById($id)) {
+            throw new NotFoundException('Dashboard Allocation not found');
+        }
+
+        $allocation = $DashboardTabAllocationsTable->getDashboardTabAllocationForEdit($id);
+        if (!$this->allowedByContainerId($allocation['DashboardAllocation']['container_id'], true)) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->request->is('get')) {
+            $this->set('allocation', $allocation);
+            $this->viewBuilder()->setOption('serialize', ['allocation']);
+            return;
+        }
+
+
+        if ($this->request->is('post')) {
+            $allocation = $DashboardTabAllocationsTable->get($id);
+
+            $allocation->setAccess('author', false); //Otherwise CakePHP will try to create a new user
+            $allocation = $DashboardTabAllocationsTable->patchEntity($allocation, $this->request->getData('DashboardAllocation', []));
+
+            // Set the author of the allocation
+            $User = new User($this->getUser());
+            $allocation->set('user_id', $User->getId());
+
+            $DashboardTabAllocationsTable->save($allocation);
+
+            if ($allocation->hasErrors()) {
+                $this->set('error', $allocation->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                $this->response = $this->response->withStatus(400);
+                return;
+            }
+
+            //No errors
+            $this->set('allocation', $allocation);
+            $this->viewBuilder()->setOption('serialize', ['allocation']);
+            return;
+        }
 
     }
 

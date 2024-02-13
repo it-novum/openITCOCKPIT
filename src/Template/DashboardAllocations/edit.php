@@ -45,8 +45,9 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <span><?= __('Create Dashboard allocation') ?></span>
+                    <span><?= __('Edit Dashboard allocation') ?>:</span>
                     <span class="fw-300">
+                        {{post.DashboardAllocation.name}}
                     </span>
                 </h2>
                 <div class="panel-toolbar">
@@ -61,7 +62,7 @@
             <div class="panel-container show">
                 <div class="panel-content">
                     <form ng-submit="submit();"
-                          ng-init="successMessage={objectName : '<?php echo __('Dashboard allocation'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
+                          ng-init="successMessage={objectName : '<?php echo __('Dashboard allocation'); ?>' , message: '<?php echo __('updated successfully'); ?>'}">
                         <!-- Select Container -->
                         <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                             <label class="control-label" for="UserContainers">
@@ -185,7 +186,7 @@
                             <div class="card-body">
                                 <div class="float-right">
                                     <button class="btn btn-primary"
-                                            type="submit"><?php echo __('Create allocation'); ?></button>
+                                            type="submit"><?php echo __('Update allocation'); ?></button>
                                     <a back-button href="javascript:void(0);" fallback-state='DashboardAllocationsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
