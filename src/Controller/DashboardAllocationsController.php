@@ -73,6 +73,9 @@ class DashboardAllocationsController extends AppController {
             $PaginateOMat,
             $MY_RIGHTS
         );
+        foreach ($all_dashboardtab_allocations as $key => $all_dashboardtab_allocation){
+            $all_dashboardtab_allocations[$key]['allowEdit'] = $this->isWritableContainer($all_dashboardtab_allocation['container_id']);
+        }
 
         $this->set('all_dashboardtab_allocations', $all_dashboardtab_allocations);
         $this->viewBuilder()->setOption('serialize', ['all_dashboardtab_allocations']);

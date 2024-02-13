@@ -161,7 +161,13 @@
                                     <div class="btn-group btn-group-xs" role="group">
                                         <?php if ($this->Acl->hasPermission('edit', 'DashboardAllocations')): ?>
                                             <a ui-sref="DashboardAllocationsEdit({id: dashboardtab_allocation.id})"
+                                               ng-if="dashboardtab_allocation.allowEdit"
                                                class="btn btn-default btn-lower-padding">
+                                                <i class="fa fa-cog"></i>
+                                            </a>
+                                            <a href="javascript:void(0);"
+                                               ng-if="!dashboardtab_allocation.allowEdit"
+                                               class="btn btn-default disabled btn-lower-padding">
                                                 <i class="fa fa-cog"></i>
                                             </a>
                                         <?php else: ?>
@@ -178,6 +184,7 @@
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <?php if ($this->Acl->hasPermission('edit', 'DashboardAllocations')): ?>
                                                 <a ui-sref="DashboardAllocationsEdit({id: dashboardtab_allocation.id})"
+                                                   ng-if="dashboardtab_allocation.allowEdit"
                                                    class="dropdown-item">
                                                     <i class="fa fa-cog"></i>
                                                     <?php echo __('Edit'); ?>
@@ -185,9 +192,10 @@
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'DashboardAllocations')): ?>
                                                 <a ng-click="confirmDelete(getObjectForDelete(dashboardTab))"
+                                                   ng-if="dashboardtab_allocation.allowEdit"
                                                    class="dropdown-item txt-color-red">
                                                     <i class="fa fa-trash"></i>
-                                                    <?php echo __('Delete all allocations'); ?>
+                                                    <?php echo __('Delete'); ?>
                                                 </a>
                                             <?php endif; ?>
                                         </div>
