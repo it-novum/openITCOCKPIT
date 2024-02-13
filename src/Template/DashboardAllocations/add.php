@@ -31,7 +31,7 @@
         </a>
     </li>
     <li class="breadcrumb-item">
-        <a ui-sref="DashboardAllocation">
+        <a ui-sref="DashboardAllocationsIndex">
             <i class="fa fa-table"></i> <?php echo __('Dashboard Allocation'); ?>
         </a>
     </li>
@@ -51,7 +51,7 @@
                 </h2>
                 <div class="panel-toolbar">
                     <?php if ($this->Acl->hasPermission('allocationManager', 'dashboards')): ?>
-                        <a back-button href="javascript:void(0);" fallback-state='DashboardAllocation'
+                        <a back-button href="javascript:void(0);" fallback-state='DashboardAllocationsIndex'
                            class="btn btn-default btn-xs mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
@@ -186,7 +186,7 @@
                                 <div class="float-right">
                                     <button class="btn btn-primary"
                                             type="submit"><?php echo __('Create Allocation'); ?></button>
-                                    <a back-button href="javascript:void(0);" fallback-state='DashboardAllocation'
+                                    <a back-button href="javascript:void(0);" fallback-state='DashboardAllocationsIndex'
                                        class="btn btn-default"><?php echo __('Cancel'); ?></a>
                                 </div>
                             </div>
