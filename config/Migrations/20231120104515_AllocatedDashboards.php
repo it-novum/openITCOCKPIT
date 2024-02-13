@@ -55,9 +55,9 @@ class AllocatedDashboards extends AbstractMigration {
                     'null'    => false,
                     'comment' => 'user which created the allocation'
                 ])
-                ->addColumn('pinned', 'integer', [
+                ->addColumn('pinned', 'boolean', [
                     'default' => 0,
-                    'limit'   => 1,
+                    'length'  => null,
                     'null'    => false,
                 ])
                 ->addColumn('created', 'datetime', [

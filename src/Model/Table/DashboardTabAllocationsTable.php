@@ -31,6 +31,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Database\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
+use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\DashboardTabAllocationsFilter;
@@ -190,6 +191,14 @@ class DashboardTabAllocationsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return bool
+     */
+    public function existsById($id): bool {
+        return $this->exists(['DashboardTabAllocations.id' => $id]);
+    }
+
+    /**
      * @param DashboardTabAllocationsFilter $DashboardTabAllocationsFilter
      * @param PaginateOMat|null $PaginateOMat
      * @param array $MY_RIGHTS
@@ -243,5 +252,45 @@ class DashboardTabAllocationsTable extends Table {
         }
 
         return $result;
+    }
+
+    public function getDashboardTabAllocationForEdit($id) {
+        $query = $this->find()
+            ->contain([
+                'Author' => function(Query $q){
+                    // User who created the allocation
+                    // Do not leak any sensitive data like password (even if it is hashed)!
+                    $q
+                        ->disableAutoFields()
+                        ->select([
+                            'Author.id',
+                            'Author.firstname',
+                            'Author.lastname',
+                        ]);
+                    return $q;
+                },
+                'Users',     // Users who are forced to use this dashboard
+                'Usergroups' // User groups who are forced to use this dashboard
+            ])
+            ->where([
+                'DashboardTabAllocations.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+
+        if (empty($query)) {
+            return [];
+        }
+
+        $query['users'] = [
+            '_ids' => Hash::extract($query, 'users.{n}.id')
+        ];
+        $query['usergroups'] = [
+            '_ids' => Hash::extract($query, 'usergroups.{n}.id')
+        ];
+
+        return [
+            'DashboardAllocation' => $query
+        ];
     }
 }
