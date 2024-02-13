@@ -62,20 +62,6 @@
                 <div class="panel-content">
                     <form ng-submit="submit();"
                           ng-init="successMessage={objectName : '<?php echo __('Dashboard allocation'); ?>' , message: '<?php echo __('created successfully'); ?>'}">
-
-                        <div class="form-group required" ng-class="{'has-error': errors.name}">
-                            <label class="control-label">
-                                <?php echo __('Name of the allocation'); ?>
-                            </label>
-                            <input
-                                class="form-control"
-                                type="text"
-                                ng-model="post.DashboardAllocation.name">
-                            <div ng-repeat="error in errors.name">
-                                <div class="help-block text-danger">{{ error }}</div>
-                            </div>
-                        </div>
-
                         <!-- Select Container -->
                         <div class="form-group required" ng-class="{'has-error': errors.container_id}">
                             <label class="control-label" for="UserContainers">
@@ -94,6 +80,18 @@
                             </div>
                         </div>
 
+                        <div class="form-group required" ng-class="{'has-error': errors.name}">
+                            <label class="control-label">
+                                <?php echo __('Name of the allocation'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                ng-model="post.DashboardAllocation.name">
+                            <div ng-repeat="error in errors.name">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                        </div>
                         <!-- Select Dashboard Tab to Share -->
                         <div class="form-group required" ng-class="{'has-error': errors.dashboard_tab_id}">
                             <label class="control-label" for="DashboardTab">
