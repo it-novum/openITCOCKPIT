@@ -117,7 +117,7 @@ class DashboardsController extends AppController {
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
 
-        //Check if a tab exists for the given user
+        // If user has neither OWN or allocated tabs, create the default tab.
         if ($DashboardTabsTable->hasUserATab($User->getId()) === false) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {

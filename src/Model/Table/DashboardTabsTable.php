@@ -188,9 +188,31 @@ class DashboardTabsTable extends Table {
                 ->where([
                     'DashboardTabs.user_id' => $userId,
                 ])
-                ->firstOrFail();
+                ->first();
+            if (!empty($result)) {
+                return true;
+            }
 
-            return true;
+            // Check for allocated Dashboards!
+            /** @var UsersTable $UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+            // User has an allocated dashboard?
+            $result = $UsersTable->getAllocatedTabsByUserId($userId);
+            if (!empty($result)) {
+                return true;
+            }
+            $User = $UsersTable->get($userId);
+
+
+            // Usergroup has an allocated dashboard?
+            /** @var UsergroupsTable $UsergroupsTable */
+            $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+            $result = $UsergroupsTable->getAllocatedTabsByUsergroupId($User->usergroup_id);
+
+            if (!empty ($result)) {
+                return true;
+            }
         } catch (RecordNotFoundException $e) {
             return false;
         }
