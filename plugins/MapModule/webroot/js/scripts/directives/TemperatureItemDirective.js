@@ -39,7 +39,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     $scope.responsePerfdata = result.data.data.Perfdata;
 
                     processPerfdata();
-                    renderGauge($scope.perfdata);
+                    renderGauge($scope.setup);
 
                     initRefreshTimer();
 
@@ -115,16 +115,16 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 return thresholdAreas;
             }
 
-            var renderGauge = function(perfdata){
-                var label = perfdata.datasource.setup.metric.name,
+            var renderGauge = function(setup){
+                var label = setup.metric.name,
                     units = '';
 
 
                 if($scope.item.show_label === true){
-                    if(typeof(perfdata.datasource.setup.metric.unit) !== "string" || perfdata.datasource.setup.metric.unit.length === 0){
+                    if(typeof(setup.metric.unit) !== "string" || setup.metric.unit.length === 0){
                         units = label;
                     }else{
-                        units = label + ' in ' + perfdata.datasource.setup.metric.unit;
+                        units = label + ' in ' + setup.metric.unit;
                     }
                     label = $scope.Host.hostname + '/' + $scope.Service.servicename;
 
@@ -132,7 +132,6 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     if(label.length > 20){
                         label = $scope.Service.servicename;
                     }
-
                 }
 
                 // shorten label if required.
@@ -141,15 +140,14 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     label += '...';
                 }
 
-                if(isNaN(perfdata.datasource.setup.scale.min) || isNaN(perfdata.datasource.setup.scale.max) || perfdata.datasource.setup.scale.min === null || perfdata.datasource.setup.scale.max === null){
-                    perfdata.datasource.setup.scale.min = 0;
-                    perfdata.datasource.setup.scale.max = 100;
+                if(isNaN(setup.scale.min) || isNaN(setup.scale.max) || setup.scale.min === null || setup.scale.max === null){
+                    setup.scale.min = 0;
+                    setup.scale.max = 100;
                 }
 
-                var thresholds = $scope.getThresholdAreas(perfdata.datasource.setup);
-
+                var thresholds = $scope.getThresholdAreas(setup);
                 var maxDecimalDigits = 3;
-                var currentValueAsString = perfdata.datasource.setup.metric.value.toString();
+                var currentValueAsString = setup.metric.value.toString();
                 var intergetDigits = currentValueAsString.length;
                 var decimalDigits = 0;
 
@@ -163,7 +161,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 }
 
                 var showDecimalDigitsGauge = 0;
-                if(decimalDigits > 0 || (perfdata.datasource.setup.scale.max - perfdata.datasource.setup.scale.min < 10)){
+                if(decimalDigits > 0 || (setup.scale.max - setup.scale.min < 10)){
                     showDecimalDigitsGauge = 1;
                 }
 
@@ -171,9 +169,9 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     renderTo: 'map-temperature-' + $scope.item.id,
                     height: $scope.height,
                     width: $scope.width,
-                    value: perfdata.datasource.setup.metric.value,
-                    minValue: perfdata.datasource.setup.scale.min || 0,
-                    maxValue: perfdata.datasource.setup.scale.max || 100,
+                    value: setup.metric.value,
+                    minValue: setup.scale.min || 0,
+                    maxValue: setup.scale.max || 100,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -183,7 +181,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     highlights: thresholds,
                     animationDuration: 700,
                     animationRule: 'elastic',
-                    majorTicks: getMajorTicks(perfdata.datasource.setup.scale.min || 0, perfdata.datasource.setup.scale.max || 100, 5)
+                    majorTicks: getMajorTicks(setup, 5)
                 };
 
 
@@ -195,11 +193,11 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 //gauge.value = 1337;
             };
 
-            var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
+            var getMajorTicks = function(setup, numberOfTicks){
                 numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
-                let tickSize = Math.ceil((perfdataMax - perfdataMin) / numberOfTicks),
+                let tickSize = Math.ceil((setup.scale.max - setup.scale.min) / numberOfTicks),
                     tickArr = [],
-                    myTick = perfdataMin;
+                    myTick = setup.scale.min;
 
                 for(let index = 0; index <= numberOfTicks; index++){
                     tickArr.push(myTick);
@@ -211,32 +209,20 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
             };
 
             var processPerfdata = function(){
-                //Dummy data if there are no performance data records available
-                $scope.perfdata = {
-                    current: 0,
-                    warning: 80,
-                    critical: 90,
-                    min: 0,
-                    max: 100,
-                    unit: 'n/a',
-                    setup: {}
-                };
+                $scope.setup = {};
 
 
                 if($scope.responsePerfdata !== null){
                     if($scope.item.metric !== null && $scope.responsePerfdata.hasOwnProperty($scope.item.metric)){
-                        $scope.perfdata = $scope.responsePerfdata[$scope.item.metric];
+                        $scope.setup    = $scope.responsePerfdata[$scope.item.metric].datasource.setup;
                     }else{
                         //Use first metric.
                         for(var metricName in $scope.responsePerfdata){
-                            $scope.perfdata = $scope.responsePerfdata[metricName];
+                            $scope.setup    = $scope.responsePerfdata[metricName].datasource.setup;
                             break;
                         }
                     }
                 }
-
-                $scope.perfdata.current = parseFloat($scope.perfdata.current);
-                $scope.perfdata.warning = parseFloat($scope.perfdata.warning);
             };
 
             var initRefreshTimer = function(){
@@ -257,7 +243,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 $scope.width = $scope.item.size_x;
                 $scope.height = $scope.item.size_y;
 
-                renderGauge($scope.perfdata);
+                renderGauge($scope.setup);
             });
 
             $scope.$watch('item.metric', function(){
@@ -266,7 +252,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 }
 
                 processPerfdata();
-                renderGauge($scope.perfdata);
+                renderGauge($scope.setup);
             });
 
             $scope.$watch('item.object_id', function(){
