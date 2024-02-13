@@ -302,12 +302,13 @@ class DashboardTabAllocationsTable extends Table {
 
     public function getAllDashboardAllocationsByUser(User $User) {
         $query = $this->find()
-            ->innerJoinWith('Users')
-            ->innerJoinWith('Usergroups');
-        $query->where(
-            [
-                'Users.id'   => $User->getId(),
-                'Usergroups' => $User->getUsergroupId()
+            ->leftJoinWith('Users')
+            ->leftJoinWith('Usergroups');
+        $query->andWhere([
+                'OR' => [
+                    'UsersToDashboardTabAllocations.user_id'           => $User->getId(),
+                    'UsergroupsToDashboardTabAllocations.usergroup_id' => $User->getUsergroupId()
+                ]
             ]
         );
         $query->disableHydration()

@@ -186,6 +186,7 @@ class DashboardTabsTable extends Table {
      */
     public function hasUserATab(User $User) {
         try {
+            /*
             $result = $this->find()
                 ->where([
                     'DashboardTabs.user_id' => $User->getId(),
@@ -194,12 +195,14 @@ class DashboardTabsTable extends Table {
             if (!empty($result)) {
                 return true;
             }
+            */
 
             // Check for allocated Dashboards!
             /** @var DashboardTabAllocationsTable $DashboardTabAllocationsTable */
             $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
 
-            $allocations = []; // todo ask the $DashboardTabAllocationsTable
+            $allocations = $DashboardTabAllocationsTable->getAllDashboardAllocationsByUser($User);
+            dd($allocations);
 
             if (!empty ($allocations)) {
                 return true;
