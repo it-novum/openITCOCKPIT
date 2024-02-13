@@ -229,6 +229,11 @@ class DashboardTabAllocationsTable extends Table {
                     return $query->select([
                         'Usergroups.name'
                     ]);
+                },
+                'DashboardTabs' => function (Query $query) {
+                    return $query->select([
+                        'DashboardTabs.name'
+                    ]);
                 }
             ]);
 
