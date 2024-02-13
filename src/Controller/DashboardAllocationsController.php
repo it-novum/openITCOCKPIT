@@ -164,7 +164,34 @@ class DashboardAllocationsController extends AppController {
     }
 
     public function delete($id = null) {
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
 
+        /** @var DashboardTabAllocationsTable $DashboardTabAllocationsTable */
+        $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
+
+        if (!$DashboardTabAllocationsTable->existsById($id)) {
+            throw new NotFoundException(__('Dashboard allocation not found'));
+        }
+
+        $allocation = $DashboardTabAllocationsTable->get($id);
+
+        if (!$this->allowedByContainerId($allocation->container_id)) {
+            $this->render403();
+            return;
+        }
+
+        if ($DashboardTabAllocationsTable->delete($allocation)) {
+
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['success']);
+            return;
+        }
+
+        $this->response = $this->response->withStatus(500);
+        $this->set('success', false);
+        $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
     /****************************

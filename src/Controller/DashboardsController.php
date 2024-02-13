@@ -2101,6 +2101,7 @@ class DashboardsController extends AppController {
      * I will allocate the dashboard_tab identified by the given $id.
      * @param $id
      * @return void
+     * @deprecated
      */
     public function allocate($id = null): void {
         if (!$this->isApiRequest()) {
@@ -2150,6 +2151,7 @@ class DashboardsController extends AppController {
      * I will remove the allocation of the dashboard_tab identified by the given $id.
      * @param $id
      * @return void
+     * @deprecated
      */
     public function deallocate($id = null): void {
 
@@ -2204,25 +2206,6 @@ class DashboardsController extends AppController {
         }
     }
 
-    /**
-     * I will solely provide the list of dashboards on the instance including the allocated users and usergroups.
-     * @return void
-     */
-    public function allocationManager(): void {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship template
-            return;
-        }
-
-        /** @var DashboardTabsTable $DashboardTabsTable */
-        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-        $DashboardsTabsFilter = new DashboardTabsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $DashboardsTabsFilter->getPage());
-        $dashboardTabs = $DashboardTabsTable->getDashboardTabsIndex($DashboardsTabsFilter, $PaginateOMat);
-        $this->set('dashboardTabs', $dashboardTabs);
-        $this->viewBuilder()->setOption('serialize', ['dashboardTabs']);
-
-    }
 
     /*************************************************
      *       openITCOCKPIT Desktop App METHODS       *

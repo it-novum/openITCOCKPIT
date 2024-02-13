@@ -33,6 +33,9 @@ class DashboardTab extends Entity {
 
     use BitFlagTrait;
 
+    /**
+     * @deprecated
+     */
     public const FLAG_BLANK = 0 << 0;        // 0
     public const FLAG_ALLOCATED = 1 << 0;    // 1
     public const FLAG_PINNED = 1 << 1;       // 2
