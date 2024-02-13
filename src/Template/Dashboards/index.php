@@ -79,7 +79,7 @@
                                     </span>
                                     <b class="caret"></b>
                                 </a>
-                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
+                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}" >
                                     <li>
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="triggerRenameTabModal(tab.name)">
