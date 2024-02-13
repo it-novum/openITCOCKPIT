@@ -14,8 +14,7 @@ angular.module('openITCOCKPIT').directive('mapWidget', function($http){
             };
 
             // ITC-3037
-            var $widgetContent = $('#widget-content-' + $scope.widget.id);
-            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
+            $scope.readOnly    = $scope.widget.isReadonly;
 
             $scope.load = function(){
                 $http.get("/map_module/mapeditors/mapWidget.json", {

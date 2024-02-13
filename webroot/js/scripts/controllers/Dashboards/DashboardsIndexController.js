@@ -115,6 +115,8 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.activeTab = tabId;
 
+                $scope.isReadonly = false;
+
                 for(var k in $scope.tabs){
                     if($scope.tabs[k].id === $scope.activeTab){
                         if($scope.tabs[k].locked === true){
@@ -125,6 +127,12 @@ angular.module('openITCOCKPIT')
                             $scope.dashboardIsLocked = false;
                             $scope.gridsterOpts.resizable.enabled = true;
                             $scope.gridsterOpts.draggable.enabled = true;
+                        }
+                        if($scope.tabs[k].isOwner === false){
+                            $scope.isReadonly = true;
+                            $scope.dashboardIsLocked = true;
+                            $scope.gridsterOpts.resizable.enabled = false;
+                            $scope.gridsterOpts.draggable.enabled = false;
                         }
                         break;
                     }
@@ -142,7 +150,8 @@ angular.module('openITCOCKPIT')
                         icon: result.data.widgets.Widget[i].icon,
                         title: result.data.widgets.Widget[i].title,
                         color: result.data.widgets.Widget[i].color,
-                        directive: result.data.widgets.Widget[i].directive
+                        directive: result.data.widgets.Widget[i].directive,
+                        isReadonly: $scope.isReadonly
                     });
                 }
 
@@ -607,6 +616,7 @@ angular.module('openITCOCKPIT')
 
             tabSortCreated = true;
             $('.nav-tabs').sortable({
+                items: "> .ui-sortable-handle",
                 update: function(){
                     var $tabbar = $(this);
                     var $tabs = $tabbar.children();

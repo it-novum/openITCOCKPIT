@@ -159,7 +159,7 @@ class DashboardsController extends AppController {
         }
 
         $User = new User($this->getUser());
-        $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
+        $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId, $User->getId());
         if (empty($widgets)) {
             // Check dashboard allocations
             // Check for allocated Dashboards!
@@ -169,7 +169,7 @@ class DashboardsController extends AppController {
             $allocations = $DashboardTabAllocationsTable->getDashboardAllocationTabIdForUser($tabId, $User);
             if (!empty($allocations)) {
                 // Load the allocated tab
-                $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($allocations['dashboard_tab']['user_id'], $tabId);
+                $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($allocations['dashboard_tab']['user_id'], $tabId, $User->getId());
             }
         }
 

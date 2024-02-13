@@ -13,8 +13,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             $scope.scroll_interval = 30000;
 
             // ITC-3037
-            var $widgetContent = $('#widget-content-' + $scope.widget.id);
-            $scope.readOnly    = parseInt($widgetContent.attr('data-readonly'));
+            $scope.readOnly    = $scope.widget.isReadonly;
 
             var $widget = $('#widget-' + $scope.widget.id);
 

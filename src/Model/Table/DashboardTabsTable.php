@@ -233,7 +233,7 @@ class DashboardTabsTable extends Table {
         $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
 
         $allocations = $DashboardTabAllocationsTable->getAllDashboardAllocationsByUser($User);
-        $allocationDashboardTabIds = Hash::extract($allocations, '{n}.dashboard_tab_id');
+        $allocationDashboardTabIds = Hash::combine($allocations, '{n}.dashboard_tab_id', '{n}');
 
         // Get all Dashboard Tabs from the user
         $where = [
@@ -245,7 +245,7 @@ class DashboardTabsTable extends Table {
             $where = [
                 'OR' => [
                     'DashboardTabs.user_id' => $User->getId(),
-                    'DashboardTabs.id IN'   => $allocationDashboardTabIds
+                    'DashboardTabs.id IN'   => array_keys($allocationDashboardTabIds)
                 ]
             ];
         }
@@ -275,11 +275,24 @@ class DashboardTabsTable extends Table {
                     'check_for_updates' => (bool)$row['check_for_updates'],
                     'last_update'       => (int)$row['last_update'],
                     'locked'            => (bool)$row['locked'],
-                    'source'            => 'USER'
+                    'pinned'            => false,
+                    'isOwner'           => $isOwner,
+                    //'source'            => 'USER'
                 ];
             } else {
                 // This dashboard tab got allocated to the user
                 // We remove any potential sensitive data
+                if (!isset($allocationDashboardTabIds[$row['id']])) {
+                    // this should be impossible !
+                    continue;
+                }
+
+                $allocation = $allocationDashboardTabIds[$row['id']];
+                $position = (int)$row['position'];
+                if ($allocation['pinned']) {
+                    $position = -1;
+                }
+
                 $forJs[] = [
                     'id'                => (int)$row['id'],
                     'position'          => (int)$row['position'],
@@ -289,7 +302,9 @@ class DashboardTabsTable extends Table {
                     'check_for_updates' => false,
                     'last_update'       => 0,
                     'locked'            => true,
-                    'source'            => 'ALLOCATED'
+                    'pinned'            => $allocation['pinned'],
+                    'isOwner'           => $isOwner,
+                    //'source'            => 'ALLOCATED'
                 ];
             }
         }
@@ -362,7 +377,7 @@ class DashboardTabsTable extends Table {
      * @param $tabId
      * @return array|null
      */
-    public function getWidgetsForTabByUserIdAndTabId($userId, $tabId) {
+    public function getWidgetsForTabByUserIdAndTabId($userId, $tabId, int $loggedInUserId) {
         $query = $this->find()
             ->contain('Widgets', function (Query $query) {
                 $query->order([
@@ -381,7 +396,10 @@ class DashboardTabsTable extends Table {
             return [];
         }
 
-        return $this->formatFirstResultAsCake2($query);
+        $result = $this->formatFirstResultAsCake2($query);
+        // Add isOwner
+        $result['DashboardTab']['isOwner'] = $loggedInUserId == $result['DashboardTab']['user_id'];
+        return $result;
     }
 
     /**
