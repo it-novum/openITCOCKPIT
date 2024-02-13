@@ -133,6 +133,17 @@ class DashboardTabsTable extends Table {
     }
 
     /**
+     * @param int $id
+     * @return bool
+     */
+    public function isOwnedByUser($tabId, $userId) {
+        return $this->exists([
+            'DashboardTabs.user_id' => $userId,
+            'DashboardTabs.id'      => $tabId
+        ]);
+    }
+
+    /**
      * @param int $userId
      * @param array $options
      * @return \Cake\Datasource\EntityInterface
@@ -186,7 +197,6 @@ class DashboardTabsTable extends Table {
      */
     public function hasUserATab(User $User) {
         try {
-            /*
             $result = $this->find()
                 ->where([
                     'DashboardTabs.user_id' => $User->getId(),
@@ -195,14 +205,12 @@ class DashboardTabsTable extends Table {
             if (!empty($result)) {
                 return true;
             }
-            */
 
             // Check for allocated Dashboards!
             /** @var DashboardTabAllocationsTable $DashboardTabAllocationsTable */
             $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
 
             $allocations = $DashboardTabAllocationsTable->getAllDashboardAllocationsByUser($User);
-            dd($allocations);
 
             if (!empty ($allocations)) {
                 return true;
@@ -218,32 +226,72 @@ class DashboardTabsTable extends Table {
      * @return array|null
      */
     public function getAllTabsByUser(User $User) {
-        // Get all Dashboard Tabs from the user
-        $result = $this->find()
-            ->where([
-                'DashboardTabs.user_id' => $User->getId()
-            ])
-            ->order([
-                'DashboardTabs.position' => 'ASC',
-            ])
-            ->disableHydration()
-            ->all();
-
         // Check for allocated Dashboards
         $allocations = [];
 
+        /** @var DashboardTabAllocationsTable $DashboardTabAllocationsTable */
+        $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
+
+        $allocations = $DashboardTabAllocationsTable->getAllDashboardAllocationsByUser($User);
+        $allocationDashboardTabIds = Hash::extract($allocations, '{n}.dashboard_tab_id');
+
+        // Get all Dashboard Tabs from the user
+        $where = [
+            'DashboardTabs.user_id' => $User->getId(),
+        ];
+
+        // Also select allocated Tabs (if any exit)
+        if (!empty($allocationDashboardTabIds)) {
+            $where = [
+                'OR' => [
+                    'DashboardTabs.user_id' => $User->getId(),
+                    'DashboardTabs.id IN'   => $allocationDashboardTabIds
+                ]
+            ];
+        }
+
+        $result = $this->find()
+            ->where($where)
+            ->order([
+                'DashboardTabs.position' => 'ASC',
+            ]);
+
+        $result
+            ->disableHydration()
+            ->all();
+
+
         $forJs = [];
         foreach ($result as $row) {
-            $forJs[] = [
-                'id'                => (int)$row['id'],
-                'position'          => (int)$row['position'],
-                'name'              => $row['name'],
-                'shared'            => (bool)$row['shared'],
-                'source_tab_id'     => (int)$row['source_tab_id'],
-                'check_for_updates' => (bool)$row['check_for_updates'],
-                'last_update'       => (int)$row['last_update'],
-                'locked'            => (bool)$row['locked']
-            ];
+            $isOwner = (int)$row['user_id'] === $User->getId();
+            if ($isOwner) {
+                // This dashboard tab is from the user itself
+                $forJs[] = [
+                    'id'                => (int)$row['id'],
+                    'position'          => (int)$row['position'],
+                    'name'              => $row['name'],
+                    'shared'            => (bool)$row['shared'],
+                    'source_tab_id'     => (int)$row['source_tab_id'],
+                    'check_for_updates' => (bool)$row['check_for_updates'],
+                    'last_update'       => (int)$row['last_update'],
+                    'locked'            => (bool)$row['locked'],
+                    'source'            => 'USER'
+                ];
+            } else {
+                // This dashboard tab got allocated to the user
+                // We remove any potential sensitive data
+                $forJs[] = [
+                    'id'                => (int)$row['id'],
+                    'position'          => (int)$row['position'],
+                    'name'              => $row['name'],
+                    'shared'            => false,
+                    'source_tab_id'     => 0,
+                    'check_for_updates' => false,
+                    'last_update'       => 0,
+                    'locked'            => true,
+                    'source'            => 'ALLOCATED'
+                ];
+            }
         }
 
 
