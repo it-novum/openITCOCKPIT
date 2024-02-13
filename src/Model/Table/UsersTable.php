@@ -1476,16 +1476,13 @@ class UsersTable extends Table {
             'name' => $query->newExpr('CONCAT(DashboardTabs.name, " (", Users.firstname, " " ,Users.lastname,")")'),
         ])->innerJoinWith('Containers')
             ->innerJoinWith('DashboardTabs');
-
-        if (!empty($containerIds)) {
-            $query->where([
-                'ContainersUsersMemberships.container_id IN' => $containerIds
-            ]);
-        }
-
         if (!empty($MY_RIGHTS)) {
-            $query->where([
-                'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
+            //remove not allowed containerIds
+            $containerIds = array_intersect($MY_RIGHTS, $containerIds);
+        }
+        if (!empty($containerIds)) {
+            $query->andWhere([
+                'ContainersUsersMemberships.container_id IN' => $containerIds
             ]);
         }
 
