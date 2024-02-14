@@ -691,6 +691,22 @@ angular.module('openITCOCKPIT')
             });
         }
 
+        $scope.deleteAllocation = function(tabId){
+            $http.post("/DashboardAllocations/delete/"+tabId+".json?angular=true", {}
+            ).then(function(result){
+                if(result.data.success){
+                    genericSuccess();
+                    $scope.load();
+                }else{
+                    genericError();
+                }
+
+                $('#allocateDashboardModal').modal('hide');
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
         if(document.addEventListener){
             document.addEventListener('webkitfullscreenchange', fullscreenExitHandler, false);
             document.addEventListener('mozfullscreenchange', fullscreenExitHandler, false);

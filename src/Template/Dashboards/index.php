@@ -645,8 +645,8 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form  class="form-horizontal"
-                       ng-init="successMessage=
+                <form class="form-horizontal"
+                      ng-init="successMessage=
                         {objectName : '<?php echo __('Dashboard tab allocation'); ?>' , message:
                         '<?= __('saved successfully'); ?>'}">
 
@@ -765,6 +765,12 @@
             </div>
 
             <div class="modal-footer">
+                <?php if ($this->Acl->hasPermission('delete', 'DashboardAllocations')): ?>
+                <button type="button" ng-show="post.DashboardAllocation.id"
+                        class="btn btn-danger mr-auto" ng-click="deleteAllocation(post.DashboardAllocation.id)">
+                    <?php echo __('Delete'); ?>
+                </button>
+                <?php endif; ?>
                 <button type="button" ng-hide="post.DashboardAllocation.id" class="btn btn-primary"
                         ng-click="addDashboardAllocation()">
                     <?php echo __('Create Allocation'); ?>
