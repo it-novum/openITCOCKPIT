@@ -617,13 +617,11 @@ angular.module('openITCOCKPIT')
                 $scope.dashboard_tabs = result.data.dashboard_tabs;
                 $scope.users = result.data.users;
                 $scope.usergroups = result.data.usergroups;
-                $scope.allocated_dashboard_tabs = result.data.allocated_dashboard_tabs;
             });
         };
 
         $scope.allocateDashboard = function(tabId){
             $scope.errors = null;
-            $scope.resetInputFields();
             $scope.loadContainers();
             var tabById = _.find(
                 $scope.tabs,
@@ -665,6 +663,8 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
                 $('#allocateDashboardModal').modal('hide');
+                $scope.resetInputFields();
+                $scope.load();
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
@@ -684,6 +684,8 @@ angular.module('openITCOCKPIT')
                         + '</a></u> ' + $scope.successMessage.message
                 });
                 $('#allocateDashboardModal').modal('hide');
+                $scope.resetInputFields();
+                $scope.load();
             }, function errorCallback(result){
                 if(result.data.hasOwnProperty('error')){
                     NotyService.genericError();
@@ -709,10 +711,10 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.resetInputFields = function(){
+            $scope.post.DashboardAllocation.container_id = 0; //trigger watch event
             $scope.dashboard_tabs = [];
             $scope.users = [];
             $scope.usergroups = [];
-            $scope.allocated_dashboard_tabs = [];
         };
 
         if(document.addEventListener){
