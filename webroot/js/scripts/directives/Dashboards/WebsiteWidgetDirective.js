@@ -21,7 +21,6 @@ angular.module('openITCOCKPIT').directive('websiteWidget', function($http){
 
             // ITC-3037
             $scope.readOnly    = $scope.widget.isReadonly;
-            console.log($scope.readOnly);
 
 
             $widget.on('resize', function(event, items){

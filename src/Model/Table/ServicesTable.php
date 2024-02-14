@@ -3406,15 +3406,17 @@ class ServicesTable extends Table {
                 ],
             ])
             ->innerJoinWith('Servicetemplates')
-            ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            ->innerJoinWith('Hosts');
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
                 return $q->where([
                     'HostsToContainersSharing.id IN ' => $MY_RIGHTS
                 ]);
-            })
-            ->group([
-                'Servicestatus.current_state',
-            ])
+            });
+        }
+        $query->group([
+            'Servicestatus.current_state',
+        ])
             ->disableHydration();
 
         $where = [];
