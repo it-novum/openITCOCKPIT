@@ -7,6 +7,28 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
             'refreshInterval': '='
         },
         controller: function($scope){
+            // default data if no setup is passed whatsoever.
+            $scope.defaultSetup = {
+                scale: {
+                    min: 0,
+                    max: 100,
+                    type: "O",
+                },
+                metric: {
+                    value: 0,
+                    unit: 'X',
+                    name: 'No data available',
+                },
+                warn: {
+                    low: null,
+                    high: null,
+                },
+                crit: {
+                    low: null,
+                    high: null,
+                }
+            };
+
             $scope.init = true;
             $scope.statusUpdateInterval = null;
 
@@ -39,7 +61,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                     $scope.responsePerfdata = result.data.data.Perfdata;
 
                     processPerfdata();
-                    renderGauge($scope.setup);
+                    renderGauge();
 
                     initRefreshTimer();
 
@@ -115,7 +137,8 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 return thresholdAreas;
             }
 
-            var renderGauge = function(setup){
+            var renderGauge = function(){
+                let setup = $scope.setup;
                 var label = setup.metric.name,
                     units = '';
 
@@ -222,8 +245,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
             };
 
             var processPerfdata = function(){
-                $scope.setup = {};
-
+                $scope.setup = $scope.defaultSetup;
 
                 if($scope.responsePerfdata !== null){
                     if($scope.item.metric !== null && $scope.responsePerfdata.hasOwnProperty($scope.item.metric)){
@@ -256,7 +278,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 $scope.width = $scope.item.size_x;
                 $scope.height = $scope.item.size_y;
 
-                renderGauge($scope.setup);
+                renderGauge();
             });
 
             $scope.$watch('item.metric', function(){
@@ -265,7 +287,7 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                 }
 
                 processPerfdata();
-                renderGauge($scope.setup);
+                renderGauge();
             });
 
             $scope.$watch('item.object_id', function(){
