@@ -623,6 +623,7 @@ angular.module('openITCOCKPIT')
 
         $scope.allocateDashboard = function(tabId){
             $scope.errors = null;
+            $scope.resetInputFields();
             $scope.loadContainers();
             var tabById = _.find(
                 $scope.tabs,
@@ -692,7 +693,7 @@ angular.module('openITCOCKPIT')
         }
 
         $scope.deleteAllocation = function(tabId){
-            $http.post("/DashboardAllocations/delete/"+tabId+".json?angular=true", {}
+            $http.post("/DashboardAllocations/delete/" + tabId + ".json?angular=true", {}
             ).then(function(result){
                 if(result.data.success){
                     genericSuccess();
@@ -705,6 +706,13 @@ angular.module('openITCOCKPIT')
             }, function errorCallback(result){
                 genericError();
             });
+        };
+
+        $scope.resetInputFields = function(){
+            $scope.dashboard_tabs = [];
+            $scope.users = [];
+            $scope.usergroups = [];
+            $scope.allocated_dashboard_tabs = [];
         };
 
         if(document.addEventListener){
