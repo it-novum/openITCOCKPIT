@@ -83,7 +83,8 @@
                                 <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}" ng-if="tab.isOwner">
                                     <li>
                                         <a href="javascript:void(0);" class="dropdown-item"
-                                           ng-click="triggerRenameTabModal(tab.name)">
+                                           ng-click="triggerRenameTabModal(tab.name)"
+                                           ng-class="{'text-muted':dashboardIsLocked}">
                                             <i class="fa fa-pencil-square-o"></i>
                                             <?php echo __('Rename'); ?>
                                         </a>
