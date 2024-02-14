@@ -66,12 +66,13 @@
                                 </span>
                                 </a>
 
+                                <!-- For owners of the tab (include drop down menu with options) -->
                                 <a href="javascript:void(0);"
-                                   class="nav-link active"
+                                   class="nav-link active dropdown-toggle"
                                    data-toggle="dropdown"
                                    aria-expanded="false"
-                                   ng-if="activeTab === tab.id"
-                                   ng-class="{ 'text-primary': tab.shared, 'dropdown-toggle': tab.isOwner, 'text-info': !tab.isOwner}">
+                                   ng-if="activeTab === tab.id && tab.isOwner"
+                                   ng-class="{ 'text-primary': tab.shared }">
                                     <span class="text"
                                           ng-class="{ 'text-primary': tab.shared === true}">
                                         <i class="fa-solid fa-thumbtack" ng-show="tab.pinned"></i>
@@ -79,7 +80,7 @@
                                     </span>
                                     <b class="caret"></b>
                                 </a>
-                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}" >
+                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}" ng-if="tab.isOwner">
                                     <li>
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="triggerRenameTabModal(tab.name)">
@@ -110,6 +111,20 @@
                                         </a>
                                     </li>
                                 </ul>
+
+                                <!-- For users who got this tab by allocation (no drop down menu with options) -->
+                                <a href="javascript:void(0);"
+                                   class="nav-link active text-info"
+                                   aria-expanded="false"
+                                   ng-if="activeTab === tab.id && !tab.isOwner"
+                                   ng-class="{ 'text-primary': tab.shared}">
+                                    <span class="text"
+                                          ng-class="{ 'text-primary': tab.shared === true}">
+                                        <i class="fa-solid fa-thumbtack" ng-show="tab.pinned"></i>
+                                        {{tab.name}}
+                                    </span>
+                                </a>
+
                             </li>
                         </ul>
                     </div>
