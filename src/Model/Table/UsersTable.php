@@ -101,7 +101,9 @@ class UsersTable extends Table {
         ]);
 
         $this->hasMany('DashboardTabs', [
-            'foreignKey' => 'user_id'
+            'foreignKey'       => 'user_id',
+            'dependent'        => true,
+            'cascadeCallbacks' => true
         ]);
 
         $this->belongsToMany('Containers', [
@@ -1501,8 +1503,8 @@ class UsersTable extends Table {
         if (!empty($containerIds)) {
             $query->where([
                     'OR' => [
-                        'ContainersUsersMemberships.container_id IN'           => $containerIds,
-                        'ContainersUsercontainerrolesMemberships.container_id IN'           => $containerIds
+                        'ContainersUsersMemberships.container_id IN'              => $containerIds,
+                        'ContainersUsercontainerrolesMemberships.container_id IN' => $containerIds
                     ]
                 ]
             );
