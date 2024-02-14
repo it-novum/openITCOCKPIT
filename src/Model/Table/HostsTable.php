@@ -21,7 +21,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Cache\ObjectsCache;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -1102,7 +1101,6 @@ class HostsTable extends Table {
 
         $noConditionFilters = $HostFilter->getNoConditionFilters();
         if (!empty($noConditionFilters['Hoststatus.state_older_than']) && is_numeric($noConditionFilters['Hoststatus.state_older_than']) && $noConditionFilters['Hoststatus.state_older_than'] > 0) {
-            FileDebugger::dump("bla");
             $intervalUnit = 'MINUTE';
             if (in_array($noConditionFilters['Hoststatus.state_older_than_unit'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
                 $intervalUnit = $noConditionFilters['Hoststatus.state_older_than_unit'];
