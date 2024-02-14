@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval){
+    .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval, $state, NotyService){
 
         /** public vars **/
         $scope.init = true;
@@ -592,6 +592,105 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadContainers = function(){
+            return $http.get("/users/loadContainersForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.init = false;
+                $scope.containers = result.data.containers;
+            });
+        };
+
+        $scope.loadElements = function(){
+            var containerId = $scope.post.DashboardAllocation.container_id;
+            if(containerId === 0){
+                return;
+            }
+
+            $http.get("/DashboardAllocations/loadElementsByContainerId/" + containerId + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.dashboard_tabs = result.data.dashboard_tabs;
+                $scope.users = result.data.users;
+                $scope.usergroups = result.data.usergroups;
+                $scope.allocated_dashboard_tabs = result.data.allocated_dashboard_tabs;
+            });
+        };
+
+        $scope.allocateDashboard = function(tabId){
+            $scope.errors = null;
+            $scope.loadContainers();
+            var tabById = _.find(
+                $scope.tabs,
+                function(tab){
+                    return tab.id == tabId;
+                }
+            );
+            $scope.post = {
+                DashboardAllocation: {
+                    name: tabById.name,
+                    container_id: 0,
+                    dashboard_tab_id: tabId,
+                    pinned: false,
+                    users: {
+                        _ids: []
+                    },
+                    usergroups: {
+                        _ids: [],
+                    }
+                }
+            };
+
+            if(tabById.hasOwnProperty('dashboard_tab_allocation') && tabById.dashboard_tab_allocation){
+                $scope.post.DashboardAllocation = tabById.dashboard_tab_allocation;
+            }
+
+            // Show the modal.
+            $('#allocateDashboardModal').modal('show');
+        }
+
+        $scope.addDashboardAllocation = function(){
+            $http.post("/DashboardAllocations/add.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                var url = $state.href('DashboardAllocationsEdit', {id: result.data.allocation.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+                $('#allocateDashboardModal').modal('hide');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    NotyService.genericError();
+                    $scope.errors = result.data.error;
+                }
+            });
+        }
+
+        $scope.editDashboardAllocation = function(){
+            $http.post("/DashboardAllocations/edit/" + $scope.post.DashboardAllocation.id + ".json?angular=true",
+                $scope.post
+            ).then(function(result){
+                var url = $state.href('DashboardAllocationsEdit', {id: result.data.allocation.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+                $('#allocateDashboardModal').modal('hide');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    NotyService.genericError();
+                    $scope.errors = result.data.error;
+                }
+            });
+        }
+
         if(document.addEventListener){
             document.addEventListener('webkitfullscreenchange', fullscreenExitHandler, false);
             document.addEventListener('mozfullscreenchange', fullscreenExitHandler, false);
@@ -750,6 +849,13 @@ angular.module('openITCOCKPIT')
             watchTimeout = $timeout(function(){
                 $scope.saveGrid();
             }, 1500);
+        }, true);
+
+        $scope.$watch('post.DashboardAllocation.container_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadElements();
         }, true);
 
         $scope.load();

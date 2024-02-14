@@ -12,7 +12,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 
 /**
@@ -235,6 +234,10 @@ class DashboardTabsTable extends Table {
         $allocations = $DashboardTabAllocationsTable->getAllDashboardAllocationsByUser($User);
         $allocationDashboardTabIds = Hash::combine($allocations, '{n}.dashboard_tab_id', '{n}');
 
+        $allDashboardsAllocations = $DashboardTabAllocationsTable->getAllDashboardAllocations();
+        $allDashboardsAllocationsTabIds = Hash::combine($allDashboardsAllocations, '{n}.dashboard_tab_id', '{n}');
+
+
         // Get all Dashboard Tabs from the user
         $where = [
             'DashboardTabs.user_id' => $User->getId(),
@@ -267,17 +270,17 @@ class DashboardTabsTable extends Table {
             if ($isOwner) {
                 // This dashboard tab is from the user itself
                 $forJs[] = [
-                    'id'                => (int)$row['id'],
-                    'position'          => (int)$row['position'],
-                    'name'              => $row['name'],
-                    'shared'            => (bool)$row['shared'],
-                    'source_tab_id'     => (int)$row['source_tab_id'],
-                    'check_for_updates' => (bool)$row['check_for_updates'],
-                    'last_update'       => (int)$row['last_update'],
-                    'locked'            => (bool)$row['locked'],
-                    'pinned'            => false,
-                    'isOwner'           => $isOwner,
-                    //'source'            => 'USER'
+                    'id'                       => (int)$row['id'],
+                    'position'                 => (int)$row['position'],
+                    'name'                     => $row['name'],
+                    'shared'                   => (bool)$row['shared'],
+                    'source_tab_id'            => (int)$row['source_tab_id'],
+                    'check_for_updates'        => (bool)$row['check_for_updates'],
+                    'last_update'              => (int)$row['last_update'],
+                    'locked'                   => (bool)$row['locked'],
+                    'pinned'                   => false,
+                    'isOwner'                  => $isOwner,
+                    'dashboard_tab_allocation' => $allDashboardsAllocationsTabIds[$row['id']] ?? null
                 ];
             } else {
                 // This dashboard tab got allocated to the user

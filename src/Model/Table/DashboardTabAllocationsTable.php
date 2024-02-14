@@ -33,7 +33,6 @@ use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\DashboardTabAllocationsFilter;
@@ -311,10 +310,39 @@ class DashboardTabAllocationsTable extends Table {
                     'UsergroupsToDashboardTabAllocations.usergroup_id' => $User->getUsergroupId()
                 ]
             ]
-        );
+        )->group([
+            'DashboardTabAllocations.id'
+        ]);
         $query->disableHydration()
             ->all();
         return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
+     * @param $MY_RIGHTS
+     * @return array
+     */
+    public function getAllDashboardAllocations($MY_RIGHTS = []) {
+        $query = $this->find()
+            ->contain([
+                'Users',
+                'Usergroups'
+            ])
+            ->disableHydration()
+            ->all();
+        $allocations = $query->toArray();
+        if (empty($allocations)) {
+            return [];
+        }
+        foreach ($allocations as $key => $allocation) {
+            $allocations[$key]['users'] = [
+                '_ids' => Hash::extract($allocations[$key]['users'], '{n}.id')
+            ];
+            $allocations[$key]['usergroups'] = [
+                '_ids' => Hash::extract($allocations[$key]['usergroups'], '{n}.id')
+            ];
+        }
+        return $allocations;
     }
 
     /**
