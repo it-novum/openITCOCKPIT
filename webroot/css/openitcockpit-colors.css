@@ -1292,3 +1292,15 @@ background: rgba(255, 77, 77, 0.27)
 .bg-panel-default{
     background-color: #FFF;
 }
+
+.tab-allocated {
+    color: #0d47a1!important;
+}
+
+.tab-shared-and-allocated-gradient {
+    background: -webkit-linear-gradient(to right, #0d47a1 0%,  #4285F4 100%);
+    background: -moz-linear-gradient(to right, #0d47a1 0%, #4285F4 100%);
+    background: linear-gradient(to right, #0d47a1 0%, #4285F4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

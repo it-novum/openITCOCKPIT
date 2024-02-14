@@ -60,7 +60,9 @@
                                    ng-class="{ 'bg-primary-50 text-dark': !tab.isOwner}"
                                    role="tab">
                                 <span class="text" ng-click="loadTabContent(tab.id)"
-                                      ng-class="{ 'text-primary': tab.shared === true}">
+                                      ng-class="{ 'text-primary': tab.shared === true,
+                                      'tab-allocated': tab.dashboard_tab_allocation,
+                                       'tab-shared-and-allocated-gradient': tab.shared === true && tab.dashboard_tab_allocation}">
                                     <i class="fa-solid fa-thumbtack" ng-show="tab.pinned"></i>
                                     {{tab.name}}
                                 </span>
@@ -74,7 +76,9 @@
                                    ng-if="activeTab === tab.id && tab.isOwner"
                                    ng-class="{ 'text-primary': tab.shared }">
                                     <span class="text"
-                                          ng-class="{ 'text-primary': tab.shared === true}">
+                                          ng-class="{ 'text-primary': tab.shared === true,
+                                          'tab-allocated': tab.dashboard_tab_allocation,
+                                          'tab-shared-and-allocated-gradient': tab.shared === true && tab.dashboard_tab_allocation}">
                                         <i class="fa-solid fa-thumbtack" ng-show="tab.pinned"></i>
                                         {{tab.name}}
                                     </span>
@@ -125,7 +129,7 @@
 
                                 <!-- For users who got this tab by allocation (no drop down menu with options) -->
                                 <a href="javascript:void(0);"
-                                   class="nav-link active text-info"
+                                   class="nav-link active tab-allocated"
                                    aria-expanded="false"
                                    ng-if="activeTab === tab.id && !tab.isOwner"
                                    ng-class="{ 'text-primary': tab.shared}">
