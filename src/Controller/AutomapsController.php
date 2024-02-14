@@ -31,10 +31,12 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Entity\Automap;
 use App\Model\Table\AutomapsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\WidgetsTable;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -45,6 +47,7 @@ use itnovum\openITCOCKPIT\Core\Dashboards\AutomapJson;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -672,6 +675,14 @@ class AutomapsController extends AppController {
         }
 
         if ($this->request->is('post')) {
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
 
             $config = $AutomapJson->standardizedData($this->request->getData());
             $widget = $WidgetsTable->patchEntity($widget, [
