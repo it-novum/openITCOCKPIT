@@ -39,6 +39,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
@@ -1474,18 +1475,38 @@ class UsersTable extends Table {
         $query->select([
             'id'   => 'DashboardTabs.id',
             'name' => $query->newExpr('CONCAT(DashboardTabs.name, " (", Users.firstname, " " ,Users.lastname,")")'),
-        ])->innerJoinWith('Containers')
-            ->innerJoinWith('DashboardTabs');
+        ])
+            ->innerJoinWith('DashboardTabs')
+            ->leftJoin(
+                ['ContainersUsersMemberships' => 'users_to_containers'],
+                ['Users.id = ContainersUsersMemberships.user_id']
+            )
+            ->leftJoin(
+                ['UsercontainerrolesMemberships' => 'users_to_usercontainerroles'],
+                ['Users.id = UsercontainerrolesMemberships.user_id']
+            )
+            ->leftJoin(
+                ['Usercontainerroles' => 'usercontainerroles'],
+                ['Usercontainerroles.id = UsercontainerrolesMemberships.usercontainerrole_id']
+            )
+            ->leftJoin(
+                ['ContainersUsercontainerrolesMemberships' => 'usercontainerroles_to_containers'],
+                ['ContainersUsercontainerrolesMemberships.usercontainerrole_id = Usercontainerroles.id']
+            );
+
         if (!empty($MY_RIGHTS)) {
             //remove not allowed containerIds
             $containerIds = array_intersect($MY_RIGHTS, $containerIds);
         }
         if (!empty($containerIds)) {
-            $query->andWhere([
-                'ContainersUsersMemberships.container_id IN' => $containerIds
-            ]);
+            $query->where([
+                    'OR' => [
+                        'ContainersUsersMemberships.container_id IN'           => $containerIds,
+                        'ContainersUsercontainerrolesMemberships.container_id IN'           => $containerIds
+                    ]
+                ]
+            );
         }
-
         $query->group(['DashboardTabs.id'])
             ->disableHydration()
             ->all();
