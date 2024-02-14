@@ -11,6 +11,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             $scope.init = true;
             $scope.useScroll = true;
             $scope.scroll_interval = 30000;
+            $scope.min_scroll_intervall = 5000;
 
             var $widget = $('#widget-' + $scope.widget.id);
 
@@ -24,6 +25,8 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             $scope.direction = 'desc';
             $scope.currentPage = 1;
 
+            $scope.configPageOpen = false;
+
             $scope.filter = {
                 Hoststatus: {
                     current_state: {
@@ -35,7 +38,9 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     not_acknowledged: false,
                     in_downtime: false,
                     not_in_downtime: false,
-                    output: ''
+                    output: '',
+                    state_older_than: null,
+                    state_older_than_unit: 'minutes',
                 },
                 Host: {
                     name: '',
@@ -58,17 +63,17 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     $scope.filter.Hoststatus.not_acknowledged = result.data.config.Hoststatus.not_acknowledged;
                     $scope.filter.Hoststatus.in_downtime = result.data.config.Hoststatus.in_downtime;
                     $scope.filter.Hoststatus.not_in_downtime = result.data.config.Hoststatus.not_in_downtime;
+                    $scope.filter.Hoststatus.state_older_than = result.data.config.Hoststatus.state_older_than ? parseInt(result.data.config.Hoststatus.state_older_than, 10) : null;
                     $scope.filter.Host.name_regex = result.data.config.Host.name_regex;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
 
                     var scrollInterval = parseInt(result.data.config.scroll_interval);
-                    if(scrollInterval < 5000){
-                        scrollInterval = 5000;
-                    }
                     $scope.scroll_interval = scrollInterval;
-                    if($scope.useScroll){
+                    if(scrollInterval < 5000){
+                        $scope.pauseScroll();
+                    }else{
                         $scope.startScroll();
                     }
 
@@ -108,6 +113,8 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                     'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                     'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
+                    'noConditionFilter[Hoststatus.state_older_than]': $scope.filter.Hoststatus.state_older_than,
+                    'noConditionFilter[Hoststatus.state_older_than_unit]': $scope.filter.Hoststatus.state_older_than_unit,
                     'limit': $scope.limit
                 };
 
@@ -167,6 +174,9 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
 
             $scope.startScroll = function(){
                 $scope.pauseScroll();
+                if(!$scope.useScroll && $scope.scroll_interval === 0){
+                    $scope.scroll_interval = $scope.min_scroll_intervall;
+                }
                 $scope.useScroll = true;
 
                 $scope.interval = $interval(function(){
@@ -233,9 +243,11 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
 
             $scope.hideConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_IN');
+                $scope.configPageOpen = false;
             };
             $scope.showConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_OUT');
+                $scope.configPageOpen = true;
                 $scope.loadWidgetConfig();
             };
 
@@ -247,20 +259,22 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                 $("input[data-role=tagsinput]").tagsinput();
             });
 
-            $scope.$watch('scroll_interval', function(){
+            $scope.$watch('scroll_interval', function(scrollInterval){
                 $scope.pagingTimeString = getTimeString();
                 if($scope.init === true){
                     return true;
                 }
                 $scope.pauseScroll();
-                $scope.startScroll();
+                if(scrollInterval > 0){
+                    $scope.startScroll();
+                }
                 $scope.load({
                     save: true
                 });
             });
 
             $scope.$watch('sort', function(){
-                if($scope.init === true){
+                if($scope.init === true || $scope.configPageOpen === true){
                     return true;
                 }
                 $scope.load({

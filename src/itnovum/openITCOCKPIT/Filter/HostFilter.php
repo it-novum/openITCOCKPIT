@@ -28,6 +28,11 @@ namespace itnovum\openITCOCKPIT\Filter;
 class HostFilter extends Filter {
 
     /**
+     * @var array
+     */
+    private $noConditionFilters = [];
+
+    /**
      * @return array
      */
     public function indexFilter() {
@@ -143,6 +148,22 @@ class HostFilter extends Filter {
         ];
 
         return $this->getConditionsByFilters($filters);
+    }
+
+    /**
+     * add filter which can not be converted to conditions (if you just need the values in the query)
+     *
+     * @param array $filters
+     */
+    public function setNoConditionFilters($filter) {
+        $this->noConditionFilters = $filter;
+    }
+
+    /**
+     * @return array
+     */
+    public function getNoConditionFilters() {
+        return $this->noConditionFilters;
     }
 
 }

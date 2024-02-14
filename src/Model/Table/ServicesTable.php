@@ -2041,6 +2041,22 @@ class ServicesTable extends Table {
             unset($where['servicedescription LIKE']);
         }
 
+        if (!empty($where['Servicestatus.state_older_than']) && is_numeric($where['Servicestatus.state_older_than']) && $where['Servicestatus.state_older_than'] > 0) {
+            $intervalUnit = 'MINUTE';
+            if (in_array($where['Servicestatus.state_older_than_unit'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
+                $intervalUnit = $where['Servicestatus.state_older_than_unit'];
+            }
+            $query->where([
+                sprintf('Servicestatus.last_state_change <= UNIX_TIMESTAMP(DATE(NOW() - INTERVAL %s %s))',
+                    $where['Servicestatus.state_older_than'],
+                    $intervalUnit
+                )
+            ]);
+
+        }
+        unset($where['Servicestatus.state_older_than']);
+        unset($where['Servicestatus.state_older_than_unit']);
+
         if (!empty($where)) {
             $query->andWhere($where);
         }
@@ -2259,6 +2275,23 @@ class ServicesTable extends Table {
             );
             unset($where['servicedescription LIKE']);
         }
+
+        if (!empty($where['Servicestatus.state_older_than']) && is_numeric($where['Servicestatus.state_older_than']) && $where['Servicestatus.state_older_than'] > 0) {
+            $intervalUnit = 'MINUTE';
+            if (in_array($where['Servicestatus.state_older_than_unit'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
+                $intervalUnit = $where['Servicestatus.state_older_than_unit'];
+            }
+            $query->where([
+                sprintf('Servicestatus.last_state_change <= UNIX_TIMESTAMP(DATE(NOW() - INTERVAL %s %s))',
+                    $where['Servicestatus.state_older_than'],
+                    $intervalUnit
+                )
+            ]);
+
+        }
+        unset($where['Servicestatus.state_older_than']);
+        unset($where['Servicestatus.state_older_than_unit']);
+
         if (!empty($where)) {
             $query->andWhere($where);
         }

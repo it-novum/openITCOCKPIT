@@ -11,6 +11,7 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
             $scope.init = true;
             $scope.useScroll = true;
             $scope.scroll_interval = 30000;
+            $scope.min_scroll_intervall = 5000;
 
             var $widget = $('#widget-' + $scope.widget.id);
 
@@ -56,10 +57,13 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
                     var scrollInterval = parseInt(result.data.config.scroll_interval);
-                    if(scrollInterval < 5000){
-                        scrollInterval = 5000;
-                    }
                     $scope.scroll_interval = scrollInterval;
+                    if(scrollInterval < 5000){
+                        $scope.pauseScroll();
+                    }else{
+                        $scope.startScroll();
+                    }
+
                     $scope.load();
                 });
             };
@@ -151,6 +155,9 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
 
             $scope.startScroll = function(){
                 $scope.pauseScroll();
+                if(!$scope.useScroll && $scope.scroll_interval === 0){
+                    $scope.scroll_interval = $scope.min_scroll_intervall;
+                }
                 $scope.useScroll = true;
 
                 $scope.interval = $interval(function(){
@@ -227,13 +234,15 @@ angular.module('openITCOCKPIT').directive('servicesDowntimeWidget', function($ht
 
             loadWidgetConfig();
 
-            $scope.$watch('scroll_interval', function(){
+            $scope.$watch('scroll_interval', function(scrollInterval){
                 $scope.pagingTimeString = getTimeString();
                 if($scope.init === true){
                     return true;
                 }
                 $scope.pauseScroll();
-                $scope.startScroll();
+                if(scrollInterval > 0){
+                    $scope.startScroll();
+                }
                 $scope.load({
                     save: true
                 });
