@@ -475,4 +475,107 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             ]
         ];
     }
+
+    /**
+     * @param array $uuids
+     * @param bool $isRunning
+     * @return array
+     */
+    public function byUuidsNoJoins($uuids, $isRunning = false) {
+        if (empty($uuids)) {
+            return [];
+        }
+
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $query = $this->find();
+        $query->select([
+            'DowntimeServices.service_description',
+            'DowntimeServices.author_name',
+            'DowntimeServices.comment_data',
+            'DowntimeServices.entry_time',
+            'DowntimeServices.scheduled_start_time',
+            'DowntimeServices.scheduled_end_time',
+            'DowntimeServices.duration',
+            'DowntimeServices.was_started',
+            'DowntimeServices.internal_downtime_id',
+            'DowntimeServices.was_cancelled',
+        ])
+            ->order([
+                'DowntimeServices.entry_time' => 'DESC'
+            ])
+            ->where([
+                'DowntimeServices.service_description IN' => $uuids
+            ]);
+
+        if ($isRunning) {
+            $query->andWhere([
+                'DowntimeServices.scheduled_end_time >' => time(),
+                'DowntimeServices.was_started'          => 1,
+                'DowntimeServices.was_cancelled'        => 0
+
+            ]);
+        }
+
+        $query->disableHydration();
+        $downtimes = $query->all();
+        $result = [];
+        foreach ($downtimes as $downtime) {
+            $result[$downtime['service_description']] = $downtime;
+        }
+        return $result;
+    }
+
+    /**
+     * @param $uuids
+     * @param int $startTimestamp
+     * @param int $endTimestamp
+     * @return array
+     */
+    public function getPlannedDowntimes($uuids, int $startTimestamp, int $endTimestamp) {
+        if (empty($uuids)) {
+            return [];
+        }
+
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'DowntimeServices.service_description',
+                'DowntimeServices.author_name',
+                'DowntimeServices.comment_data',
+                'DowntimeServices.entry_time',
+                'DowntimeServices.scheduled_start_time',
+                'DowntimeServices.scheduled_end_time',
+                'DowntimeServices.actual_end_time',
+                'DowntimeServices.duration',
+                'DowntimeServices.was_started',
+                'DowntimeServices.internal_downtime_id',
+                'DowntimeServices.was_cancelled',
+            ])
+            ->where([
+                'DowntimeServices.scheduled_start_time >' => $startTimestamp,
+                'DowntimeServices.scheduled_start_time <' => $endTimestamp,
+                'DowntimeServices.was_started'            => 0,
+                'DowntimeServices.was_cancelled'          => 0,
+                'DowntimeServices.service_description IN' => $uuids
+            ])
+            ->order([
+                'DowntimeServices.scheduled_start_time' => 'DESC'
+            ]);
+
+        $query->disableHydration();
+        $downtimes = $query->all();
+        $result = [];
+        foreach ($downtimes as $downtime) {
+            $result[$downtime['service_description']][] = $downtime;
+        }
+
+        return $result;
+    }
+
 }
