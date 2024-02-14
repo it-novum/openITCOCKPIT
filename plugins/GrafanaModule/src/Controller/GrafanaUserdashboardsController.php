@@ -27,10 +27,12 @@ namespace GrafanaModule\Controller;
 
 use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Core\Plugin;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Log\Log;
@@ -46,6 +48,7 @@ use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -1105,6 +1108,15 @@ class GrafanaUserdashboardsController extends AppController {
             }
 
             $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
 
             $widget->set('json_data', json_encode([
                 'GrafanaUserdashboard' => [

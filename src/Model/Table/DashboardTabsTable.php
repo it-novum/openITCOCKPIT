@@ -295,7 +295,7 @@ class DashboardTabsTable extends Table {
 
                 $forJs[] = [
                     'id'                => (int)$row['id'],
-                    'position'          => (int)$row['position'],
+                    'position'          => $position,
                     'name'              => $row['name'],
                     'shared'            => false,
                     'source_tab_id'     => 0,
@@ -310,7 +310,7 @@ class DashboardTabsTable extends Table {
         }
 
 
-        return $forJs;
+        return Hash::sort($forJs, '{n}.position', 'asc');
     }
 
     /**
