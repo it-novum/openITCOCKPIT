@@ -29742,3 +29742,69 @@ msgstr "VMware Host"
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:96
 msgid "VMware Snapshot services"
 msgstr "VMware Snapshot Services"
+
+#: .-src/Model/Table/StatuspagesTable.php:557
+msgid "State is acknowledged"
+msgstr "Status ist bestätigt"
+
+#: .-src/Model/Table/StatuspagesTable.php:563
+msgid "State is not acknowledged"
+msgstr "Status ist nicht bestätigt"
+
+#: .-src/Model/Table/StatuspagesTable.php:559
+msgid "Work in progress"
+msgstr "In Arbeit"
+
+#: .-src/Model/Table/StatuspagesTable.php:573
+msgid "{0} of {1} problems acknowledged"
+msgstr "{0} von {1} Problem(en) bestätigt"
+
+
+#: .-src/Template/Statuspages/index.php:244
+msgid "Public View"
+msgstr "öffentliche Anzeige"
+
+msgid "Status pages"
+msgstr "Statusseiten"
+
+msgid "Major Outage"
+msgstr "Schwerer Ausfall"
+
+msgid "Performance Issues"
+msgstr "Leistungsprobleme"
+
+msgid "Not in Monitoring"
+msgstr "Nicht in Überwachung"
+
+msgid "All services are operational"
+msgstr "Alle Services funktional"
+
+msgid "Operational"
+msgstr "Funktional"
+
+msgid "Investigating issue"
+msgstr "Problem unter Beobachtung"
+
+msgid "Upcoming maintenance"
+msgstr "geplante Wartung"
+
+msgid "Currently under maintenance."
+msgstr "in Wartung"
+
+msgid "Scheduled maintenance for the next 10 days:"
+msgstr "geplante Wartungen in den nächsten 10 Tagen:"
+
+msgid "{0} current downtimes."
+msgstr "{0} laufende Wartung(en)."
+
+msgid "{0} downtimes planned for next 10 days"
+msgstr "{0} Wartung(en) für die nächsten 10 Tage geplant"
+
+msgid "{0} service(s) in current downtime."
+msgstr "{0} Service(s) in Wartung."
+
+msgid "{0} service downtimes planned for next 10 days"
+msgstr "{0} Service Wartungen(en) für die nächsten 10 Tage geplant"
+
+msgid "{0} of {1} service problems acknowledged"
+msgstr "{0} von {1} Serviceproblem(en) bestätigt"

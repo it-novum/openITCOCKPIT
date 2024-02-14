@@ -29742,3 +29742,67 @@ msgstr ""
 msgid "VMware Snapshot services"
 msgstr ""
 
+#: .-src/Model/Table/StatuspagesTable.php:557
+msgid "State is acknowledged"
+msgstr ""
+
+#: .-src/Model/Table/StatuspagesTable.php:563
+msgid "State is not acknowledged"
+msgstr ""
+
+#: .-src/Model/Table/StatuspagesTable.php:559
+msgid "Work in progress"
+msgstr ""
+
+#: .-src/Model/Table/StatuspagesTable.php:573
+msgid "{0} of {1} problems acknowledged"
+msgstr ""
+
+#: .-src/Template/Statuspages/index.php:244
+msgid "Public View"
+msgstr ""
+
+msgid "Status pages"
+msgstr ""
+
+msgid "Major Outage"
+msgstr ""
+
+msgid "Performance Issues"
+msgstr ""
+
+msgid "Not in Monitoring"
+msgstr ""
+
+msgid "All services are operational"
+msgstr ""
+
+msgid "Operational"
+msgstr ""
+
+msgid "Investigating issue"
+msgstr ""
+
+msgid "Upcoming maintenance"
+msgstr ""
+
+msgid "Currently under maintenance."
+msgstr ""
+
+msgid "Scheduled maintenance for the next 10 days:"
+msgstr ""
+
+msgid "{0} current downtimes."
+msgstr ""
+
+msgid "{0} downtimes planned for next 10 days"
+msgstr ""
+
+msgid "{0} service(s) in current downtime."
+msgstr ""
+
+msgid "{0} service downtimes planned for next 10 days"
+msgstr ""
+
+msgid "{0} of {1} service problems acknowledged"
+msgstr ""

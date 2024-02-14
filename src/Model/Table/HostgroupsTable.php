@@ -74,6 +74,13 @@ class HostgroupsTable extends Table {
             'joinTable'        => 'hosttemplates_to_hostgroups',
             'saveStrategy'     => 'replace'
         ]);
+        $this->belongsToMany('Statuspages', [
+            'className'        => 'Statuspages',
+            'foreignKey'       => 'hostgroup_id',
+            'targetForeignKey' => 'statuspage_id',
+            'joinTable'        => 'statuspages_to_hostgroups',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
     }
 
     /**
@@ -558,10 +565,16 @@ class HostgroupsTable extends Table {
                 ])
                 ->where([
                     'Hostgroups.id IN' => $selected
-                ])
-                ->order([
-                    'Containers.name' => 'asc'
-                ])
+                ]);
+
+            if (!empty($HostgroupConditions->getContainerIds())) {
+                $query->where([
+                    'Containers.parent_id IN' => $HostgroupConditions->getContainerIds()
+                ]);
+            }
+            $query->order([
+                'Containers.name' => 'asc'
+            ])
                 ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();

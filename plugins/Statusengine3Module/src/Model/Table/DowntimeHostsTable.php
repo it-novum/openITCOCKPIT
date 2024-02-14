@@ -378,4 +378,110 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
 
         return $query->first();
     }
+
+
+    /**
+     * @param $uuids
+     * @param $isRunning
+     * @return array
+     */
+    public function byUuidsNoJoins($uuids, $isRunning = false) {
+        if (empty($uuids)) {
+            return [];
+        }
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'DowntimeHosts.hostname',
+                'DowntimeHosts.author_name',
+                'DowntimeHosts.comment_data',
+                'DowntimeHosts.entry_time',
+                'DowntimeHosts.scheduled_start_time',
+                'DowntimeHosts.scheduled_end_time',
+                'DowntimeHosts.duration',
+                'DowntimeHosts.was_started',
+                'DowntimeHosts.internal_downtime_id',
+                'DowntimeHosts.was_cancelled',
+            ])
+            ->order([
+                'DowntimeHosts.entry_time' => 'DESC'
+            ])
+            ->where([
+                'DowntimeHosts.hostname IN' => $uuids
+            ]);
+
+        if ($isRunning) {
+            $query->andWhere([
+                'DowntimeHosts.scheduled_end_time >' => time(),
+                'DowntimeHosts.was_started'          => 1,
+                'DowntimeHosts.was_cancelled'        => 0
+
+            ]);
+        }
+
+        $query->disableHydration();
+
+        $downtimes = $query->all();
+        $result = [];
+        foreach ($downtimes as $downtime) {
+            $result[$downtime['hostname']] = $downtime;
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * @param $uuids
+     * @param int $startTimestamp
+     * @param int $endTimestamp
+     * @return array
+     */
+    public function getPlannedDowntimes($uuids, int $startTimestamp, int $endTimestamp) {
+        if (empty($uuids)) {
+            return [];
+        }
+
+        if (!is_array($uuids)) {
+            $uuids = [$uuids];
+        }
+
+        $query = $this->find()
+            ->select([
+                'DowntimeHosts.hostname',
+                'DowntimeHosts.author_name',
+                'DowntimeHosts.comment_data',
+                'DowntimeHosts.entry_time',
+                'DowntimeHosts.scheduled_start_time',
+                'DowntimeHosts.scheduled_end_time',
+                'DowntimeHosts.actual_end_time',
+                'DowntimeHosts.duration',
+                'DowntimeHosts.was_started',
+                'DowntimeHosts.internal_downtime_id',
+                'DowntimeHosts.was_cancelled',
+            ])
+            ->where([
+                'DowntimeHosts.scheduled_start_time >' => $startTimestamp,
+                'DowntimeHosts.scheduled_start_time <' => $endTimestamp,
+                'DowntimeHosts.was_started'            => 0,
+                'DowntimeHosts.was_cancelled'          => 0,
+                'DowntimeHosts.hostname IN'            => $uuids
+            ])
+            ->order([
+                'DowntimeHosts.scheduled_start_time' => 'DESC'
+            ]);
+
+        $query->disableHydration();
+        $downtimes = $query->all();
+        $result = [];
+        foreach ($downtimes as $downtime) {
+            $result[$downtime['hostname']][] = $downtime;
+        }
+
+        return $result;
+    }
+
 }

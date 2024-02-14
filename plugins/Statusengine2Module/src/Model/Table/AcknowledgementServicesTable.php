@@ -27,6 +27,7 @@ namespace Statusengine2Module\Model\Table;
 
 use App\Lib\Interfaces\AcknowledgementServicesTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Http\Exception\NotImplementedException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -175,5 +176,13 @@ class AcknowledgementServicesTable extends Table implements AcknowledgementServi
         }
 
         return $result;
+    }
+
+    /**
+     * @param $uuids
+     * @return mixed
+     */
+    public function byUuids($uuids) {
+        throw new NotImplementedException();
     }
 }

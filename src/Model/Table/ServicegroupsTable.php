@@ -12,7 +12,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ServicegroupConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicegroupFilter;
@@ -71,6 +70,14 @@ class ServicegroupsTable extends Table {
             'joinTable'        => 'servicetemplates_to_servicegroups',
             'saveStrategy'     => 'replace'
         ]);
+
+        $this->belongsToMany('Statuspages', [
+            'className'        => 'Statuspages',
+            'foreignKey'       => 'servicegroup_id',
+            'targetForeignKey' => 'statuspage_id',
+            'joinTable'        => 'statuspages_to_servicegroups',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
     }
 
     /**
@@ -459,15 +466,15 @@ class ServicegroupsTable extends Table {
                                     'Servicetemplates.name'
                                 ]);
                             },
-                            'Hosts' => function(Query $q){
+                            'Hosts'            => function (Query $q) {
                                 return $q->select([
                                     'Hosts.id',
                                     'Hosts.uuid',
                                     'Hosts.name'
                                 ])
                                     ->contain([
-                                    'HostsToContainersSharing'
-                                ]);
+                                        'HostsToContainersSharing'
+                                    ]);
                             }
 
                         ])
@@ -508,7 +515,7 @@ class ServicegroupsTable extends Table {
                                                 'Servicetemplates.name'
                                             ]);
                                         },
-                                        'Hosts' => function(Query $q){
+                                        'Hosts'            => function (Query $q) {
                                             return $q->select([
                                                 'Hosts.id',
                                                 'Hosts.uuid',

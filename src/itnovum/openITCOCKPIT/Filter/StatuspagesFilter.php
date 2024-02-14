@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2018>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,36 +22,27 @@
 //  License agreement and license key will be shipped with the order
 //  confirmation.
 
-namespace App\Lib\Interfaces;
+namespace itnovum\openITCOCKPIT\Filter;
 
 
-use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
-
-interface AcknowledgementHostsTableInterface {
+class StatuspagesFilter extends Filter {
 
     /**
-     * @param AcknowledgedHostConditions $AcknowledgedHostConditions
-     * @param PaginateOMat|null $PaginateOMat
      * @return array
      */
-    public function getAcknowledgements(AcknowledgedHostConditions $AcknowledgedHostConditions, $PaginateOMat = null);
+    public function indexFilter() {
+        $filters = [
+            'bool'     => [
+                'Statuspages.public'
+            ],
+            'like' => [
+                'Statuspages.name',
+                'Statuspages.description',
+            ]
+        ];
 
-    /**
-     * @param string $uuid
-     * @return array
-     */
-    public function byHostUuid($uuid);
+        return $this->getConditionsByFilters($filters);
+    }
 
-    /**
-     * @param string $uuid
-     * @return array
-     */
-    public function byUuid($uuid);
 
-    /**
-     * @param array $uuids
-     * @return array
-     */
-    public function byUuids($uuids);
 }
