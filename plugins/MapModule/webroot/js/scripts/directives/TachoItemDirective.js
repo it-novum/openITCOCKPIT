@@ -41,7 +41,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     $scope.responsePerfdata = result.data.data.Perfdata;
 
                     processPerfdata();
-                    renderGauge($scope.perfdataName, $scope.perfdata);
+                    renderGauge($scope.perfdataName, $scope.setup);
 
                     initRefreshTimer();
                     $scope.init = false;
@@ -116,13 +116,8 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
             }
 
 
-            var renderGauge = function(perfdataName, perfdata){
-                console.log(perfdata);
-                if(typeof perfdata === 'undefined'){
-                    return;
-                }
-
-                var units = perfdata.unit;
+            var renderGauge = function(perfdataName, setup){
+                var units = setup.metric.unit;
                 var label = perfdataName;
 
                 if(label.length > 20){
@@ -143,24 +138,15 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     }
                 }
 
-                if(isNaN(perfdata.warning) || isNaN(perfdata.critical)){
-                    perfdata.warning = null;
-                    perfdata.critical = null;
+                if(isNaN(setup.scale.min) || isNaN(setup.scale.max) || setup.scale.min === null || setup.scale.max === null){
+                    setup.scale.min = 0;
+                    setup.scale.max = 100;
                 }
 
-                if(isNaN(perfdata.datasource.setup.scale.max) && isNaN(perfdata.critical) === false){
-                    perfdata.datasource.setup.scale.max = perfdata.critical;
-                }
-
-                if(isNaN(perfdata.datasource.setup.scale.min) || isNaN(perfdata.datasource.setup.scale.max) || perfdata.datasource.setup.scale.min === null || perfdata.datasource.setup.scale.max === null){
-                    perfdata.datasource.setup.scale.min = 0;
-                    perfdata.datasource.setup.scale.max = 100;
-                }
-
-                var thresholds = $scope.getThresholdAreas(perfdata.datasource.setup);
+                var thresholds = $scope.getThresholdAreas(setup);
 
                 var maxDecimalDigits = 3;
-                var currentValueAsString = perfdata.datasource.setup.metric.value.toString();
+                var currentValueAsString = setup.metric.value.toString();
                 var intergetDigits = currentValueAsString.length;
                 var decimalDigits = 0;
 
@@ -174,7 +160,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                 }
 
                 var showDecimalDigitsGauge = 0;
-                if(decimalDigits > 0 || (perfdata.datasource.setup.scale.max - perfdata.datasource.setup.scale.min < 10)){
+                if(decimalDigits > 0 || (setup.scale.max - setup.scale.min < 10)){
                     showDecimalDigitsGauge = 1;
                 }
 
@@ -182,9 +168,9 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     renderTo: 'map-tacho-' + $scope.item.id,
                     height: $scope.height,
                     width: $scope.width,
-                    value: perfdata.datasource.setup.metric.value,
-                    minValue: perfdata.datasource.setup.scale.min || 0,
-                    maxValue: perfdata.datasource.setup.scale.max || 100,
+                    value: setup.metric.value,
+                    minValue: setup.scale.min || 0,
+                    maxValue: setup.scale.max || 100,
                     units: units,
                     strokeTicks: true,
                     title: label,
@@ -194,7 +180,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     highlights: thresholds,
                     animationDuration: 700,
                     animationRule: 'elastic',
-                    majorTicks: getMajorTicks(perfdata.datasource.setup.scale.min,perfdata.datasource.setup.scale.max, 5)
+                    majorTicks: getMajorTicks(setup.scale.min,setup.scale.max, 5)
                 });
 
                 gauge.draw();
@@ -236,11 +222,13 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                     if($scope.item.metric !== null && $scope.responsePerfdata.hasOwnProperty($scope.item.metric)){
                         $scope.perfdataName = $scope.item.metric;
                         $scope.perfdata = $scope.responsePerfdata[$scope.item.metric];
+                        $scope.setup = $scope.perfdata.datasource.setup;
                     }else{
                         //Use first metric.
                         for(var metricName in $scope.responsePerfdata){
                             $scope.perfdataName = metricName;
                             $scope.perfdata = $scope.responsePerfdata[metricName];
+                            $scope.setup = $scope.perfdata.datasource.setup;
                             break;
                         }
                     }
@@ -265,7 +253,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                 $scope.width = $scope.item.size_x;
                 $scope.height = $scope.width;
 
-                renderGauge($scope.perfdataName, $scope.perfdata);
+                renderGauge($scope.perfdataName, $scope.setup);
             });
 
             $scope.$watch('item.metric', function(){
@@ -274,7 +262,7 @@ angular.module('openITCOCKPIT').directive('tachoItem', function($http, $interval
                 }
 
                 processPerfdata();
-                renderGauge($scope.perfdataName, $scope.perfdata);
+                renderGauge($scope.perfdataName, $scope.setup);
             });
 
             $scope.$watch('item.object_id', function(){
