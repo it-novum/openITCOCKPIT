@@ -906,6 +906,18 @@
                                                     </label>
                                                 </div>
                                             </div>
+                                            <div class="form-group col-12">
+                                                <div class="custom-control custom-checkbox margin-bottom-10">
+                                                    <input type="checkbox"
+                                                           class="custom-control-input"
+                                                           id="ntp"
+                                                           ng-model="config.bool.ntp">
+                                                    <label class="custom-control-label"
+                                                           for="ntp">
+                                                        <?php echo __('Monitor of system clock is synchronized (NTP)'); ?>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </fieldset>
                                 </div>
