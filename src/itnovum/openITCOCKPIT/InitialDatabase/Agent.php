@@ -373,6 +373,11 @@ class Agent extends Importer {
                 'plugin_name'        => 'Libvirt',
                 'servicetemplate_id' => '4a0d6a78-8dd5-47c7-9edc-ed6a2aebce3a'
             ],
+            [
+                'name'               => 'ntp',
+                'plugin_name'        => 'Ntp',
+                'servicetemplate_id' => 'f3aadc86-fcc6-4d36-abce-50d0af593e44'
+            ],
         ];
         return $data;
     }
@@ -1254,6 +1259,28 @@ class Agent extends Importer {
                 'commandarguments' => []
             ],
 
+            // Agent 3.x
+            [
+                'name'             => 'check_oitc_agent_ntp',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'e96abe8e-af71-4565-9997-dfeb9e518cac',
+                'description'      => "Monitores if the system clock is synchronized to a time source like NTP.\n" .
+                    "Warning and Critical thresholds are integer values in seconds (e.g. 60 or 90).\n" .
+                    "On macOS clients the system time will be compared against the server time",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+
         ];
         return $data;
     }
@@ -1371,7 +1398,7 @@ class Agent extends Importer {
                         (int)0 => '1'
                     ]
                 ]
-            ]
+            ],
         ];
         return $data;
     }
@@ -3476,6 +3503,70 @@ class Agent extends Importer {
                     ],
                     [
                         'commandargument_id' => '$ARG5$',
+                        'value'              => '90',
+                    ]
+                ],
+                'customvariables'                           => [],
+                'servicegroups'                             => [],
+                'contactgroups'                             => [],
+                'contacts'                                  => []
+            ],
+
+            [
+                'uuid'                                      => 'f3aadc86-fcc6-4d36-abce-50d0af593e44',
+                'template_name'                             => 'OITC_AGENT_NTP',
+                'name'                                      => 'System Time',
+                'container_id'                              => ROOT_CONTAINER,
+                'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+                'check_period_id'                           => '1',
+                'notify_period_id'                          => '1',
+                'description'                               => '',
+                'command_id'                                => 'e96abe8e-af71-4565-9997-dfeb9e518cac',
+                'check_command_args'                        => '',
+                'checkcommand_info'                         => '',
+                'eventhandler_command_id'                   => '0',
+                'timeperiod_id'                             => '0',
+                'check_interval'                            => '300',
+                'retry_interval'                            => '60',
+                'max_check_attempts'                        => '3',
+                'first_notification_delay'                  => '0',
+                'notification_interval'                     => '7200',
+                'notify_on_warning'                         => '1',
+                'notify_on_unknown'                         => '1',
+                'notify_on_critical'                        => '1',
+                'notify_on_recovery'                        => '1',
+                'notify_on_flapping'                        => '0',
+                'notify_on_downtime'                        => '0',
+                'flap_detection_enabled'                    => '0',
+                'flap_detection_on_ok'                      => '0',
+                'flap_detection_on_warning'                 => '0',
+                'flap_detection_on_unknown'                 => '0',
+                'flap_detection_on_critical'                => '0',
+                'low_flap_threshold'                        => '0',
+                'high_flap_threshold'                       => '0',
+                'process_performance_data'                  => '1',
+                'freshness_checks_enabled'                  => '1',
+                'freshness_threshold'                       => '300',
+                'passive_checks_enabled'                    => '1',
+                'event_handler_enabled'                     => '0',
+                'active_checks_enabled'                     => '0',
+                'retain_status_information'                 => '0',
+                'retain_nonstatus_information'              => '0',
+                'notifications_enabled'                     => '1',
+                'notes'                                     => '',
+                'priority'                                  => '1',
+                'tags'                                      => '',
+                'service_url'                               => '',
+                'is_volatile'                               => '0',
+                'check_freshness'                           => '0',
+                'servicetemplateeventcommandargumentvalues' => [],
+                'servicetemplatecommandargumentvalues'      => [
+                    [
+                        'commandargument_id' => '$ARG1$',
+                        'value'              => '60',
+                    ],
+                    [
+                        'commandargument_id' => '$ARG2$',
                         'value'              => '90',
                     ]
                 ],
