@@ -57,7 +57,7 @@
                                 <a class="nav-link"
                                    href="javascript:void(0);"
                                    ng-if="activeTab !== tab.id"
-                                   ng-class="{ 'bg-primary-50 text-dark': !tab.isOwner}"
+                                   ng-class="{ 'tab-allocated': !tab.isOwner}"
                                    role="tab">
                                 <span class="text" ng-click="loadTabContent(tab.id)"
                                       ng-class="{ 'text-primary': tab.shared === true,
