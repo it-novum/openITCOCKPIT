@@ -7,6 +7,28 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
             'refreshInterval': '='
         },
         controller: function($scope){
+            // default data if no setup is passed whatsoever.
+            $scope.defaultSetup = {
+                scale: {
+                    min: 0,
+                    max: 100,
+                    type: "O",
+                },
+                metric: {
+                    value: 0,
+                    unit: 'X',
+                    name: 'No data available',
+                },
+                warn: {
+                    low: null,
+                    high: null,
+                },
+                crit: {
+                    low: null,
+                    high: null,
+                }
+            };
+
             $scope.init = true;
             $scope.statusUpdateInterval = null;
 
@@ -92,7 +114,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     $scope.responsePerfdata = result.data.performance_data;
 
                     processPerfdata();
-                    renderGraph($scope.perfdata);
+                    renderGraph();
                     $scope.init = false;
                 });
             };
@@ -379,15 +401,17 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 return thresholdLines;
             }
 
-            var renderGraph = function(performance_data){
+            var renderGraph = function(){
+                let performance_data = $scope.perfdata,
+                    setup = performance_data.datasource.setup;
                 if(!performance_data){
                     return;
                 }
                 initTooltip();
                 var GraphDefaultsObj     = new GraphDefaults();
                 var defaultColor  = GraphDefaultsObj.defaultFillColor;
-                var thresholdLines = $scope.getThresholdLines(performance_data.datasource.setup, GraphDefaultsObj);
-                var thresholdAreas = $scope.getThresholdAreas(performance_data.datasource.setup, GraphDefaultsObj);
+                var thresholdLines = $scope.getThresholdLines(setup, GraphDefaultsObj);
+                var thresholdAreas = $scope.getThresholdAreas(setup, GraphDefaultsObj);
 
                 var graph_data = [];
 
@@ -397,9 +421,9 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     gaugeData.push([frontEndTimestamp, performance_data.data[timestamp]]);
                 }
 
-                var label = $scope.service.servicename + ' "' + performance_data.datasource.setup.label + '"';
-                if(performance_data.datasource.setup.unit){
-                    label = label + ' in ' + performance_data.datasource.setup.unit;
+                var label = $scope.service.servicename + ' "' + setup.label + '"';
+                if(setup.metric.unit){
+                    label = label + ' in ' + setup.metric.unit;
                 }
 
                 label = htmlspecialchars(label);
@@ -407,7 +431,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 graph_data.push({
                     label: label,
                     data: gaugeData,
-                    unit: performance_data.datasource.setup.unit,
+                    unit: setup.metric.unit,
                     // https://github.com/MichaelZinsmaier/CurvedLines
                     curvedLines: {
                         apply: true,
@@ -458,22 +482,26 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
             };
 
             var processPerfdata = function(){
-                if($scope.responsePerfdata !== null){
-                    if($scope.item.metric === null){
-                        //Use the first metric
-                        $scope.perfdata = $scope.responsePerfdata[0];
-                    }else{
-                        for(var metricNo in $scope.responsePerfdata){
-                            if(isNaN($scope.item.metric)){
-                                // Normal gauge from Whisper/Nagios or Prometheus
-                                if($scope.responsePerfdata[metricNo].datasource.metric === $scope.item.metric){
-                                    $scope.perfdata = $scope.responsePerfdata[metricNo];
-                                }
-                            }else{
-                                // Datasource is numeric - this is a workaround for non-unique Prometheus results like from rate() or sum()
-                                if(metricNo == $scope.item.metric){
-                                    $scope.perfdata = $scope.responsePerfdata[metricNo];
-                                }
+                // default data if no setup is passed whatsoever.
+                $scope.setup = $scope.defaultSetup;
+
+                if($scope.responsePerfdata === null){
+                    return;
+                }
+                if($scope.item.metric === null){
+                    //Use the first metric
+                    $scope.perfdata = $scope.responsePerfdata[0];
+                }else{
+                    for(var metricNo in $scope.responsePerfdata){
+                        if(isNaN($scope.item.metric)){
+                            // Normal gauge from Whisper/Nagios or Prometheus
+                            if($scope.responsePerfdata[metricNo].datasource.metric === $scope.item.metric){
+                                $scope.perfdata = $scope.responsePerfdata[metricNo];
+                            }
+                        }else{
+                            // Datasource is numeric - this is a workaround for non-unique Prometheus results like from rate() or sum()
+                            if(metricNo == $scope.item.metric){
+                                $scope.perfdata = $scope.responsePerfdata[metricNo];
                             }
                         }
                     }
@@ -503,7 +531,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
 
                 //Let AngularJS update the template and rerender graph
                 $timeout(function(){
-                    renderGraph($scope.perfdata)
+                    renderGraph()
                 }, 250);
             });
 
@@ -522,7 +550,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 }
 
                 processPerfdata();
-                renderGraph($scope.perfdata);
+                renderGraph();
             });
 
             $scope.load();
