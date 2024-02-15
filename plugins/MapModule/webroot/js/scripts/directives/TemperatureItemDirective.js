@@ -121,7 +121,6 @@ angular.module('openITCOCKPIT').directive('temperatureItem', function($http, $in
                         ];
                         break;
                     case "O<W<C<W<O":
-                        console.warn(setup);
                         thresholdAreas = [
                             {from: setup.scale.min,   to: setup.crit.low,  color: '#449D44'},
                             {from: setup.crit.low,    to: setup.warn.low,  color: '#DF8F1D'},
