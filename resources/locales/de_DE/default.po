@@ -19375,7 +19375,7 @@ msgstr "Bestätigungen sollen auf der Statusseite angezeigt werden"
 #: ./src/Template/Statuspages/add.php:208
 #: ./src/Template/Statuspages/edit.php:207
 msgid "Show acknowledgement comments"
-msgstr ""
+msgstr "Zeige Bestätigungskommentar"
 
 #: ./src/Template/Statuspages/add.php:212
 #: ./src/Template/Statuspages/edit.php:211
