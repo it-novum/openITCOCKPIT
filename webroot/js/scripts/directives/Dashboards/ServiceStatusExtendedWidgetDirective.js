@@ -12,6 +12,9 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
             $scope.useScroll = true;
             $scope.scroll_interval = 30000;
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
+
             var $widget = $('#widget-' + $scope.widget.id);
 
             $widget.on('resize', function(event, items){

@@ -1293,6 +1293,17 @@ div.packetmanager-selection > span::selection {
     background-color: #FFF;
 }
 
+.tab-allocated {
+    color: #00acc1!important;
+}
+
+.tab-shared-and-allocated-gradient {
+    background: -webkit-linear-gradient(to right, #00acc1 0%, #4285F4 100%);
+    background: -moz-linear-gradient(to right, #00acc1 0%, #4285F4 100%);
+    background: linear-gradient(to right, #00acc1 0%, #4285F4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 /* Status pages */
 
 .statuspage-bg-primary {

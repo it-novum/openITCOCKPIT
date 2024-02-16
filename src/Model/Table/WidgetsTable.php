@@ -5,11 +5,15 @@ namespace App\Model\Table;
 
 use App\Lib\PluginManager;
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Model\Entity\Widget;
+use ArrayObject;
+use Cake\Datasource\EntityInterface;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\Dashboards\ModuleWidgetsInterface;
+use \DateTime;
 
 /**
  * Widgets Model
@@ -489,5 +493,25 @@ class WidgetsTable extends Table {
             ->disableHydration()
             ->first();
         return $this->formatFirstResultAsCake2($result);
+    }
+
+    /**
+     * I will refresh the modification date of the corellated dashboard_tabs entry of this Widget.
+     * This fixes the issue where updates on Widgets are not triggering updates for shared and allocated dashboards.
+     *
+     * @param Widget $entity
+     * @param ArrayObject $options
+     * @return bool
+     */
+    public function _onSaveSuccess(EntityInterface $entity, ArrayObject $options): bool {
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+        $DashboardTab = $DashboardTabsTable->get($entity->dashboard_tab_id);
+        $patch = [
+            'modified' => new DateTime()
+        ];
+        $DashboardTabsTable->patchEntity($DashboardTab, $patch);
+        $DashboardTabsTable->save($DashboardTab);
+
+        return parent::_onSaveSuccess($entity, $options);
     }
 }

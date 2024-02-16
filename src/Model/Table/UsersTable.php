@@ -39,6 +39,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
@@ -99,6 +100,12 @@ class UsersTable extends Table {
             'foreignKey' => 'user_id'
         ]);
 
+        $this->hasMany('DashboardTabs', [
+            'foreignKey'       => 'user_id',
+            'dependent'        => true,
+            'cascadeCallbacks' => true
+        ]);
+
         $this->belongsToMany('Containers', [
             'through'          => 'ContainersUsersMemberships',
             'className'        => 'Containers',
@@ -114,6 +121,15 @@ class UsersTable extends Table {
             'foreignKey'       => 'user_id',
             'targetForeignKey' => 'usercontainerrole_id',
             //'saveStrategy'     => 'replace'
+        ]);
+
+        $this->belongsToMany('DashboardTabAllocations', [
+            'className'        => 'DashboardTabAllocations',
+            'joinTable'        => 'users_to_dashboard_tab_allocations',
+            'foreignKey'       => 'user_id',
+            'targetForeignKey' => 'dashboard_tab_allocation_id',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
         ]);
     }
 
@@ -1452,4 +1468,59 @@ class UsersTable extends Table {
         return true;
     }
 
+    public function getDashboardTabsByContainerIdsAsList($containerIds, $MY_RIGHTS) {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find();
+        $query->select([
+            'id'   => 'DashboardTabs.id',
+            'name' => $query->newExpr('CONCAT(DashboardTabs.name, " (", Users.firstname, " " ,Users.lastname,")")'),
+        ])
+            ->innerJoinWith('DashboardTabs')
+            ->leftJoin(
+                ['ContainersUsersMemberships' => 'users_to_containers'],
+                ['Users.id = ContainersUsersMemberships.user_id']
+            )
+            ->leftJoin(
+                ['UsercontainerrolesMemberships' => 'users_to_usercontainerroles'],
+                ['Users.id = UsercontainerrolesMemberships.user_id']
+            )
+            ->leftJoin(
+                ['Usercontainerroles' => 'usercontainerroles'],
+                ['Usercontainerroles.id = UsercontainerrolesMemberships.usercontainerrole_id']
+            )
+            ->leftJoin(
+                ['ContainersUsercontainerrolesMemberships' => 'usercontainerroles_to_containers'],
+                ['ContainersUsercontainerrolesMemberships.usercontainerrole_id = Usercontainerroles.id']
+            );
+
+        if (!empty($MY_RIGHTS)) {
+            //remove not allowed containerIds
+            $containerIds = array_intersect($MY_RIGHTS, $containerIds);
+        }
+        if (!empty($containerIds)) {
+            $query->where([
+                    'OR' => [
+                        'ContainersUsersMemberships.container_id IN'              => $containerIds,
+                        'ContainersUsercontainerrolesMemberships.container_id IN' => $containerIds
+                    ]
+                ]
+            );
+        }
+        $query->group(['DashboardTabs.id'])
+            ->disableHydration()
+            ->all();
+        $result = $this->emptyArrayIfNull($query->toArray());
+        if (empty($result)) {
+            return [];
+        }
+
+        $dashboardTabs = [];
+        foreach ($result as $resultSet) {
+            $dashboardTabs[$resultSet['id']] = $resultSet['name'];
+        }
+        return $dashboardTabs;
+    }
 }
