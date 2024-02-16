@@ -71,7 +71,7 @@ class Menu {
                 '',
                 'fa fa-list',
                 ['browser'],
-                2
+                3
             ))
             ->addCategory(
                 (new MenuCategory(
@@ -101,6 +101,7 @@ class Menu {
                         2
                     ))
             )
+
             ->addCategory(
                 (new MenuCategory(
                     'reports_category',
@@ -108,6 +109,7 @@ class Menu {
                     4,
                     'fa fa-file-invoice'
                 ))
+
                     ->addLink(new MenuLink(
                         __('Instant reports'),
                         'InstantreportsIndex',
@@ -135,6 +137,16 @@ class Menu {
                         'index',
                         '',
                         'fa fa-file-invoice',
+                        [],
+                        3
+                    ))
+                    ->addLink(new MenuLink(
+                        __('Status pages'),
+                        'StatuspagesIndex',
+                        'statuspages',
+                        'index',
+                        '',
+                        'fas fa-info-circle',
                         [],
                         3
                     ))
@@ -486,6 +498,16 @@ class Menu {
                     'fas fa-bullhorn',
                     [__('message'), __('news'), __('information')],
                     4
+                ))
+                ->addLink(new MenuLink(
+                    __('Dashboard Allocation'),
+                    'DashboardAllocationsIndex',
+                    'DashboardAllocations',
+                    'index',
+                    '',
+                    'fa fa-table',
+                    [],
+                    5
                 ))
             )
             ->addCategory((new MenuCategory(

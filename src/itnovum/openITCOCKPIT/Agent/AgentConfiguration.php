@@ -100,6 +100,7 @@ class AgentConfiguration {
             'dockerstats'                    => false, // Enable docker checks
             'libvirt'                        => true, // Enable libvirt checks (requires libvirt build),
             'userstats'                      => true, // Enable logged in users check
+            'ntp'                            => true, // Enable NTP check
         ],
         'int'    => [
             'bind_port'      => 3333, // Bind port of the Agents web server

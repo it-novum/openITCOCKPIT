@@ -458,8 +458,10 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
-                $satellite_id = $Host->getSatelliteId();
+                if(isset($SatelliteNames[$Host->getSatelliteId()])){
+                    $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
+                    $satellite_id = $Host->getSatelliteId();
+                }
             }
 
             $tmpRecord = [
@@ -1400,8 +1402,10 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
-                $satellite_id = $Host->getSatelliteId();
+                if(isset( $SatelliteNames[$Host->getSatelliteId()])){
+                    $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
+                    $satellite_id = $Host->getSatelliteId();
+                }
             }
 
             $tmpRecord = [

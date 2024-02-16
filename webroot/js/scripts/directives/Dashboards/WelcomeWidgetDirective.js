@@ -8,6 +8,8 @@ angular.module('openITCOCKPIT').directive('welcomeWidget', function($http){
 
         controller: function($scope){
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
 
             $scope.load = function(){
                 $http.get("/angular/statuscount.json", {

@@ -202,7 +202,6 @@ class AgentResponseToServices {
                         $services['windows_eventlog'] = $windowsEventlogs;
                     }
                     break;
-                    break;
                 case 'customchecks':
                     $customchecks = $this->getServiceStructForCustomchecks();
                     if ($customchecks) {
@@ -226,6 +225,12 @@ class AgentResponseToServices {
                     $libvirtServices = $this->getServiceStructForLibvirt();
                     if ($libvirtServices) {
                         $services['libvirt'] = $libvirtServices;
+                    }
+                    break;
+                case 'ntp':
+                    $ntp = $this->getServiceStructByName('ntp', 'System Time');
+                    if ($ntp) {
+                        $services['ntp'] = $ntp;
                     }
                     break;
             }

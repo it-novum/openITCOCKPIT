@@ -180,6 +180,14 @@ class HostsTable extends Table {
             'foreignKey' => 'host_id',
         ])->setDependent(true);
 
+        $this->belongsToMany('Statuspages', [
+            'className'        => 'Statuspages',
+            'foreignKey'       => 'host_id',
+            'targetForeignKey' => 'statuspage_id',
+            'joinTable'        => 'statuspages_to_hosts',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
+
         /*$this->hasOne('Agenthostscache', [
             'foreignKey' => 'hostuuid',
             'bindingKey' => 'uuid'
@@ -4238,6 +4246,7 @@ class HostsTable extends Table {
                 'Hosts.address',
                 'Hosts.satellite_id',
                 'Hosts.container_id',
+                'Hosts.hosttemplate_id'
             ])
             ->where([
                 'Hosts.id' => $id

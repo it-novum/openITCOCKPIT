@@ -12,6 +12,8 @@ angular.module('openITCOCKPIT').directive('noticeWidget', function($http){
             $scope.ready = false;
             $scope.noticeTimeout = null;
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
 
             $widget.on('resize', function(event, items){
                 hasResize();

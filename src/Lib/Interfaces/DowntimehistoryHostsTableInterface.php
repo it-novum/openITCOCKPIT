@@ -57,4 +57,19 @@ interface DowntimehistoryHostsTableInterface {
      */
     public function byHostUuid($uuid = null, $isRunning = false);
 
+    /**
+     * @param array $uuids
+     * @param bool $isRunning
+     * @return array
+     */
+    public function byUuidsNoJoins($uuids, $isRunning = false);
+
+    /**
+     * @param $uuids
+     * @param int $startTimestamp
+     * @param int $endTimestamp
+     * @return array
+     */
+    public function getPlannedDowntimes($uuids, int $startTimestamp, int $endTimestamp);
+
 }
