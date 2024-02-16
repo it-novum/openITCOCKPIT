@@ -117,6 +117,7 @@
                                 data-placeholder="<?php echo __('Please choose'); ?>"
                                 class="form-control"
                                 chosen="servicetemplates"
+                                callback="loadServicetemplatesByString"
                                 multiple
                                 ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
                                 ng-model="post.Servicetemplategroup.servicetemplates._ids">
@@ -131,7 +132,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Update service template group'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='ServicetemplategroupsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);"
+                                       fallback-state='ServicetemplategroupsIndex' class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

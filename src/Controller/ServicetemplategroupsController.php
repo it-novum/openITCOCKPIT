@@ -52,6 +52,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
+use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
 
 /**
@@ -1028,6 +1029,42 @@ class ServicetemplategroupsController extends AppController {
         $containerId = $ContainersTable->resolveChildrenOfContainerIds($containerId);
         $servicetemplates = $ServicetemplatesTable->getServicetemplatesByContainerId($containerId, 'list');
         $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
+
+        $this->set('servicetemplates', $servicetemplates);
+        $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
+    }
+
+    /**
+     * @param int|null $containerId
+     */
+    public function loadServicetemplatesByString() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $containerId = $this->request->getQuery('containerId');
+        $selected = $this->request->getQuery('selected');
+        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ServicetemplatesTable ServicetemplatesTable */
+        $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container id'));
+        }
+
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+        }
+
+        $servicetemplates = Api::makeItJavaScriptAble(
+            $ServicetemplatesTable->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)
+        );
 
         $this->set('servicetemplates', $servicetemplates);
         $this->viewBuilder()->setOption('serialize', ['servicetemplates']);

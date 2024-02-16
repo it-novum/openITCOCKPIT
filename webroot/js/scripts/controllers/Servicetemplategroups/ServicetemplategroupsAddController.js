@@ -101,6 +101,21 @@ angular.module('openITCOCKPIT')
 
         $scope.loadContainers();
 
+        $scope.loadServicetemplatesByString = function(searchString){
+            if($scope.post.Servicetemplategroup.container.parent_id == 0){
+                return;
+            }
+            $http.get("/servicetemplategroups/loadServicetemplatesByString.json", {
+                params: {
+                    'angular': true,
+                    'containerId': $scope.post.Servicetemplategroup.container.parent_id,
+                    'filter[Servicetemplates.template_name]': searchString,
+                    'selected[]': $scope.post.Servicetemplategroup.servicetemplates._ids
+                }
+            }).then(function(result){
+                $scope.servicetemplates = result.data.servicetemplates;
+            });
+        };
 
         $scope.$watch('post.Servicetemplategroup.container.parent_id', function(){
             if($scope.init){
