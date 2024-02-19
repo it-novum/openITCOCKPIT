@@ -25,16 +25,19 @@
 
 namespace GrafanaModule\Controller;
 
+use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\WidgetsTable;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
 use GrafanaModule\Model\Table\GrafanaDashboardsTable;
 use GuzzleHttp\Client;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 
@@ -257,6 +260,16 @@ class GrafanaConfigurationController extends AppController {
             }
 
             $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget->set('host_id', $hostId);
 
             $WidgetsTable->save($widget);

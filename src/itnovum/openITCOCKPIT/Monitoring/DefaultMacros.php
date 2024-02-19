@@ -103,11 +103,11 @@ class DefaultMacros {
                     ],
                     [
                         'macro'       => '$HOSTPROBLEMID$',
-                        'description' => __('Unique number of the current host problem state.')
+                        'description' => __('Unique UUIDv4 string of the current host problem.')
                     ],
                     [
                         'macro'       => '$LASTHOSTPROBLEMID$',
-                        'description' => __('Unique number of the last host problem state.')
+                        'description' => __('Unique UUIDv4 string of the last host problem.')
                     ],
                     [
                         'macro'       => '$HOSTLATENCY$',
@@ -209,7 +209,24 @@ class DefaultMacros {
                     [
                         'macro'       => '$TOTALHOSTSERVICESUNKNOWN$',
                         'description' => __('Total number of services associated with the host in state UNKNOWN.')
+                    ],
+                    [
+                        'macro'       => '$HOSTPROBLEMSTART$',
+                        'description' => __('This is a timestamp in time_t format (seconds since the UNIX epoch) indicating the time at which the host state changed into a non-Up state.')
+                    ],
+                    [
+                        'macro'       => '$HOSTPROBLEMEND$',
+                        'description' => __('This is a timestamp in time_t format (seconds since the UNIX epoch) indicating the time at which the host state changed changed back into Up state.')
+                    ],
+                    [
+                        'macro'       => '$HOSTPROBLEMDURATIONSEC$',
+                        'description' => __('The duration in seconds between $HOSTPROBLEMSTART$ and $HOSTPROBLEMEND$.')
+                    ],
+                    [
+                        'macro'       => '$HOSTPROBLEMDURATION$',
+                        'description' => __('The duration between $HOSTPROBLEMSTART$ and $HOSTPROBLEMEND$ in a human readable format e.g.: 1d 10h 8m 35s')
                     ]
+
                 ]
             ],
 
@@ -295,11 +312,11 @@ class DefaultMacros {
                     ],
                     [
                         'macro'       => '$SERVICEPROBLEMID$',
-                        'description' => __('Unique number of the current service problem state.')
+                        'description' => __('Unique UUIDv4 string the current service problem.')
                     ],
                     [
                         'macro'       => '$LASTSERVICEPROBLEMID$',
-                        'description' => __('Unique number of the last service problem state.')
+                        'description' => __('Unique UUIDv4 string of the last service problem.')
                     ],
                     [
                         'macro'       => '$SERVICELATENCY$',
@@ -383,7 +400,23 @@ class DefaultMacros {
                     ],
                     [
                         'macro'       => '$SERVICENOTES$',
-                        'description' => __('Uer defined notes for the host.')
+                        'description' => __('Uer defined notes for the service.')
+                    ],
+                    [
+                        'macro'       => '$SERVICEPROBLEMSTART$',
+                        'description' => __('This is a timestamp in time_t format (seconds since the UNIX epoch) indicating the time at which the service state changed into a non-Ok state.')
+                    ],
+                    [
+                        'macro'       => '$SERVICEPROBLEMEND$',
+                        'description' => __('This is a timestamp in time_t format (seconds since the UNIX epoch) indicating the time at which the service state changed changed back into Ok state.')
+                    ],
+                    [
+                        'macro'       => '$SERVICEPROBLEMDURATIONSEC$',
+                        'description' => __('The duration in seconds between $SERVICEPROBLEMSTART$ and $SERVICEPROBLEMEND$.')
+                    ],
+                    [
+                        'macro'       => '$SERVICEPROBLEMDURATION$',
+                        'description' => __('The duration between $SERVICEPROBLEMSTART$ and $SERVICEPROBLEMEND$ in a human readable format e.g.: 1d 10h 8m 35s')
                     ]
                 ]
             ],
@@ -571,7 +604,7 @@ class DefaultMacros {
                     ],
                     [
                         'macro'       => '$HOSTNOTIFICATIONID$',
-                        'description' => __('Unique event number of the host notification.')
+                        'description' => __('Unique UUIDv4 string of the host notification.')
                     ],
                     [
                         'macro'       => '$SERVICENOTIFICATIONNUMBER$',
@@ -579,7 +612,7 @@ class DefaultMacros {
                     ],
                     [
                         'macro'       => '$SERVICENOTIFICATIONID$',
-                        'description' => __('Unique event number of the service notification.')
+                        'description' => __('Unique UUIDv4 string of the service notification.')
                     ]
                 ]
             ],

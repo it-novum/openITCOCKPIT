@@ -515,6 +515,30 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "StatisticsIndexController"
             })
 
+            .state('StatuspagesIndex', {
+                url: '/statuspages/index',
+                templateUrl: "/statuspages/index.html",
+                controller: "StatuspagesIndexController"
+            })
+
+            .state('StatuspagesAdd', {
+                url: '/statuspages/add',
+                templateUrl: "/statuspages/add.html",
+                controller: "StatuspagesAddController"
+            })
+
+            .state('StatuspagesView', {
+                url: '/statuspages/view/:id',
+                templateUrl: "/statuspages/view.html",
+                controller: "StatuspagesViewController"
+            })
+
+            .state('StatuspagesEdit', {
+                url: '/statuspages/edit/:id',
+                templateUrl: "/statuspages/edit.html",
+                controller: "StatuspagesEditController"
+            })
+
             .state('StatusmapsIndex', {
                 url: '/statusmaps/index',
                 templateUrl: "/statusmaps/index.html",
@@ -1082,6 +1106,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 url: '/users/index',
                 templateUrl: "/users/index.html",
                 controller: "UsersIndexController"
+            })
+
+            .state('DashboardAllocationsIndex', {
+                url: '/DashboardAllocations/index',
+                templateUrl: "/DashboardAllocations/index.html",
+                controller: "DashboardAllocationsIndexController"
+            })
+
+            .state('DashboardAllocationsAdd', {
+                url: '/DashboardAllocations/add',
+                templateUrl: "/DashboardAllocations/add.html",
+                controller: "DashboardAllocationsAddController"
+            })
+
+            .state('DashboardAllocationsEdit', {
+                url: '/DashboardAllocations/edit/:id',
+                templateUrl: "/DashboardAllocations/edit.html",
+                controller: "DashboardAllocationsEditController"
             })
 
             .state('UsersAdd', {

@@ -52,38 +52,57 @@
                                     <?php echo __('Dashboard'); ?>
                                 </h2>
                             </li>
-                            <li class="nav-item ui-sortable-handle" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
-                                ng-class="{'active':activeTab === tab.id}">
+                            <li class="nav-item" data-tab-id="{{tab.id}}" ng-repeat="tab in tabs"
+                                ng-class="{'active':activeTab === tab.id, 'ui-sortable-handle': !tab.pinned}">
                                 <a class="nav-link"
                                    href="javascript:void(0);"
                                    ng-if="activeTab !== tab.id"
+                                   ng-class="{ 'tab-allocated': !tab.isOwner}"
                                    role="tab">
                                 <span class="text" ng-click="loadTabContent(tab.id)"
-                                      ng-class="{ 'text-primary': tab.shared === true}">
+                                      ng-class="{ 'text-primary': tab.shared === true,
+                                      'tab-allocated': tab.dashboard_tab_allocation,
+                                       'tab-shared-and-allocated-gradient': tab.shared === true && tab.dashboard_tab_allocation}">
+                                    <i class="fa-solid fa-thumbtack" ng-show="tab.pinned"></i>
                                     {{tab.name}}
                                 </span>
                                 </a>
 
+                                <!-- For owners of the tab (include drop down menu with options) -->
                                 <a href="javascript:void(0);"
-                                   class="dropdown-toggle nav-link active"
+                                   class="nav-link active dropdown-toggle"
                                    data-toggle="dropdown"
                                    aria-expanded="false"
-                                   ng-if="activeTab === tab.id"
-                                   ng-class="{ 'text-primary': tab.shared}">
+                                   ng-if="activeTab === tab.id && tab.isOwner"
+                                   ng-class="{ 'text-primary': tab.shared }">
                                     <span class="text"
-                                          ng-class="{ 'text-primary': tab.shared === true}">
+                                          ng-class="{ 'text-primary': tab.shared === true,
+                                          'tab-allocated': tab.dashboard_tab_allocation,
+                                          'tab-shared-and-allocated-gradient': tab.shared === true && tab.dashboard_tab_allocation}">
+                                        <i class="fa-solid fa-thumbtack" ng-show="tab.pinned"></i>
                                         {{tab.name}}
                                     </span>
                                     <b class="caret"></b>
                                 </a>
-                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}">
+                                <ul class="dropdown-menu" id="menuHack-tab-{{tab.id}}" ng-if="tab.isOwner">
                                     <li>
                                         <a href="javascript:void(0);" class="dropdown-item"
-                                           ng-click="triggerRenameTabModal(tab.name)">
+                                           ng-click="triggerRenameTabModal(tab.name)"
+                                           ng-class="{'text-muted':dashboardIsLocked}">
                                             <i class="fa fa-pencil-square-o"></i>
                                             <?php echo __('Rename'); ?>
                                         </a>
                                     </li>
+                                    <?php if ($this->Acl->hasPermission('add', 'DashboardAllocations') &&
+                                        $this->Acl->hasPermission('edit', 'DashboardAllocations')): ?>
+                                        <li ng-hide="!tab.isOwner">
+                                            <a href="javascript:void(0);" class="dropdown-item"
+                                               ng-click="allocateDashboard(tab.id)">
+                                                <i class="fa fa-user"></i>
+                                                <?php echo __('Allocate Dashboard'); ?>
+                                            </a>
+                                        </li>
+                                    <?php endif; ?>
                                     <li ng-hide="tab.shared">
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="startSharing(tab.id)">
@@ -107,10 +126,25 @@
                                         </a>
                                     </li>
                                 </ul>
+
+                                <!-- For users who got this tab by allocation (no drop down menu with options) -->
+                                <a href="javascript:void(0);"
+                                   class="nav-link active tab-allocated"
+                                   aria-expanded="false"
+                                   ng-if="activeTab === tab.id && !tab.isOwner"
+                                   ng-class="{ 'text-primary': tab.shared}">
+                                    <span class="text"
+                                          ng-class="{ 'text-primary': tab.shared === true}">
+                                        <i class="fa-solid fa-thumbtack" ng-show="tab.pinned"></i>
+                                        {{tab.name}}
+                                    </span>
+                                </a>
+
                             </li>
                         </ul>
                     </div>
-                    <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-xs-12 panel-toolbar pl-0 pr-0 pt-2 d-inline text-right">
+                    <div
+                        class="col-xl-4 col-lg-4 col-md-6 col-sm-12 col-xs-12 panel-toolbar pl-0 pr-0 pt-2 d-inline text-right">
                         <button class="btn btn-xs mr-1 shadow-0 btn-primary"
                                 title="<?php echo __('Setup tab rotation'); ?>"
                                 data-toggle="modal" data-target="#tabRotationModal">
@@ -118,6 +152,7 @@
                         </button>
                         <button class="btn btn-xs mr-1 shadow-0"
                                 ng-class="{ 'btn-danger': dashboardIsLocked, 'btn-primary': !dashboardIsLocked }"
+                                ng-hide="isReadonly"
                                 title="<?php echo __('Lock for edit'); ?>"
                                 ng-click="lockOrUnlockDashboard()">
                             <i class="fa fa-lock"
@@ -125,7 +160,8 @@
                         </button>
 
 
-                        <div class="btn-group btn-group-xs margin-right-5">
+                        <div class="btn-group btn-group-xs margin-right-5"
+                             ng-hide="isReadonly">
                             <button class="btn btn-success dropdown-toggle waves-effect waves-themed" type="button"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
                                     ng-disabled="dashboardIsLocked">
@@ -181,7 +217,7 @@
                                      style="width:100%;" id="widget-{{widget.id}}">
                                     <div role="heading"
                                          class="ui-sortable-handle card-header d-flex"
-                                         style="cursor: move;">
+                                         ng-style="{'cursor': widget.isReadonly || dashboardIsLocked ? '' : 'move'}">
                                         <div class="card-title mr-auto padding-top-0_2-rem">
                                             <i class="{{widget.icon}}"></i>
                                             {{widget.title}}
@@ -591,6 +627,161 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" ng-click="renameWidget()">
                     <?php echo __('Save widget Title'); ?>
+                </button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--- Allocate Dashboard Modal --->
+<div id="allocateDashboardModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-user"></i>
+                    <?php echo __('Allocate Dashboard'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal"
+                      ng-init="successMessage=
+                        {objectName : '<?php echo __('Dashboard tab allocation'); ?>' , message:
+                        '<?= __('saved successfully'); ?>'}">
+
+                    <!-- Select Container -->
+                    <div class="form-group" ng-class="{'has-error': errors.containers}">
+                        <label class="control-label hintmark" for="UserContainers">
+                            <?php echo __('Container'); ?>
+                        </label>
+                        <select
+                            id="UserContainers"
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="containers"
+                            ng-options="container.key as container.value for container in containers"
+                            ng-model="post.DashboardAllocation.container_id">
+                        </select>
+                        <div ng-repeat="error in errors.container_id">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                    <div class="form-group required" ng-class="{'has-error': errors.name}">
+                        <label class="control-label">
+                            <?php echo __('Name of the allocation'); ?>
+                        </label>
+                        <input
+                            class="form-control"
+                            type="text"
+                            ng-model="post.DashboardAllocation.name">
+                        <div ng-repeat="error in errors.name">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+                    <!-- Select Dashboard Tab to Share -->
+                    <div class="form-group required" ng-class="{'has-error': errors.dashboard_tab_id}">
+                        <label class="control-label" for="DashboardTab">
+                            <?php echo __('Dashboard to allocate'); ?>
+                        </label>
+                        <select
+                            id="DashboardTab"
+                            data-placeholder="<?php echo __('Please choose'); ?>"
+                            class="form-control"
+                            chosen="dashboard_tabs"
+                            ng-readonly="true"
+                            ng-disabled="true"
+                            ng-options="dashboard_tab.key as dashboard_tab.value for dashboard_tab in dashboard_tabs"
+                            ng-model="post.DashboardAllocation.dashboard_tab_id">
+                        </select>
+                        <div ng-repeat="error in errors.dashboard_tab_id">
+                            <div class="help-block text-danger">{{ error }}</div>
+                        </div>
+                    </div>
+
+                    <!-- Select Users -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group margin-top-20 padding-bottom-10">
+                                <label class="control-label">
+                                    <?php echo __('Allocated Users'); ?>
+                                </label>
+                                <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="users"
+                                    ng-options="user.key as user.value for user in users"
+                                    ng-model="post.DashboardAllocation.users._ids"
+                                    multiple="multiple">
+                                </select>
+                                <div ng-repeat="error in errors.users">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Select Roles -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group margin-top-20 padding-bottom-10">
+                                <label class="control-label">
+                                    <?php echo __('Allocated User roles'); ?>
+                                </label>
+                                <select
+                                    data-placeholder="<?php echo __('Please choose'); ?>"
+                                    class="form-control"
+                                    chosen="usergroups"
+                                    ng-options="usergroup.key as usergroup.value for usergroup in usergroups"
+                                    ng-model="post.DashboardAllocation.usergroups._ids"
+                                    multiple="multiple">
+                                </select>
+                                <div ng-repeat="error in errors.usergroups">
+                                    <div class="help-block text-danger">{{ error }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- pinDashboard -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="form-group margin-top-20 padding-bottom-10">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox"
+                                           class="custom-control-input"
+                                           id="pinDashboard"
+                                           ng-model="post.DashboardAllocation.pinned">
+                                    <label class="custom-control-label" for="pinDashboard">
+                                        <?php echo __('Pin Dashboard'); ?>
+                                    </label>
+                                </div>
+                                <div
+                                    class="help-block"><?php echo __('If enabled, this dashboard will be pinned at the leftmost tab.'); ?></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <?php if ($this->Acl->hasPermission('delete', 'DashboardAllocations')): ?>
+                <button type="button" ng-show="post.DashboardAllocation.id"
+                        class="btn btn-danger mr-auto" ng-click="deleteAllocation(post.DashboardAllocation.id)">
+                    <?php echo __('Delete'); ?>
+                </button>
+                <?php endif; ?>
+                <button type="button" ng-hide="post.DashboardAllocation.id" class="btn btn-primary"
+                        ng-click="addDashboardAllocation()">
+                    <?php echo __('Create Allocation'); ?>
+                </button>
+                <button type="button" ng-show="post.DashboardAllocation.id" class="btn btn-primary"
+                        ng-click="editDashboardAllocation()">
+                    <?php echo __('Update Allocation'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
                     <?php echo __('Close'); ?>

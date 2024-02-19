@@ -278,6 +278,7 @@ class AclDependencies {
             ->allow('Users', 'getLocaleOptions')
             ->allow('Users', 'getUserPermissions');
 
+
         ///////////////////////////////
         //    Add dependencies       //
         //////////////////////////////
@@ -358,6 +359,11 @@ class AclDependencies {
             ->dependency('Currentstatereports', 'index', 'Currentstatereports', 'createPdfReport')
             ->dependency('Currentstatereports', 'index', 'Currentstatereports', 'createHtmlReport');
 
+        $this
+            ->dependency('DashboardAllocations', 'add', 'DashboardAllocations', 'loadElementsByContainerId')
+            ->dependency('DashboardAllocations', 'edit', 'DashboardAllocations', 'loadElementsByContainerId')
+            ->dependency('DashboardAllocations', 'edit', 'Users', 'loadContainersForAngular')
+            ->dependency('DashboardAllocations', 'edit', 'Users', 'loadContainersForAngular');
 
         $this
             ->dependency('Downtimereports', 'index', 'Downtimereports', 'createPdfReport')
@@ -391,6 +397,7 @@ class AclDependencies {
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'listToCsv')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'view')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByString')
+            ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByStringAndContainers')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByContainerId')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosts')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosttemplates')
@@ -493,6 +500,7 @@ class AclDependencies {
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'view')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByContainerId')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByString')
+            ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByStringAndContainers')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'loadServicetemplates')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'loadContainers')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'addServicesToServicegroup')
@@ -557,6 +565,12 @@ class AclDependencies {
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadCommandArguments')
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadEventhandlerCommandArguments')
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadElementsByContainerId');
+
+        $this
+            ->dependency('Statuspages', 'index', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'view', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'add', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'loadContainers');
 
         $this
             ->dependency('Users', 'index', 'Users', 'view')

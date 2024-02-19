@@ -31,7 +31,9 @@ use App\itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewExtendedJson;
 use App\itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewExtendedJson;
 use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Entity\DashboardTab;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\DashboardTabAllocationsTable;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ParenthostsTable;
@@ -69,6 +71,8 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\DashboardTabsFilter;
 use ParsedownExtra;
 use PrometheusModule\Lib\PrometheusAdapter;
 use RuntimeException;
@@ -118,8 +122,8 @@ class DashboardsController extends AppController {
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
 
-        //Check if a tab exists for the given user
-        if ($DashboardTabsTable->hasUserATab($User->getId()) === false) {
+        // If user has neither OWN or allocated tabs, create the default tab.
+        if ($DashboardTabsTable->hasUserATab($User) === false) {
             $entitiy = $DashboardTabsTable->createNewTab($User->getId());
             if ($entitiy) {
                 //Create default widgets
@@ -130,7 +134,7 @@ class DashboardsController extends AppController {
                 $DashboardTabsTable->save($entitiy);
             }
         }
-        $tabs = $DashboardTabsTable->getAllTabsByUserId($User->getId());
+        $tabs = $DashboardTabsTable->getAllTabsByUser($User);
 
         $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
 
@@ -149,6 +153,8 @@ class DashboardsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        $tabId = (int)$tabId;
+
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
@@ -157,7 +163,20 @@ class DashboardsController extends AppController {
         }
 
         $User = new User($this->getUser());
-        $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId);
+        $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($User->getId(), $tabId, $User->getId());
+        if (empty($widgets)) {
+            // Check dashboard allocations
+            // Check for allocated Dashboards!
+            /** @var DashboardTabAllocationsTable $DashboardTabAllocationsTable */
+            $DashboardTabAllocationsTable = TableRegistry::getTableLocator()->get('DashboardTabAllocations');
+
+            $allocations = $DashboardTabAllocationsTable->getDashboardAllocationTabIdForUser($tabId, $User);
+            if (!empty($allocations)) {
+                // Load the allocated tab
+                $widgets = $DashboardTabsTable->getWidgetsForTabByUserIdAndTabId($allocations['dashboard_tab']['user_id'], $tabId, $User->getId());
+            }
+        }
+
 
         $this->set('widgets', $widgets);
         $this->viewBuilder()->setOption('serialize', ['widgets']);
@@ -201,6 +220,11 @@ class DashboardsController extends AppController {
             $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
             /** @var WidgetsTable $WidgetsTable */
             $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+            if (!$DashboardTabsTable->isOwnedByUser($widgetsData[0]['Widget']['dashboard_tab_id'], $User->getId())) {
+                $this->render403();
+                return;
+            }
 
             //Save all Widgets
             $widgets = [];
@@ -247,7 +271,9 @@ class DashboardsController extends AppController {
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
-        if (!$DashboardTabsTable->existsById($widget['dashboard_tab_id'])) {
+        $User = new User($this->getUser());
+
+        if (!$DashboardTabsTable->isOwnedByUser($widget['dashboard_tab_id'], $User->getId())) {
             throw new NotFoundException('DashboardTab does not exists!');
         }
 
@@ -294,14 +320,24 @@ class DashboardsController extends AppController {
         }
 
         $widget['id'] = (int)$widget['id'];
+        $User = new User($this->getUser());
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
         if (!$WidgetsTable->existsById($widget['id'])) {
             throw new NotFoundException('Widget does not exists!');
         }
-        if ($WidgetsTable->delete($WidgetsTable->get($widget['id']))) {
+
+        $widget = $WidgetsTable->get($widget['id']);
+
+        if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+            throw new NotFoundException();
+        }
+
+        if ($WidgetsTable->delete($widget)) {
             $this->set('message', __('Successfully deleted'));
             $this->viewBuilder()->setOption('serialize', ['message', 'widget']);
             return;
@@ -414,6 +450,11 @@ class DashboardsController extends AppController {
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
+        if (!$DashboardTabsTable->isOwnedByUser($id, $User->getId())) {
+            $this->render403();
+            return;
+        }
+
         $tab = $DashboardTabsTable->find()
             ->where([
                 'DashboardTabs.id'      => $id,
@@ -451,6 +492,11 @@ class DashboardsController extends AppController {
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
+        if (!$DashboardTabsTable->isOwnedByUser($id, $User->getId())) {
+            $this->render403();
+            return;
+        }
+
         $tab = $DashboardTabsTable->find()
             ->where([
                 'DashboardTabs.id'      => $id,
@@ -482,6 +528,11 @@ class DashboardsController extends AppController {
         $id = (int)$this->request->getData('DashboardTab.id', 0);
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        if (!$DashboardTabsTable->isOwnedByUser($id, $User->getId())) {
+            $this->render403();
+            return;
+        }
 
         $tab = $DashboardTabsTable->find()
             ->where([
@@ -517,6 +568,11 @@ class DashboardsController extends AppController {
         $id = (int)$this->request->getData('DashboardTab.id', 0);
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        if (!$DashboardTabsTable->isOwnedByUser($id, $User->getId())) {
+            $this->render403();
+            return;
+        }
 
         $tab = $DashboardTabsTable->find()
             ->where([
@@ -590,7 +646,7 @@ class DashboardsController extends AppController {
 
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-        if (!$DashboardTabsTable->existsById($tabId)) {
+        if (!$DashboardTabsTable->isOwnedByUser($tabId, $User->getId())) {
             throw new NotFoundException('DashboardTab not found');
         }
 
@@ -632,7 +688,7 @@ class DashboardsController extends AppController {
 
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
-        if (!$DashboardTabsTable->existsById($id)) {
+        if (!$DashboardTabsTable->isOwnedByUser($id, $User->getId())) {
             throw new NotFoundException('DashboardTab not found');
         }
 
@@ -670,6 +726,11 @@ class DashboardsController extends AppController {
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$DashboardTabsTable->isOwnedByUser($id, $User->getId())) {
+            $this->render403();
+            return;
+        }
 
         $tabToUpdate = $DashboardTabsTable->find()
             ->where([
@@ -745,13 +806,20 @@ class DashboardsController extends AppController {
 
         $widgetId = (int)$this->request->getData('Widget.id', 0);
         $name = $this->request->getData('Widget.name', '');
+        $User = new User($this->getUser());
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+        /** @var DashboardTabsTable $DashboardTabsTable */
+        $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
 
         $widget = $WidgetsTable->get($widgetId);
 
         if ($widget === null) {
+            throw new NotFoundException();
+        }
+
+        if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
             throw new NotFoundException();
         }
 
@@ -779,6 +847,11 @@ class DashboardsController extends AppController {
 
         /** @var DashboardTabsTable $DashboardTabsTable */
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+        if (!$DashboardTabsTable->isOwnedByUser($id, $User->getId())) {
+            $this->render403();
+            return;
+        }
 
         $tab = $DashboardTabsTable->find()
             ->where([
@@ -816,6 +889,11 @@ class DashboardsController extends AppController {
         $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if (!$DashboardTabsTable->isOwnedByUser($id, $User->getId())) {
+            $this->render403();
+            return;
+        }
 
         $tab = $DashboardTabsTable->find()
             ->where([
@@ -1012,6 +1090,16 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $config = $HostStatusListJson->standardizedData($this->request->getData());
 
             $widget = $WidgetsTable->patchEntity($widget, [
@@ -1063,6 +1151,16 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $config = $DowntimeHostListJson->standardizedData($this->request->getData());
 
             $widget = $WidgetsTable->patchEntity($widget, [
@@ -1109,6 +1207,16 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $config = $DowntimeServiceListJson->standardizedData($this->request->getData());
 
             $widget = $WidgetsTable->patchEntity($widget, [
@@ -1156,6 +1264,15 @@ class DashboardsController extends AppController {
         }
 
         if ($this->request->is('post')) {
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $config = $ServiceStatusListJson->standardizedData($this->request->getData());
 
             $widget = $WidgetsTable->patchEntity($widget, [
@@ -1215,6 +1332,16 @@ class DashboardsController extends AppController {
 
 
         if ($this->request->is('post')) {
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode([
                     'note' => $this->request->getData('note', '')
@@ -1281,6 +1408,16 @@ class DashboardsController extends AppController {
                 throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'service_id' => $serviceId,
                 'json_data'  => json_encode($config)
@@ -1363,6 +1500,16 @@ class DashboardsController extends AppController {
                 throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'service_id' => $serviceId,
                 'json_data'  => json_encode($config)
@@ -1541,6 +1688,16 @@ class DashboardsController extends AppController {
                 throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
             ]);
@@ -1719,6 +1876,16 @@ class DashboardsController extends AppController {
                 throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
             ]);
@@ -1818,6 +1985,16 @@ class DashboardsController extends AppController {
                 throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
             ]);
@@ -1917,6 +2094,15 @@ class DashboardsController extends AppController {
 
 
         if ($this->request->is('post')) {
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode([
                     'url' => $this->request->getData('url', '')
@@ -2054,6 +2240,15 @@ class DashboardsController extends AppController {
 
 
         if ($this->request->is('post')) {
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $config = $TacticalOverviewJson->standardizedData($this->request->getData());
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)

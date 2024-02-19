@@ -27,6 +27,7 @@ namespace MapModule\Controller;
 
 use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Lib\Exceptions\MissingDbBackendException;
+use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ServicegroupsTable;
@@ -34,6 +35,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
@@ -2103,6 +2105,16 @@ class MapeditorsController extends AppController {
             }
 
             $widgetEntity = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widgetEntity->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget['json_data'] = json_encode($config);
 
             $widgetEntity = $WidgetsTable->patchEntity($widgetEntity, $widget);

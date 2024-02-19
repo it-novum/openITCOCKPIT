@@ -9,6 +9,9 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewExtendedWidget',
         controller: function($scope){
             $scope.init = true;
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
+
             var $widget = $('#widget-' + $scope.widget.id);
             $('#widget-content-' + $scope.widget.id).css('overflow', 'hidden');
 

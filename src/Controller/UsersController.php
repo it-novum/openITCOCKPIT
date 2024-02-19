@@ -770,7 +770,6 @@ class UsersController extends AppController {
             $containerId = ROOT_CONTAINER;
         }
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-
         $users = Api::makeItJavaScriptAble(
             $UsersTable->getUsersByContainerIds($containerIds, 'list')
         );

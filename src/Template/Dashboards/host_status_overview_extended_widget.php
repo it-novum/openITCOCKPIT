@@ -35,7 +35,7 @@
             <div class="row">
                 <div class="col-xs-12 col-lg-12">
                     <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark"
-                       ng-click="showConfig()">
+                       ng-click="showConfig()" ng-hide="readOnly">
                         <i class="fa fa-cog fa-sm"></i>
                     </a>
                     <span class="pr-2 text-white italic pull-right font-weight-light font-md">
