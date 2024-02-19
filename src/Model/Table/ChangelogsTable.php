@@ -749,7 +749,7 @@ class ChangelogsTable extends Table {
                     if (empty($changes['before']) && !empty($changes['after'])) {
                         //All changes are new/added (fields where empty before)
                         foreach ($changes['after'] as $fieldName => $fieldValue) {
-                            if($fieldName === 'id'){
+                            if ($fieldName === 'id') {
                                 continue;
                             }
                             $diffs[$fieldName] = [
@@ -773,10 +773,8 @@ class ChangelogsTable extends Table {
                     }
 
                     if (!empty($changes['before']) && !empty($changes['after'])) {
-
                         //Data got modified (e.g. rename or so)
                         if (!$isArray) {
-
                             foreach (Hash::diff($changes['after'], $changes['before']) as $fieldName => $fieldValue) {
                                 if ($fieldName === 'id' || $fieldName === 'container_id') {
                                     continue;
@@ -789,6 +787,7 @@ class ChangelogsTable extends Table {
                         } else {
                             $idsBeforeSave = Hash::extract($changes['before'], '{n}.id');
                             $idsAfterSave = Hash::extract($changes['after'], '{n}.id');
+
                             if (!empty($idsBeforeSave) || !empty($idsAfterSave)) {
                                 foreach ($idsBeforeSave as $id) {
                                     if (!in_array($id, $idsAfterSave, true)) {
@@ -804,10 +803,13 @@ class ChangelogsTable extends Table {
                                             'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
                                         ];
                                     }
+                                    if (($key = array_search($id, $idsAfterSave)) !== false) {
+                                        unset($idsAfterSave[$key]);
+                                    }
                                 }
+
                                 foreach ($idsAfterSave as $id) {
                                     if (!in_array($id, $idsBeforeSave, true)) {
-                                        //dd('hier');
                                         //Object got added
                                         $diffs[] = [
                                             'old' => null,
