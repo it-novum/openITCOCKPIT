@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
         $scope.errors = {};
         $scope.intervalText = 'disabled';
         $scope.dashboardIsLocked = false;
+        $scope.widgetSearchStr = '';
 
         $scope.data = {
             newTabName: '',
@@ -842,6 +843,30 @@ angular.module('openITCOCKPIT')
 
         };
 
+        $scope.triggerAddWidgetModal = function(){
+            if($scope.dashboardIsLocked){
+                return;
+            }
+
+            $scope.resetWidgetSearch();
+        };
+
+        $scope.resetWidgetSearch = function(){
+            if($scope.widgetSearchStr.length !== 0){
+                $scope.widgetSearchStr = '';
+            }
+        }
+
+        $scope.getWidgetsByString = function(value){
+            $http.get("/dashboards/getWidgetsByString.json", {
+                params: {
+                    'angular': true,
+                    'searchString': value
+                }
+            }).then(function(result){
+                $scope.availableWidgets = result.data.widgets;
+            });
+        };
 
         /** On Load stuff **/
         $scope.$watch('data.viewTabRotateInterval', function(){
@@ -882,6 +907,13 @@ angular.module('openITCOCKPIT')
                 return;
             }
             $scope.loadElements();
+        }, true);
+
+        $scope.$watch('widgetSearchStr', function(value){
+            if($scope.init){
+                return;
+            }
+            $scope.getWidgetsByString(value);
         }, true);
 
         $scope.load();

@@ -149,7 +149,7 @@ class WidgetsTable extends Table {
      * @param array $ACL_PERMISSIONS
      * @return array
      */
-    public function getAvailableWidgets($ACL_PERMISSIONS = []) {
+    public function getAvailableWidgets($ACL_PERMISSIONS = [], $searchString = '') {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
@@ -421,6 +421,14 @@ class WidgetsTable extends Table {
 
                 foreach ($PluginWidgets->getAvailableWidgets() as $pluginWidget) {
                     $widgets[] = $pluginWidget;
+                }
+            }
+        }
+
+        if (!empty($searchString)) {
+            foreach ($widgets as $key => $value) {
+                if (!str_contains(strtolower($widgets[$key]['title']), strtolower($searchString))) {
+                    unset($widgets[$key]);
                 }
             }
         }
