@@ -162,7 +162,7 @@
                         <div class="btn-group btn-group-xs margin-right-5"
                              ng-hide="isReadonly">
                             <button class="btn btn-success waves-effect waves-themed" type="button"
-                                    data-toggle="modal" data-target="#addWidgetModal" ng-click="triggerAddWidgetModal()"
+                                    data-toggle="modal" data-target="#addWidgetModal" ng-click="resetWidgetSearch()"
                                     ng-disabled="dashboardIsLocked">
                                 <?php echo __('Add Widget'); ?>
                             </button>

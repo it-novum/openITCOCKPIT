@@ -843,14 +843,6 @@ angular.module('openITCOCKPIT')
 
         };
 
-        $scope.triggerAddWidgetModal = function(){
-            if($scope.dashboardIsLocked){
-                return;
-            }
-
-            $scope.resetWidgetSearch();
-        };
-
         $scope.resetWidgetSearch = function(){
             if($scope.widgetSearchStr.length !== 0){
                 $scope.widgetSearchStr = '';
