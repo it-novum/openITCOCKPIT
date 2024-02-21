@@ -872,8 +872,11 @@ class ChangelogsTable extends Table {
                         }
                     }
                     if ($isArray) {
-                        if (!empty(Hash::extract($diffs, '{n}.{*}[password=1].value'))) {
-                            $diffs = Hash::insert($diffs, '{n}.{*}[password=1].value', '🤫');
+                        if (!empty(Hash::extract($diffs, '{n}.old[password=1].value'))) {
+                            $diffs = Hash::insert($diffs, '{n}.old[password=1].value', '🤫');
+                        }
+                        if (!empty(Hash::extract($diffs, '{n}.new[password=1].value'))) {
+                            $diffs = Hash::insert($diffs, '{n}.new[password=1].value', '🤫');
                         }
                     }
 
