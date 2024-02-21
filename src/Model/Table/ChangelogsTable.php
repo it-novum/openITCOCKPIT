@@ -254,7 +254,7 @@ class ChangelogsTable extends Table {
                 'CheckPeriod'                                    => '{(id|name)}',
                 'NotifyPeriod'                                   => '{(id|name)}',
                 'CheckCommand'                                   => '{(id|name)}',
-                'Hosttemplate.customvariables'                   => '{n}.{(id|name|value)}',
+                'Hosttemplate.customvariables'                   => '{n}.{(id|name|value|password)}',
                 'Hosttemplate.hosttemplatecommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                        => '{n}.{(id|name)}',
                 'Contactgroup'                                   => '{n}.{(id|name)}',
@@ -266,7 +266,7 @@ class ChangelogsTable extends Table {
                 'NotifyPeriod'                                              => '{(id|name)}',
                 'CheckCommand'                                              => '{(id|name)}',
                 'EventhandlerCommand'                                       => '{(id|name)}',
-                'Servicetemplate.customvariables'                           => '{n}.{(id|name|value)}',
+                'Servicetemplate.customvariables'                           => '{n}.{(id|name|value|password)}',
                 'Servicetemplate.servicetemplatecommandargumentvalues'      => '{n}.{(id|value)}',
                 'Servicetemplate.servicetemplateeventcommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                                   => '{n}.{(id|name)}',
@@ -292,7 +292,7 @@ class ChangelogsTable extends Table {
                 'CheckCommand'                   => '{(id|name)}',
                 'Hostgroup'                      => '{n}.{(id|name)}',
                 'Parenthost'                     => '{n}.{(id|name)}',
-                'Host.customvariables'           => '{n}.{(id|name|value)}',
+                'Host.customvariables'           => '{n}.{(id|name|value|password)}',
                 'Host.hostcommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                        => '{n}.{(id|name)}',
                 'Contactgroup'                   => '{n}.{(id|name)}',
@@ -305,7 +305,7 @@ class ChangelogsTable extends Table {
                 'NotifyPeriod'                              => '{(id|name)}',
                 'CheckCommand'                              => '{(id|name)}',
                 'Servicegroup'                              => '{n}.{(id|name)}',
-                'Service.customvariables'                   => '{n}.{(id|name|value)}',
+                'Service.customvariables'                   => '{n}.{(id|name|value|password)}',
                 'Service.servicecommandargumentvalues'      => '{n}.{(id|value)}',
                 'Service.serviceeventcommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                   => '{n}.{(id|name)}',
@@ -871,6 +871,12 @@ class ChangelogsTable extends Table {
                             }
                         }
                     }
+                    if ($isArray) {
+                        if (!empty(Hash::extract($diffs, '{n}.{*}[password=1].value'))) {
+                            $diffs = Hash::insert($diffs, '{n}.{*}[password=1].value', '🤫');
+                        }
+                    }
+
                     $dataUnserialized[$index][$tableName] = [
                         'data'    => $diffs,
                         'isArray' => $isArray
@@ -878,6 +884,7 @@ class ChangelogsTable extends Table {
                 }
             }
         }
+        $dataUnserialized = Hash::insert($dataUnserialized, '{n}.{s}.data.{n}[password=1].value', '🤫');
         return $dataUnserialized;
     }
 }
