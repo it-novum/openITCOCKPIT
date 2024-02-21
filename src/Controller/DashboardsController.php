@@ -185,16 +185,12 @@ class DashboardsController extends AppController {
             return;
         }
 
-        $searchString = $this->request->getQuery('searchString');
+        $searchString = $this->request->getQuery('searchString', '');
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
-
-        if (!empty($searchString)) {
-            $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS, $searchString);
-        } else {
-            $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
-        }
+        
+        $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS, $searchString);
 
         $this->set('widgets', $widgets);
         $this->viewBuilder()->setOption('serialize', ['widgets']);
