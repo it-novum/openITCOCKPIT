@@ -31,7 +31,7 @@
             timing-function="ease-in-out">
 
         <flippy-front class="fixFlippy">
-            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
+            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()" ng-hide="readOnly">
                 <i class="fa fa-cog fa-sm"></i>
             </a>
             <span ng-show="trafficlight.service_id === null" class="text-info padding-left-20">

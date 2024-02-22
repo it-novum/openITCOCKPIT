@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core;
 
 
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 class LoginBackgrounds {
 
     /**

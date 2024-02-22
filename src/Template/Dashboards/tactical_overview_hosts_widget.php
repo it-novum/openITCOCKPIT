@@ -35,7 +35,7 @@ $hasHostIndexPermissions = $this->Acl->hasPermission('index', 'hosts', '');
             <div class="row">
                 <div class="col-lg-1">
                     <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark"
-                       ng-click="showConfig()">
+                       ng-click="showConfig()" ng-hide="readOnly">
                         <i class="fa fa-cog fa-sm"></i>
                     </a>
                 </div>

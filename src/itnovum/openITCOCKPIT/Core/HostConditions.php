@@ -70,9 +70,9 @@ class HostConditions {
     private $satellite_id = null;
 
     /**
-     * @var array
+     * @var string
      */
-    private $hostgroupIds = [];
+    private $hostgroupRegex = '';
 
     /**
      * HostConditions constructor.
@@ -219,6 +219,7 @@ class HostConditions {
     public function setHostnameRegex($hostnameRegex) {
         $this->hostnameRegex = $hostnameRegex;
     }
+    
 
     /**
      * @param int $satellite_id
@@ -234,19 +235,4 @@ class HostConditions {
     public function getSatelliteId() {
         return $this->satellite_id;
     }
-
-    /**
-     * @return array
-     */
-    public function getHostgroupIds() {
-        return $this->hostgroupIds;
-    }
-
-    /**
-     * @param array $hostgroupIds
-     */
-    public function setHostgroupIds($hostgroupIds) {
-        $this->hostgroupIds = $hostgroupIds;
-    }
-
 }

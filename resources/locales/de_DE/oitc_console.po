@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2023-10-09 09:40+0200\n"
+"POT-Creation-Date: 2024-02-15 10:07+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -502,6 +502,18 @@ msgstr "Status-ID des aktuellen Service-Status"
 msgid "Write initial Checkmk configuration"
 msgstr "Schreiben Sie die erste Checkmk-Konfiguration"
 
+#: .-modules/CheckmkModule/src/Command/ServiceDiscoveryCommand.php:57
+msgid "Create new discovered services"
+msgstr ""
+
+#: .-modules/CheckmkModule/src/Command/ServiceDiscoveryCommand.php:63
+msgid "Disable update of existing Checkmk services"
+msgstr ""
+
+#: .-modules/CheckmkModule/src/Command/ServiceDiscoveryCommand.php:69
+msgid "Outputs the operations but will not execute anything"
+msgstr ""
+
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:82
 msgid "ID of the container open alerts should be monitored. If empty, all alerts will be considered. There can be multiple container-id arguments"
 msgstr "Die ID der Container-Offen-Warnungen sollte überwacht werden. Wenn es leer ist, werden alle Warnungen berücksichtigt. Es können mehrere Container-ID-Argumente vorhanden sein"
@@ -523,12 +535,12 @@ msgid "Number of alerts before the plugin will output a critical state. There ca
 msgstr "Anzahl der Warnungen, bevor das Plugin einen kritischen Zustand ausgibt. Für jeden --statetype können mehrere kritische Argumente vorhanden sein. Es ist wichtig, die gleiche Reihenfolge zu haben, z. B.: --statetype 0 --critical 10 --statetype 1 --critical 15"
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:128
-msgid "Alerts older than the provided number in days will trigger a warning state. There can be multiple age-warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
-msgstr "Warnungen, die älter als die angegebene Anzahl in Tagen sind, lösen einen Warnstatus aus. Für jeden --statetype können mehrere Alters-Warnungsargumente vorhanden sein. Es ist wichtig, die gleiche Reihenfolge zu haben, z. B.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
+msgid "Alerts older than the provided number in {age-unit}s will trigger a warning state. There can be multiple age-warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
+msgstr ""
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:136
-msgid "Alerts older than the provided number in days will trigger a critical state. There can be multiple age-critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
-msgstr "Warnungen, die älter als die angegebene Anzahl in Tagen sind, lösen einen kritischen Status aus. Für jeden --statetype kann es mehrere alters-kritische Argumente geben. Es ist wichtig, die gleiche Reihenfolge zu haben, z. B.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
+msgid "Alerts older than the provided number in {age-unit}s will trigger a critical state. There can be multiple age-critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
+msgstr ""
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:144
 msgid "Only consider alerts where the message contains provided string"
@@ -537,6 +549,10 @@ msgstr "Berücksichtigen Sie nur Warnungen, bei denen die Nachricht die angegebe
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:153
 msgid "Determines if the plugin should print detailed information as long output."
 msgstr "Legt fest, ob das Plugin detaillierte Informationen als lange ausgabe ausgeben soll."
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:163
+msgid "Defines the age unit you specified for the alert limiatation: \"minute\" | \"hour\" | \"day\". Default: \"day\""
+msgstr ""
 
 #: .-modules/CustomalertModule/src/Command/CustomAlertWorkerCommand.php:111
 msgid "Print UUIDs of dropped services"
@@ -603,3 +619,4 @@ msgstr "Schleifenintervall in Sekunden"
 #: .-modules/ServicenowModule/src/Command/ServicenowNotificationCommand.php:59
 msgid "comment"
 msgstr "Kommentar"
+

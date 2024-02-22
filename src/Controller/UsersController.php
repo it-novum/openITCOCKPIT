@@ -41,6 +41,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Event\EventInterface;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\I18n\FrozenTime;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -106,6 +107,8 @@ class UsersController extends AppController {
             $images['particles'] = 'none';
         }
 
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
         $hasValidSslCertificate = false;
         if (isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && isset($_SERVER['SSL_CERT'])) {
@@ -138,6 +141,9 @@ class UsersController extends AppController {
                     }
                     $Session->write('oauth_user_not_found', $oauth_error);
                 }
+            } else {
+                $loginData = $result->getData();
+                $UsersTable->saveLastLoginDate($loginData['email']);
             }
         }
 
@@ -163,15 +169,14 @@ class UsersController extends AppController {
             return;
         }
 
-        /** @var UsersTable $UsersTable */
-        $UsersTable = TableRegistry::getTableLocator()->get('Users');
-
         if ($this->request->is('post')) {
             // Docs: https://book.cakephp.org/authentication/1/en/index.html
 
             $result = $this->Authentication->getResult();
             if ($result->getStatus() === ResultInterface::SUCCESS) {
                 $this->set('success', true);
+                $loginData = $this->request->getData();
+                $UsersTable->saveLastLoginDate($loginData['email']);
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
@@ -239,10 +244,14 @@ class UsersController extends AppController {
         $all_users = [];
 
         $types = $UsersTable->getUserTypesWithStyles();
+        $UserTime = $User->getUserTime();
 
         foreach ($all_tmp_users as $index => $_user) {
             /** @var User $_user */
             $user = $_user->toArray();
+            if (!empty($user['last_login'])) {
+                $user['last_login'] = $UserTime->format($user['last_login']->getTimestamp());
+            }
             $user['allow_edit'] = $this->hasRootPrivileges;
             if (!empty($user['samaccountname'])) {
                 $user['UserTypes'] = [$types['LDAP_USER']];
@@ -372,6 +381,14 @@ class UsersController extends AppController {
             return;
         }
 
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+        $UserTime = $User->getUserTime();
+        foreach ($user['User']['apikeys'] as $i => $apikey) {
+            if (isset($apikey['last_use']) && $apikey['last_use'] instanceof FrozenTime) {
+                $user['User']['apikeys'][$i]['last_use'] = $UserTime->format($apikey['last_use']->getTimestamp());
+            }
+        }
+
         $isLdapUser = !empty($user['User']['samaccountname']);
 
         $types = $UsersTable->getUserTypesWithStyles();
@@ -396,7 +413,6 @@ class UsersController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-
             $data = $this->request->getData('User', []);
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
@@ -483,7 +499,6 @@ class UsersController extends AppController {
                 $data['password'] = '';
                 $data['confirm_password'] = '';
             }
-
             //prevent multiple hash of password
             if ($data['password'] === '' && $data['confirm_password'] === '') {
                 unset($data['password']);
@@ -755,7 +770,6 @@ class UsersController extends AppController {
             $containerId = ROOT_CONTAINER;
         }
         $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-
         $users = Api::makeItJavaScriptAble(
             $UsersTable->getUsersByContainerIds($containerIds, 'list')
         );

@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Hostgroup;
+use Cake\Database\Expression\Comparison;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -73,6 +74,13 @@ class HostgroupsTable extends Table {
             'joinTable'        => 'hosttemplates_to_hostgroups',
             'saveStrategy'     => 'replace'
         ]);
+        $this->belongsToMany('Statuspages', [
+            'className'        => 'Statuspages',
+            'foreignKey'       => 'hostgroup_id',
+            'targetForeignKey' => 'statuspage_id',
+            'joinTable'        => 'statuspages_to_hostgroups',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
     }
 
     /**
@@ -557,10 +565,16 @@ class HostgroupsTable extends Table {
                 ])
                 ->where([
                     'Hostgroups.id IN' => $selected
-                ])
-                ->order([
-                    'Containers.name' => 'asc'
-                ])
+                ]);
+
+            if (!empty($HostgroupConditions->getContainerIds())) {
+                $query->where([
+                    'Containers.parent_id IN' => $HostgroupConditions->getContainerIds()
+                ]);
+            }
+            $query->order([
+                'Containers.name' => 'asc'
+            ])
                 ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();
@@ -1010,6 +1024,62 @@ class HostgroupsTable extends Table {
         ));
 
         return $hostIds;
+    }
+
+    /**
+     * @param string $hostgroupRegex
+     * @return array
+     */
+    public function getHostIdsByHostgroupNameRegex($hostgroupRegex, $containerIds) {
+        $hostGroupIds = $this->getHostgroupIdsByNameRegex($hostgroupRegex, $containerIds);
+        $allHostIdsArray = [];
+        foreach ($hostGroupIds as $hostGroupId) {
+            $hostIds = $this->getHostIdsByHostgroupId($hostGroupId);
+            foreach ($hostIds as $hostId) {
+                $allHostIdsArray[$hostId] = $hostId;
+            }
+        }
+        return $allHostIdsArray;
+
+    }
+
+    /**
+     * @param string $hostgroupRegex
+     * @param array|mixed $containerIds
+     * @param @param string $type (all or count, list is NOT supported!)
+     * @return array|int
+     */
+    public function getHostgroupIdsByNameRegex(string $hostgroupRegex, $containerIds, $type = 'all') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id',
+            ])
+            ->contain(['Containers'])
+            ->where(['Containers.parent_id IN' => $containerIds])
+            ->disableHydration();
+        $where = [];
+
+        if ($this->isValidRegularExpression($hostgroupRegex)) {
+            $where[] = new Comparison(
+                'Containers.name',
+                $hostgroupRegex,
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+        if ($type === 'count') {
+            return $query->count();
+        }
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull(Hash::extract($result->toArray(), '{n}.id'));
     }
 
     /**
@@ -1572,5 +1642,100 @@ class HostgroupsTable extends Table {
         }
 
         return $entity;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostUudsAndServiceUuidsByHostgroupId($id) {
+        $hostgroup = $this->find()
+            ->contain([
+                // Get all hosts that are in this host group through the host template AND
+                // which does NOT have any own host groups
+                'Hosttemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.hosttemplate_id',
+                                        'Hostgroups.id'
+                                    ])
+                                    ->contain([
+                                        'Services' => function (Query $query) {
+                                            return $query->select([
+                                                'Services.id',
+                                                'Services.host_id',
+                                                'Services.uuid'
+                                            ])->where([
+                                                'Services.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->leftJoinWith('Hostgroups')
+                                    ->where(['Hosts.disabled' => 0])
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                },
+
+                // Get all hosts from this host group
+                'Hosts'         => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.uuid',
+                        ])->contain([
+                            'Services' => function (Query $query) {
+                                return $query->select([
+                                    'Services.id',
+                                    'Services.host_id',
+                                    'Services.uuid'
+                                ])->where([
+                                    'Services.disabled' => 0
+                                ]);
+                            }
+                        ])->where(['Hosts.disabled' => 0]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+        foreach ($hostgroup['hosts'] as $host) {
+            $hostAnServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
+            foreach ($host['services'] as $service) {
+                $hostAnServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
+            }
+        }
+
+        foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
+            foreach ($hosttemplate['hosts'] as $host) {
+                $hostAnServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
+                foreach ($host['services'] as $service) {
+                    $hostAnServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
+                }
+            }
+        }
+
+        return $hostAnServiceUuids;
+    }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
     }
 }

@@ -54,6 +54,7 @@ use Cake\ORM\Entity;
  * @property bool $is_oauth
  * @property \Cake\I18n\FrozenTime|null $created
  * @property \Cake\I18n\FrozenTime|null $modified
+ * @property \Cake\I18n\FrozenTime|null last_login
  *
  * @property \App\Model\Entity\Usergroup $usergroup
  * @property \App\Model\Entity\Apikey[] $apikeys
@@ -112,7 +113,8 @@ class User extends Entity {
         'users_to_containers'     => true,
         'containers'              => true,
         'usercontainerroles'      => true,
-        'is_oauth'                => true
+        'is_oauth'                => true,
+        'last_login'              => true
     ];
 
     /**

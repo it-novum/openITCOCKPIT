@@ -164,34 +164,6 @@
                     </div>
                     <!-- Satellite select end -->
 
-                    <div class="row" ng-show="(exportRunning || showLog) && satellites.length > 0">
-                        <div class="col-12">
-                            <div class="alert border-faded bg-transparent text-secondary margin-top-20">
-                                <div class="d-flex align-items-center">
-                                    <div class="alert-icon">
-                                            <span class="icon-stack icon-stack-md">
-                                                <i class="base-7 icon-stack-3x color-info-600"></i>
-                                                <i class="fas fa-satellite icon-stack-1x text-white"></i>
-                                            </span>
-                                    </div>
-                                    <div class="flex-1">
-                                        <span class="h5 color-info-600">
-                                            <?= __('Satellite Status has been moved.'); ?>
-                                        </span>
-                                        <br>
-                                        <?= __('Satellite export status has been moved to a separate view.'); ?>
-                                    </div>
-                                    <?php if ($this->Acl->hasPermission('status', 'satellites', 'DistributeModule')): ?>
-                                        <a class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
-                                           ui-sref="SatellitesStatus">
-                                            <?= __('Go to "Satellite Status"'); ?>
-                                        </a>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="card">
                         <div class="card-header" ng-show="exportRunning || showLog">
                             <i class="fas fa-tasks"></i>
@@ -270,6 +242,35 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="row" ng-show="(exportRunning || showLog) && satellites.length > 0">
+                        <div class="col-12">
+                            <div class="alert border-faded bg-transparent text-secondary margin-top-20">
+                                <div class="d-flex align-items-center">
+                                    <div class="alert-icon">
+                                            <span class="icon-stack icon-stack-md">
+                                                <i class="base-7 icon-stack-3x color-info-600"></i>
+                                                <i class="fas fa-satellite icon-stack-1x text-white"></i>
+                                            </span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <span class="h5 color-info-600">
+                                            <?= __('Satellite Status has been moved.'); ?>
+                                        </span>
+                                        <br>
+                                        <?= __('Satellite export status has been moved to a separate view.'); ?>
+                                    </div>
+                                    <?php if ($this->Acl->hasPermission('status', 'satellites', 'DistributeModule')): ?>
+                                        <a class="btn btn-outline-success btn-sm btn-w-m waves-effect waves-themed"
+                                           ui-sref="SatellitesStatus">
+                                            <?= __('Go to "Satellite Status"'); ?>
+                                        </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

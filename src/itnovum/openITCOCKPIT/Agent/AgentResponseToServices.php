@@ -102,6 +102,12 @@ class AgentResponseToServices {
         $services = [];
         foreach ($this->agentResponse as $mainKey => $items) {
             switch ($mainKey) {
+                case 'agent':
+                    $systemUptime = $this->getServiceStructByName('agent.system_uptime', 'Uptime');
+                    if ($systemUptime) {
+                        $services['system_uptime'] = $systemUptime;
+                    }
+                    break;
                 case 'memory':
                     $memoryService = $this->getServiceStructByName('memory', 'Memory usage percentage');
                     if ($memoryService) {
@@ -143,9 +149,15 @@ class AgentResponseToServices {
                     }
                     break;
                 case 'disks':
-                    $disksServices = $this->getServiceStructForDisks();
+                    $disksServices = $this->getServiceStructForDisks(); // Space used
                     if ($disksServices) {
                         $services['disks'] = $disksServices;
+                    }
+
+                    // "disks_free" is only a Virtual JSON key bc it does not exist in the Agent output
+                    $disksFreeSpaceServices = $this->getServiceStructForDisks(true); // Space free
+                    if ($disksFreeSpaceServices) {
+                        $services['disks_free'] = $disksFreeSpaceServices;
                     }
                     break;
                 case 'net_io':
@@ -190,7 +202,6 @@ class AgentResponseToServices {
                         $services['windows_eventlog'] = $windowsEventlogs;
                     }
                     break;
-                    break;
                 case 'customchecks':
                     $customchecks = $this->getServiceStructForCustomchecks();
                     if ($customchecks) {
@@ -214,6 +225,12 @@ class AgentResponseToServices {
                     $libvirtServices = $this->getServiceStructForLibvirt();
                     if ($libvirtServices) {
                         $services['libvirt'] = $libvirtServices;
+                    }
+                    break;
+                case 'ntp':
+                    $ntp = $this->getServiceStructByName('ntp', 'System Time');
+                    if ($ntp) {
+                        $services['ntp'] = $ntp;
                     }
                     break;
             }
@@ -372,10 +389,16 @@ class AgentResponseToServices {
     }
 
     /**
-     * @return array|bool
+     * @param bool $monitorDiskFreeSpace
+     * @return array|false
      */
-    private function getServiceStructForDisks() {
-        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('disks');
+    private function getServiceStructForDisks(bool $monitorDiskFreeSpace = false) {
+        $virtualJsonKey = 'disks'; // To monitor used disk space
+        if ($monitorDiskFreeSpace === true) {
+            $virtualJsonKey = 'disks_free'; // To monitor free disk space
+        }
+
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName($virtualJsonKey);
         if (empty($agentcheck)) {
             return false;
         }
@@ -386,9 +409,14 @@ class AgentResponseToServices {
                 if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $this->shortCommandargumentValue($device['disk']['mountpoint'])])) {
                     $servicetemplatecommandargumentvalues[2]['value'] = $this->shortCommandargumentValue($device['disk']['mountpoint']); // / or C:
 
+                    $serviceDesc = 'Disk usage of';
+                    if ($monitorDiskFreeSpace === true) {
+                        $serviceDesc = 'Disk free space of';
+                    }
+
                     $services[] = $this->getServiceStruct(
                         $agentcheck['servicetemplate_id'],
-                        sprintf('Disk usage of: %s (%s)', $device['disk']['mountpoint'], $device['disk']['device']),
+                        sprintf('%s: %s (%s)', $serviceDesc, $device['disk']['mountpoint'], $device['disk']['device']),
                         $servicetemplatecommandargumentvalues
                     );
                 }

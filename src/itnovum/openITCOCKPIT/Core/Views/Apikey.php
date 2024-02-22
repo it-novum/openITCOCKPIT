@@ -24,6 +24,8 @@
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
+use Cake\I18n\FrozenTime;
+
 /**
  * Class Apikey
  * @package itnovum\openITCOCKPIT\Core\Views
@@ -37,6 +39,7 @@ class Apikey {
     private $apikey = null;
 
     private $description = null;
+    private $last_use = null;
 
     /**
      * Apikey constructor.
@@ -57,6 +60,10 @@ class Apikey {
 
         if (isset($apikey['description'])) {
             $this->description = $apikey['description'];
+        }
+
+        if (isset($apikey['last_use'])) {
+            $this->last_use = $apikey['last_use'];
         }
 
     }
@@ -87,6 +94,20 @@ class Apikey {
      */
     public function getDescription() {
         return $this->description;
+    }
+
+    /**
+     * @return string|null|FrozenTime
+     */
+    public function getLastUse() {
+        return $this->last_use;
+    }
+
+    /**
+     * @param string|FrozenTime $lastUse
+     */
+    public function setLastUse($lastUse) {
+        $this->last_use = $lastUse;
     }
 
 

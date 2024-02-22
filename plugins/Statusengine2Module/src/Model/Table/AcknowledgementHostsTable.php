@@ -27,6 +27,7 @@ namespace Statusengine2Module\Model\Table;
 
 use App\Lib\Interfaces\AcknowledgementHostsTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Http\Exception\NotImplementedException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -176,4 +177,13 @@ class AcknowledgementHostsTable extends Table implements AcknowledgementHostsTab
 
         return $result;
     }
+
+    /**
+     * @param array $uuids
+     * @return mixed
+     */
+    public function byUuids($uuids) {
+        throw new NotImplementedException();
+    }
+
 }

@@ -65,6 +65,15 @@ class UsergroupsTable extends Table {
             'targetForeignKey' => 'ldapgroup_id',
             'saveStrategy'     => 'replace'
         ]);
+
+        $this->belongsToMany('DashboardTabAllocation', [
+            'className'        => 'DashboardTabAllocation',
+            'joinTable'        => 'usergroups_to_dashboard_tab_allocations',
+            'foreignKey'       => 'usergroup_id',
+            'targetForeignKey' => 'dashboard_tab_allocation_id',
+            'saveStrategy'     => 'replace',
+            'dependent'        => true
+        ]);
     }
 
     /**

@@ -33,7 +33,7 @@
             <div class="row">
                 <div class="col-lg-4">
                     <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark"
-                       ng-click="showConfig()">
+                       ng-click="showConfig()" ng-hide="readOnly">
                         <i class="fa fa-cog fa-sm"></i>
                     </a>
                     <span ng-show="automap_id === null" class="text-info padding-left-20">
@@ -77,7 +77,7 @@
                                 </label>
 
                                 <div class="slidecontainer">
-                                    <input type="range" step="5000" min="5000" max="300000" class="slider"
+                                    <input type="range" step="5000" min="5000" max="300000" class="slider" ng-disabled="readOnly"
                                            style="width: 100%"
                                            ng-model="scroll_interval" ng-model-options="{debounce: 500}">
                                 </div>

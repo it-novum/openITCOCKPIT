@@ -82,7 +82,9 @@ class DefaultRolePermissions {
                 'Users'                 => ['index'],
                 'Backups'               => ['index'],
                 'Supports'              => ['index', 'issue'],
-                'Instantreports'        => ['index', 'sendEmailsList']
+                'Instantreports'        => ['index', 'sendEmailsList'],
+                'Statuspages'        => ['index', 'view', 'publicView'],
+
             ]
         ];
 

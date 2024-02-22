@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval){
+    .controller('DashboardsIndexController', function($scope, $http, $timeout, $interval, $state, NotyService){
 
         /** public vars **/
         $scope.init = true;
@@ -115,6 +115,8 @@ angular.module('openITCOCKPIT')
             }).then(function(result){
                 $scope.activeTab = tabId;
 
+                $scope.isReadonly = false;
+
                 for(var k in $scope.tabs){
                     if($scope.tabs[k].id === $scope.activeTab){
                         if($scope.tabs[k].locked === true){
@@ -125,6 +127,12 @@ angular.module('openITCOCKPIT')
                             $scope.dashboardIsLocked = false;
                             $scope.gridsterOpts.resizable.enabled = true;
                             $scope.gridsterOpts.draggable.enabled = true;
+                        }
+                        if($scope.tabs[k].isOwner === false){
+                            $scope.isReadonly = true;
+                            $scope.dashboardIsLocked = true;
+                            $scope.gridsterOpts.resizable.enabled = false;
+                            $scope.gridsterOpts.draggable.enabled = false;
                         }
                         break;
                     }
@@ -142,7 +150,8 @@ angular.module('openITCOCKPIT')
                         icon: result.data.widgets.Widget[i].icon,
                         title: result.data.widgets.Widget[i].title,
                         color: result.data.widgets.Widget[i].color,
-                        directive: result.data.widgets.Widget[i].directive
+                        directive: result.data.widgets.Widget[i].directive,
+                        isReadonly: $scope.isReadonly
                     });
                 }
 
@@ -583,6 +592,131 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.loadContainers = function(){
+            return $http.get("/users/loadContainersForAngular.json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.init = false;
+                $scope.containers = result.data.containers;
+            });
+        };
+
+        $scope.loadElements = function(){
+            var containerId = $scope.post.DashboardAllocation.container_id;
+            if(containerId === 0){
+                return;
+            }
+
+            $http.get("/DashboardAllocations/loadElementsByContainerId/" + containerId + ".json", {
+                params: {
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.dashboard_tabs = result.data.dashboard_tabs;
+                $scope.users = result.data.users;
+                $scope.usergroups = result.data.usergroups;
+            });
+        };
+
+        $scope.allocateDashboard = function(tabId){
+            $scope.errors = null;
+            $scope.loadContainers();
+            var tabById = _.find(
+                $scope.tabs,
+                function(tab){
+                    return tab.id == tabId;
+                }
+            );
+            $scope.post = {
+                DashboardAllocation: {
+                    name: tabById.name,
+                    container_id: 0,
+                    dashboard_tab_id: tabId,
+                    pinned: false,
+                    users: {
+                        _ids: []
+                    },
+                    usergroups: {
+                        _ids: [],
+                    }
+                }
+            };
+
+            if(tabById.hasOwnProperty('dashboard_tab_allocation') && tabById.dashboard_tab_allocation){
+                $scope.post.DashboardAllocation = tabById.dashboard_tab_allocation;
+            }
+
+            // Show the modal.
+            $('#allocateDashboardModal').modal('show');
+        }
+
+        $scope.addDashboardAllocation = function(){
+            $http.post("/DashboardAllocations/add.json?angular=true",
+                $scope.post
+            ).then(function(result){
+                var url = $state.href('DashboardAllocationsEdit', {id: result.data.allocation.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+                $('#allocateDashboardModal').modal('hide');
+                $scope.resetInputFields();
+                $scope.load();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    NotyService.genericError();
+                    $scope.errors = result.data.error;
+                }
+            });
+        }
+
+        $scope.editDashboardAllocation = function(){
+            $http.post("/DashboardAllocations/edit/" + $scope.post.DashboardAllocation.id + ".json?angular=true",
+                $scope.post
+            ).then(function(result){
+                var url = $state.href('DashboardAllocationsEdit', {id: result.data.allocation.id});
+                NotyService.genericSuccess({
+                    message: '<u><a href="' + url + '" class="txt-color-white"> '
+                        + $scope.successMessage.objectName
+                        + '</a></u> ' + $scope.successMessage.message
+                });
+                $('#allocateDashboardModal').modal('hide');
+                $scope.resetInputFields();
+                $scope.load();
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    NotyService.genericError();
+                    $scope.errors = result.data.error;
+                }
+            });
+        }
+
+        $scope.deleteAllocation = function(tabId){
+            $http.post("/DashboardAllocations/delete/" + tabId + ".json?angular=true", {}
+            ).then(function(result){
+                if(result.data.success){
+                    genericSuccess();
+                    $scope.load();
+                }else{
+                    genericError();
+                }
+
+                $('#allocateDashboardModal').modal('hide');
+            }, function errorCallback(result){
+                genericError();
+            });
+        };
+
+        $scope.resetInputFields = function(){
+            $scope.post.DashboardAllocation.container_id = 0; //trigger watch event
+            $scope.dashboard_tabs = [];
+            $scope.users = [];
+            $scope.usergroups = [];
+        };
+
         if(document.addEventListener){
             document.addEventListener('webkitfullscreenchange', fullscreenExitHandler, false);
             document.addEventListener('mozfullscreenchange', fullscreenExitHandler, false);
@@ -607,6 +741,7 @@ angular.module('openITCOCKPIT')
 
             tabSortCreated = true;
             $('.nav-tabs').sortable({
+                items: "> .ui-sortable-handle",
                 update: function(){
                     var $tabbar = $(this);
                     var $tabs = $tabbar.children();
@@ -740,6 +875,13 @@ angular.module('openITCOCKPIT')
             watchTimeout = $timeout(function(){
                 $scope.saveGrid();
             }, 1500);
+        }, true);
+
+        $scope.$watch('post.DashboardAllocation.container_id', function(){
+            if($scope.init){
+                return;
+            }
+            $scope.loadElements();
         }, true);
 
         $scope.load();
