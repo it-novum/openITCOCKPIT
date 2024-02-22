@@ -128,6 +128,10 @@
                                     <i class="fa" ng-class="getSortClass('Automaps.host_regex')"></i>
                                     <?php echo __('Host RegEx'); ?>
                                 </th>
+                                <th class="no-sort" ng-click="orderBy('Automaps.hostgroup_regex')">
+                                    <i class="fa" ng-class="getSortClass('Automaps.hostgroup_regex')"></i>
+                                    <?php echo __('Host group RegEx'); ?>
+                                </th>
                                 <th class="no-sort" ng-click="orderBy('Automaps.service_regex')">
                                     <i class="fa" ng-class="getSortClass('Automaps.service_regex')"></i>
                                     <?php echo __('Service RegEx'); ?>
@@ -162,6 +166,7 @@
                                 </td>
                                 <td class="word-break">{{automap.description}}</td>
                                 <td class="word-break">{{automap.host_regex}}</td>
+                                <td class="word-break">{{automap.hostgroup_regex}}</td>
                                 <td class="word-break">{{automap.service_regex}}</td>
 
                                 <td>

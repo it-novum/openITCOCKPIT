@@ -60,9 +60,9 @@ class User {
     private $dateformat;
 
     /**
-     * @var string
+     * @var int
      */
-
+    private $usergroupId;
 
 
     /**
@@ -77,9 +77,7 @@ class User {
         $this->id = (int)$Identity->get('id');
         $this->timezone = $Identity->get('timezone');
         $this->dateformat = $Identity->get('dateformat');
-
-
-
+        $this->usergroupId = $Identity->get('usergroup_id');
     }
 
     /**getUserTime
@@ -125,29 +123,40 @@ class User {
     }
 
     /**
-     * @return UserImage
+     * PITFALL! ITC-2693
+     * The usergroup_id from the Database is maybe just the fallback usergroup of the user.
+     * The usergroup of the current Identity can be overwritten by the LdapUsergroupIdMiddleware depending on the
+     * LDAP Group a user is member of.
+     *
+     * So instand of using the usergroup_id from the database, use THIS getUsergroupId method because it uses the
+     * usergroupId from the current Identity
+     *
+     * @return int
      */
+    public function getUsergroupId(): int {
+        return $this->usergroupId;
+    }
 
+    /**
+     * @return string|null
+     */
     public function getUserAvatar() {
 
         $diskPath = WWW_ROOT . 'img' . DS . 'userimages' . DS . 'initial_avatar_' . md5($this->fullName) . '.png';
 
         $Avatar = new InitialAvatar();
         $image = $Avatar->name($this->fullName)
-                        ->background('#46c3db')
-                        ->color('#c5e3f6')
-                        ->size(200)->generate()
-                        ->save($diskPath, 100, 'png');
-        $userImage = NULL;
+            ->background('#46c3db')
+            ->color('#c5e3f6')
+            ->size(200)->generate()
+            ->save($diskPath, 100, 'png');
+        $userImage = null;
 
-        if(file_exists($diskPath)) {
+        if (file_exists($diskPath)) {
             $userImage = '/img/userimages' . DS . 'initial_avatar_' . md5($this->fullName) . '.png';
         }
 
         return $userImage;
-
-
     }
-
 
 }

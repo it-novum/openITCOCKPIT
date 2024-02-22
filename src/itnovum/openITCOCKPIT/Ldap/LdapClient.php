@@ -62,6 +62,18 @@ class LdapClient {
      */
     private $isOpenLdap = false;
 
+    /**
+     * ITC-3127
+     * https://github.com/it-novum/openITCOCKPIT/pull/1500
+     *
+     * Possible values:
+     * memberUid
+     * uniqueMember
+     *
+     * @var string
+     */
+    private $openLdapGroupSchema = 'memberUid';
+
     const ENCRYPTION_PLAIN = 0;
 
     const ENCRYPTION_STARTTLS = 1;
@@ -76,7 +88,7 @@ class LdapClient {
      * @param bool $isOpenLdap
      * @throws \FreeDSx\Ldap\Exception\BindException
      */
-    private function __construct($username, $passwod, $options = [], $isOpenLdap = false) {
+    private function __construct($username, $passwod, $options = [], $isOpenLdap = false, $openLdapGroupSchema = 'memberUid') {
         $this->username = $username;
         $this->password = $passwod;
 
@@ -93,6 +105,7 @@ class LdapClient {
 
         $options = Hash::merge($_options, $options);
         $this->isOpenLdap = $isOpenLdap;
+        $this->openLdapGroupSchema = $openLdapGroupSchema;
 
 
         if ($options['tls_level'] == self::ENCRYPTION_TLS) {
@@ -124,6 +137,8 @@ class LdapClient {
         );
         $passwod = $systemsettings['FRONTEND']['FRONTEND.LDAP.PASSWORD'];
 
+        $openLdapGroupSchema = $systemsettings['FRONTEND']['FRONTEND.LDAP.OPENLDAP_GROUP_SCHEMA'] ?? 'memberUid';
+
         $self = new self(
             $username,
             $passwod,
@@ -135,7 +150,8 @@ class LdapClient {
                 'tls_level'             => (int)$systemsettings['FRONTEND']['FRONTEND.LDAP.USE_TLS'],
                 'base_dn'               => $systemsettings['FRONTEND']['FRONTEND.LDAP.BASEDN'],
             ],
-            ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap')
+            ($systemsettings['FRONTEND']['FRONTEND.LDAP.TYPE'] === 'openldap'),
+            $openLdapGroupSchema
         );
 
         $self->setRawFilter($systemsettings['FRONTEND']['FRONTEND.LDAP.QUERY']);
@@ -384,14 +400,26 @@ class LdapClient {
      */
     private function getGroupsFromUserOpenLdap(array $ldapUser) {
         // By default, Open LDAP has no memberOf in the user entity. So you have to query all groups and filter by memberUid(=sAMAccountName)
-        // or by uniqueMember
-        // LDAP ist ein Quelle unendlicher Freude! (LDAP is a source of endless joy! )
+        // Depending on the LDAP Server, you may have to filter by uniqueMember=uid=sAMAccountName* RFC 4519 section 2.40
+        // https://www.openkm.com/wiki/index.php/LDAP_and_Active_Directory_uniqueMember_user_examples
+        // LDAP ist ein Quelle unendlicher Freude! (LDAP is a source of endless joy!)
         $memberUid = $ldapUser['samaccountname'];
+        $uniqueMember = 'uid=' . $ldapUser['samaccountname'];
 
+        // Filter by memberUid(=sAMAccountName)
         $filter = \FreeDSx\Ldap\Search\Filters::and(
             \FreeDSx\Ldap\Search\Filters::raw($this->rawGroupFilter),
             \FreeDSx\Ldap\Search\Filters::equal('memberUid', $memberUid)
         );
+
+        if($this->openLdapGroupSchema === 'uniqueMember'){
+            // Filter by uniqueMember=uid=sAMAccountName*
+            // https://github.com/it-novum/openITCOCKPIT/pull/1500/files
+            $filter = \FreeDSx\Ldap\Search\Filters::and(
+                \FreeDSx\Ldap\Search\Filters::raw($this->rawGroupFilter),
+                \FreeDSx\Ldap\Search\Filters::startsWith('uniqueMember', $uniqueMember)
+            );
+        }
 
         $search = \FreeDSx\Ldap\Operations::search($filter);
 

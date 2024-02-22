@@ -31,7 +31,6 @@ use App\Lib\Exceptions\MissingDbBackendException;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Entity\Changelog;
-use App\Model\Entity\Servicegroup;
 use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\HostsTable;
@@ -987,7 +986,9 @@ class ServicegroupsController extends AppController {
             ->lastHardStateChange()
             ->lastStateChange()
             ->lastCheck()
-            ->nextCheck();
+            ->nextCheck()
+            ->problemHasBeenAcknowledged()
+            ->scheduledDowntimeDepth();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
@@ -1079,6 +1080,50 @@ class ServicegroupsController extends AppController {
 
         $ServicegroupConditions = new ServicegroupConditions($ServicegroupFilter->indexFilter());
         $ServicegroupConditions->setContainerIds($this->MY_RIGHTS);
+
+        $servicegroups = Api::makeItJavaScriptAble(
+            $ServicegroupsTable->getServicegroupsForAngular($ServicegroupConditions, $selected)
+        );
+
+        $this->set('servicegroups', $servicegroups);
+        $this->viewBuilder()->setOption('serialize', ['servicegroups']);
+    }
+
+    public function loadServicegroupsByStringAndContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        /** @var $ServicegroupsTable ServicegroupsTable */
+        $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
+
+        $selected = $this->request->getQuery('selected');
+        $containerId = $this->request->getQuery('containerId');
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'ServicegroupSericegroupsByContainerIdAjax');
+
+                // Tenant host groups are available for all users of a tenant (oITC V2 legacy)
+                $tenantContainerIds[] = $path[1]['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+        $ServicegroupFilter = new ServicegroupFilter($this->request);
+
+        $ServicegroupConditions = new ServicegroupConditions($ServicegroupFilter->indexFilter());
+        $ServicegroupConditions->setContainerIds($containerIds);
 
         $servicegroups = Api::makeItJavaScriptAble(
             $ServicegroupsTable->getServicegroupsForAngular($ServicegroupConditions, $selected)

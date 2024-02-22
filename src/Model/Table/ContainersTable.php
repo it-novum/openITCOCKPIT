@@ -6,9 +6,7 @@ use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
 use Cake\Database\Expression\QueryExpression;
-use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\Event\EventInterface;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\Log\Log;
@@ -18,7 +16,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use CustomalertModule\Model\Table\CustomalertRulesTable;
-use CustomalertModule\Model\Table\CustomalertsTable;
 use GrafanaModule\Model\Table\GrafanaUserdashboardsTable;
 use itnovum\openITCOCKPIT\Core\ContainerNestedSet;
 use MapModule\Model\Table\MapsTable;
@@ -519,6 +516,26 @@ class ContainersTable extends Table {
     }
 
     /**
+     * @param int|array $containerIds
+     * @param array $MY_RIGHTS_LEVEL
+     * @param bool $resolveRoot
+     * @param array $includeContainerTypes
+     * @return array
+     */
+    public function resolveWritableChildrenOfContainerIds($containerIdsToResolve, array $MY_RIGHTS_LEVEL, $resolveRoot = false, $includeContainerTypes = []) {
+        $resolvedContainers = $this->resolveChildrenOfContainerIds($containerIdsToResolve, $resolveRoot, $includeContainerTypes);
+
+        $containers = [];
+        foreach ($resolvedContainers as $containerId) {
+            if (isset($MY_RIGHTS_LEVEL[$containerId]) && $MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT) {
+                $containers[] = $containerId;
+            }
+        }
+
+        return $containers;
+    }
+
+    /**
      * Remove the ROOT_CONTAINER from a given array with container ids as value
      *
      * @param array $containerIds
@@ -539,14 +556,19 @@ class ContainersTable extends Table {
 
     /**
      * @param int $id
+     * @param bool $flat =false If set to true, the result will be flattened into an int[]
+     *
      * @return array
      */
-    public function getPathById($id) {
+    public function getPathById($id, bool $flat = false) {
         try {
             $path = $this->find('path', ['for' => $id])
                 ->disableHydration()
                 ->all()
                 ->toArray();
+            if ($flat) {
+                return Hash::extract($path, '{n}.id');
+            }
             return $path;
         } catch (RecordNotFoundException $e) {
             return [];
@@ -585,6 +607,19 @@ class ContainersTable extends Table {
         }
 
         return $delimiter . implode($delimiter, $nodes);
+    }
+
+    /**
+     * I will solely check whether the given $newContainerId is in the path of the $oldContainerId.
+     *
+     * @param int $newContainerId
+     * @param int $oldContainerId
+     *
+     * @return bool
+     */
+    final public function isNewContainerInPathOfOldContainer(int $newContainerId, int $oldContainerId): bool {
+        $paths = $this->getPathById($oldContainerId, true);
+        return in_array($newContainerId, $paths, true);
     }
 
     public function getAllContainerByParentId($parentContainerId) {
@@ -893,7 +928,7 @@ class ContainersTable extends Table {
                     $containers[$index]['childsElements']['contactgroups'] = $ContactgroupsTable->getContactgroupsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
 
                     $containers[$index]['childsElements']['users'] = $UsersTable->getUsersByContainerIdExact($container['id'], 'list');
-                    $containers[$index]['childsElements']['usercontainerroles'] = $UserContainerRolesTable->getContainerRoleByContainerIdExact($container['id'], 'list','id', $MY_RIGHTS);
+                    $containers[$index]['childsElements']['usercontainerroles'] = $UserContainerRolesTable->getContainerRoleByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     // label Type_#Id
                     $containers[$index]['childsElements']['hostdependencies'] = $HostdependenciesTable->getHostdependenciesByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
                     $containers[$index]['childsElements']['hostescalations'] = $HostescalationsTable->getHostescalationsByContainerIdExact($container['id'], 'list', 'id', $MY_RIGHTS);
@@ -1039,7 +1074,7 @@ class ContainersTable extends Table {
             'timeperiods'            => __('Time periods'),
             'grafana_userdashboards' => __('Grafana user dashboards'),
             'users'                  => __('Users'),
-            'usercontainerroles'    =>  __('User container roles')
+            'usercontainerroles'     => __('User container roles')
         ];
 
 

@@ -419,7 +419,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                     <div class="col-lg-12 copy-to-clipboard-container" style="display: block; position: relative;">
                         <?php if ($LsbRelease->isDebianBased()): ?>
                             <div class="bg-color-black txt-color-white code-font padding-7 packetmanager-selection">
-                                sudo apt-get update && apt-get dist-upgrade
+                                sudo apt-get update && sudo apt-get dist-upgrade
                                 <br>
                                 sudo apt-get install <span ng-bind-html="getCliCommand() | trustAsHtml"></span>
                                 \ <br>

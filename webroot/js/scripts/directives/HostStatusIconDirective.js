@@ -67,7 +67,8 @@ angular.module('openITCOCKPIT').directive('hoststatusicon', function($interval){
                     default:
                         $scope.btnColor = 'primary';
                         $scope.flappingColor = 'text-primary';
-                        $scope.humanState = $scope.humanState || 'unknown';
+                        $scope.isHardstate = null;
+                        $scope.humanState = $scope.humanState || 'not in monitoring';
                 }
 
                 // Ouptut no state type by default.

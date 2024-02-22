@@ -17,8 +17,11 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
             };
 
             /** private vars **/
-            var $widget = $('#widget-' + $scope.widget.id);
             var $widgetContent = $('#widget-content-' + $scope.widget.id);
+            var $widget = $('#widget-' + $scope.widget.id);
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
+
             var timer = {
                 red: null,
                 yellow: null,
@@ -141,7 +144,7 @@ angular.module('openITCOCKPIT').directive('trafficlightWidget', function($http){
 
                 if($scope.Service.isEVCService){
                     if($scope.ACL.evc.view){
-                        return '/eventcorrelation_module/eventcorrelations/view/' + $scope.Host.id
+                        return '/#!/eventcorrelation_module/eventcorrelations/view/' + $scope.Host.id
                     }
 
                     if($scope.ACL.services.index){

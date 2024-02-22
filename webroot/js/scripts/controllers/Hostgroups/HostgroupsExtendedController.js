@@ -100,6 +100,9 @@ angular.module('openITCOCKPIT')
                         1: true,
                         2: true
                     };
+
+                    $scope.loadAdditionalInformation();
+
                 });
             }
         };
@@ -111,6 +114,17 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.timezone = result.data.timezone;
+            });
+        };
+
+        $scope.loadAdditionalInformation = function(){
+            $http.get("/hostgroups/loadAdditionalInformation/.json", {
+                params: {
+                    'id': $scope.post.Hostgroup.id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.AdditionalInformationExists = result.data.AdditionalInformationExists;
             });
         };
 
