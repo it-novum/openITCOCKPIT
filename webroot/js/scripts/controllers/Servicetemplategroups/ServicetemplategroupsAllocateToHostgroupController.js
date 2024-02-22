@@ -160,6 +160,14 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.handleHostSelect = function(hostIndex, areAllCreateServiceOnTargetHostTrue, services){
+
+            for(var serviceIndex in services){
+                $scope.hostsWithServicesToDeploy[hostIndex].services[serviceIndex].createServiceOnTargetHost = !areAllCreateServiceOnTargetHostTrue;
+            }
+
+        }
+
         $scope.loadServicetemplategroups('', $scope.id);
         $scope.loadHostgroups('', $scope.hostgroupId);
 
@@ -182,6 +190,34 @@ angular.module('openITCOCKPIT')
             //HostgroupId was passed via URL
             //ServicetemplategroupId was 0
             $scope.loadServices();
+        }, true);
+
+        $scope.$watch('hostsWithServicesToDeploy', function(oldValues, newValues){
+            if($scope.init){
+                return;
+            }
+
+            for(var hostIndex in $scope.hostsWithServicesToDeploy){
+
+                //parent checkbox will be handled by handleHostSelect() to prevent loop behavior
+                if(typeof oldValues === "undefined" && newValues[hostIndex].areAllCreateServiceOnTargetHostTrue !== oldValues[hostIndex].areAllCreateServiceOnTargetHostTrue){
+                    continue;
+                }
+
+                var areAllSelected = true;
+                for(var serviceIndex in $scope.hostsWithServicesToDeploy[hostIndex].services){
+
+                    if($scope.hostsWithServicesToDeploy[hostIndex].services[serviceIndex].createServiceOnTargetHost === false){
+                        $scope.hostsWithServicesToDeploy[hostIndex].areAllCreateServiceOnTargetHostTrue = false;
+                        areAllSelected = false;
+                        continue;
+                    }
+                }
+                if(areAllSelected === true){
+                    $scope.hostsWithServicesToDeploy[hostIndex].areAllCreateServiceOnTargetHostTrue = true;
+                }
+            }
+
         }, true);
 
     });
