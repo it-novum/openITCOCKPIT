@@ -94,6 +94,7 @@ endif;
 
 <?php /* <<<<<<< HEAD */ ?>
 <login-layout></login-layout>
+<!-- todo restore custom bg upload -->
 <?php /*=======
 <div class="peers ai-s fxw-nw h-100vh" ng-controller="LoginLayoutController">
 
