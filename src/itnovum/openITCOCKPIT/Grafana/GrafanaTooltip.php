@@ -36,15 +36,4 @@ class GrafanaTooltip {
         self::SHARED_TOOLTIP,
     ];
 
-    public static function fromSetup(): int {
-        switch ($a) {
-            case 1;
-                return self::SHARED_CROSSHAIR;
-            case 2;
-                return self::SHARED_TOOLTIP;
-            case 0;
-            default:
-                return self::DEFAULT;
-        }
-    }
 }
