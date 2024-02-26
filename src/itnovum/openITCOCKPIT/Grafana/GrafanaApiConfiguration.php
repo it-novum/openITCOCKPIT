@@ -373,13 +373,15 @@ class GrafanaApiConfiguration {
         }
     }
 
-    public function getIframeUrlForUserDashboard($url, $timerange = null, $autorefresh = '0') {
+    public function getIframeUrlForUserDashboard($url, $timerange = null, $autorefresh = null) {
         //&kiosk=tv require Grafana 5.3+ to work
         //https://github.com/grafana/grafana/issues/13493
         //Since Grafana 5.3, users can escape the &kiosk mode by pressing esc key.
         //Also &kiosk=tv is not very helpful. So we implemented an datepicker for now.
 
         $timerange = $timerange ?? $this->range ?? 'now-3h';
+        $autorefresh = $autorefresh ?? $this->refresh ?? '0';
+
 
         $autoRefreshUrlStr = '';
         if ($autorefresh !== 0 && $autorefresh !== '0') {
