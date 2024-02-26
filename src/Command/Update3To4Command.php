@@ -314,7 +314,7 @@ class Update3To4Command extends Command {
             $Mailer->setEmailFormat('text');
             $Mailer->setAttachments([
                 'logo.png' => [
-                    'file'      => $Logo->getSmallLogoDiskPath(),
+                    'file'      => $Logo->getSmallLogoPdfPath(),
                     'mimetype'  => 'image/png',
                     'contentId' => '100'
                 ]
@@ -1451,7 +1451,7 @@ class Update3To4Command extends Command {
         $partitionsInNdoSchema = $query->fetchAll('assoc');
 
         $query = $Connection->execute("
-                SELECT *   
+                SELECT *
                 FROM information_schema.partitions
                 WHERE TABLE_SCHEMA = :databaseName
                 AND TABLE_NAME = :tableName
