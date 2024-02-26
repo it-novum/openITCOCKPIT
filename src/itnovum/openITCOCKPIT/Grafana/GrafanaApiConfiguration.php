@@ -27,6 +27,8 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaTooltip;
+
 class GrafanaApiConfiguration {
     /**
      * @var string
@@ -82,6 +84,9 @@ class GrafanaApiConfiguration {
      * @var null|string
      */
     private $grafana_uid = null;
+    private $graphTooltip;
+    private $range;
+    private $refresh;
 
     /**
      * GrafanaConfiguration constructor.
@@ -270,6 +275,25 @@ class GrafanaApiConfiguration {
         $this->hostUuid = $uuid;
     }
 
+    final public function setRefresh(string $refresh): void {
+        $this->refresh = $refresh;
+    }
+
+    final public function setRange(string $range): void {
+        $this->range = $range;
+    }
+
+    /**
+     * @param int $graphTooltip
+     * @return void
+     */
+    final public function setGraphTooltip(int $graphTooltip): void {
+        if (!in_array($graphTooltip, GrafanaTooltip::ALL, true)) {
+            return;
+        }
+        $this->graphTooltip = $graphTooltip;
+    }
+
     /**
      * @param string
      */
@@ -349,11 +373,13 @@ class GrafanaApiConfiguration {
         }
     }
 
-    public function getIframeUrlForUserDashboard($url, $timerange = 'now-3h', $autorefresh = '0') {
+    public function getIframeUrlForUserDashboard($url, $timerange = null, $autorefresh = '0') {
         //&kiosk=tv require Grafana 5.3+ to work
         //https://github.com/grafana/grafana/issues/13493
         //Since Grafana 5.3, users can escape the &kiosk mode by pressing esc key.
         //Also &kiosk=tv is not very helpful. So we implemented an datepicker for now.
+
+        $timerange = $timerange ?? $this->range ?? 'now-3h';
 
         $autoRefreshUrlStr = '';
         if ($autorefresh !== 0 && $autorefresh !== '0') {

@@ -27,6 +27,8 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
+
 class GrafanaTargetPrometheus implements GrafanaTargetInterface {
 
     /**
@@ -54,6 +56,9 @@ class GrafanaTargetPrometheus implements GrafanaTargetInterface {
      */
     private $color = null;
 
+    /** @var PerformanceDataSetup|null */
+    private $setup = null;
+
     /**
      * GrafanaTargetPrometheus constructor.
      * @param $target
@@ -62,12 +67,13 @@ class GrafanaTargetPrometheus implements GrafanaTargetInterface {
      * @param null $alias
      * @param null|string $color
      */
-    public function __construct($promql, GrafanaTargetUnit $grafanaTargetUnit, GrafanaThresholds $grafanaThresholds, $alias = null, $color = null) {
+    public function __construct($promql, GrafanaTargetUnit $grafanaTargetUnit, GrafanaThresholds $grafanaThresholds, $alias = null, $color = null, ?PerformanceDataSetup $setup= null) {
         $this->promql = $promql;
         $this->unit = $grafanaTargetUnit;
         $this->thresholds = $grafanaThresholds;
         $this->alias = $alias;
         $this->color = $color;
+        $this->setup = $setup;
     }
 
     /**
@@ -111,6 +117,13 @@ class GrafanaTargetPrometheus implements GrafanaTargetInterface {
      */
     public function getColor() {
         return $this->color;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSetup(): ?PerformanceDataSetup {
+        return $this->setup;
     }
 
     /**
