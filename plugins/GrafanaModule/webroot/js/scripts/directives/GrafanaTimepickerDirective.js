@@ -9,10 +9,9 @@ angular.module('openITCOCKPIT').directive('grafanaTimepicker', function($http){
         },
         controller: function($scope){
             // Either fetch values from parameters, or use default.
-            $scope.selectedTimerange   =  $scope.selectedTimerange || 'now-3h';
-            $scope.selectedAutoRefresh =   $scope.selectedAutoRefresh || '1m';
-            $scope.init                = true;
-
+            $scope.selectedTimerange = $scope.selectedTimerange || 'now-3h';
+            $scope.selectedAutoRefresh = $scope.selectedAutoRefresh || '1m';
+            $scope.init = true;
 
             $scope.load = function(){
                 $http.get("/grafana_module/grafana_userdashboards/grafanaTimepicker.json", {
@@ -28,31 +27,35 @@ angular.module('openITCOCKPIT').directive('grafanaTimepicker', function($http){
             };
 
             $scope.changeAutoRefresh = function(urlKey){
+                $scope.updateNames();
                 $scope.selectedAutoRefresh = urlKey;
                 $scope.callback($scope.selectedTimerange, $scope.selectedAutoRefresh);
             };
 
             $scope.changeTimerange = function(urlKey){
+                $scope.updateNames();
                 $scope.selectedTimerange = urlKey;
                 $scope.callback($scope.selectedTimerange, $scope.selectedAutoRefresh);
             };
 
-            $scope.updateNames = function() {
-                for (let index in $scope.timeranges) {
+            $scope.updateNames = function(){
+                for(let index in $scope.timeranges){
                     let list = $scope.timeranges[index];
-                    for (let value in list) {
+                    for(let value in list){
                         let name = $scope.timeranges[index][value];
-                        if (value === $scope.selectedTimerange) {
+                        if(value === $scope.selectedTimerange){
                             $scope.humanTimerange = name;
                         }
-                        if (value === $scope.selectedAutoRefresh) {
+                        if(value === $scope.selectedAutoRefresh){
                             $scope.humanAutoRefresh = name;
                         }
                     }
                 }
             }
-
             $scope.$watchGroup(['selectedTimerange', 'selectedAutoRefresh'], function(){
+                if($scope.init){
+                    return;
+                }
                 $scope.updateNames();
             });
             $scope.load();
