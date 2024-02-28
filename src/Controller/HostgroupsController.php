@@ -36,7 +36,6 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\HostgroupsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
-use App\Model\Table\HosttemplatesToHostgroupsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
@@ -818,35 +817,6 @@ class HostgroupsController extends AppController {
 
             $hostEntity = $HostsTable->patchEntity($hostEntity, $patch);
             $HostsTable->save($hostEntity);
-        }
-
-        $fakeRequest = [
-            'Hostgroup' => [
-                'hosts' => [
-                    '_ids' => $hostIdsToSave
-                ]
-            ]
-        ];
-
-        //No errors
-        /** @var  ChangelogsTable $ChangelogsTable */
-        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-        $changelog_data = $ChangelogsTable->parseDataForChangelog(
-            'edit',
-            'hostgroups',
-            $hostGroupId,
-            OBJECT_HOSTGROUP,
-            $hostgroup['Hostgroup']['container']['parent_id'],
-            $User->getId(),
-            $hostgroup['Hostgroup']['container']['name'],
-            array_merge($HostgroupsTable->resolveDataForChangelog($fakeRequest), $fakeRequest),
-            array_merge($HostgroupsTable->resolveDataForChangelog($hostgroupForChangelog), $hostgroupForChangelog)
-        );
-        if ($changelog_data) {
-            /** @var Changelog $changelogEntry */
-            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-            $ChangelogsTable->save($changelogEntry);
         }
 
     }
