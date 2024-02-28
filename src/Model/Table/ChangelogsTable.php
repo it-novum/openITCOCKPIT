@@ -254,7 +254,7 @@ class ChangelogsTable extends Table {
                 'CheckPeriod'                                    => '{(id|name)}',
                 'NotifyPeriod'                                   => '{(id|name)}',
                 'CheckCommand'                                   => '{(id|name)}',
-                'Hosttemplate.customvariables'                   => '{n}.{(id|name|value)}',
+                'Hosttemplate.customvariables'                   => '{n}.{(id|name|value|password)}',
                 'Hosttemplate.hosttemplatecommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                        => '{n}.{(id|name)}',
                 'Contactgroup'                                   => '{n}.{(id|name)}',
@@ -266,7 +266,7 @@ class ChangelogsTable extends Table {
                 'NotifyPeriod'                                              => '{(id|name)}',
                 'CheckCommand'                                              => '{(id|name)}',
                 'EventhandlerCommand'                                       => '{(id|name)}',
-                'Servicetemplate.customvariables'                           => '{n}.{(id|name|value)}',
+                'Servicetemplate.customvariables'                           => '{n}.{(id|name|value|password)}',
                 'Servicetemplate.servicetemplatecommandargumentvalues'      => '{n}.{(id|value)}',
                 'Servicetemplate.servicetemplateeventcommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                                   => '{n}.{(id|name)}',
@@ -292,7 +292,7 @@ class ChangelogsTable extends Table {
                 'CheckCommand'                   => '{(id|name)}',
                 'Hostgroup'                      => '{n}.{(id|name)}',
                 'Parenthost'                     => '{n}.{(id|name)}',
-                'Host.customvariables'           => '{n}.{(id|name|value)}',
+                'Host.customvariables'           => '{n}.{(id|name|value|password)}',
                 'Host.hostcommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                        => '{n}.{(id|name)}',
                 'Contactgroup'                   => '{n}.{(id|name)}',
@@ -305,7 +305,7 @@ class ChangelogsTable extends Table {
                 'NotifyPeriod'                              => '{(id|name)}',
                 'CheckCommand'                              => '{(id|name)}',
                 'Servicegroup'                              => '{n}.{(id|name)}',
-                'Service.customvariables'                   => '{n}.{(id|name|value)}',
+                'Service.customvariables'                   => '{n}.{(id|name|value|password)}',
                 'Service.servicecommandargumentvalues'      => '{n}.{(id|value)}',
                 'Service.serviceeventcommandargumentvalues' => '{n}.{(id|value)}',
                 'Contact'                                   => '{n}.{(id|name)}',
@@ -749,6 +749,9 @@ class ChangelogsTable extends Table {
                     if (empty($changes['before']) && !empty($changes['after'])) {
                         //All changes are new/added (fields where empty before)
                         foreach ($changes['after'] as $fieldName => $fieldValue) {
+                            if ($fieldName === 'id') {
+                                continue;
+                            }
                             $diffs[$fieldName] = [
                                 'old' => '',
                                 'new' => is_array($fieldValue) ? Hash::remove($fieldValue, 'id') : $fieldValue,
@@ -784,6 +787,7 @@ class ChangelogsTable extends Table {
                         } else {
                             $idsBeforeSave = Hash::extract($changes['before'], '{n}.id');
                             $idsAfterSave = Hash::extract($changes['after'], '{n}.id');
+
                             if (!empty($idsBeforeSave) || !empty($idsAfterSave)) {
                                 foreach ($idsBeforeSave as $id) {
                                     if (!in_array($id, $idsAfterSave, true)) {
@@ -799,10 +803,13 @@ class ChangelogsTable extends Table {
                                             'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
                                         ];
                                     }
+                                    if (($key = array_search($id, $idsAfterSave)) !== false) {
+                                        unset($idsAfterSave[$key]);
+                                    }
                                 }
+
                                 foreach ($idsAfterSave as $id) {
                                     if (!in_array($id, $idsBeforeSave, true)) {
-                                        //dd('hier');
                                         //Object got added
                                         $diffs[] = [
                                             'old' => null,
@@ -864,6 +871,15 @@ class ChangelogsTable extends Table {
                             }
                         }
                     }
+                    if ($isArray) {
+                        if (!empty(Hash::extract($diffs, '{n}.old[password=1].value'))) {
+                            $diffs = Hash::insert($diffs, '{n}.old[password=1].value', '🤫');
+                        }
+                        if (!empty(Hash::extract($diffs, '{n}.new[password=1].value'))) {
+                            $diffs = Hash::insert($diffs, '{n}.new[password=1].value', '🤫');
+                        }
+                    }
+
                     $dataUnserialized[$index][$tableName] = [
                         'data'    => $diffs,
                         'isArray' => $isArray
@@ -871,6 +887,7 @@ class ChangelogsTable extends Table {
                 }
             }
         }
+        $dataUnserialized = Hash::insert($dataUnserialized, '{n}.{s}.data.{n}[password=1].value', '🤫');
         return $dataUnserialized;
     }
 }

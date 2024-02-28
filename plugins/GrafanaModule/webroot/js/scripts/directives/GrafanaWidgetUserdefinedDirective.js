@@ -14,6 +14,8 @@ angular.module('openITCOCKPIT').directive('grafanaWidgetUserdefined', function($
                 iframe_url: ''
             };
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
 
             $scope.load = function(){
                 $http.get("/grafana_module/grafana_userdashboards/grafanaWidget.json", {

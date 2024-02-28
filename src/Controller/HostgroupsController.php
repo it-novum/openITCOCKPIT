@@ -39,10 +39,12 @@ use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\HosttemplatesToHostgroupsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Cache\Cache;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use ImportModule\Model\Table\ImportedHostgroupsTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostConditions;
@@ -1102,6 +1104,52 @@ class HostgroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
 
+    public function loadHostgroupsByStringAndContainers() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->getQuery('selected');
+        $containerId = (int)$this->request->getQuery('containerId');
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        $tenantContainerIds = [];
+
+        foreach ($containerIds as $container_id) {
+            if ($container_id != ROOT_CONTAINER) {
+                // Get contaier id of the tenant container
+                // $container_id is may be a location, devicegroup or whatever, so we need to container id of the tenant container to load contactgroups and contacts
+                $path = $ContainersTable->getPathByIdAndCacheResult($container_id, 'HostgroupHostgroupsByContainerIdAjax');
+
+                // Tenant host groups are available for all users of a tenant (oITC V2 legacy)
+                $tenantContainerIds[] = $path[1]['id'];
+            } else {
+                $tenantContainerIds[] = ROOT_CONTAINER;
+            }
+        }
+        $tenantContainerIds = array_unique($tenantContainerIds);
+        $containerIds = array_unique(array_merge($tenantContainerIds, $containerIds));
+
+
+        $HostgroupFilter = new HostgroupFilter($this->request);
+
+        $HostgroupCondition = new HostgroupConditions($HostgroupFilter->indexFilter());
+        $HostgroupCondition->setContainerIds($containerIds);
+
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $hostgroups = Api::makeItJavaScriptAble(
+            $HostgroupsTable->getHostgroupsForAngular($HostgroupCondition, $selected, true)
+        );
+
+        $this->set('hostgroups', $hostgroups);
+        $this->viewBuilder()->setOption('serialize', ['hostgroups']);
+    }
+
     public function loadHostgroupsByContainerId() {
         if (!$this->isApiRequest()) {
             throw new MethodNotAllowedException();
@@ -1135,5 +1183,24 @@ class HostgroupsController extends AppController {
 
         $this->set('hostgroups', $hostgroups);
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
+    }
+
+    public function loadAdditionalInformation() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $id = $this->request->getQuery('id');
+
+        $additionalInformationExists = false;
+
+        if (Plugin::isLoaded('ImportModule')) {
+            /** @var ImportedHostgroupsTable $ImportedHostgroupsTable */
+            $ImportedHostgroupsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHostgroups');
+            $additionalInformationExists = $ImportedHostgroupsTable->existsImportedHostgroupByHostgroupId($id);
+        }
+
+        $this->set('AdditionalInformationExists', $additionalInformationExists);
+        $this->viewBuilder()->setOption('serialize', ['AdditionalInformationExists']);
     }
 }

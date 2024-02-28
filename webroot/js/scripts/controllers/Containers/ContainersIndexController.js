@@ -208,6 +208,21 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.submit = function(){
+            var containerType = parseInt($scope.post.Container.containertype_id, 10);
+            switch(containerType){
+                case 2: // Tenant
+                    $scope.saveTenant();
+                    break;
+                case 3: // Location
+                    $scope.saveLocation();
+                    break;
+                case 5: // Node
+                    $scope.saveNode();
+                    break;
+            }
+        };
+
         $scope.load();
 
         $scope.$watch('selectedContainer.id', function(){

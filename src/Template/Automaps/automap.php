@@ -27,15 +27,19 @@
 <div class="panel-container show">
     <div class="panel-content">
         <div class="row no-gutters">
-            <div class="col-xs-12 col-md-5">
+            <div class="col-xs-12 col-md-3">
                 <strong><?php echo __('Regular expression for hosts') ?>:</strong>
                 <code>{{ automap.host_regex }}</code>
             </div>
-            <div class="col-xs-12 col-md-5">
+            <div class="col-xs-12 col-md-3">
+                <strong><?php echo __('Regular expression for host groups') ?>:</strong>
+                <code>{{ automap.hostgroup_regex }}</code>
+            </div>
+            <div class="col-xs-12 col-md-3">
                 <strong><?php echo __('Regular expression for services') ?>:</strong>
                 <code>{{ automap.service_regex }}</code>
             </div>
-            <div class="col-xs-12 col-md-2">
+            <div class="col-xs-12 col-md-3">
                 <strong><?php echo __('Recursive') ?>:</strong>
                 <span class="badge badge-danger"
                       ng-hide="automap.recursive">

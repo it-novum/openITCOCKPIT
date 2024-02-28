@@ -1269,12 +1269,12 @@ div.packetmanager-selection > span::selection {
     background: linear-gradient(0deg, #f00 0%, #ffa700 100%) !important;
 }
 
-.bg-diff-info{
+.bg-diff-info {
     background: rgba(164, 222, 243, 0.27)
 }
 
-.bg-diff-primary{
-    background: rgba(66,133,244, 0.27);
+.bg-diff-primary {
+    background: rgba(66, 133, 244, 0.27);
 }
 
 .bg-diff-green {
@@ -1282,13 +1282,60 @@ div.packetmanager-selection > span::selection {
 }
 
 .bg-diff-red {
-background: rgba(255, 77, 77, 0.27)
+    background: rgba(255, 77, 77, 0.27)
 }
 
 .border-secondary-with-20-opacity {
     border-color: #6c757d33 !important;
 }
 
-.bg-panel-default{
+.bg-panel-default {
     background-color: #FFF;
+}
+
+.tab-allocated {
+    color: #00acc1!important;
+}
+
+.tab-shared-and-allocated-gradient {
+    background: -webkit-linear-gradient(to right, #00acc1 0%, #4285F4 100%);
+    background: -moz-linear-gradient(to right, #00acc1 0%, #4285F4 100%);
+    background: linear-gradient(to right, #00acc1 0%, #4285F4 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+/* Status pages */
+
+.statuspage-bg-primary {
+    background: linear-gradient(0deg, #5a95f5 0%, #4285F4 100%);
+}
+
+.statuspage-bg-success, .statuspage-bg-ok, .statuspage-bg-up {
+    background: linear-gradient(0deg, #00C851 0%, #00af47 100%);
+}
+
+.statuspage-bg-warning {
+    background: linear-gradient(0deg, #ffbb33 0%, #ffb31a 100%);
+}
+
+.statuspage-bg-critical, .statuspage-bg-down {
+    background: linear-gradient(0deg, #ff4d4d 0%, #CC0000 100%);
+}
+
+.statuspage-bg-unknown, .statuspage-bg-unreachable {
+    background: linear-gradient(0deg, #727b84 0%, #6c757d 100%);
+}
+
+.statuspage-icon {
+    font-size: 3.5rem;
+    text-shadow: -1px -1px 0px rgba(255, 255, 255, 0.3), 1px 1px 0px rgba(0, 0, 0, 0.8);
+}
+
+.statuspage-item-box {
+    background: #4285F408;
+    background-clip: content-box;
+}
+
+.warning-icon-gray {
+    filter: grayscale(100%);
 }

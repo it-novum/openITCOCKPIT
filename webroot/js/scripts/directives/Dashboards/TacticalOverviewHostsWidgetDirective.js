@@ -11,8 +11,11 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
             $scope.init = true;
             $scope.hoststatusSummary = null;
 
-            var $widget = $('#widget-' + $scope.widget.id);
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
+
+            var $widget = $('#widget-' + $scope.widget.id);
             $scope.hostListTimeout = null;
 
 

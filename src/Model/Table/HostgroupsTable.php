@@ -7,6 +7,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Hostgroup;
+use Cake\Database\Expression\Comparison;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
@@ -14,6 +15,7 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
@@ -72,6 +74,13 @@ class HostgroupsTable extends Table {
             'joinTable'        => 'hosttemplates_to_hostgroups',
             'saveStrategy'     => 'replace'
         ]);
+        $this->belongsToMany('Statuspages', [
+            'className'        => 'Statuspages',
+            'foreignKey'       => 'hostgroup_id',
+            'targetForeignKey' => 'statuspage_id',
+            'joinTable'        => 'statuspages_to_hostgroups',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
     }
 
     /**
@@ -297,9 +306,10 @@ class HostgroupsTable extends Table {
 
     /**
      * @param array $dataToParse
-     * @return array
+     * @param ObjectsCache|null $Cache
+     * @return array|array[]
      */
-    public function resolveDataForChangelog($dataToParse = []) {
+    public function resolveDataForChangelog($dataToParse = [], ?ObjectsCache $Cache = null) {
         $extDataForChangelog = [
             'Host'         => [],
             'Hosttemplate' => [],
@@ -311,20 +321,52 @@ class HostgroupsTable extends Table {
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
         if (!empty($dataToParse['Hostgroup']['hosts']['_ids'])) {
-            foreach ($HostsTable->getHostsAsList($dataToParse['Hostgroup']['hosts']['_ids']) as $hostId => $hostName) {
-                $extDataForChangelog['Host'][] = [
-                    'id'   => $hostId,
-                    'name' => $hostName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($HostsTable->getHostsAsList($dataToParse['Hostgroup']['hosts']['_ids']) as $hostId => $hostName) {
+                    $extDataForChangelog['Host'][] = [
+                        'id'   => $hostId,
+                        'name' => $hostName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Hostgroup']['hosts']['_ids'] as $hostId) {
+                    if (!$Cache->has(OBJECT_HOST, $hostId)) {
+                        foreach ($HostsTable->getHostsAsList($hostId) as $hostName) {
+                            $Cache->set(OBJECT_HOST, $hostId, [
+                                'id'   => $hostId,
+                                'name' => $hostName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Host'][] = $Cache->get(OBJECT_HOST, $hostId);
+                }
             }
         }
 
         if (!empty($dataToParse['Hostgroup']['hosttemplates']['_ids'])) {
-            foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Hostgroup']['hosttemplates']['_ids']) as $hosttemplateId => $hosttemplateName) {
-                $extDataForChangelog['Hosttemplate'][] = [
-                    'id'   => $hosttemplateId,
-                    'name' => $hosttemplateName
-                ];
+            if ($Cache === null) {
+                // Legacy - no caching
+                foreach ($HosttemplatesTable->getHosttemplatesAsList($dataToParse['Hostgroup']['hosttemplates']['_ids']) as $hosttemplateId => $hosttemplateName) {
+                    $extDataForChangelog['Hosttemplate'][] = [
+                        'id'   => $hosttemplateId,
+                        'name' => $hosttemplateName
+                    ];
+                }
+            } else {
+                // Used the passed Cache instance
+                foreach ($dataToParse['Hostgroup']['hosttemplates']['_ids'] as $hosttemplateId) {
+                    if (!$Cache->has(OBJECT_HOSTTEMPLATE, $hosttemplateId)) {
+                        foreach ($HosttemplatesTable->getHosttemplatesAsList($hosttemplateId) as $hosttemplateName) {
+                            $Cache->set(OBJECT_HOSTTEMPLATE, $hosttemplateId, [
+                                'id'   => $hosttemplateId,
+                                'name' => $hosttemplateName
+                            ]);
+                        }
+                    }
+                    $extDataForChangelog['Hosttemplate'][] = $Cache->get(OBJECT_HOSTTEMPLATE, $hosttemplateId);
+                }
             }
         }
 
@@ -371,9 +413,10 @@ class HostgroupsTable extends Table {
 
     /**
      * @param int $id
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getHostgroupByIdForMapeditor($id) {
+    public function getHostgroupByIdForMapeditor($id, $MY_RIGHTS = []) {
         $query = $this->find()
             ->contain([
                 'Containers'    => function (Query $q) {
@@ -382,8 +425,16 @@ class HostgroupsTable extends Table {
                         'Containers.name'
                     ]);
                 },
-                'Hosts'         => function (Query $q) {
-                    return $q->contain([
+                'Hosts'         => function (Query $q) use ($MY_RIGHTS) {
+                    if (!empty($MY_RIGHTS)) {
+                        $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.host_id = Hosts.id'
+                        ]);
+                        $q->where([
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
+                    $q->contain([
                         'HostsToContainersSharing',
                         'Services' => function (Query $q) {
                             return $q->where([
@@ -398,14 +449,24 @@ class HostgroupsTable extends Table {
                     ])->where([
                         'Hosts.disabled' => 0
                     ]);
+                    return $q;
                 },
-                'Hosttemplates' => function (Query $q) {
+                'Hosttemplates' => function (Query $q) use ($MY_RIGHTS) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'id'
                         ])
                         ->contain([
-                            'Hosts' => function (Query $query) {
+                            'Hosts' => function (Query $query) use ($MY_RIGHTS) {
+                                if (!empty($MY_RIGHTS)) {
+                                    $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                        'HostsToContainersSharing.host_id = Hosts.id'
+                                    ]);
+                                    $query->where([
+                                        'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                    ]);
+                                }
+
                                 $query
                                     ->disableAutoFields()
                                     ->select([
@@ -504,10 +565,16 @@ class HostgroupsTable extends Table {
                 ])
                 ->where([
                     'Hostgroups.id IN' => $selected
-                ])
-                ->order([
-                    'Containers.name' => 'asc'
-                ])
+                ]);
+
+            if (!empty($HostgroupConditions->getContainerIds())) {
+                $query->where([
+                    'Containers.parent_id IN' => $HostgroupConditions->getContainerIds()
+                ]);
+            }
+            $query->order([
+                'Containers.name' => 'asc'
+            ])
                 ->limit(ITN_AJAX_LIMIT)
                 ->disableHydration()
                 ->all();
@@ -778,8 +845,8 @@ class HostgroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Hosts'         => function (Query $q) {
-                    return $q->enableAutoFields(false)
+                'Hosts'         => function (Query $q) use ($MY_RIGHTS) {
+                    $q->enableAutoFields(false)
                         ->select([
                             'Hosts.id',
                             'Hosts.uuid',
@@ -787,14 +854,24 @@ class HostgroupsTable extends Table {
                             'Hosts.description'
                         ])
                         ->contain(['HostsToContainersSharing']);
+
+                    if (!empty($MY_RIGHTS)) {
+                        $q->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                            'HostsToContainersSharing.host_id = Hosts.id'
+                        ]);
+                        $q->where([
+                            'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                        ]);
+                    }
+                    return $q;
                 },
-                'Hosttemplates' => function (Query $q) {
+                'Hosttemplates' => function (Query $q) use ($MY_RIGHTS) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'id'
                         ])
                         ->contain([
-                            'Hosts' => function (Query $query) {
+                            'Hosts' => function (Query $query) use ($MY_RIGHTS) {
                                 $query
                                     ->disableAutoFields()
                                     ->select([
@@ -804,6 +881,16 @@ class HostgroupsTable extends Table {
                                         'Hosts.hosttemplate_id'
                                     ])
                                     ->contain(['HostsToContainersSharing']);
+
+                                if (!empty($MY_RIGHTS)) {
+                                    $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                                        'HostsToContainersSharing.host_id = Hosts.id'
+                                    ]);
+                                    $query->where([
+                                        'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+                                    ]);
+                                }
+
                                 $query
                                     ->leftJoinWith('Hostgroups')
                                     ->whereNull('Hostgroups.id');
@@ -870,7 +957,11 @@ class HostgroupsTable extends Table {
             ])
             ->where($where)
             ->disableHydration()
-            ->firstOrFail();
+            ->first();
+
+        if ($hostgroup === null) {
+            return [];
+        }
 
         return array_unique(array_merge(
             Hash::extract($hostgroup, 'hosts.{n}.id'),
@@ -933,6 +1024,62 @@ class HostgroupsTable extends Table {
         ));
 
         return $hostIds;
+    }
+
+    /**
+     * @param string $hostgroupRegex
+     * @return array
+     */
+    public function getHostIdsByHostgroupNameRegex($hostgroupRegex, $containerIds) {
+        $hostGroupIds = $this->getHostgroupIdsByNameRegex($hostgroupRegex, $containerIds);
+        $allHostIdsArray = [];
+        foreach ($hostGroupIds as $hostGroupId) {
+            $hostIds = $this->getHostIdsByHostgroupId($hostGroupId);
+            foreach ($hostIds as $hostId) {
+                $allHostIdsArray[$hostId] = $hostId;
+            }
+        }
+        return $allHostIdsArray;
+
+    }
+
+    /**
+     * @param string $hostgroupRegex
+     * @param array|mixed $containerIds
+     * @param @param string $type (all or count, list is NOT supported!)
+     * @return array|int
+     */
+    public function getHostgroupIdsByNameRegex(string $hostgroupRegex, $containerIds, $type = 'all') {
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $query = $this->find()
+            ->select([
+                'Hostgroups.id',
+            ])
+            ->contain(['Containers'])
+            ->where(['Containers.parent_id IN' => $containerIds])
+            ->disableHydration();
+        $where = [];
+
+        if ($this->isValidRegularExpression($hostgroupRegex)) {
+            $where[] = new Comparison(
+                'Containers.name',
+                $hostgroupRegex,
+                'string',
+                'RLIKE'
+            );
+        }
+
+        if (!empty($where)) {
+            $query->andWhere($where);
+        }
+        if ($type === 'count') {
+            return $query->count();
+        }
+
+        $result = $query->all();
+        return $this->emptyArrayIfNull(Hash::extract($result->toArray(), '{n}.id'));
     }
 
     /**
@@ -1412,11 +1559,12 @@ class HostgroupsTable extends Table {
      *  ▲ ▲ ▲ READ THIS ▲ ▲ ▲
      *
      * @param Hostgroup $entity The entity that will be saved by the Table
-     * @param array $hostgroup The contactgroup as array ( [ Contactgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $hostgroup The hostgroup as array ( [ Hostgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
      * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @param ObjectsCache|null $Cache
      * @return Hostgroup
      */
-    public function createHostgroup(Hostgroup $entity, array $hostgroup, int $userId): Hostgroup {
+    public function createHostgroup(Hostgroup $entity, array $hostgroup, int $userId, ?ObjectsCache $Cache = null): Hostgroup {
         $this->save($entity);
         if ($entity->hasErrors()) {
             // We have some validation errors
@@ -1428,7 +1576,7 @@ class HostgroupsTable extends Table {
         /** @var ChangelogsTable $ChangelogsTable */
         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-        $extDataForChangelog = $this->resolveDataForChangelog($hostgroup);
+        $extDataForChangelog = $this->resolveDataForChangelog($hostgroup, $Cache);
 
         $changelog_data = $ChangelogsTable->parseDataForChangelog(
             'add',
@@ -1460,9 +1608,10 @@ class HostgroupsTable extends Table {
      * @param array $newHostgroup The new hostgroup as array ( [ Hostgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
      * @param array $oldHostgroup The old hostgroup as array ( [ Hostgroup => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
      * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @param ObjectsCache|null $Cache
      * @return Hostgroup
      */
-    public function updateHostgroup(Hostgroup $entity, array $newHostgroup, array $oldHostgroup, int $userId): Hostgroup {
+    public function updateHostgroup(Hostgroup $entity, array $newHostgroup, array $oldHostgroup, int $userId, ?ObjectsCache $Cache = null): Hostgroup {
         $this->save($entity);
         if ($entity->hasErrors()) {
             // We have some validation errors
@@ -1482,8 +1631,8 @@ class HostgroupsTable extends Table {
             $entity->get('container')->get('parent_id'),
             $userId,
             $entity->get('container')->get('name'),
-            array_merge($this->resolveDataForChangelog($newHostgroup), $newHostgroup),
-            array_merge($this->resolveDataForChangelog($oldHostgroup), $oldHostgroup)
+            array_merge($this->resolveDataForChangelog($newHostgroup, $Cache), $newHostgroup),
+            array_merge($this->resolveDataForChangelog($oldHostgroup, $Cache), $oldHostgroup)
         );
 
         if ($changelog_data) {
@@ -1493,5 +1642,100 @@ class HostgroupsTable extends Table {
         }
 
         return $entity;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostUudsAndServiceUuidsByHostgroupId($id) {
+        $hostgroup = $this->find()
+            ->contain([
+                // Get all hosts that are in this host group through the host template AND
+                // which does NOT have any own host groups
+                'Hosttemplates' => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'id',
+                        ])
+                        ->contain([
+                            'Hosts' => function (Query $query) {
+                                $query->disableAutoFields()
+                                    ->select([
+                                        'Hosts.id',
+                                        'Hosts.uuid',
+                                        'Hosts.hosttemplate_id',
+                                        'Hostgroups.id'
+                                    ])
+                                    ->contain([
+                                        'Services' => function (Query $query) {
+                                            return $query->select([
+                                                'Services.id',
+                                                'Services.host_id',
+                                                'Services.uuid'
+                                            ])->where([
+                                                'Services.disabled' => 0
+                                            ]);
+                                        }
+                                    ])
+                                    ->leftJoinWith('Hostgroups')
+                                    ->where(['Hosts.disabled' => 0])
+                                    ->whereNull('Hostgroups.id');
+                                return $query;
+                            }
+                        ]);
+                    return $query;
+                },
+
+                // Get all hosts from this host group
+                'Hosts'         => function (Query $query) {
+                    $query->disableAutoFields()
+                        ->select([
+                            'Hosts.id',
+                            'Hosts.uuid',
+                        ])->contain([
+                            'Services' => function (Query $query) {
+                                return $query->select([
+                                    'Services.id',
+                                    'Services.host_id',
+                                    'Services.uuid'
+                                ])->where([
+                                    'Services.disabled' => 0
+                                ]);
+                            }
+                        ])->where(['Hosts.disabled' => 0]);
+                    return $query;
+                }
+            ])
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+        foreach ($hostgroup['hosts'] as $host) {
+            $hostAnServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
+            foreach ($host['services'] as $service) {
+                $hostAnServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
+            }
+        }
+
+        foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
+            foreach ($hosttemplate['hosts'] as $host) {
+                $hostAnServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
+                foreach ($host['services'] as $service) {
+                    $hostAnServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
+                }
+            }
+        }
+
+        return $hostAnServiceUuids;
+    }
+
+    /**
+     * @param $regEx
+     * @return bool
+     */
+    private function isValidRegularExpression($regEx) {
+        return @preg_match('`' . $regEx . '`', '') !== false;
     }
 }

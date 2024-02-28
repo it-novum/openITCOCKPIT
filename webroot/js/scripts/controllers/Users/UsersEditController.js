@@ -56,6 +56,7 @@ angular.module('openITCOCKPIT')
                             id: data.apikeys[i].id,
                             apikey: data.apikeys[i].apikey,
                             description: data.apikeys[i].description,
+                            last_use: data.apikeys[i].last_use,
                             index: parseInt(i, 10)
                         });
                     }

@@ -25,6 +25,8 @@
 namespace itnovum\openITCOCKPIT\Core\Views;
 
 
+use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
+
 class Logo {
     private $logoName = 'logo.png';
     private $smallLogoName = 'logo_small.png';
@@ -39,6 +41,7 @@ class Logo {
     private $headerLogoName = 'logo_header.png';
     private $customHeaderLogoName = 'logo_custom_header.png';
 
+    private $customLoginBackgroundName = 'custom_login_background.png';
 
     /**
      * @return string
@@ -267,5 +270,35 @@ class Logo {
         }
 
         return '/img/logos/openitcockpit-logo-url-light.png';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCustomLoginBackground() {
+        $file = sprintf($this->logoBaseForAbsolutePath, WWW_ROOT, $this->customLoginBackgroundName);
+        return file_exists($file);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomLoginBackgroundDiskPath() {
+        return sprintf($this->logoBasePath, WWW_ROOT, $this->customLoginBackgroundName);
+    }
+
+    /**
+     * @return string
+     */
+    public function getCustomLoginBackgroundHtml() {
+        if ($this->isCustomLoginBackground()) {
+            return sprintf($this->logoBasePath, '', $this->customLoginBackgroundName);
+        }
+
+        // No custom login background - return the current login image
+        $LoginBackgrounds = new LoginBackgrounds();
+        $images = $LoginBackgrounds->getImages();
+
+        return sprintf('/img/login/%s', $images['images'][0]['image']);
     }
 }

@@ -238,8 +238,10 @@ class AclDependencies {
             ->allow('Dashboards', 'trafficLightWidget')
             ->allow('Dashboards', 'getServiceWithStateById')
             ->allow('Dashboards', 'hostStatusOverviewWidget')
+            ->allow('Dashboards', 'hostStatusOverviewExtendedWidget')
             ->allow('Dashboards', 'tachoWidget')
             ->allow('Dashboards', 'serviceStatusOverviewWidget')
+            ->allow('Dashboards', 'serviceStatusOverviewExtendedWidget')
             ->allow('Dashboards', 'websiteWidget')
             ->allow('Dashboards', 'todayWidget')
             ->allow('Dashboards', 'getPerformanceDataMetrics')
@@ -275,6 +277,7 @@ class AclDependencies {
             ->allow('Users', 'logout')
             ->allow('Users', 'getLocaleOptions')
             ->allow('Users', 'getUserPermissions');
+
 
         ///////////////////////////////
         //    Add dependencies       //
@@ -356,6 +359,11 @@ class AclDependencies {
             ->dependency('Currentstatereports', 'index', 'Currentstatereports', 'createPdfReport')
             ->dependency('Currentstatereports', 'index', 'Currentstatereports', 'createHtmlReport');
 
+        $this
+            ->dependency('DashboardAllocations', 'add', 'DashboardAllocations', 'loadElementsByContainerId')
+            ->dependency('DashboardAllocations', 'edit', 'DashboardAllocations', 'loadElementsByContainerId')
+            ->dependency('DashboardAllocations', 'edit', 'Users', 'loadContainersForAngular')
+            ->dependency('DashboardAllocations', 'edit', 'Users', 'loadContainersForAngular');
 
         $this
             ->dependency('Downtimereports', 'index', 'Downtimereports', 'createPdfReport')
@@ -389,6 +397,7 @@ class AclDependencies {
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'listToCsv')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'view')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByString')
+            ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByStringAndContainers')
             ->dependency('Hostgroups', 'index', 'Hostgroups', 'loadHostgroupsByContainerId')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosts')
             ->dependency('Hostgroups', 'add', 'Hostgroups', 'loadHosttemplates')
@@ -401,7 +410,8 @@ class AclDependencies {
             ->dependency('Hostgroups', 'edit', 'Hostgroups', 'addHostsToHostgroup')
             ->dependency('Hostgroups', 'edit', 'Hostgroups', 'append')
             ->dependency('Hostgroups', 'extended', 'Hostgroups', 'loadHostgroupWithHostsById')
-            ->dependency('Hostgroups', 'extended', 'Hostgroups', 'listToPdf');
+            ->dependency('Hostgroups', 'extended', 'Hostgroups', 'listToPdf')
+            ->dependency('Hostgroups', 'extended', 'Hostgroups', 'loadAdditionalInformation');
 
 
         $this
@@ -490,6 +500,7 @@ class AclDependencies {
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'view')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByContainerId')
             ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByString')
+            ->dependency('Servicegroups', 'index', 'Servicegroups', 'loadServicegroupsByStringAndContainers')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'loadServicetemplates')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'loadContainers')
             ->dependency('Servicegroups', 'add', 'Servicegroups', 'addServicesToServicegroup')
@@ -554,6 +565,12 @@ class AclDependencies {
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadCommandArguments')
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadEventhandlerCommandArguments')
             ->dependency('Servicetemplates', 'edit', 'Servicetemplates', 'loadElementsByContainerId');
+
+        $this
+            ->dependency('Statuspages', 'index', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'view', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'add', 'Statuspages', 'loadContainers')
+            ->dependency('Statuspages', 'edit', 'Statuspages', 'loadContainers');
 
         $this
             ->dependency('Users', 'index', 'Users', 'view')
@@ -855,6 +872,7 @@ class AclDependencies {
         }
 
         //Add dependent ACL actions to $selectedAcos
+        $dependentAcoIdsInUse = []; // don't reset already assigned dependencies
         foreach ($selectedAcos as $acoId => $permissions) {
             if ($permissions === 1) {
                 if (isset($dependencyTree[$acoId])) {
@@ -862,16 +880,26 @@ class AclDependencies {
 
                     foreach ($dependencyTree[$acoId] as $dependentAcoId) {
                         $selectedAcos[$dependentAcoId] = 1;
+                        $dependentAcoIdsInUse[$dependentAcoId] = $dependentAcoId;
+                    }
+                }
+            } else {
+                if (isset($dependencyTree[$acoId])) {
+                    //Remove dependencies from $selectedAcos;
+                    foreach ($dependencyTree[$acoId] as $dependentAcoId) {
+                        if (!in_array($dependentAcoId, $dependentAcoIdsInUse, true)) {
+                            $selectedAcos[$dependentAcoId] = 0;
+                        }
                     }
                 }
             }
         }
-
         return $selectedAcos;
     }
 
     public function filterAcosForFrontend($acosResultThreaded) {
         $allDependenciesSimplified = [];
+
         foreach ($this->dependencies as $controllerName => $actions) { //1
             if (substr($controllerName, -6) === 'Module') {
                 $pluginName = $controllerName;
@@ -947,19 +975,17 @@ class AclDependencies {
                         unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
                     }
 
-                    // Remove ACOs that shoud be ignored like public functions form AppController that exists in all controllers due to class FooController extends AppController and so on
+                    // Remove ACOs that should be ignored like public functions form AppController that exists in all controllers due to class FooController extends AppController and so on
                     if (in_array($actionName, $this->ignore, true)) {
                         unset($acosResultThreaded[0]['children'][$controllerIndex]['children'][$actionIndex]);
                     }
                 }
             }
 
-            //Make sure we have arrays [] not hasmaps {} !!!
+            //Make sure we have arrays [] not hashmaps {} !!!
             $acosResultThreaded[0]['children'][$controllerIndex]['children'] = array_values($acosResultThreaded[0]['children'][$controllerIndex]['children']);
 
         }
-
         return $acosResultThreaded;
     }
-
 }

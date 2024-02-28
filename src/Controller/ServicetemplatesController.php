@@ -126,7 +126,7 @@ class ServicetemplatesController extends AppController {
         ]);
 
 
-        if (!$this->allowedByContainerId($servicetemplate['Servicetemplate']['container']['id'])) {
+        if (!$this->allowedByContainerId($servicetemplate['Container']['id'])) {
             throw new ForbiddenException('403 Forbidden');
         }
 

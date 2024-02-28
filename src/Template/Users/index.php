@@ -201,6 +201,10 @@
                                     <i class="fa" ng-class="getSortClass('Users.usergroup_id')"></i>
                                     <?php echo __('User role'); ?>
                                 </th>
+                                <th class="no-sort" ng-click="orderBy('Users.last_login')">
+                                    <i class="fa" ng-class="getSortClass('Users.last_login')"></i>
+                                    <?php echo __('Last Login'); ?>
+                                </th>
                                 <th class="no-sort text-center">
                                     <i class="fa fa-cog"></i>
                                 </th>
@@ -236,6 +240,7 @@
                                     </span>
                                 </td>
                                 <td>{{user.usergroup.name}}</td>
+                                <td>{{user.last_login}}</td>
 
                                 <td class="width-50">
                                     <div class="btn-group btn-group-xs" role="group">

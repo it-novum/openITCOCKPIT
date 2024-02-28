@@ -457,7 +457,8 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                 <div class="panel-content">
 
                     <div class="row">
-                        <div class="col-12 card card-body text-center text-info padding-10" ng-show="apikeys.length == 0">
+                        <div class="col-12 card card-body text-center text-info padding-10"
+                             ng-show="apikeys.length == 0">
                             <i class="fa fa-info-circle"></i>
                             <?php echo __('No API keys created yet. You can still use the api using your username and password.'); ?>
                             <br/>
@@ -469,8 +470,11 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <div class="col-xs-12 col-md-1 bold">
                             <?php echo __('ID'); ?>
                         </div>
-                        <div class="col-xs-12 col-md-9 bold">
+                        <div class="col-xs-12 col-md-7 bold">
                             <?php echo __('Description'); ?>
+                        </div>
+                        <div class="col-xs-12 col-md-2 bold">
+                            <?php echo __('Last used'); ?>
                         </div>
                         <div class="col-xs-12 col-md-2 bold">
                             <?php echo __('Show'); ?>
@@ -480,8 +484,11 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                         <div class="col-xs-12 col-md-1">
                             {{apikey.id}}
                         </div>
-                        <div class="col-xs-12 col-md-9">
+                        <div class="col-xs-12 col-md-7">
                             {{apikey.description}}
+                        </div>
+                        <div class="col-xs-12 col-md-2">
+                            {{apikey.last_use}}
                         </div>
                         <div class="col-xs-12 col-md-2">
                             <button class="btn btn-primary btn-xs btn-block" ng-click="editApiKey(apikey.id)">

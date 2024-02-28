@@ -28,7 +28,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\itnovum\openITCOCKPIT\Core\Permissions\MyRightsFactory;
-use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
 use Authentication\Controller\Component\AuthenticationComponent;
 use Authentication\IdentityInterface;
@@ -154,8 +153,7 @@ class AppController extends Controller {
             return false;
         }
 
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
         $rights = $this->MY_RIGHTS;
 
         if (is_array($containerIds)) {

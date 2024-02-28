@@ -68,7 +68,7 @@
                             </div>
                         </div>
 
-                        <div class="margin-top-20">
+                        <div class="card margin-top-20">
                             <div class="card-body">
                                 <div class="float-right">
                                     <?php if ($this->Acl->hasPermission('deleteBackupFile', 'backups')): ?>
@@ -116,7 +116,7 @@
                                 </div>
                             </div>
 
-                            <div class="margin-top-20">
+                            <div class="card margin-top-20">
                                 <div class="card-body">
                                     <div class="float-right">
                                         <button type="submit" class="btn btn-primary waves-effect waves-themed"

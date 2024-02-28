@@ -14,6 +14,9 @@ angular.module('openITCOCKPIT').directive('calendarWidget', function($http){
 
             $scope.calendarTimeout = null;
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
+
             $scope.load = function(){
                 $http.get("/dashboards/calendarWidget.json", {
                     params: {
