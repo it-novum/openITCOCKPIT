@@ -27,6 +27,9 @@
  * @var \App\View\AppView $this
  *
  */
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -859,6 +862,19 @@
                                         <a ui-sref="HostsBrowser({id:host.Host.id})">
                                             {{ host.Host.hostname }}
                                         </a>
+
+                                        <?php if (Plugin::isLoaded('ImportModule') &&
+                                            $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
+                                            <span class="badge border border-info"
+                                                  ng-show="host.Host.additionalInformationExists">
+                                                <a ui-sref="HostsBrowser({id: host.Host.id, selectedTab: 'tab6'})"
+                                                   class="text-info">
+                                                    <i class="fas fa-database"></i> <?php echo __('CMDB'); ?>
+                                                </a>
+                                            </span>
+                                        <?php endif; ?>
+
+
                                     <?php else: ?>
                                         {{ host.Host.hostname }}
                                     <?php endif; ?>
@@ -1017,6 +1033,15 @@
                                                    class="dropdown-item">
                                                     <i class="fa-solid fa-timeline fa-rotate-90"></i>
                                                     <?php echo __('Changelog'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('browser', 'hosts') &&
+                                                Plugin::isLoaded('ImportModule') &&
+                                                $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
+                                                <a ui-sref="HostsBrowser({id: host.Host.id, selectedTab: 'tab6'})"
+                                                   ng-show="host.Host.additionalInformationExists"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-database">&nbsp;</i> <?php echo __('CMDB'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('serviceList', 'services')): ?>
