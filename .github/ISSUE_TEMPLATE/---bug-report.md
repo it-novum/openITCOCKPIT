@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem. You can upload screenshots via drag and drop
 
 **Versions**
-* openITCOKPIT Server Version: 4.x.x
+* openITCOCKPIT Server Version: 4.x.x
 *  Operating system
 
 **Additional context**
