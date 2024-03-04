@@ -126,7 +126,7 @@ class ResetPasswordCommand extends Command {
 
         $user->set('password', $newPassword);
 
-        if($enable){
+        if ($enable) {
             $user->set('is_active', 1);
         }
 
@@ -146,7 +146,7 @@ class ResetPasswordCommand extends Command {
             $Mailer->setEmailFormat('text');
             $Mailer->setAttachments([
                 'logo.png' => [
-                    'file'      => $Logo->getSmallLogoDiskPath(),
+                    'file'      => $Logo->getSmallLogoPdfPath(),
                     'mimetype'  => 'image/png',
                     'contentId' => '100'
                 ]
