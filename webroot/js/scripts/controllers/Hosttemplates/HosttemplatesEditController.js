@@ -9,6 +9,7 @@ angular.module('openITCOCKPIT')
 
         $scope.init = true;
         $scope.typeDetails = {};
+        $scope.hosttemplateConfig = {};
 
         $scope.loadHosttemplate = function(){
             var params = {
@@ -117,6 +118,23 @@ angular.module('openITCOCKPIT')
                     return;
                 }
             }
+        };
+
+        $scope.showNagiosConfiguration = function(hosttemplateId){
+            $http.get("/hosttemplates/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'hosttemplateId': hosttemplateId
+                }
+            }).then(function(result){
+                $scope.hosttemplateConfig = result.data.hosttemplateConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         $scope.submit = function(){

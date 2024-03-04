@@ -42,14 +42,17 @@ use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use App\Model\Table\UsersTable;
+use Cake\Core\Configure;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use FreeDSx\Ldap\Exception\BindException;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\Permissions\ContactContainersPermissions;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -711,4 +714,60 @@ class ContactsController extends AppController {
         $this->set('ldapUsers', $ldapUsers);
         $this->viewBuilder()->setOption('serialize', ['ldapUsers']);
     }
+
+    public function nagiosConfiguration() {
+
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $contactId = $this->request->getQuery('contactId', null);
+
+        /** @var $ContactsTable ContactsTable */
+        $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
+
+        if (!$ContactsTable->existsById($contactId)) {
+            throw new NotFoundException(__('Contact not found'));
+        }
+
+        $contact = $ContactsTable->getContactForEdit($contactId);
+
+        $contactForChangeLog = $contact;
+
+        if (!$this->allowedByContainerId($contact['Contact']['containers']['_ids'], false)) {
+            $this->render403();
+            return;
+        }
+
+        if (!empty($contactId)) {
+
+            $TableName = "Contacts";
+            $confName = "contacts";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $contactNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$contactId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $contactNagiosConfig = "Contact Config Record not found.";
+        }
+
+        if (empty($contactId) || gettype($contactNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $contactNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("contactConfig", $contactNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['contactConfig']);
+
+
+    }
+
 }

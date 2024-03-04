@@ -11,6 +11,7 @@ angular.module('openITCOCKPIT')
         keywords = QueryStringService.getStateValue($stateParams, 'keywords');
         not_keywords = QueryStringService.getStateValue($stateParams, 'not_keywords');
         //console.log(QueryStringService.getStateValue($stateParams, 'filter'));
+        $scope.hostConfig = {};
         /*** Filter Settings ***/
             //filterId = QueryStringService.getStateValue($stateParams, 'filter');
         var defaultFilter = function(){
@@ -49,6 +50,7 @@ angular.module('openITCOCKPIT')
                     }
                 };
             };
+
         /*** Filter end ***/
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -369,6 +371,23 @@ angular.module('openITCOCKPIT')
             $scope.undoSelection();
             $scope.load();
         }
+
+        $scope.showNagiosConfiguration = function(hostId){
+            $http.get("/hosts/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'hostId': hostId
+                }
+            }).then(function(result){
+                $scope.hostConfig = result.data.hostConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
+        };
 
         //Fire on page load
         defaultFilter();

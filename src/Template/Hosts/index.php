@@ -1059,6 +1059,14 @@
                                                     <?php echo __('Used by'); ?>
                                                 </a>
                                             <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'hosts')): ?>
+                                                <a href="javascript:void(0);"
+                                                   class="dropdown-item"
+                                                   ng-click="showNagiosConfiguration(host.Host.id)">
+                                                    <i class="fa fa-file-code"></i>
+                                                    <?php echo __('Configuration'); ?>
+                                                </a>
+                                            <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'hosts')): ?>
                                                 <div class="dropdown-divider"></div>
                                                 <a ng-click="confirmDelete(getObjectForDelete(host))"
@@ -1180,6 +1188,53 @@
             </div>
             <ack-tooltip></ack-tooltip>
             <downtime-tooltip></downtime-tooltip>
+        </div>
+    </div>
+</div>
+
+<!-- Show host config modal -->
+<div id="angularShowConfigurationModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-file-code"></i>
+                    <?php echo __('Host Configuration'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="control-label">
+                        <?php echo __('File'); ?>
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="hostConfig.file">
+                </div>
+
+                <div class="form-group" ng-repeat="(label, value) in hostConfig.content">
+                    <label class="control-label">
+                        {{ label }}
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="value">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

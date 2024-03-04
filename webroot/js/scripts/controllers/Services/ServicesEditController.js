@@ -12,6 +12,8 @@ angular.module('openITCOCKPIT')
             disableInheritance: false
         };
 
+        $scope.serviceConfig = {};
+
         $scope.post = {
             Service: {}
         };
@@ -329,6 +331,23 @@ angular.module('openITCOCKPIT')
                     return;
                 }
             }
+        };
+
+        $scope.showNagiosConfiguration = function(serviceId){
+            $http.get("/services/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'serviceId': serviceId
+                }
+            }).then(function(result){
+                $scope.serviceConfig = result.data.serviceConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         // Fire on page load

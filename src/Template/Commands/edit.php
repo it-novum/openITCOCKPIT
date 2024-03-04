@@ -54,7 +54,14 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
                 </h2>
                 <div class="panel-toolbar">
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
-                        UUID: {{post.Command.uuid}}
+                        <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'commands')): ?>
+                            <a href="javascript:void(0);"
+                               ng-click="showNagiosConfiguration(post.Command.id)">
+                                UUID: {{post.Command.uuid}}
+                            </a>
+                        <?php else: ?>
+                            UUID: {{post.Command.uuid}}
+                        <?php endif; ?>
                     </div>
 
                     <button ng-click="showDefaultMacros()"
@@ -334,7 +341,8 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
 
                 <div class="row">
                     <div class="col-xs-12">
-                        <?php echo __('Number of used {0} variables:', '<code>$ARGn$</code>'); ?> <strong>{{usedCommandLineArgs}}</strong>&nbsp;
+                        <?php echo __('Number of used {0} variables:', '<code>$ARGn$</code>'); ?>
+                        <strong>{{usedCommandLineArgs}}</strong>&nbsp;
                     </div>
                     <div class="col-xs-12">
                         <?php echo __('Number of defined arguments:'); ?> <strong>{{definedCommandArguments}}</strong>
@@ -419,6 +427,53 @@ use itnovum\openITCOCKPIT\Monitoring\DefaultMacros;
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo __('Close'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show Command config modal -->
+<div id="angularShowConfigurationModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-file-code"></i>
+                    <?php echo __('Command Configuration'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="control-label">
+                        <?php echo __('File'); ?>
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="commandConfig.file">
+                </div>
+
+                <div class="form-group" ng-repeat="(label, value) in commandConfig.content">
+                    <label class="control-label">
+                        {{ label }}
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="value">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
+                </div>
             </div>
         </div>
     </div>

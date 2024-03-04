@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('HostescalationsIndexController', function($scope, $http, $stateParams, MassChangeService, SortService, QueryStringService){
+    .controller('HostescalationsIndexController', function($scope, $http, $stateParams, MassChangeService, SortService, QueryStringService, NotyService){
 
         SortService.setSort(QueryStringService.getValue('sort', 'Hostescalations.id'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
@@ -11,6 +11,8 @@ angular.module('openITCOCKPIT')
 
         $scope.hostgroupFocus = true;
         $scope.hostgroupExcludeFocus = false;
+
+        $scope.hostescalationConfig = {};
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -131,6 +133,23 @@ angular.module('openITCOCKPIT')
                 }
             }
             return objects;
+        };
+
+        $scope.showNagiosConfiguration = function(hostescalationId){
+            $http.get("/hostescalations/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'hostescalationId': hostescalationId
+                }
+            }).then(function(result){
+                $scope.hostescalationConfig = result.data.hostescalationConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         //Fire on page load

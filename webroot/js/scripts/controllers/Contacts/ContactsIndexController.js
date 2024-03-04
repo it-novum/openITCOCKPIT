@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ContactsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService){
+    .controller('ContactsIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService, NotyService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Contacts.name'));
@@ -8,6 +8,7 @@ angular.module('openITCOCKPIT')
 
         $scope.useScroll = true;
 
+        $scope.contactConfig = {};
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -124,6 +125,23 @@ angular.module('openITCOCKPIT')
         $scope.changeMode = function(val){
             $scope.useScroll = val;
             $scope.load();
+        };
+
+        $scope.showNagiosConfiguration = function(contactId){
+            $http.get("/contacts/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'contactId': contactId
+                }
+            }).then(function(result){
+                $scope.contactConfig = result.data.contactConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         //Fire on page load

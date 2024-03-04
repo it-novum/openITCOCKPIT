@@ -53,10 +53,12 @@ use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use AutoreportModule\Model\Table\AutoreportsTable;
+use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
@@ -81,6 +83,7 @@ use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForView;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\Permissions\HostContainersPermissions;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
@@ -3646,4 +3649,58 @@ class HostsController extends AppController {
         $this->set('total', $total);
         $this->viewBuilder()->setOption('serialize', ['host', 'objects', 'total']);
     }
+
+    public function nagiosConfiguration() {
+
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $hostId = $this->request->getQuery('hostId', null);
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($hostId)) {
+            throw new NotFoundException(__('Host not found'));
+        }
+
+        $host = $HostsTable->getHostForEdit($hostId);
+
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'], false)) {
+            $this->render403();
+            return;
+        }
+
+        if (!empty($hostId)) {
+
+            $TableName = "Hosts";
+            $confName = "hosts";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $hostNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$hostId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $hostNagiosConfig = "Host Config Record not found.";
+        }
+
+        if (empty($hostId) || gettype($hostNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $hostNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("hostConfig", $hostNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['hostConfig']);
+
+
+    }
+
 }
