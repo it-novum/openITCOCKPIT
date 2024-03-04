@@ -734,6 +734,7 @@ class ServicetemplategroupsController extends AppController {
                 $targetHostwithServices = $HostsTable->getServicesForServicetemplateAllocation($hostId);
 
                 $servicetemplatesForDeploy = [];
+                $areAllCreateServiceOnTargetHostTrue = true;
                 foreach ($servicetemplategroup['servicetemplates'] as $servicetemplate) {
                     $doesServicetemplateExistsOnTargetHost = false;
                     $doesServicetemplateExistsOnTargetHostAndIsDisabled = false;
@@ -746,6 +747,7 @@ class ServicetemplategroupsController extends AppController {
 
                     if ($doesServicetemplateExistsOnTargetHost || $doesServicetemplateExistsOnTargetHostAndIsDisabled) {
                         $createServiceOnTargetHost = false;
+                        $areAllCreateServiceOnTargetHostTrue = false;
                     }
 
                     $servicetemplatesForDeploy[] = [
@@ -757,8 +759,9 @@ class ServicetemplategroupsController extends AppController {
                 }
 
                 $hosts[] = [
-                    'host'     => $viewHost->toArray(),
-                    'services' => $servicetemplatesForDeploy
+                    'host'                                => $viewHost->toArray(),
+                    'areAllCreateServiceOnTargetHostTrue' => $areAllCreateServiceOnTargetHostTrue,
+                    'services'                            => $servicetemplatesForDeploy
                 ];
             }
 
