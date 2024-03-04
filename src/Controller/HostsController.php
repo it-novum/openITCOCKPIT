@@ -229,8 +229,8 @@ class HostsController extends AppController {
             $existingImportedHostIdsByHostIds = $ImportedHostsTable->existingImportedHostIdsByHostIds(
                 Hash::extract($hosts, '{n}.Host.id')
             );
+            $existingImportedHostIdsByHostIds = Hash::combine($existingImportedHostIdsByHostIds, '{n}', '{n}');
         }
-
         foreach ($hosts as $host) {
             $serviceUuids = $ServiceTable->find('list', [
                 'valueField' => 'uuid'
@@ -241,7 +241,7 @@ class HostsController extends AppController {
                 ->all()
                 ->toList();
             if (!empty($existingImportedHostIdsByHostIds)) {
-                $additionalInformationExists = in_array($host['Host']['id'], $existingImportedHostIdsByHostIds, true);
+                $additionalInformationExists = isset($existingImportedHostIdsByHostIds[$host['Host']['id']]);
             }
 
             $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
