@@ -39,6 +39,9 @@ angular.module('openITCOCKPIT').directive('hostsDowntimeWidget', function($http,
             };
             /*** Filter end ***/
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
+
             var loadWidgetConfig = function(){
                 $http.get("/dashboards/hostsDowntimeWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
                     $scope.filter.Host = result.data.config.Host;

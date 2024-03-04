@@ -34,11 +34,12 @@
         {{changelogentry.model}}:
         <strong>
             <a ui-sref="{{changelogentry.ngState}}({id: changelogentry.object_id})"
-               ng-if="changelogentry.ngState">
+               ng-if="changelogentry.ngState && changelogentry.recordExists">
                 {{changelogentry.name}}
             </a>
-            <span ng-if="!changelogentry.ngState"
-                  ng-class="{'changelog_delete': changelogentry.action ==='delete'}">
+            <span ng-if="!changelogentry.ngState || !changelogentry.recordExists"
+                  ng-class="{'changelog_delete': (changelogentry.action ==='delete' ||
+                  (changelogentry.ngState && !changelogentry.recordExists))}">
                 {{changelogentry.name}}
             </span>
 

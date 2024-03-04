@@ -37,6 +37,9 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
                 show_label: false
             };
 
+            // ITC-3037
+            $scope.readOnly    = $scope.widget.isReadonly;
+
             /** private vars **/
             var $widget = $('#widget-' + $scope.widget.id);
             var $widgetContent = $('#widget-content-' + $scope.widget.id);

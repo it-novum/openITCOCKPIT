@@ -15,6 +15,7 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #: ./src/itnovum/openITCOCKPIT/Core/Security/CSRF.php:176
+#: ./src/itnovum/openITCOCKPIT/Core/Security/CSRF.php:176
 msgid "The request has been black-holed"
 msgstr ""
 

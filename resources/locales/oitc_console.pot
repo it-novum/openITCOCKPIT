@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
-"POT-Creation-Date: 2023-10-09 09:40+0200\n"
+"POT-Creation-Date: 2024-02-15 10:07+0100\n"
 "PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
 "Last-Translator: NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
@@ -493,6 +493,18 @@ msgstr ""
 msgid "Write initial Checkmk configuration"
 msgstr ""
 
+#: .-modules/CheckmkModule/src/Command/ServiceDiscoveryCommand.php:57
+msgid "Create new discovered services"
+msgstr ""
+
+#: .-modules/CheckmkModule/src/Command/ServiceDiscoveryCommand.php:63
+msgid "Disable update of existing Checkmk services"
+msgstr ""
+
+#: .-modules/CheckmkModule/src/Command/ServiceDiscoveryCommand.php:69
+msgid "Outputs the operations but will not execute anything"
+msgstr ""
+
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:82
 msgid "ID of the container open alerts should be monitored. If empty, all alerts will be considered. There can be multiple container-id arguments"
 msgstr ""
@@ -514,11 +526,11 @@ msgid "Number of alerts before the plugin will output a critical state. There ca
 msgstr ""
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:128
-msgid "Alerts older than the provided number in days will trigger a warning state. There can be multiple age-warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
+msgid "Alerts older than the provided number in {age-unit}s will trigger a warning state. There can be multiple age-warning arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-warning 2 --statetype 1 --age-warning 5"
 msgstr ""
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:136
-msgid "Alerts older than the provided number in days will trigger a critical state. There can be multiple age-critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
+msgid "Alerts older than the provided number in {age-unit}s will trigger a critical state. There can be multiple age-critical arguments for each --statetype. It is important to have the same order e.g.: --statetype 0 --age-critical 4 --statetype 1 --age-critical 10"
 msgstr ""
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:144
@@ -527,6 +539,10 @@ msgstr ""
 
 #: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:153
 msgid "Determines if the plugin should print detailed information as long output."
+msgstr ""
+
+#: .-modules/CustomalertModule/src/Command/CheckAlertsCommand.php:163
+msgid "Defines the age unit you specified for the alert limiatation: \"minute\" | \"hour\" | \"day\". Default: \"day\""
 msgstr ""
 
 #: .-modules/CustomalertModule/src/Command/CustomAlertWorkerCommand.php:111

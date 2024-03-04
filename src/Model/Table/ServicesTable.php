@@ -172,6 +172,14 @@ class ServicesTable extends Table {
         $this->hasMany('Widgets', [
             'foreignKey' => 'service_id'
         ]);
+
+        $this->belongsToMany('Statuspages', [
+            'className'        => 'Statuspages',
+            'foreignKey'       => 'service_id',
+            'targetForeignKey' => 'statuspage_id',
+            'joinTable'        => 'statuspages_to_services',
+            'saveStrategy'     => 'replace'
+        ])->setDependent(true);
     }
 
     /**
@@ -3406,15 +3414,17 @@ class ServicesTable extends Table {
                 ],
             ])
             ->innerJoinWith('Servicetemplates')
-            ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            ->innerJoinWith('Hosts');
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
                 return $q->where([
                     'HostsToContainersSharing.id IN ' => $MY_RIGHTS
                 ]);
-            })
-            ->group([
-                'Servicestatus.current_state',
-            ])
+            });
+        }
+        $query->group([
+            'Servicestatus.current_state',
+        ])
             ->disableHydration();
 
         $where = [];

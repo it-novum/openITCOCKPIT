@@ -32,7 +32,7 @@
 
         <flippy-front
             class="bg-host-{{filter.Hoststatus.current_state}} bg-host-background-icon bg-host-front-{{filter.Hoststatus.current_state}} fixFlippy">
-            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()">
+            <a href="javascript:void(0);" class="btn btn-default btn-xs txt-color-blueDark" ng-click="showConfig()" ng-hide="readOnly">
                 <i class="fa fa-cog fa-sm"></i>
             </a>
             <div class="padding-5" style="font-size:{{fontSize}}px;">

@@ -27,6 +27,7 @@ namespace Statusengine2Module\Model\Table;
 
 use App\Lib\Interfaces\DowntimehistoryHostsTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Http\Exception\NotImplementedException;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -66,7 +67,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
 
         $this->setTable('nagios_downtimehistory');
@@ -86,7 +87,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         //Readonly table
         return $validator;
     }
@@ -98,7 +99,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
      * @param \Cake\ORM\RulesChecker $rules The rules object to be modified.
      * @return \Cake\ORM\RulesChecker
      */
-    public function buildRules(RulesChecker $rules) :RulesChecker {
+    public function buildRules(RulesChecker $rules): RulesChecker {
         //Readonly table
         return $rules;
     }
@@ -318,7 +319,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             ->bind(':end2', $endDateSqlFormat, 'date');
 
         $query->enableHydration($enableHydration);
-        if($disableResultsCasting) {
+        if ($disableResultsCasting) {
             $query->disableResultsCasting();
         }
         $query->all();
@@ -371,5 +372,19 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
         }
 
         return $query->first();
+    }
+
+    public function byUuidsNoJoins($uuids, $isRunning = false) {
+        throw new NotImplementedException();
+    }
+
+    /**
+     * @param $uuids
+     * @param int $startTimestamp
+     * @param int $endTimestamp
+     * @return array
+     */
+    public function getPlannedDowntimes($uuids, int $startTimestamp, int $endTimestamp) {
+        throw new NotImplementedException();
     }
 }
