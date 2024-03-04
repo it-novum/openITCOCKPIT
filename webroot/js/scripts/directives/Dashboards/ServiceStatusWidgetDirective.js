@@ -11,6 +11,7 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
             $scope.init = true;
             $scope.useScroll = true;
             $scope.scroll_interval = 30000;
+            $scope.min_scroll_intervall = 5000;
 
             // ITC-3037
             $scope.readOnly    = $scope.widget.isReadonly;
@@ -27,6 +28,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
             $scope.direction = 'desc';
             $scope.currentPage = 1;
 
+            $scope.configPageOpen = false;
+
             $scope.filter = {
                 Servicestatus: {
                     current_state: {
@@ -39,7 +42,9 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     not_acknowledged: false,
                     in_downtime: false,
                     not_in_downtime: false,
-                    output: ''
+                    output: '',
+                    state_older_than: null,
+                    state_older_than_unit: 'minutes',
                 },
                 Host: {
                     name: '',
@@ -73,17 +78,17 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     $scope.filter.Servicestatus.not_acknowledged = result.data.config.Servicestatus.not_acknowledged;
                     $scope.filter.Servicestatus.in_downtime = result.data.config.Servicestatus.in_downtime;
                     $scope.filter.Servicestatus.not_in_downtime = result.data.config.Servicestatus.not_in_downtime;
+                    $scope.filter.Servicestatus.state_older_than = result.data.config.Servicestatus.state_older_than ? parseInt(result.data.config.Servicestatus.state_older_than, 10) : null;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
                     $scope.filter.Host.name_regex = result.data.config.Host.name_regex;
                     $scope.filter.Service.name_regex = result.data.config.Service.name_regex;
                     var scrollInterval = parseInt(result.data.config.scroll_interval);
-                    if(scrollInterval < 5000){
-                        scrollInterval = 5000;
-                    }
                     $scope.scroll_interval = scrollInterval;
-                    if($scope.useScroll){
+                    if(scrollInterval < 5000){
+                        $scope.pauseScroll();
+                    }else{
                         $scope.startScroll();
                     }
 
@@ -127,6 +132,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                     'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
                     'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                     'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
+                    'noConditionFilter[Servicestatus.state_older_than]': $scope.filter.Servicestatus.state_older_than,
+                    'noConditionFilter[Servicestatus.state_older_than_unit]': $scope.filter.Servicestatus.state_older_than_unit,
                     'limit': $scope.limit
                 };
 
@@ -186,6 +193,9 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
 
             $scope.startScroll = function(){
                 $scope.pauseScroll();
+                if(!$scope.useScroll && $scope.scroll_interval === 0){
+                    $scope.scroll_interval = $scope.min_scroll_intervall;
+                }
                 $scope.useScroll = true;
 
                 $scope.interval = $interval(function(){
@@ -252,9 +262,11 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
 
             $scope.hideConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_IN');
+                $scope.configPageOpen = false;
             };
             $scope.showConfig = function(){
                 $scope.$broadcast('FLIP_EVENT_OUT');
+                $scope.configPageOpen = true;
                 $scope.loadWidgetConfig();
             };
 
@@ -266,20 +278,22 @@ angular.module('openITCOCKPIT').directive('servicesStatusWidget', function($http
                 $("input[data-role=tagsinput]").tagsinput();
             });
 
-            $scope.$watch('scroll_interval', function(){
+            $scope.$watch('scroll_interval', function(scrollInterval){
                 $scope.pagingTimeString = getTimeString();
                 if($scope.init === true){
                     return true;
                 }
                 $scope.pauseScroll();
-                $scope.startScroll();
+                if(scrollInterval > 0){
+                    $scope.startScroll();
+                }
                 $scope.load({
                     save: true
                 });
             });
 
             $scope.$watch('sort', function(){
-                if($scope.init === true){
+                if($scope.init === true || $scope.configPageOpen === true){
                     return true;
                 }
                 $scope.load({
