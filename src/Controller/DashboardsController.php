@@ -178,6 +178,24 @@ class DashboardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['widgets']);
     }
 
+    public function getWidgetsByString() {
+
+        if (!$this->isAngularJsRequest()) {
+            //Only ship template
+            return;
+        }
+
+        $searchString = $this->request->getQuery('searchString', '');
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+        
+        $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS, $searchString);
+
+        $this->set('widgets', $widgets);
+        $this->viewBuilder()->setOption('serialize', ['widgets']);
+    }
+
     public function dynamicDirective() {
         $directiveName = $this->request->getQuery('directive');
 
