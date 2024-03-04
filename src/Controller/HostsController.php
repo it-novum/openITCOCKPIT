@@ -223,6 +223,16 @@ class HostsController extends AppController {
         $ServiceTable = TableRegistry::getTableLocator()->get('Services');
         $typesForView = $HostsTable->getHostTypesWithStyles();
 
+        $additionalInformationExists = false;
+        $existingImportedHostIdsByHostIds = [];
+        if (Plugin::isLoaded('ImportModule') && !empty($hosts)) {
+            /** @var ImportedHostsTable $ImportedHostsTable */
+            $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
+            $existingImportedHostIdsByHostIds = $ImportedHostsTable->existingImportedHostIdsByHostIds(
+                Hash::extract($hosts, '{n}.Host.id')
+            );
+            $existingImportedHostIdsByHostIds = Hash::combine($existingImportedHostIdsByHostIds, '{n}', '{n}');
+        }
         foreach ($hosts as $host) {
             $serviceUuids = $ServiceTable->find('list', [
                 'valueField' => 'uuid'
@@ -232,6 +242,9 @@ class HostsController extends AppController {
                 ])
                 ->all()
                 ->toList();
+            if (!empty($existingImportedHostIdsByHostIds)) {
+                $additionalInformationExists = isset($existingImportedHostIdsByHostIds[$host['Host']['id']]);
+            }
 
             $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
             $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
@@ -260,6 +273,7 @@ class HostsController extends AppController {
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
+
 
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
@@ -299,6 +313,7 @@ class HostsController extends AppController {
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
             $tmpRecord['Host']['type'] = $typesForView[$host['Host']['host_type']];
+            $tmpRecord['Host']['additionalInformationExists'] = $additionalInformationExists;
 
             $all_hosts[] = $tmpRecord;
         }
@@ -458,7 +473,7 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                if(isset($SatelliteNames[$Host->getSatelliteId()])){
+                if (isset($SatelliteNames[$Host->getSatelliteId()])) {
                     $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
                     $satellite_id = $Host->getSatelliteId();
                 }
@@ -1402,7 +1417,7 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                if(isset( $SatelliteNames[$Host->getSatelliteId()])){
+                if (isset($SatelliteNames[$Host->getSatelliteId()])) {
                     $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
                     $satellite_id = $Host->getSatelliteId();
                 }
