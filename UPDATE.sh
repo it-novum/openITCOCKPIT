@@ -376,6 +376,7 @@ chmod +x /usr/bin/oitc
 
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,nsta,statusengine} /opt/openitc/etc/statusengine/Config
+mkdir -p /opt/openitc/etc/mod_gearman
 
 mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend
@@ -469,6 +470,12 @@ if [ -f /opt/openitc/etc/grafana/api_key ]; then
         echo "Could not connect to Grafana"
     fi
     set -e
+fi
+
+if [ ! -f /opt/openitc/etc/mod_gearman/secret.file ]; then
+    echo "Generate new shared secret for Mod-Gearman"
+    MG_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(16, \$cstrong));")
+    echo $MG_KEY > /opt/openitc/etc/mod_gearman/secret.file
 fi
 
 echo "Enable new systemd services"
