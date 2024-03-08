@@ -3060,7 +3060,8 @@ class ServicesController extends AppController {
 
         $service = $ServicesTable->get($id, [
             'contain' => [
-                'Hosts'
+                'Hosts',
+                'Servicetemplates'
             ]
         ]);
         if (!$HostsTable->existsById($service->get('host_id'))) {
@@ -3081,6 +3082,19 @@ class ServicesController extends AppController {
             if (!empty($hostSlaId)) {
                 if (!$SlasTable->existsById($hostSlaId)) {
                     throw new NotFoundException(__('Invalid sla'));
+                }
+                $isSlaRelevant = $service->sla_relevant;
+                if (empty($isSlaRelevant)) {
+                    $isSlaRelevant = $service->servicetemplate->sla_relevant;
+                }
+                if ($isSlaRelevant == 0) {
+                    $slaOverview = [
+                        'state'          => 'not_sla_relevant',
+                        'evaluation_end' => time()
+                    ];
+                    $this->set('slaOverview', $slaOverview);
+                    $this->viewBuilder()->setOption('serialize', ['slaOverview']);
+                    return;
                 }
 
                 $SlaInformation = $SlasTable->getSlaStatusInformationByServiceIdAndSlaId($id, $hostSlaId);

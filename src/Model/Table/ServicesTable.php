@@ -5481,7 +5481,7 @@ class ServicesTable extends Table {
      * @param bool $enableHydration
      * @return \Cake\Datasource\ResultSetInterface
      */
-    public function getActiveServicesWithServicetemplateByHostId($id, $enableHydration = true) {
+    public function getActiveServicesWithSlaRelevanceWithServicetemplateByHostId($id, $enableHydration = true) {
         $query = $this->find();
         $query->select([
             'Services.id',
@@ -5490,7 +5490,8 @@ class ServicesTable extends Table {
             ->contain('Servicetemplates')
             ->where([
                 'Services.host_id'  => $id,
-                'Services.disabled' => 0
+                'Services.disabled' => 0,
+                $query->newExpr('IF((Services.sla_relevant IS NULL OR Services.sla_relevant = ""), Servicetemplates.sla_relevant, Services.sla_relevant) = 1')
             ])
             ->order([
                 'servicename',
