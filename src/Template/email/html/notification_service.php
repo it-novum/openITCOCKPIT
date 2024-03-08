@@ -96,7 +96,7 @@ echo $this->element('emails/style');
                                     &nbsp;
                                 <?php endif; ?>
                                 <span>
-                                    <a href="<?php printf('https://%s/#!/services/browser/%s', $systemAddress, $Service->getUuid()); ?>"
+                                    <a href="<?php printf('https://%s/#!/services/browser/%s#acknowledge', $systemAddress, $Service->getUuid()); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($ServicestatusIcon->getTextColor()) ?>">
                                             <?php echo h($Service->getServicename()); ?>

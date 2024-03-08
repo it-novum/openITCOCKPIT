@@ -183,6 +183,11 @@ angular.module('openITCOCKPIT')
 
                 $scope.init = false;
 
+                // Acknowledge if param is passed.
+                if(window.location.href.indexOf('#acknowledge') > -1){
+                    $scope.acknowledgeHost($scope.getObjectsForExternalCommand());
+                }
+
                 setTimeout(function(){
                     jQuery(function(){
                         jQuery("[rel=tooltip]").tooltip();
