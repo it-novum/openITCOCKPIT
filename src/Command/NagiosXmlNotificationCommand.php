@@ -230,7 +230,7 @@ class NagiosXmlNotificationCommand extends Command {
         $toName = null;
         if ($args->getOption('contactalias') !== '') {
             $toName = $args->getOption('contactalias');
-            if(!empty($toName) && is_string($toName)){
+            if (!empty($toName) && is_string($toName)) {
                 $toName = EmailCharacters::removeDangerousCharactersForToHeader($toName);
             }
         }
@@ -241,7 +241,7 @@ class NagiosXmlNotificationCommand extends Command {
         if ($this->noAttachments === false && $this->format !== 'text') {
             $Mailer->setAttachments([
                 'logo.png' => [
-                    'file'      => $Logo->getSmallLogoDiskPath(),
+                    'file'      => $Logo->getSmallLogoPdfPath(),
                     'mimetype'  => 'image/png',
                     'contentId' => '100'
                 ]
@@ -281,7 +281,7 @@ class NagiosXmlNotificationCommand extends Command {
         $toName = null;
         if ($args->getOption('contactalias') !== '') {
             $toName = $args->getOption('contactalias');
-            if(!empty($toName) && is_string($toName)){
+            if (!empty($toName) && is_string($toName)) {
                 $toName = EmailCharacters::removeDangerousCharactersForToHeader($toName);
             }
         }
@@ -301,7 +301,7 @@ class NagiosXmlNotificationCommand extends Command {
             //Add Logo to attachments
             $attachments = $charts;
             $attachments['logo.png'] = [
-                'file'      => $Logo->getSmallLogoDiskPath(),
+                'file'      => $Logo->getSmallLogoPdfPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100'
             ];

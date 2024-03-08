@@ -1649,6 +1649,7 @@ class HostgroupsTable extends Table {
      * @return array
      */
     public function getHostUudsAndServiceUuidsByHostgroupId($id) {
+        $hostAndServiceUuids = [];
         $hostgroup = $this->find()
             ->contain([
                 // Get all hosts that are in this host group through the host template AND
@@ -1713,22 +1714,22 @@ class HostgroupsTable extends Table {
             ->disableHydration()
             ->first();
         foreach ($hostgroup['hosts'] as $host) {
-            $hostAnServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
+            $hostAndServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
             foreach ($host['services'] as $service) {
-                $hostAnServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
+                $hostAndServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
             }
         }
 
         foreach ($hostgroup['hosttemplates'] as $hosttemplate) {
             foreach ($hosttemplate['hosts'] as $host) {
-                $hostAnServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
+                $hostAndServiceUuids['host_uuids'][$host['uuid']] = $host['id'];
                 foreach ($host['services'] as $service) {
-                    $hostAnServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
+                    $hostAndServiceUuids['service_uuids'][$service['uuid']] = $service['id'];
                 }
             }
         }
 
-        return $hostAnServiceUuids;
+        return $hostAndServiceUuids;
     }
 
     /**

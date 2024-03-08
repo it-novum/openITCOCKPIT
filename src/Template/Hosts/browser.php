@@ -84,13 +84,16 @@ use Cake\Core\Plugin;
                     <?php endif; ?>
                     <ul class="nav nav-tabs border-bottom-0 nav-tabs-clean flex-column flex-sm-row" role="tablist">
                         <li class="nav-item pointer">
-                            <a class="nav-link active" data-toggle="tab" ng-click="selectedTab = 'tab1'; hideTimeline()"
+                            <a class="nav-link"
+                               ng-class="{'active': selectedTab == 'tab1'}"
+                               data-toggle="tab" ng-click="selectedTab = 'tab1'; hideTimeline()"
                                role="tab">
                                 <i class="fa fa-info">&nbsp;</i> <?php echo __('Status information'); ?>
                             </a>
                         </li>
                         <li class="nav-item pointer">
-                            <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab2'; hideTimeline()"
+                            <a class="nav-link"
+                               data-toggle="tab" ng-click="selectedTab = 'tab2'; hideTimeline()"
                                role="tab">
                                 <i class="fa fa-hdd-o">&nbsp;</i> <?php echo __('Device information'); ?>
                             </a>
@@ -121,7 +124,9 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                         <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('additionalHostInformation', 'ExternalSystems', 'ImportModule')): ?>
                             <li class="nav-item pointer" ng-show="AdditionalInformationExists">
-                                <a class="nav-link" data-toggle="tab" ng-click="selectedTab = 'tab6'; hideTimeline()"
+                                <a class="nav-link"
+                                   ng-class="{'active': selectedTab == 'tab6'}"
+                                   data-toggle="tab" ng-click="selectedTab = 'tab6'; hideTimeline()"
                                    role="tab">
                                     <i class="fas fa-database">&nbsp;</i> <?php echo __('CMDB'); ?>
                                 </a>
