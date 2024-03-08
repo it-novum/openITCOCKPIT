@@ -137,8 +137,8 @@ class ModGearmanModule extends ConfigGenerator implements ConfigInterface {
             'result_workers'             => 'Number of result worker threads.',
             'orphaned_checks_returncode' => 'Set return code of orphaned checks.',
 
-            'localhostgroups'    => 'A comma separated list of host group UUIDs to bypass Mod-Gearman.',
-            'localservicegroups' => 'A comma separated list of service group UUIDs to bypass Mod-Gearman.',
+            'localhostgroups'    => 'A comma separated list of host group UUIDs to bypass Mod-Gearman. It is recommended to use the WORKER custom variable instead',
+            'localservicegroups' => 'A comma separated list of service group UUIDs to bypass Mod-Gearman. It is recommended to use the WORKER custom variable instead',
         ];
 
         if (isset($help[$key])) {

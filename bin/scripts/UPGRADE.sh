@@ -472,8 +472,18 @@ systemctl restart\
  openitcockpit-node.service\
  oitc_cronjobs.timer
 
+# Restart services if they are running
 for srv in supervisor.service; do
   if systemctl is-active --quiet $srv; then
+    systemctl restart $srv
+  fi
+done
+
+# Restart services if they exists
+# Mod_Gearman workers are optional because they could be offloaded to a different host
+for srv in mod-gearman-worker.service; do
+  if systemctl is-enabled --quiet $srv &>/dev/null; then
+    echo "Restart service: $srv"
     systemctl restart $srv
   fi
 done
