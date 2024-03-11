@@ -31,10 +31,10 @@ use Migrations\AbstractSeed;
  * Class InstallSeed
  *
  * Created:
- * oitc4 bake seed -p SlackModule --table commands --data Install
+ * oitc4 bake seed -p MSTeamsModule --table commands --data Install
  *
  * Apply:
- * oitc4 migrations seed -p SlackModule
+ * oitc4 migrations seed -p MSTeamsModule
  */
 class InstallSeed extends AbstractSeed {
 
