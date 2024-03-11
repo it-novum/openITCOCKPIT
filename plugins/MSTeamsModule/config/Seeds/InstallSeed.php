@@ -54,7 +54,7 @@ class InstallSeed extends AbstractSeed {
 
         $data = [
             [
-                'name'         => 'host-notifiy-by-teams',
+                'name'         => 'host-notify-by-teams',
                 'command_line' => '/opt/openitc/frontend/bin/cake MSTeamsModule.teams_notification --type Host --notificationtype $NOTIFICATIONTYPE$ --hostuuid "$HOSTNAME$" --state "$HOSTSTATEID$" --output "$HOSTOUTPUT$"',
                 'command_type' => NOTIFICATION_COMMAND,
                 'human_args'   => null,
