@@ -27,7 +27,6 @@ declare(strict_types=1);
 
 namespace MSTeamsModule\Lib;
 
-
 use itnovum\openITCOCKPIT\Core\Menu\MenuCategory;
 use itnovum\openITCOCKPIT\Core\Menu\MenuHeadline;
 use itnovum\openITCOCKPIT\Core\Menu\MenuInterface;
