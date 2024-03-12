@@ -111,6 +111,14 @@ class ConfigurationFilesController extends AppController {
     /**
      * @throws \Exception
      */
+    public function ModGearmanModule() {
+        $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\ModGearmanModule', 'ModGearmanModule');
+    }
+
+
+    /**
+     * @throws \Exception
+     */
     public function AfterExport() {
         $this->__sharedControllerAction('itnovum\openITCOCKPIT\ConfigGenerator\AfterExport', 'AfterExport');
     }
