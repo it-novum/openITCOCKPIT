@@ -98,7 +98,8 @@
 
                     <div class="row" ng-show="hostgroupId > 0">
                         <div class="col-12">
-                            <div class="alert border-faded bg-transparent text-secondary margin-top-20 margin-bottom-10">
+                            <div
+                                class="alert border-faded bg-transparent text-secondary margin-top-20 margin-bottom-10">
                                 <div class="d-flex align-items-center">
                                     <div class="alert-icon">
                                         <span class="icon-stack icon-stack-md">
@@ -121,10 +122,13 @@
 
                     <div class="row form-horizontal" ng-show="hostgroupId > 0">
                         <div class="col-xs-12 col-md-9 col-lg-7 padding-top-15"
-                             ng-repeat="hostWithServicesToDeploy in hostsWithServicesToDeploy">
+                             ng-repeat="hostWithServicesToDeploy in hostsWithServicesToDeploy track by $index">
                             <fieldset>
                                 <legend class="margin-0 padding-top-10">
                                     <h4>
+                                        <input type="checkbox"
+                                               ng-model="hostWithServicesToDeploy.areAllCreateServiceOnTargetHostTrue"
+                                               ng-click="handleHostSelect($index, hostWithServicesToDeploy.areAllCreateServiceOnTargetHostTrue,hostWithServicesToDeploy.services)">
                                         <?= __('Service/s to deploy on host:'); ?>
                                         <span class="text-info">
                                             {{hostWithServicesToDeploy.host.hostname}}

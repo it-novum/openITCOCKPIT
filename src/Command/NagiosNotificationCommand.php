@@ -241,7 +241,7 @@ class NagiosNotificationCommand extends Command {
         if ($this->noAttachments === false && $this->format !== 'text') {
             $Mailer->setAttachments([
                 'logo.png' => [
-                    'file'      => $Logo->getSmallLogoDiskPath(),
+                    'file'      => $Logo->getSmallLogoPdfPath(),
                     'mimetype'  => 'image/png',
                     'contentId' => '100'
                 ]
@@ -302,7 +302,7 @@ class NagiosNotificationCommand extends Command {
             //Add Logo to attachments
             $attachments = $charts;
             $attachments['logo.png'] = [
-                'file'      => $Logo->getSmallLogoDiskPath(),
+                'file'      => $Logo->getSmallLogoPdfPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100'
             ];
