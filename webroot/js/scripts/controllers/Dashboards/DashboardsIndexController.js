@@ -10,6 +10,7 @@ angular.module('openITCOCKPIT')
         $scope.intervalText = 'disabled';
         $scope.dashboardIsLocked = false;
         $scope.widgetSearchStr = '';
+        $scope.noWidgetsFound = false;
 
         $scope.data = {
             newTabName: '',
@@ -849,16 +850,11 @@ angular.module('openITCOCKPIT')
             }
         }
 
-        $scope.getWidgetsByString = function(value){
-            $http.get("/dashboards/getWidgetsByString.json", {
-                params: {
-                    'angular': true,
-                    'searchString': value
-                }
-            }).then(function(result){
-                $scope.availableWidgets = result.data.widgets;
-            });
-        };
+        $scope.checkWidgetTitles = function(widget){
+
+            return widget['title'].toLowerCase().includes($scope.widgetSearchStr.toLowerCase());
+
+        }
 
         /** On Load stuff **/
         $scope.$watch('data.viewTabRotateInterval', function(){
@@ -905,7 +901,13 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            $scope.getWidgetsByString(value);
+
+            if($scope.widgetSearchStr.length > 0 && !$scope.availableWidgets.some($scope.checkWidgetTitles)){
+                $scope.noWidgetsFound = true;
+            }else{
+                $scope.noWidgetsFound = false;
+            }
+
         }, true);
 
         $scope.load();
