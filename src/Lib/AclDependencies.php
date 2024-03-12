@@ -653,7 +653,6 @@ class AclDependencies {
 
         $this
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NagiosCfg')
-            ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'ModGearmanModule')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'AfterExport')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'NagiosModuleConfig')
             ->dependency('ConfigurationFiles', 'edit', 'ConfigurationFiles', 'phpNSTAMaster')

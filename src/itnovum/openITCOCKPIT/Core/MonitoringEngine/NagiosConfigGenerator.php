@@ -779,17 +779,6 @@ class NagiosConfigGenerator {
                 }
             }
 
-            if (IS_CONTAINER === false && $host->host_type == EVK_HOST) {
-                // ITC-3177 EVC Hosts (and all their services) needs to be checked by the local running Naemon
-                // due to the EVC Checkplugin requires Database access.
-                // This is only relevant for classical installations
-                // In a Docker / Container based installation **all** checks are getting executed by Mod_Gearman
-                // and a complex Docker-Compose file makes sure that the database access does work.
-                //
-                // We ensure that EVC hosts will bypass Mod-Gearman by setting the _WORKER variable to local
-                $content .= $this->addContent('_WORKER', 1, 'local');
-            }
-
             $content .= $this->addContent('}', 0);
 
             if (!$this->conf['minified']) {

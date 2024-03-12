@@ -376,15 +376,12 @@ chmod +x /usr/bin/oitc
 
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,nsta,statusengine} /opt/openitc/etc/statusengine/Config
-mkdir -p /opt/openitc/etc/mod_gearman
-mkdir -p /opt/openitc/logs/mod_gearman
 
 mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend
 chown nagios:nagios /opt/openitc/logs/frontend/nagios
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
-chown nagios:nagios /opt/openitc/logs/mod_gearman
 
 mkdir -p /opt/openitc/logs/nagios/archives
 chown nagios:www-data /opt/openitc/logs/nagios /opt/openitc/logs/nagios/archives
@@ -474,14 +471,6 @@ if [ -f /opt/openitc/etc/grafana/api_key ]; then
     set -e
 fi
 
-if [ ! -f /opt/openitc/etc/mod_gearman/secret.file ]; then
-    echo "Generate new shared secret for Mod-Gearman"
-    MG_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(16, \$cstrong));")
-    echo $MG_KEY > /opt/openitc/etc/mod_gearman/secret.file
-fi
-chown nagios:nagios /opt/openitc/etc/mod_gearman/secret.file
-chmod 400 /opt/openitc/etc/mod_gearman/secret.file
-
 echo "Enable new systemd services"
 systemctl daemon-reload
 systemctl enable sudo_server.service\
@@ -508,7 +497,7 @@ echo "Restart monitoring engine"
 systemctl restart nagios.service
 
 # Restart services if they are running
-for srv in openitcockpit-graphing.service nginx.service nsta.service event-collectd.service mod-gearman-worker.service; do
+for srv in openitcockpit-graphing.service nginx.service nsta.service event-collectd.service; do
   if systemctl is-active --quiet $srv; then
     echo "Restart service: $srv"
     systemctl restart $srv

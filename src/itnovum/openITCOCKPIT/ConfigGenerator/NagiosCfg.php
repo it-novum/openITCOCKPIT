@@ -74,8 +74,6 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'statusengine_enable_ochp'  => 0,
             'statusengine_enable_ocsp'  => 0,
 
-            'enable_mod_gearman' => 1,
-
         ],
 
         'int' => [
@@ -210,8 +208,6 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
             'statusengine_enable_ochp'  => 'Enables/Disabled Statusengine implementation of OCHP.',
             'statusengine_enable_ocsp'  => 'Enables/Disabled Statusengine implementation of OCSP.',
 
-            'enable_mod_gearman' => 'Enables/Disabled the Mod-Gearman Event Broker Module',
-
         ];
 
         if (isset($help[$key])) {
@@ -241,7 +237,7 @@ class NagiosCfg extends ConfigGenerator implements ConfigInterface {
         ];
 
         $configToExport['STATUSENGINE_VERSION'] = 3;
-        if ($DbBackend->isNdoUtils()) {
+        if($DbBackend->isNdoUtils()){
             $configToExport['STATUSENGINE_VERSION'] = 2;
         }
 
