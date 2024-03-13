@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicetemplatesIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService, $state){
+    .controller('ServicetemplatesIndexController', function($scope, $http, $rootScope, $stateParams, SortService, MassChangeService, QueryStringService, $state, NotyService){
         $rootScope.lastObjectName = null;
 
         SortService.setSort(QueryStringService.getValue('sort', 'Servicetemplates.name'));
@@ -7,6 +7,8 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         $scope.useScroll = true;
+
+        $scope.servicetemplateConfig = {};
 
         var defaultServicetemplatetypeIds = [];
         if($stateParams.servicetemplateTypes !== null){
@@ -133,6 +135,23 @@ angular.module('openITCOCKPIT')
         $scope.changeMode = function(val){
             $scope.useScroll = val;
             $scope.load();
+        };
+
+        $scope.showNagiosConfiguration = function(servicetemplateId){
+            $http.get("/servicetemplates/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'servicetemplateId': servicetemplateId
+                }
+            }).then(function(result){
+                $scope.servicetemplateConfig = result.data.servicetemplateConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         //Fire on page load

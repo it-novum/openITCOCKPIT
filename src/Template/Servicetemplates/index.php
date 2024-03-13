@@ -172,8 +172,10 @@
                                     <i class="fa" ng-class="getSortClass('Servicetemplates.description')"></i>
                                     <?php echo __('Description'); ?>
                                 </th>
-                                <th class="no-sort width-160" ng-click="orderBy('Servicetemplates.servicetemplatetype_id')">
-                                    <i class="fa" ng-class="getSortClass('Servicetemplates.servicetemplatetype_id')"></i>
+                                <th class="no-sort width-160"
+                                    ng-click="orderBy('Servicetemplates.servicetemplatetype_id')">
+                                    <i class="fa"
+                                       ng-class="getSortClass('Servicetemplates.servicetemplatetype_id')"></i>
                                     <?php echo __('Type'); ?>
                                 </th>
                                 <th class="no-sort text-center">
@@ -195,7 +197,8 @@
                                 <td>{{servicetemplate.Servicetemplate.name}}</td>
                                 <td>{{servicetemplate.Servicetemplate.description}}</td>
                                 <td>
-                                    <span class="badge border {{servicetemplate.Servicetemplate.type.class}} {{servicetemplate.Servicetemplate.type.color}}">
+                                    <span
+                                        class="badge border {{servicetemplate.Servicetemplate.type.class}} {{servicetemplate.Servicetemplate.type.color}}">
                                         <i class="{{servicetemplate.Servicetemplate.type.icon}}"></i>
                                         {{servicetemplate.Servicetemplate.type.title}}
                                     </span>
@@ -252,6 +255,14 @@
                                                    ui-sref="DocumentationsView({uuid:servicetemplate.Servicetemplate.uuid, type:'servicetemplate'})">
                                                     <i class="fa fa-book"></i>
                                                     <?php echo __('Documentation'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'servicetemplates')): ?>
+                                                <a href="javascript:void(0);"
+                                                   class="dropdown-item"
+                                                   ng-click="showNagiosConfiguration(servicetemplate.Servicetemplate.id)">
+                                                    <i class="fa fa-file-code"></i>
+                                                    <?php echo __('Configuration'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'servicetemplates')): ?>
@@ -336,6 +347,53 @@
                         <paginator paging="paging" click-action="changepage" ng-if="paging"></paginator>
                         <?php echo $this->element('paginator_or_scroll'); ?>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show service template config modal -->
+<div id="angularShowConfigurationModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-file-code"></i>
+                    <?php echo __('Service Template Configuration'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="control-label">
+                        <?php echo __('File'); ?>
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="servicetemplateConfig.file">
+                </div>
+
+                <div class="form-group" ng-repeat="(label, value) in servicetemplateConfig.content">
+                    <label class="control-label">
+                        {{ label }}
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="value">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
                 </div>
             </div>
         </div>

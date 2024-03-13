@@ -48,7 +48,14 @@
                 </h2>
                 <div class="panel-toolbar">
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
-                        UUID: {{post.Contact.uuid}}
+                        <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'contacts')): ?>
+                            <a href="javascript:void(0);"
+                               ng-click="showNagiosConfiguration(post.Contact.id)">
+                                UUID: {{post.Contact.uuid}}
+                            </a>
+                        <?php else: ?>
+                            UUID: {{post.Contact.uuid}}
+                        <?php endif; ?>
                     </div>
                     <?php if ($this->Acl->hasPermission('index', 'contacts')): ?>
                         <a back-button href="javascript:void(0);" href="javascript:void(0);"
@@ -76,7 +83,8 @@
                                 ng-disabled="data.areContainersChangeable === false"
                                 ng-model="post.Contact.containers._ids">
                             </select>
-                            <div ng-show="post.Contact.containers._ids.length === 0 && requiredContainers.length === 0" class="warning-glow">
+                            <div ng-show="post.Contact.containers._ids.length === 0 && requiredContainers.length === 0"
+                                 class="warning-glow">
                                 <?php echo __('Please select a container.'); ?>
                             </div>
                             <div ng-repeat="error in errors.containers">
@@ -89,7 +97,7 @@
                                 <?php echo __('Required containers'); ?>
                                 <?php if ($this->Acl->hasPermission('usedBy', 'contacts')): ?>
                                     <a ui-sref="ContactsUsedBy({id:id, containerIds: requiredContainers})"
-                                    class="margin-left-5">
+                                       class="margin-left-5">
                                         <i class="fa fa-reply-all fa-flip-horizontal text-primary"></i>
                                         <?php echo __('Used by'); ?>
                                         <sup>
@@ -560,6 +568,53 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show contact config modal -->
+<div id="angularShowConfigurationModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-file-code"></i>
+                    <?php echo __('Contact Configuration'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="control-label">
+                        <?php echo __('File'); ?>
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="contactConfig.file">
+                </div>
+
+                <div class="form-group" ng-repeat="(label, value) in contactConfig.content">
+                    <label class="control-label">
+                        {{ label }}
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="value">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
                 </div>
             </div>
         </div>

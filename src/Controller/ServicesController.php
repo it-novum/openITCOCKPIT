@@ -55,11 +55,13 @@ use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\TimeperiodsTable;
 use AutoreportModule\Model\Table\AutoreportsTable;
+use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use CustomalertModule\Model\Table\CustomalertsTable;
@@ -80,6 +82,7 @@ use itnovum\openITCOCKPIT\Core\KeyValueStore;
 use itnovum\openITCOCKPIT\Core\Merger\HostMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForBrowser;
 use itnovum\openITCOCKPIT\Core\Merger\ServiceMergerForView;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\Reports\DaterangesCreator;
 use itnovum\openITCOCKPIT\Core\ServiceConditions;
 use itnovum\openITCOCKPIT\Core\ServiceControllerRequest;
@@ -3194,4 +3197,60 @@ class ServicesController extends AppController {
         $this->set('total', $total);
         $this->viewBuilder()->setOption('serialize', ['service', 'objects', 'total']);
     }
+
+    public function nagiosConfiguration() {
+
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $serviceId = $this->request->getQuery('serviceId', null);
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        if (!$ServicesTable->existsById($serviceId)) {
+            throw new NotFoundException(__('Service not found'));
+        }
+
+        $service = $ServicesTable->getServiceForEdit($serviceId);
+        $host = $HostsTable->getHostForServiceEdit($service['Service']['host_id']);
+
+        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'], false)) {
+            $this->render403();
+            return;
+        }
+
+        if (!empty($serviceId)) {
+
+            $TableName = "Services";
+            $confName = "services";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $serviceNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$serviceId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $serviceNagiosConfig = "Service Config Record not found.";
+        }
+
+        if (empty($serviceId) || gettype($serviceNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $serviceNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("serviceConfig", $serviceNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['serviceConfig']);
+
+
+    }
+
 }
