@@ -247,7 +247,7 @@ class MessagesOtdController extends AppController {
                     $Mailer->setEmailFormat('both');
                     $Mailer->setAttachments([
                         'logo.png' => [
-                            'file'      => $Logo->getSmallLogoDiskPath(),
+                            'file'      => $Logo->getSmallLogoPdfPath(),
                             'mimetype'  => 'image/png',
                             'contentId' => '100'
                         ]

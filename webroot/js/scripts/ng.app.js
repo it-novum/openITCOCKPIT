@@ -1272,7 +1272,13 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             .state('HostsBrowser', {
                 url: '/hosts/browser/:id',
                 templateUrl: "/hosts/browser.html",
-                controller: "HostsBrowserController"
+                controller: "HostsBrowserController",
+                params: {
+                    selectedTab: {
+                        value: null,
+                        array: true
+                    }
+                },
             })
 
             .state('HostsAdd', {
