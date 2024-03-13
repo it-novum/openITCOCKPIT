@@ -164,15 +164,10 @@ class ServicesController extends AppController {
         }
 
         $ServiceFilter = new ServiceFilter($this->request);
-        $noConditionFilter = $this->request->getQuery('noConditionFilter');
-        $indexFilter = $ServiceFilter->indexFilter();
-        if (!empty($noConditionFilter)) {
-            $indexFilter = Hash::merge($indexFilter, $noConditionFilter);
-        }
 
         $ServiceControllerRequest = new ServiceControllerRequest($this->request, $ServiceFilter);
         $ServiceConditions = new ServiceConditions(
-            $indexFilter
+            $ServiceFilter->indexFilter()
         );
         $ServiceConditions->setContainerIds($this->MY_RIGHTS);
 

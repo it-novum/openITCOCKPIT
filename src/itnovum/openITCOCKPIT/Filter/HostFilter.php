@@ -28,11 +28,6 @@ namespace itnovum\openITCOCKPIT\Filter;
 class HostFilter extends Filter {
 
     /**
-     * @var array
-     */
-    private $noConditionFilters = [];
-
-    /**
      * @return array
      */
     public function indexFilter() {
@@ -46,7 +41,7 @@ class HostFilter extends Filter {
             'like'          => [
                 'Hosts.description',
                 'Hoststatus.output',
-                'hostdescription'
+                'hostdescription',
             ],
             'rlike'         => [
                 'Hosts.keywords'
@@ -71,6 +66,10 @@ class HostFilter extends Filter {
             'like_or_rlike' => [
                 'Hosts.name',
                 'Hosts.address',
+            ],
+            'greater'       => [
+                'Hoststatus.state_older_than',
+                'Hoststatus.state_older_than_unit',
             ]
         ];
 
@@ -148,22 +147,6 @@ class HostFilter extends Filter {
         ];
 
         return $this->getConditionsByFilters($filters);
-    }
-
-    /**
-     * add filter which can not be converted to conditions (if you just need the values in the query)
-     *
-     * @param array $filters
-     */
-    public function setNoConditionFilters($filter) {
-        $this->noConditionFilters = $filter;
-    }
-
-    /**
-     * @return array
-     */
-    public function getNoConditionFilters() {
-        return $this->noConditionFilters;
     }
 
 }

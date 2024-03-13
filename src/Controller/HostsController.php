@@ -155,8 +155,6 @@ class HostsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $HostFilter = new HostFilter($this->request);
-        $noConditionFilter = $this->request->getQuery('noConditionFilter');
-        $HostFilter->setNoConditionFilters($noConditionFilter);
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
@@ -458,7 +456,7 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                if(isset($SatelliteNames[$Host->getSatelliteId()])){
+                if (isset($SatelliteNames[$Host->getSatelliteId()])) {
                     $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
                     $satellite_id = $Host->getSatelliteId();
                 }
@@ -1402,7 +1400,7 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                if(isset( $SatelliteNames[$Host->getSatelliteId()])){
+                if (isset($SatelliteNames[$Host->getSatelliteId()])) {
                     $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
                     $satellite_id = $Host->getSatelliteId();
                 }
