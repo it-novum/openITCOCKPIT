@@ -3,6 +3,7 @@ angular.module('openITCOCKPIT')
 
         /** public vars **/
         $scope.init = true;
+        $scope.inKiosk = false;
         $scope.activeTab = null;
         $scope.availableWidgets = [];
         $scope.fullscreen = false;
@@ -103,8 +104,37 @@ angular.module('openITCOCKPIT')
                 $scope.askForHelp = result.data.askForHelp;
 
                 $scope.init = false;
+
+                // Enter Kiosk on Load?
+                if(window.location.toString().includes('#kiosk')){
+                    $scope.toggleKiosk();
+                }
             });
         };
+
+        $scope.toggleKiosk = function(){
+            if($scope.inKiosk){
+                $scope.leaveKiosk();
+            }else{
+                $scope.enterKiosk();
+            }
+        }
+
+        $scope.enterKiosk = function(){
+            $('#header').addClass('d-none');
+            $('.breadcrumb').addClass('d-none');
+            $('sidebar').addClass('d-none');
+            $('#js-page-content').addClass('show-grid');
+            $scope.inKiosk = true;
+        }
+
+        $scope.leaveKiosk = function(){
+            $('#header').removeClass('d-none');
+            $('.breadcrumb').removeClass('d-none');
+            $('sidebar').removeClass('d-none');
+            $('#js-page-content').removeClass('show-grid');
+            $scope.inKiosk = false;
+        }
 
         $scope.loadTabContent = function(tabId){
             disableWatch = true;
