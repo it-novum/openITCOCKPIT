@@ -5503,6 +5503,31 @@ class ServicesTable extends Table {
     }
 
     /**
+     * @param $id
+     * @return array
+     */
+    public function getActiveAndSlaRelavantServicesIdsByHostIdAsList($id) {
+        //$list = $this->MODEL->find('list', ['keyField' => 'id', 'valueField' => ('user_type')])->toArray();
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'id'
+        ]);
+        $query->select([
+            'Services.id',
+            'is_sla_relevant' => $query->newExpr('IF(Services.sla_relevant IS NULL, Servicetemplates.sla_relevant, Services.sla_relevant)')
+        ])
+            ->contain(['Servicetemplates'])
+            ->where([
+                'Services.host_id'  => $id,
+                'Services.disabled' => 0,
+                $query->newExpr('IF((Services.sla_relevant IS NULL OR Services.sla_relevant = ""), Servicetemplates.sla_relevant, Services.sla_relevant) = 1')
+            ])
+            ->disableHydration()
+            ->all();
+        return $this->emptyArrayIfNull($query->toArray());
+    }
+
+    /**
      * @param ServiceConditions $ServiceConditions
      * @return array
      */
