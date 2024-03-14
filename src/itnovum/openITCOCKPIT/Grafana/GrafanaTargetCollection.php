@@ -72,7 +72,7 @@ class GrafanaTargetCollection {
 
 
     /**
-     * @return array
+     * @return GrafanaTargetInterface[]
      */
     public function getTargets() {
         return $this->targets;

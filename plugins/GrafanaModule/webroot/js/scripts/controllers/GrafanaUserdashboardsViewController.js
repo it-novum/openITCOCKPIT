@@ -2,10 +2,13 @@ angular.module('openITCOCKPIT')
     .controller('Grafana_userdashboardsViewController', function($scope, $http, $stateParams){
 
         $scope.id = $stateParams.id;
-        $scope.selectedTimerange = 'now-3h';
-        $scope.selectedAutorefresh = '60s';
 
         $scope.dashboardFoundInGrafana = false;
+
+        $scope.dashboard = {
+            range : 'now-3h',
+            refresh : '1m'
+        }
 
         $scope.load = function(){
             $http.get("/grafana_module/grafana_userdashboards/view/" + $scope.id + ".json", {
@@ -25,8 +28,8 @@ angular.module('openITCOCKPIT')
             $http.get("/grafana_module/grafana_userdashboards/getViewIframeUrl/" + $scope.id + ".json", {
                 params: {
                     'angular': true,
-                    'from': $scope.selectedTimerange,
-                    'refresh': $scope.selectedAutorefresh
+                    'from': $scope.dashboard.range,
+                    'refresh': $scope.dashboard.refresh
                 }
             }).then(function(result){
                 $scope.dashboardFoundInGrafana = result.data.dashboardFoundInGrafana;
@@ -35,8 +38,8 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.grafanaTimepickerCallback = function(selectedTimerange, selectedAutorefresh){
-            $scope.selectedTimerange = selectedTimerange;
-            $scope.selectedAutorefresh = selectedAutorefresh;
+            $scope.dashboard.range   = selectedTimerange;
+            $scope.dashboard.refresh = selectedAutorefresh;
             $scope.loadIframeUrl();
         };
 

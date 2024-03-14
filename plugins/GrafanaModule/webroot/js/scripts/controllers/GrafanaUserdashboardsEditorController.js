@@ -23,6 +23,7 @@ angular.module('openITCOCKPIT')
                     }
                 }
 
+                console.warn(result);
                 $scope.data = data;
                 $scope.containerId = parseInt(result.data.userdashboardData.container_id, 10);
 
@@ -48,7 +49,8 @@ angular.module('openITCOCKPIT')
                 id: $scope.id
             };
 
-            $http.post("/grafana_module/grafana_userdashboards/addRow.json?angular=true", data).then(function(result){
+            $http.post("/grafana_module/grafana_userdashboards/addRow.json?angular=true"
+                , data).then(function(result){
                 if(result.data.hasOwnProperty('success')){
                     new Noty({
                         theme: 'metroui',

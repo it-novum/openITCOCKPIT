@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 // Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
@@ -27,146 +27,121 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
+use itnovum\openITCOCKPIT\Perfdata\ScaleType;
+
 class GrafanaThresholdCollection {
+    private const COLOR_CRITICAL = '#CC0000';
+    private const COLOR_WARNING = '#ffbb33';
+    private const COLOR_SUCCESS = '#00C851';
 
-    /**
-     * @var GrafanaTargetCollection
-     */
-    private $targetCollection;
 
-    /**
-     * @var null|int
-     */
-    private $warning = null;
-
-    /**
-     * @var null|int
-     */
-    private $critical = null;
+    /** @var PerformanceDataSetup|null */
+    private $setup;
 
     public function __construct(GrafanaTargetCollection $targetCollection) {
-        $this->targetCollection = $targetCollection;
-        $this->warning = $this->getWarningThreshold();
-        $this->critical = $this->getCriticalsThreshold();
+        $this->setup = self::getSetup($targetCollection);
     }
 
-    /**
-     * @return bool
-     */
-    public function canDisplayWarningThreshold() {
-        return !(is_null($this->warning));
-    }
 
     /**
-     * @return null|int
-     */
-    public function getWarningThreshold() {
-        $warnings = [];
-        foreach ($this->targetCollection->getTargets() as $target) {
-            /** @var GrafanaTargetInterface $target */
-            if ($target->getThresholds()->hasWarning()) {
-                $warnings[$target->getThresholds()->getWarning(true)] = true;
-            }
-        }
-        if (sizeof($warnings) === 1) {
-            return array_keys($warnings)[0];
-        }
-        return null;
-    }
-
-    /**
-     * @return bool
-     */
-    public function canDisplayCriticalThreshold() {
-        return !(is_null($this->critical));
-    }
-
-    /**
-     * @return null|int
-     */
-    public function getCriticalsThreshold() {
-        $criticals = [];
-        foreach ($this->targetCollection->getTargets() as $target) {
-            /** @var GrafanaTargetInterface $target */
-            if ($target->getThresholds()->hasCritical()) {
-                $criticals[$target->getThresholds()->getCritical(true)] = true;
-            }
-        }
-        if (sizeof($criticals) === 1) {
-            return array_keys($criticals)[0];
-        }
-        return null;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isInvertedThresholds() {
-        if ($this->warning === null || $this->critical === null) {
-            return false;
-        }
-
-        return ($this->warning > $this->critical);
-    }
-
-    /**
+     * I will return the Threshold definitions for Grafana that are configured in the setup of the instance.
+     *
      * @return array
      */
-    public function getThresholdsAsArray() {
-        $thresholds = [];
-        $thresholdsTmp = [];
+    final public function getThresholds(): array {
+        // It's a trap!
+        if (!$this->setup instanceof PerformanceDataSetup) {
+            return [];
+        }
+        switch ($this->setup->scale->type) {
+            case ScaleType::W_O:
+                return [
+                    self::getArea(null, self::COLOR_WARNING),
+                    self::getArea($this->setup->warn->low, self::COLOR_SUCCESS),
+                ];
+            case ScaleType::C_W_O:
+                return [
+                    self::getArea(null, self::COLOR_CRITICAL),
+                    self::getArea($this->setup->crit->low, self::COLOR_WARNING),
+                    self::getArea($this->setup->warn->low, self::COLOR_SUCCESS),
+                ];
+            case ScaleType::O_W:
+                return [
+                    self::getArea(null, self::COLOR_SUCCESS),
+                    self::getArea($this->setup->warn->low, self::COLOR_WARNING),
+                ];
+            case ScaleType::O_W_C:
+                return [
+                    self::getArea(null, self::COLOR_SUCCESS),
+                    self::getArea($this->setup->warn->low, self::COLOR_WARNING),
+                    self::getArea($this->setup->crit->low, self::COLOR_CRITICAL),
+                ];
+            case ScaleType::C_W_O_W_C:
+                return [
+                    self::getArea(null, self::COLOR_CRITICAL),
+                    self::getArea($this->setup->crit->low, self::COLOR_WARNING),
+                    self::getArea($this->setup->warn->low, self::COLOR_SUCCESS),
+                    self::getArea($this->setup->warn->high, self::COLOR_WARNING),
+                    self::getArea($this->setup->crit->high, self::COLOR_CRITICAL),
+                ];
+            case ScaleType::O_W_C_W_O:
+                return [
+                    self::getArea(null, self::COLOR_SUCCESS),
+                    self::getArea($this->setup->crit->low, self::COLOR_WARNING),
+                    self::getArea($this->setup->warn->low, self::COLOR_CRITICAL),
+                    self::getArea($this->setup->warn->high, self::COLOR_WARNING),
+                    self::getArea($this->setup->crit->high, self::COLOR_SUCCESS),
+                ];
+            case ScaleType::O:
+            default:
+                return [];
+        }
+    }
 
-        if ($this->isInvertedThresholds() === false) {
-            if ($this->canDisplayWarningThreshold()) {
-                $thresholdsTmp[] = [
-                    "color" => "#ffbb33", //warning
-                    "value" => $this->warning
-                ];
+    /**
+     * I will check the targets of the given $targetCollection for matching setup objectss.
+     *
+     * If ALL Setups match, I will return it.
+     * If ANY Setup varies, I will return NULL.
+     *
+     * This prevents a single-use setup of being used for multiple targets.
+     * @param GrafanaTargetCollection $targetCollection
+     * @return PerformanceDataSetup|null
+     */
+    private static function getSetup(GrafanaTargetCollection $targetCollection): ?PerformanceDataSetup {
+        $theSetup = null;
+        foreach ($targetCollection->getTargets() as $target) {
+            $mySetup = $target->getSetup();
+            if ($mySetup === null) {
+                continue;
             }
-
-            if ($this->canDisplayCriticalThreshold()) {
-                $thresholdsTmp[] = [
-                    "color" => "#CC0000", //critical
-                    "value" => $this->critical
-                ];
+            $myWarnString = $mySetup->getWarnString();
+            // First setup counts.
+            if ($theSetup === null) {
+                $theSetup = $mySetup;
+                continue;
             }
-            if (!empty($thresholdsTmp)) {
-                $thresholds[] = [
-                    'color' => '#00C851', //success
-                    'value' => null
-                ];
-                foreach ($thresholdsTmp as $threshold) {
-                    $thresholds[] = $threshold;
-                }
+            // If any different setup is found, invalidate the setup and stop the loop.
+            if ($theSetup->getWarnString() !== $myWarnString) {
+                $theSetup = null;
+                break;
             }
         }
+        return $theSetup;
+    }
 
-        $currentValue = null;
-        if ($this->isInvertedThresholds() === true) {
-            if ($this->canDisplayCriticalThreshold()) {
-                $thresholds[] = [
-                    "color" => "#CC0000", //critical
-                    'value' => $currentValue
-                ];
-                $currentValue = $this->critical;
-            }
-
-            if ($this->canDisplayWarningThreshold()) {
-                $thresholds[] = [
-                    "color" => "#ffbb33", //warning
-                    'value' => $currentValue
-                ];
-                $currentValue = $this->warning;
-            }
-
-            if (!empty($thresholds) && !is_null($currentValue)) {
-                $thresholds[] = [
-                    'color' => '#00C851', //success
-                    'value' => $currentValue
-                ];
-            }
-        }
-
-        return $thresholds;
+    /**
+     * I am here for legibility.
+     *
+     * @param float|null $from
+     * @param string $color
+     * @return array
+     */
+    private static function getArea(?float $from, string $color): array {
+        return [
+            "color" => $color,
+            "value" => $from
+        ];
     }
 }

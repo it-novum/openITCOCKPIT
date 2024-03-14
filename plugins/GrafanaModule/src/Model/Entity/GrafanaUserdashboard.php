@@ -39,6 +39,9 @@ use Cake\ORM\Entity;
  * @property string $name
  * @property string $grafana_uid
  * @property string $grafana_url
+ * @property string $range
+ * @property string @refresh
+ * @property int $tooltip
  *
  * @property ContainersTable $container
  * @property GrafanaConfiguration $grafana_configuration
@@ -61,6 +64,9 @@ class GrafanaUserdashboard extends Entity {
         'grafana_url'                  => true,
         'container'                    => true,
         'grafana_configuration'        => true,
-        'grafana_userdashboard_panels' => true
+        'grafana_userdashboard_panels' => true,
+        'range'                        => true,
+        'refresh'                      => true,
+        'tooltip'                      => true,
     ];
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GrafanaModule\Command;
 
 use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaTooltip;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
@@ -277,6 +278,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         $grafanaDashboard->setEditable(false);
         $grafanaDashboard->setTags($this->tag);
         $grafanaDashboard->setTags('🖥️ ' . $host['name']);
+        $grafanaDashboard->setTooltip(GrafanaTooltip::DEFAULT);
         $panelId = 1;
         $grafanaRow = new GrafanaRow();
 

@@ -51,7 +51,7 @@
                     <span class="fw-300"><i>{{ dashboard.name }}</i></span>
                 </h2>
                 <div class="panel-toolbar">
-                    <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
+                    <grafana-timepicker callback="grafanaTimepickerCallback" selected-auto-refresh="dashboard.refresh" selected-timerange="dashboard.range"></grafana-timepicker>
                     <?php if ($this->Acl->hasPermission('editor', 'GrafanaUserdashboards', 'GrafanaModule')): ?>
                         <button class="btn btn-xs btn-default mr-1 shadow-0 margin-left-5"
                                 ui-sref="GrafanaUserdashboardsEditor({id: dashboard.id})">

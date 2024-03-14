@@ -28,6 +28,8 @@ namespace itnovum\openITCOCKPIT\Grafana;
 
 
 use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
+use itnovum\openITCOCKPIT\Perfdata\ScaleType;
 
 class GrafanaPanel {
 
@@ -221,12 +223,13 @@ class GrafanaPanel {
             $this->panel['fieldConfig']['overrides'] = $this->Overrides->getOverrides();
         }
 
-        $thresholdsAsArray = $this->ThresholdCollection->getThresholdsAsArray();
+        $thresholdsAsArray = $this->ThresholdCollection->getThresholds();
         if (!empty($thresholdsAsArray) && empty($this->panel['fieldConfig']['overrides']) && sizeof($this->panel['targets']) === 1) {
-
             $this->panel['fieldConfig']['defaults']['thresholds'] = [
+                'mode' => 'absolute',
                 'steps' => $thresholdsAsArray
             ];
+
 
             if ($this->getMetricCount() > 1 && in_array($this->visualization_type, ['timeseries'])) {
                 // show threshold lines in chart with more than one metric - can be used for all charts if needed
@@ -239,6 +242,7 @@ class GrafanaPanel {
             }
         }
         if ($this->ColorOverrides->hasOverrides() && in_array($this->visualization_type, ['timeseries', 'bargauge'])) {
+            // This overrides the colour that comes from thresholds. Maybe just dont do that if we have thresholds in a timeseries type display?
             $this->panel['fieldConfig']['overrides'] = $this->ColorOverrides->getOverrides();
         }
 

@@ -4,7 +4,9 @@ angular.module('openITCOCKPIT')
         $scope.post = {
             GrafanaUserdashboard: {
                 container_id: null,
-                name: ''
+                name: '',
+                autoRefresh : '1m',
+                range : 'now-3h'
             }
         };
         $scope.hasGrafanaConfig = true;
@@ -42,6 +44,11 @@ angular.module('openITCOCKPIT')
                     $scope.errors = result.data.error;
                 }
             });
+        };
+
+        $scope.grafanaTimepickerCallback = function(selectedTimerange, selectedAutorefresh){
+            $scope.post.GrafanaUserdashboard.range   = selectedTimerange;
+            $scope.post.GrafanaUserdashboard.refresh = selectedAutorefresh;
         };
 
         $scope.loadContainers();
