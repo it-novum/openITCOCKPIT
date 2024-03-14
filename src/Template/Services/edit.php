@@ -1123,6 +1123,10 @@ use Cake\Core\Plugin;
                                  class="card margin-bottom-10">
                                 <div class="card-header">
                                     <i class="fa-solid fa-award"></i> <?= __('Service Level Agreement'); ?>
+                                    <span ng-show="!isSlaHost" class="italic pl-2">
+                                        <i class="fa-solid fa-circle-info text-primary"></i>
+                                        <?= __('The selected host is not associated with an SLA!'); ?>
+                                    </span>
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group">
@@ -1132,18 +1136,19 @@ use Cake\Core\Plugin;
                                                    id="isSlaRelevant"
                                                    ng-true-value="1"
                                                    ng-false-value="0"
+                                                   ng-disabled="!isSlaHost"
                                                    ng-model="post.Service.sla_relevant">
                                             <label class="custom-control-label" for="isSlaRelevant">
                                                 <?php echo __('SLA relevant'); ?>
                                             </label>
-                                            <template-diff-button ng-show="post.Service.servicetemplate_id"
+                                            <template-diff-button ng-show="post.Service.servicetemplate_id && isSlaHost"
                                                                   value="post.Service.sla_relevant"
                                                                   template-value="servicetemplate.Servicetemplate.sla_relevant">
                                             </template-diff-button>
 
                                         </div>
                                         <div class="col-xs-12 col-lg-offset-2 col-lg-12">
-                                            <div class="help-block mt-0 text-warning">
+                                            <div class="help-block mt-0 text-warning" ng-show="isSlaHost">
                                                 <span class="font-lg">⚠️</span>
                                                 <?= __('If deactivated, the service will be ignored in the SLA calculation and the related data from the service will be permanently removed.'); ?>
                                             </div>

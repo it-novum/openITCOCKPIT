@@ -177,6 +177,7 @@ angular.module('openITCOCKPIT')
                 $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
                 $scope.data.areContactsInheritedFromHost = result.data.areContactsInheritedFromHost;
                 $scope.data.areContactsInheritedFromServicetemplate = result.data.areContactsInheritedFromServicetemplate;
+                $scope.isSlaHost = result.data.isSlaHost;
 
                 if(
                     $scope.data.areContactsInheritedFromHosttemplate ||

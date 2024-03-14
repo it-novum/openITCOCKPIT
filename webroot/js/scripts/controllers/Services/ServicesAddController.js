@@ -273,6 +273,7 @@ angular.module('openITCOCKPIT')
                 $scope.servicegroups = result.data.servicegroups;
 
                 $scope.existingServices = result.data.existingServices;
+                $scope.isSlaHost = result.data.isSlaHost;
             });
         };
 
