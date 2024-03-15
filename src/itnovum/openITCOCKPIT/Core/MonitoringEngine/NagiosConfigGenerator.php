@@ -779,7 +779,7 @@ class NagiosConfigGenerator {
                 }
             }
 
-            if (IS_CONTAINER === false && $host->host_type == EVK_HOST) {
+            if (IS_CONTAINER === false && ($host->host_type == EVK_HOST || $hosttemplate->get('uuid') === 'd086e12a-e0c5-42b9-a2f4-1875c65ad09b')) {
                 // ITC-3177 EVC Hosts (and all their services) needs to be checked by the local running Naemon
                 // due to the EVC Checkplugin requires Database access.
                 // This is only relevant for classical installations
@@ -787,6 +787,8 @@ class NagiosConfigGenerator {
                 // and a complex Docker-Compose file makes sure that the database access does work.
                 //
                 // We ensure that EVC hosts will bypass Mod-Gearman by setting the _WORKER variable to local
+                //
+                // Hosttemplate: The openITCOCKPIT Agent is Pulled through the host template.
                 $content .= $this->addContent('_WORKER', 1, 'local');
             }
 
@@ -1017,6 +1019,12 @@ class NagiosConfigGenerator {
                 $content .= $this->addContent($varName, 1, $this->removeNewlines($this->escapeLastBackslash($varValue)));
             }
         }
+        if (IS_CONTAINER === false && $hosttemplate->get('uuid') === 'd086e12a-e0c5-42b9-a2f4-1875c65ad09b') {
+            // ITC-3177 On teh Satellite we do not need to care about EVC
+            // Hosttemplate: The openITCOCKPIT Agent is Pulled through the host template.
+            $content .= $this->addContent('_WORKER', 1, 'local');
+        }
+
         $content .= $this->addContent('}', 0);
 
         if (!$this->conf['minified']) {
@@ -1476,11 +1484,15 @@ class NagiosConfigGenerator {
                     }
                 }
 
-                if (IS_CONTAINER === false && $service->service_type == MK_SERVICE) {
+                if (IS_CONTAINER === false && $service->service_type != GENERIC_SERVICE) {
                     // ITC-3177 The active Checkmk Service is making an HTTP request to the local running Docker container.
                     // This HTTP request can only work on the openITCOCKPIT Server itself.
                     // Due to Checkmk has only one active Service "CHECK_MK_ACTIVE" and all other Checkmk services
                     // are passive checks anyway simply force all Checkmk Services to bypass Mod-Gearman.
+                    //
+                    // The openITCOCKPIT Agent Active check needs a .json file with the configuration
+                    // Prometheus Services are passive and dont matter
+                    // External Monitoring Services are also handled by an external daemon
                     //
                     // In a Docker / Container based installation **all** checks are getting executed by Mod_Gearman
                     // and a complex Docker-Compose file makes sure that everything works
@@ -1745,11 +1757,15 @@ class NagiosConfigGenerator {
             }
         }
 
-        if (IS_CONTAINER === false && $service->service_type == MK_SERVICE) {
+        if (IS_CONTAINER === false && $service->service_type != GENERIC_SERVICE) {
             // ITC-3177 The active Checkmk Service is making an HTTP request to the local running Docker container.
             // This HTTP request can only work on the openITCOCKPIT Server itself.
             // Due to Checkmk has only one active Service "CHECK_MK_ACTIVE" and all other Checkmk services
             // are passive checks anyway simply force all Checkmk Services to bypass Mod-Gearman.
+            //
+            // The openITCOCKPIT Agent Active check needs a .json file with the configuration
+            // Prometheus Services are passive and dont matter
+            // External Monitoring Services are also handled by an external daemon
             //
             // In a Docker / Container based installation **all** checks are getting executed by Mod_Gearman
             // and a complex Docker-Compose file makes sure that everything works
