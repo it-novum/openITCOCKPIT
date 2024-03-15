@@ -1476,6 +1476,19 @@ class NagiosConfigGenerator {
                     }
                 }
 
+                if (IS_CONTAINER === false && $service->service_type == MK_SERVICE) {
+                    // ITC-3177 The active Checkmk Service is making an HTTP request to the local running Docker container.
+                    // This HTTP request can only work on the openITCOCKPIT Server itself.
+                    // Due to Checkmk has only one active Service "CHECK_MK_ACTIVE" and all other Checkmk services
+                    // are passive checks anyway simply force all Checkmk Services to bypass Mod-Gearman.
+                    //
+                    // In a Docker / Container based installation **all** checks are getting executed by Mod_Gearman
+                    // and a complex Docker-Compose file makes sure that everything works
+                    //
+                    // We ensure that Checkmk services will bypass Mod-Gearman by setting the _WORKER variable to local
+                    $content .= $this->addContent('_WORKER', 1, 'local');
+                }
+
                 $content .= $this->addContent('}', 0);
 
                 if (!$this->conf['minified']) {
@@ -1730,6 +1743,19 @@ class NagiosConfigGenerator {
             foreach ($service->getCustomvariablesForCfg() as $varName => $varValue) {
                 $content .= $this->addContent($varName, 1, $this->removeNewlines($this->escapeLastBackslash($varValue)));
             }
+        }
+
+        if (IS_CONTAINER === false && $service->service_type == MK_SERVICE) {
+            // ITC-3177 The active Checkmk Service is making an HTTP request to the local running Docker container.
+            // This HTTP request can only work on the openITCOCKPIT Server itself.
+            // Due to Checkmk has only one active Service "CHECK_MK_ACTIVE" and all other Checkmk services
+            // are passive checks anyway simply force all Checkmk Services to bypass Mod-Gearman.
+            //
+            // In a Docker / Container based installation **all** checks are getting executed by Mod_Gearman
+            // and a complex Docker-Compose file makes sure that everything works
+            //
+            // We ensure that Checkmk services will bypass Mod-Gearman by setting the _WORKER variable to local
+            $content .= $this->addContent('_WORKER', 1, 'local');
         }
 
         $content .= $this->addContent('}', 0);

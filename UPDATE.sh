@@ -482,6 +482,14 @@ fi
 chown nagios:nagios /opt/openitc/etc/mod_gearman/secret.file
 chmod 400 /opt/openitc/etc/mod_gearman/secret.file
 
+if [ ! -f /opt/openitc/nagios/libexec/check_gearman ]; then
+    if [ -f /opt/openitc/mod_gearman/bin/check_gearman ]; then
+        echo "Copy check_gearman plugin"
+        cp /opt/openitc/mod_gearman/bin/check_gearman /opt/openitc/nagios/libexec/check_gearman
+        chmod +x /opt/openitc/nagios/libexec/check_gearman
+    fi
+fi
+
 echo "Enable new systemd services"
 systemctl daemon-reload
 systemctl enable sudo_server.service\
