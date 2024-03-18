@@ -114,8 +114,8 @@ angular.module('openITCOCKPIT').directive('popoverGraphDirective', function($htt
                         lineWidth: 2,
                         thresholds: {
                             show: true,
-                            warning: $scope.popoverPerfdata[index].datasource.warn,
-                            critical: $scope.popoverPerfdata[index].datasource.crit
+                            warning: parseFloat($scope.popoverPerfdata[index].datasource.warn),
+                            critical: parseFloat($scope.popoverPerfdata[index].datasource.crit),
                         },
                         // X-Axis min / max
                         start: graphStart,
