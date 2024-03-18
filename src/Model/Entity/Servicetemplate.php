@@ -51,6 +51,7 @@ use Cake\ORM\Entity;
  * @property int|null $priority
  * @property string|null $tags
  * @property string|null $service_url
+ * @property int $sla_relevant
  * @property bool $is_volatile
  * @property bool $check_freshness
  * @property \Cake\I18n\FrozenTime $created
@@ -127,6 +128,7 @@ class Servicetemplate extends Entity {
         'priority'                                  => true,
         'tags'                                      => true,
         'service_url'                               => true,
+        'sla_relevant'                              => true,
         'is_volatile'                               => true,
         'check_freshness'                           => true,
         'created'                                   => true,

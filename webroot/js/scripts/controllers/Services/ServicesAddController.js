@@ -70,7 +70,8 @@ angular.module('openITCOCKPIT')
                     },
                     customvariables: [],
                     servicecommandargumentvalues: [],
-                    serviceeventcommandargumentvalues: []
+                    serviceeventcommandargumentvalues: [],
+                    sla_relevant: 1
                 }
             };
         };
@@ -118,7 +119,8 @@ angular.module('openITCOCKPIT')
                 'notify_period_id',
                 'tags',
                 'service_url',
-                'is_volatile'
+                'is_volatile',
+                'sla_relevant'
             ];
 
             for(var index in fields){
@@ -271,6 +273,7 @@ angular.module('openITCOCKPIT')
                 $scope.servicegroups = result.data.servicegroups;
 
                 $scope.existingServices = result.data.existingServices;
+                $scope.isSlaHost = result.data.isSlaHost;
             });
         };
 

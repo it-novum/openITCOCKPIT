@@ -56,7 +56,8 @@ angular.module('openITCOCKPIT')
                 'notify_period_id',
                 'tags',
                 'service_url',
-                'is_volatile'
+                'is_volatile',
+                'sla_relevant'
             ];
 
             for(var index in fields){
@@ -176,6 +177,7 @@ angular.module('openITCOCKPIT')
                 $scope.data.areContactsInheritedFromHosttemplate = result.data.areContactsInheritedFromHosttemplate;
                 $scope.data.areContactsInheritedFromHost = result.data.areContactsInheritedFromHost;
                 $scope.data.areContactsInheritedFromServicetemplate = result.data.areContactsInheritedFromServicetemplate;
+                $scope.isSlaHost = result.data.isSlaHost;
 
                 if(
                     $scope.data.areContactsInheritedFromHosttemplate ||

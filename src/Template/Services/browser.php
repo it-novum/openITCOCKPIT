@@ -123,7 +123,7 @@ use Cake\Core\Plugin;
                     <div ng-show="slaOverview" ng-click="selectedTab = 'tab6'; hideTimeline()">
                         <button
                             class="btn btn-labeled btn-{{slaOverview.state}} btn-xs btn-w-m waves-effect waves-themed"
-                            ng-hide="slaOverview.state === 'not_available'">
+                            ng-hide="slaOverview.state === 'not_available' || slaOverview.state === 'not_sla_relevant'">
                             <span class="btn-label-bootstrap-5">
                                 <i class="fa-lg" ng-class="{'fa fa-check':slaOverview.state === 'success',
                                 'fa-solid fa-triangle-exclamation':slaOverview.state === 'warning',
@@ -136,6 +136,13 @@ use Cake\Core\Plugin;
                             <span class="btn-label-bootstrap-5">
                                 <i class="fas fa-question fa-lg"></i>
                             </span><?= __('Not available'); ?>
+                        </button>
+                        <button ng-disabled="true"
+                                class="btn btn-labeled btn-secondary btn-xs btn-w-m waves-effect waves-themed"
+                                ng-show="slaOverview.state === 'not_sla_relevant'">
+                            <span class="btn-label-bootstrap-5">
+                                <i class="fa-solid fa-xmark fa-lg"></i>
+                            </span><?= __('Not SLA relevant'); ?>
                         </button>
                     </div>
                 <?php endif; ?>

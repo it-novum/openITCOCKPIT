@@ -199,7 +199,8 @@ class ServiceComparisonForSave {
             'notify_period_id',
             'tags',
             'service_url',
-            'is_volatile'
+            'is_volatile',
+            'sla_relevant'
         ];
 
         $data = [];
@@ -672,4 +673,3 @@ class ServiceComparisonForSave {
     }
 
 }
-
