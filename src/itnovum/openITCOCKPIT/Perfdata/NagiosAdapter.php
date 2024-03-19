@@ -36,6 +36,11 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         $warn = $performanceData['warn'] ?? $performanceData['warning'] ?? '';
         $crit = $performanceData['crit'] ?? $performanceData['critical'] ?? '';
 
+        // $warn and $crit could be an int or float in case we do not have a range threshold.
+        // to make substr and explode work on php8.2 we have to cast the values to be strings
+        $warn = (string)$warn;
+        $crit = (string)$crit;
+
         // Check if the inverted threshold is required.
         $inverted = false;
         if (substr($warn, 0, 1) === '@' && substr($crit, 0, 1) === '@') {
