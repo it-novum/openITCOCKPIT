@@ -801,7 +801,7 @@
                                 size="255"
                                 placeholder="<?php echo __('Search for widgets'); ?>"
                                 ng-model="widgetSearchStr">
-                            <div ng-if="availableWidgets.length === 0">
+                            <div ng-if="noWidgetsFound">
                                 <div
                                     class="help-block text-danger"><?php echo __('No matching widgets found.'); ?></div>
                             </div>
@@ -819,6 +819,7 @@
                     <div class="col-lg-12">
                         <div class="list-group">
                             <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
+                               ng-show="widgetSearchStr.length === 0 || availableWidget.title.toLowerCase().includes(widgetSearchStr.toLowerCase())"
                                ng-click="addWidgetToTab(availableWidget.type_id)"
                                class="list-group-item list-group-item-action">
                                 <i class="{{availableWidget.icon}}"></i>&nbsp;
