@@ -328,14 +328,7 @@ class WidgetsTable extends Table {
                 'width'     => 3,
                 'height'    => 15
             ];
-            $widgets[] = [
-                'type_id'   => 21,
-                'title'     => __('Tactical overview for hosts'),
-                'icon'      => 'fas fa-th-list',
-                'directive' => 'tactical-overview-hosts-widget',
-                'width'     => 6,
-                'height'    => 15
-            ];
+
             $widgets[] = [
                 'type_id'   => 25,
                 'title'     => __('Host status list (extended)'),
@@ -343,6 +336,17 @@ class WidgetsTable extends Table {
                 'directive' => 'hosts-status-extended-widget',
                 'width'     => 12,
                 'height'    => 16
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['hosts']['index']) && isset($ACL_PERMISSIONS['hostgroups']['index'])) {
+            $widgets[] = [
+                'type_id'   => 21,
+                'title'     => __('Tactical overview for hosts'),
+                'icon'      => 'fas fa-th-list',
+                'directive' => 'tactical-overview-hosts-widget',
+                'width'     => 6,
+                'height'    => 15
             ];
         }
 
@@ -371,20 +375,24 @@ class WidgetsTable extends Table {
                 'width'     => 3,
                 'height'    => 15
             ];
-            $widgets[] = [
-                'type_id'   => 22,
-                'title'     => __('Tactical overview for services'),
-                'icon'      => 'fas fa-th-list',
-                'directive' => 'tactical-overview-services-widget',
-                'width'     => 6,
-                'height'    => 16
-            ];
+
             $widgets[] = [
                 'type_id'   => 26,
                 'title'     => __('Service status list (extended)'),
                 'icon'      => 'far fa-list-alt',
                 'directive' => 'services-status-extended-widget',
                 'width'     => 12,
+                'height'    => 16
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['services']['index']) && isset($ACL_PERMISSIONS['servicegroups']['index'])) {
+            $widgets[] = [
+                'type_id'   => 22,
+                'title'     => __('Tactical overview for services'),
+                'icon'      => 'fas fa-th-list',
+                'directive' => 'tactical-overview-services-widget',
+                'width'     => 6,
                 'height'    => 16
             ];
         }
