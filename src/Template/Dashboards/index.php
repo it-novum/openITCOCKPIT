@@ -821,7 +821,7 @@
                             <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
                                ng-show="widgetSearchStr.length === 0 || availableWidget.title.toLowerCase().includes(widgetSearchStr.toLowerCase())"
                                ng-click="addWidgetToTab(availableWidget.type_id)"
-                               class="list-group-item list-group-item-action">
+                               class="list-group-item list-group-item-action py-2">
                                 <i class="{{availableWidget.icon}}"></i>&nbsp;
                                 {{availableWidget.title}}
                             </a>
