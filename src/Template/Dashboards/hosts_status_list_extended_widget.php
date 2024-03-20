@@ -38,7 +38,8 @@
                                 </label>
 
                                 <div class="slidecontainer">
-                                    <input type="range" step="5000" min="5000" max="300000" class="slider" ng-disabled="readOnly"
+                                    <input type="range" step="5000" min="0" max="300000" class="slider"
+                                           ng-disabled="readOnly"
                                            style="width: 100%"
                                            ng-model="scroll_interval" ng-model-options="{debounce: 500}">
                                 </div>
@@ -222,6 +223,79 @@
                                            ng-model="filter.Host.not_keywords">
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+                            <h5 class="pt-1">
+                                <?= __('Status older than'); ?>
+                            </h5>
+                            <div class="input-group input-group-sm" ng-if="filter.Hoststatus">
+                                <div class="input-group-prepend input-group-append">
+                                <span class="input-group-text">
+                                    <i class="far fa-clock fa-lg"></i>
+                                </span>
+                                </div>
+                                <input ng-model="filter.Hoststatus.state_older_than"
+                                       placeholder="<?= __('Leave empty for all'); ?>"
+                                       class="form-control" type="number" min="1">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary dropdown-toggle"
+                                            ng-switch="filter.Hoststatus.state_older_than_unit"
+                                            type="button" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">
+                                    <span ng-switch-when="SECOND">
+                                        <?= __('seconds'); ?>
+                                    </span>
+                                        <span ng-switch-when="MINUTE">
+                                        <?= __('minutes'); ?>
+                                    </span>
+                                        <span ng-switch-when="HOUR">
+                                        <?= __('hours'); ?>
+                                    </span>
+                                        <span ng-switch-when="DAY">
+                                        <?= __('days'); ?>
+                                    </span>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="filter.Hoststatus.state_older_than_unit = 'SECOND'">
+                                            <?= __('seconds'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="filter.Hoststatus.state_older_than_unit = 'MINUTE'">
+                                            <?= __('minutes'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="filter.Hoststatus.state_older_than_unit = 'HOUR'">
+                                            <?= __('hours'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="filter.Hoststatus.state_older_than_unit = 'DAY'">
+                                            <?= __('days'); ?>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+                            <fieldset>
+                                <h5><?php echo __('Sort by'); ?></h5>
+                                <div class="form-group smart-form">
+                                    <select
+                                        id="SortingSetting-{{widget.id}}"
+                                        data-placeholder="<?php echo __('Sort by column'); ?>"
+                                        class="form-control"
+                                        chosen="column"
+                                        ng-model="sort"
+                                        ng-model-options="{debounce: 500}">
+                                        <option value="Hoststatus.current_state"><?php echo __('State'); ?></option>
+                                        <option
+                                            value="Hoststatus.last_state_change"><?php echo __('State since'); ?></option>
+                                    </select>
+                                </div>
+                            </fieldset>
                         </div>
                     </div>
 

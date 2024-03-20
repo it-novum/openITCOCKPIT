@@ -41,7 +41,7 @@ class HostFilter extends Filter {
             'like'          => [
                 'Hosts.description',
                 'Hoststatus.output',
-                'hostdescription'
+                'hostdescription',
             ],
             'rlike'         => [
                 'Hosts.keywords'
@@ -66,6 +66,10 @@ class HostFilter extends Filter {
             'like_or_rlike' => [
                 'Hosts.name',
                 'Hosts.address',
+            ],
+            'greater'       => [
+                'Hoststatus.state_older_than',
+                'Hoststatus.state_older_than_unit',
             ]
         ];
 
