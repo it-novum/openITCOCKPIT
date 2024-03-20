@@ -42,6 +42,7 @@ use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
 /**
@@ -131,6 +132,11 @@ class UsersTable extends Table {
             'saveStrategy'     => 'replace',
             'dependent'        => true
         ]);
+
+        $this->hasOne('SystemHealthUsers', [
+            'foreignKey' => 'user_id'
+        ]);
+
     }
 
     /**
@@ -1345,6 +1351,89 @@ class UsersTable extends Table {
             return [];
         }
         return $users;
+    }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getUsersForSystemHealth($MY_RIGHTS = []) {
+
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'ContainersUsersMemberships.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+        $userIds = Hash::extract($query->toArray(), '{n}.id');
+
+        //Get all user ids where container assigned are made through an user container role
+        $query = $this->find()
+            ->select([
+                'Users.id'
+            ])
+            ->matching('Usercontainerroles.Containers')
+            ->group([
+                'Users.id'
+            ])
+            ->disableHydration();
+
+        if (!empty($MY_RIGHTS)) {
+            $query->where([
+                'Containers.id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $userIdsThroughContainerRoles = Hash::extract($query->toArray(), '{n}.id');
+
+        $userIds = array_unique(array_merge($userIds, $userIdsThroughContainerRoles));
+
+        $query = $this->find();
+        $query->select([
+            'Users.id',
+            'key'   => 'Users.id',
+            'value' => $query->func()->concat([
+                'Users.firstname' => 'literal',
+                ' ',
+                'Users.lastname'  => 'literal',
+                ' (',
+                'Users.email'     => 'literal',
+                ')'
+            ]),
+            'SystemHealthUsers.id',
+        ])
+            ->contain([
+                'SystemHealthUsers',
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ])
+            ->where([
+                'Users.is_active'         => 1,
+                'SystemHealthUsers.id IS' => null
+            ]);
+
+        if (!empty($userIds)) {
+            $query->where([
+                'Users.id IN' => $userIds
+            ]);
+        }
+
+        $query->group([
+            'Users.id'
+        ]);
+
+        return $query->toArray();
     }
 
     /**
