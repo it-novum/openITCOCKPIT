@@ -184,7 +184,7 @@ class DashboardsController extends AppController {
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
 
-        $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
+        $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
         $isValidDirective = false;
         foreach ($widgets as $widget) {
             if ($widget['directive'] === $directiveName) {
