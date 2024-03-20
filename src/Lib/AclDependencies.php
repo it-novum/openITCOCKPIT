@@ -545,10 +545,12 @@ class AclDependencies {
             ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'loadServicetemplatesByContainerId')
             ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'append')
             ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'loadServicetemplategroupsByString')
+            ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'loadServicetemplatesByString')
             ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadContainers')
             ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplatesByContainerId')
             ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'append')
-            ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplategroupsByString');
+            ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplategroupsByString')
+            ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplatesByString');
 
 
         $this
