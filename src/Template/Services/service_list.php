@@ -537,7 +537,7 @@
                                             </a>
                                         <?php endif; ?>
 
-                                        <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
+                                        <?php if ($this->Acl->hasPermission('externalcommands', 'services')): ?>
                                             <a class="dropdown-item" href="javascript:void(0);"
                                                ng-click="reschedule(getObjectsForExternalCommand())">
                                                 <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>

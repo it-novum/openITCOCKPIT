@@ -154,7 +154,7 @@
                                                     <label>
                                                         <?= __('Enable RegEx'); ?>
                                                         <input type="checkbox"
-                                                           ng-model="filter.Services.name_regex">
+                                                               ng-model="filter.Services.name_regex">
                                                     </label>
                                                     <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
                                                 </span>
@@ -1110,7 +1110,7 @@
                                             <?php echo __('Add to service group'); ?>
                                         </a>
                                     <?php endif; ?>
-                                    <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
+                                    <?php if ($this->Acl->hasPermission('externalcommands', 'services')): ?>
                                         <a class="dropdown-item" href="javascript:void(0);"
                                            ng-click="reschedule(getObjectsForExternalCommand())">
                                             <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>
