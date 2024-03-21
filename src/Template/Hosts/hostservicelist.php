@@ -131,13 +131,7 @@
             {{ service.Servicestatus.last_state_change }}
         </td>
         <td>
-            <span
-                ng-if="service.Service.active_checks_enabled && service.Host.is_satellite_host === false">{{
-                service.Servicestatus.lastCheck }}</span>
-            <span
-                ng-if="service.Service.active_checks_enabled === false || service.Host.is_satellite_host === true">
-                <?php echo __('n/a'); ?>
-            </span>
+            {{service.Servicestatus.lastCheck }}
         </td>
         <td>
             <span
