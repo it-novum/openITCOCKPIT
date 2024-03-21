@@ -40,7 +40,7 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadServicetemplates = function(){
+        $scope.loadServicetemplates = function(searchString){
             var containerId = $scope.post.Servicetemplategroup.container.parent_id;
 
             //May be triggered by watch from "Create another"
@@ -48,10 +48,16 @@ angular.module('openITCOCKPIT')
                 return;
             }
 
-            $http.get("/servicetemplategroups/loadServicetemplatesByContainerId/" + containerId + ".json?angular=true")
-                .then(function(result){
-                    $scope.servicetemplates = result.data.servicetemplates;
-                });
+            $http.get("/servicetemplategroups/loadServicetemplates.json", {
+                params: {
+                    'angular': true,
+                    'containerId': containerId,
+                    'filter[Servicetemplates.template_name]': searchString,
+                    'selected[]': $scope.post.Servicetemplategroup.servicetemplates._ids
+                }
+            }).then(function(result){
+                $scope.servicetemplates = result.data.servicetemplates;
+            });
         };
 
         $scope.submit = function(){
@@ -78,22 +84,6 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.loadServicetemplatesByString = function(searchString){
-            if($scope.post.Servicetemplategroup.container.parent_id == 0){
-                return;
-            }
-            $http.get("/servicetemplategroups/loadServicetemplatesByString.json", {
-                params: {
-                    'angular': true,
-                    'containerId': $scope.post.Servicetemplategroup.container.parent_id,
-                    'filter[Servicetemplates.template_name]': searchString,
-                    'selected[]': $scope.post.Servicetemplategroup.servicetemplates._ids
-                }
-            }).then(function(result){
-                $scope.servicetemplates = result.data.servicetemplates;
-            });
-        };
-
         $scope.loadContainers();
         $scope.loadServicetemplategroup();
 
@@ -101,7 +91,7 @@ angular.module('openITCOCKPIT')
             if($scope.init){
                 return;
             }
-            $scope.loadServicetemplates();
+            $scope.loadServicetemplates('');
         }, true);
 
     });

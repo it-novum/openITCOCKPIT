@@ -537,15 +537,13 @@ class AclDependencies {
             ->dependency('Servicetemplategroups', 'index', 'Servicetemplategroups', 'loadServicetemplategroupsByString')
             ->dependency('Servicetemplategroups', 'index', 'Servicetemplategroups', 'loadHostgroupsByString')
             ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'loadContainers')
-            ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'loadServicetemplatesByContainerId')
+            ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'loadServicetemplates')
             ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'append')
             ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'loadServicetemplategroupsByString')
-            ->dependency('Servicetemplategroups', 'add', 'Servicetemplategroups', 'loadServicetemplatesByString')
             ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadContainers')
-            ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplatesByContainerId')
+            ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplates')
             ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'append')
-            ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplategroupsByString')
-            ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplatesByString');
+            ->dependency('Servicetemplategroups', 'edit', 'Servicetemplategroups', 'loadServicetemplategroupsByString');
 
 
         $this
