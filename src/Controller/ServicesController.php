@@ -1776,7 +1776,7 @@ class ServicesController extends AppController {
             }
         }
 
-        $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'hosts');
+        $canSubmitExternalCommands = $this->hasPermission('externalcommands', 'services');
 
         $typesForView = $ServicesTable->getServiceTypesWithStyles();
         $serviceType = $typesForView[$mergedService['service_type']];
