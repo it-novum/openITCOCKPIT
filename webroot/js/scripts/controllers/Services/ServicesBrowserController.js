@@ -221,6 +221,11 @@ angular.module('openITCOCKPIT')
                         jQuery("[rel=tooltip]").tooltip();
                     });
                 }, 250);
+
+                // Acknowledge if param is passed.
+                if(window.location.href.indexOf('#acknowledge') > -1){
+                    $scope.acknowledgeService($scope.getObjectsForExternalCommand());
+                }
             }, function errorCallback(results){
                 if(results.status === 403){
                     $state.go('403');
@@ -618,7 +623,10 @@ angular.module('openITCOCKPIT')
             options.series.threshold = thresholdAreas;
             options.grid.markings = thresholdLines;
             //options.lines.fillColor.colors = [{opacity: 0.4}, {brightness: 1, opacity: 1}];
-            options.lines.fillColor.colors = [{brightness: 1, opacity: 0.2}, {brightness: 1, opacity: 0.2}];
+            options.lines.fillColor.colors = [{brightness: 1, opacity: 0.2}, {
+                brightness: 1,
+                opacity: 0.2
+            }];
 
             //options.points = {
             //    show: $scope.graph.showDatapoints,
