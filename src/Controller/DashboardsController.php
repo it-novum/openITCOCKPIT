@@ -180,11 +180,16 @@ class DashboardsController extends AppController {
 
     public function dynamicDirective() {
         $directiveName = $this->request->getQuery('directive');
+        $readOnly =   filter_var($this->request->getQuery('readonly'), FILTER_VALIDATE_BOOLEAN);
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
-
-        $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
+        if($readOnly) {
+            $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
+        } else {
+            $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
+        }
+       // $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
         $isValidDirective = false;
         foreach ($widgets as $widget) {
             if ($widget['directive'] === $directiveName) {

@@ -51,7 +51,6 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewServicesWidget', func
                     $('#ServicesNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Service.not_keywords);
 
                     $scope.servicestatusSummary = result.data.servicestatusSummary;
-                    $scope.loadServicegroups();
                 });
             };
 
@@ -92,6 +91,7 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewServicesWidget', func
                 $scope.$broadcast('FLIP_EVENT_IN');
             };
             $scope.showConfig = function(){
+                $scope.loadServicegroups();
                 $scope.$broadcast('FLIP_EVENT_OUT');
             };
 

@@ -221,22 +221,6 @@ class WidgetsTable extends Table {
                 'height'    => 11
             ],
             [
-                'type_id'   => 11,
-                'title'     => __('Traffic light'),
-                'icon'      => 'fas fa-road',
-                'directive' => 'trafficlight-widget',
-                'width'     => 3,
-                'height'    => 14
-            ],
-          /*  [
-                'type_id'   => 12,
-                'title'     => __('Tachometer'),
-                'icon'      => 'fas fa-tachometer-alt',
-                'directive' => 'tachometer-widget',
-                'width'     => 3,
-                'height'    => 14
-            ], */
-            [
                 'type_id'   => 13,
                 'title'     => __('Notice'),
                 'icon'      => 'fas fa-pencil-square',
@@ -321,15 +305,6 @@ class WidgetsTable extends Table {
                 'height'    => 15
             ];
             $widgets[] = [
-                'type_id'   => 14,
-                'title'     => __('Host status overview (extended)'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'host-status-overview-extended-widget',
-                'width'     => 3,
-                'height'    => 15
-            ];
-
-            $widgets[] = [
                 'type_id'   => 25,
                 'title'     => __('Host status list (extended)'),
                 'icon'      => 'far fa-list-alt',
@@ -346,6 +321,14 @@ class WidgetsTable extends Table {
                 'icon'      => 'fas fa-th-list',
                 'directive' => 'tactical-overview-hosts-widget',
                 'width'     => 6,
+                'height'    => 15
+            ];
+            $widgets[] = [
+                'type_id'   => 14,
+                'title'     => __('Host status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'host-status-overview-extended-widget',
+                'width'     => 3,
                 'height'    => 15
             ];
         }
@@ -368,18 +351,18 @@ class WidgetsTable extends Table {
                 'height'    => 14
             ];
             $widgets[] = [
+                'type_id'   => 11,
+                'title'     => __('Traffic light'),
+                'icon'      => 'fas fa-road',
+                'directive' => 'trafficlight-widget',
+                'width'     => 3,
+                'height'    => 14
+            ];
+            $widgets[] = [
                 'type_id'   => 17,
                 'title'     => __('Service status overview'),
                 'icon'      => 'fas fa-info-circle',
                 'directive' => 'service-status-overview-widget',
-                'width'     => 3,
-                'height'    => 15
-            ];
-            $widgets[] = [
-                'type_id'   => 20,
-                'title'     => __('Service status overview (extended)'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'service-status-overview-extended-widget',
                 'width'     => 3,
                 'height'    => 15
             ];
@@ -402,6 +385,14 @@ class WidgetsTable extends Table {
                 'directive' => 'tactical-overview-services-widget',
                 'width'     => 6,
                 'height'    => 16
+            ];
+            $widgets[] = [
+                'type_id'   => 20,
+                'title'     => __('Service status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'service-status-overview-extended-widget',
+                'width'     => 3,
+                'height'    => 15
             ];
         }
 
@@ -523,14 +514,30 @@ class WidgetsTable extends Table {
                 'width'     => 3,
                 'height'    => 14
             ],
-              [
-                  'type_id'   => 12,
-                  'title'     => __('Tachometer'),
-                  'icon'      => 'fas fa-tachometer-alt',
-                  'directive' => 'tachometer-widget',
-                  'width'     => 3,
-                  'height'    => 14
-              ],
+            [
+                'type_id'   => 12,
+                'title'     => __('Tachometer'),
+                'icon'      => 'fas fa-tachometer-alt',
+                'directive' => 'tachometer-widget',
+                'width'     => 3,
+                'height'    => 14
+            ],
+            [
+                'type_id'   => 22,
+                'title'     => __('Tactical overview for services'),
+                'icon'      => 'fas fa-th-list',
+                'directive' => 'tactical-overview-services-widget',
+                'width'     => 6,
+                'height'    => 16
+            ],
+            [
+                'type_id'   => 21,
+                'title'     => __('Tactical overview for hosts'),
+                'icon'      => 'fas fa-th-list',
+                'directive' => 'tactical-overview-hosts-widget',
+                'width'     => 6,
+                'height'    => 15
+            ],
             [
                 'type_id'   => 13,
                 'title'     => __('Notice'),
@@ -555,6 +562,39 @@ class WidgetsTable extends Table {
                 'width'     => 4,
                 'height'    => 9
             ],
+            [
+                'type_id'   => 16,
+                'title'     => __('Host status overview'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'host-status-overview-widget',
+                'width'     => 3,
+                'height'    => 15
+            ],
+            [
+                'type_id'   => 14,
+                'title'     => __('Host status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'host-status-overview-extended-widget',
+                'width'     => 3,
+                'height'    => 15
+            ],
+            [
+                'type_id'   => 17,
+                'title'     => __('Service status overview'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'service-status-overview-widget',
+                'width'     => 3,
+                'height'    => 15
+            ],
+            [
+                'type_id'   => 20,
+                'title'     => __('Service status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'service-status-overview-extended-widget',
+                'width'     => 3,
+                'height'    => 15
+            ]
+
             /*
             [
                 'type_id'   => 15,
@@ -607,22 +647,6 @@ class WidgetsTable extends Table {
                 'width'     => 12,
                 'height'    => 16
             ];
-            $widgets[] = [
-                'type_id'   => 16,
-                'title'     => __('Host status overview'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'host-status-overview-widget',
-                'width'     => 3,
-                'height'    => 15
-            ];
-            $widgets[] = [
-                'type_id'   => 14,
-                'title'     => __('Host status overview (extended)'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'host-status-overview-extended-widget',
-                'width'     => 3,
-                'height'    => 15
-            ];
 
             $widgets[] = [
                 'type_id'   => 25,
@@ -631,17 +655,6 @@ class WidgetsTable extends Table {
                 'directive' => 'hosts-status-extended-widget',
                 'width'     => 12,
                 'height'    => 16
-            ];
-        }
-
-        if (isset($ACL_PERMISSIONS['hosts']['index']) && isset($ACL_PERMISSIONS['hostgroups']['index'])) {
-            $widgets[] = [
-                'type_id'   => 21,
-                'title'     => __('Tactical overview for hosts'),
-                'icon'      => 'fas fa-th-list',
-                'directive' => 'tactical-overview-hosts-widget',
-                'width'     => 6,
-                'height'    => 15
             ];
         }
 
@@ -654,48 +667,12 @@ class WidgetsTable extends Table {
                 'width'     => 12,
                 'height'    => 16
             ];
-          /*  $widgets[] = [
-                'type_id'   => 12,
-                'title'     => __('Tachometer'),
-                'icon'      => 'fas fa-tachometer-alt',
-                'directive' => 'tachometer-widget',
-                'width'     => 3,
-                'height'    => 14
-            ];*/
-            $widgets[] = [
-                'type_id'   => 17,
-                'title'     => __('Service status overview'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'service-status-overview-widget',
-                'width'     => 3,
-                'height'    => 15
-            ];
-            $widgets[] = [
-                'type_id'   => 20,
-                'title'     => __('Service status overview (extended)'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'service-status-overview-extended-widget',
-                'width'     => 3,
-                'height'    => 15
-            ];
-
             $widgets[] = [
                 'type_id'   => 26,
                 'title'     => __('Service status list (extended)'),
                 'icon'      => 'far fa-list-alt',
                 'directive' => 'services-status-extended-widget',
                 'width'     => 12,
-                'height'    => 16
-            ];
-        }
-
-        if (isset($ACL_PERMISSIONS['services']['index']) && isset($ACL_PERMISSIONS['servicegroups']['index'])) {
-            $widgets[] = [
-                'type_id'   => 22,
-                'title'     => __('Tactical overview for services'),
-                'icon'      => 'fas fa-th-list',
-                'directive' => 'tactical-overview-services-widget',
-                'width'     => 6,
                 'height'    => 16
             ];
         }
