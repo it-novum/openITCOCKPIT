@@ -221,22 +221,6 @@ class WidgetsTable extends Table {
                 'height'    => 11
             ],
             [
-                'type_id'   => 11,
-                'title'     => __('Traffic light'),
-                'icon'      => 'fas fa-road',
-                'directive' => 'trafficlight-widget',
-                'width'     => 3,
-                'height'    => 14
-            ],
-            [
-                'type_id'   => 12,
-                'title'     => __('Tachometer'),
-                'icon'      => 'fas fa-tachometer-alt',
-                'directive' => 'tachometer-widget',
-                'width'     => 3,
-                'height'    => 14
-            ],
-            [
                 'type_id'   => 13,
                 'title'     => __('Notice'),
                 'icon'      => 'fas fa-pencil-square',
@@ -321,13 +305,16 @@ class WidgetsTable extends Table {
                 'height'    => 15
             ];
             $widgets[] = [
-                'type_id'   => 14,
-                'title'     => __('Host status overview (extended)'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'host-status-overview-extended-widget',
-                'width'     => 3,
-                'height'    => 15
+                'type_id'   => 25,
+                'title'     => __('Host status list (extended)'),
+                'icon'      => 'far fa-list-alt',
+                'directive' => 'hosts-status-extended-widget',
+                'width'     => 12,
+                'height'    => 16
             ];
+        }
+
+        if (isset($ACL_PERMISSIONS['hosts']['index']) && isset($ACL_PERMISSIONS['hostgroups']['index'])) {
             $widgets[] = [
                 'type_id'   => 21,
                 'title'     => __('Tactical overview for hosts'),
@@ -336,6 +323,331 @@ class WidgetsTable extends Table {
                 'width'     => 6,
                 'height'    => 15
             ];
+            $widgets[] = [
+                'type_id'   => 14,
+                'title'     => __('Host status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'host-status-overview-extended-widget',
+                'width'     => 3,
+                'height'    => 15
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['services']['index'])) {
+            $widgets[] = [
+                'type_id'   => 10,
+                'title'     => __('Service status list'),
+                'icon'      => 'far fa-list-alt',
+                'directive' => 'services-status-widget',
+                'width'     => 12,
+                'height'    => 16
+            ];
+            $widgets[] = [
+                'type_id'   => 12,
+                'title'     => __('Tachometer'),
+                'icon'      => 'fas fa-tachometer-alt',
+                'directive' => 'tachometer-widget',
+                'width'     => 3,
+                'height'    => 14
+            ];
+            $widgets[] = [
+                'type_id'   => 11,
+                'title'     => __('Traffic light'),
+                'icon'      => 'fas fa-road',
+                'directive' => 'trafficlight-widget',
+                'width'     => 3,
+                'height'    => 14
+            ];
+            $widgets[] = [
+                'type_id'   => 17,
+                'title'     => __('Service status overview'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'service-status-overview-widget',
+                'width'     => 3,
+                'height'    => 15
+            ];
+
+            $widgets[] = [
+                'type_id'   => 26,
+                'title'     => __('Service status list (extended)'),
+                'icon'      => 'far fa-list-alt',
+                'directive' => 'services-status-extended-widget',
+                'width'     => 12,
+                'height'    => 16
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['services']['index']) && isset($ACL_PERMISSIONS['servicegroups']['index'])) {
+            $widgets[] = [
+                'type_id'   => 22,
+                'title'     => __('Tactical overview for services'),
+                'icon'      => 'fas fa-th-list',
+                'directive' => 'tactical-overview-services-widget',
+                'width'     => 6,
+                'height'    => 16
+            ];
+            $widgets[] = [
+                'type_id'   => 20,
+                'title'     => __('Service status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'service-status-overview-extended-widget',
+                'width'     => 3,
+                'height'    => 15
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['automaps']['view'])) {
+            $widgets[] = [
+                'type_id'   => 19,
+                'title'     => __('Auto Map'),
+                'icon'      => 'fa-solid fa-wand-magic-sparkles',
+                'directive' => 'automap-widget',
+                'width'     => 12,
+                'height'    => 13
+            ];
+        }
+
+        if ($SystemsettingsTable->isWebsiteWidgetEnabled()) {
+            $widgets[] = [
+                'type_id'   => 18,
+                'title'     => __('Website'),
+                'icon'      => 'fas fa-globe-europe',
+                'directive' => 'website-widget',
+                'width'     => 12,
+                'height'    => 30
+            ];
+        }
+
+        $modules = PluginManager::getAvailablePlugins();
+        foreach ($modules as $module) {
+            $className = sprintf('\\%s\\Lib\\Widgets', $module);
+            if (class_exists($className)) {
+
+                /** @var ModuleWidgetsInterface $PluginWidgets */
+                $PluginWidgets = new $className($ACL_PERMISSIONS);
+
+                foreach ($PluginWidgets->getAvailableWidgets() as $pluginWidget) {
+                    $widgets[] = $pluginWidget;
+                }
+            }
+        }
+
+        return $widgets;
+    }
+
+    public function getAvailableForViewWidgets($ACL_PERMISSIONS = []) {
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        //Default Widgets static dashboards - no permissions required
+        $widgets = [
+            [
+                'type_id'   => 1,
+                'title'     => __('Welcome'),
+                'icon'      => 'fas fa-comment',
+                'directive' => 'welcome-widget', //AngularJS directive,
+                'width'     => 6,
+                'height'    => 7,
+                'default'   => [
+                    'row' => 0,
+                    'col' => 0
+                ]
+            ],
+            [
+                'type_id'   => 2,
+                'title'     => __('Parent outages'),
+                'icon'      => 'fas fa-exchange-alt',
+                'directive' => 'parent-outages-widget',
+                'width'     => 6,
+                'height'    => 7,
+                'default'   => [
+                    'row' => 0,
+                    'col' => 6
+                ]
+            ],
+
+            [
+                'type_id'   => 3,
+                'title'     => __('Hosts pie chart'),
+                'icon'      => 'fa fa-pie-chart',
+                'directive' => 'hosts-piechart-widget',
+                'width'     => 6,
+                'height'    => 11,
+                'default'   => [
+                    'row' => 7,
+                    'col' => 0
+                ]
+            ],
+            [
+                'type_id'   => 7,
+                'title'     => __('Hosts pie chart 180'),
+                'icon'      => 'fa fa-pie-chart',
+                'directive' => 'hosts-piechart-180-widget',
+                'width'     => 6,
+                'height'    => 11
+            ],
+            [
+                'type_id'   => 4,
+                'title'     => __('Services pie chart'),
+                'icon'      => 'fa fa-pie-chart',
+                'directive' => 'services-piechart-widget',
+                'width'     => 6,
+                'height'    => 11,
+                'default'   => [
+                    'row' => 7,
+                    'col' => 6
+                ]
+            ],
+            [
+                'type_id'   => 8,
+                'title'     => __('Services pie chart 180'),
+                'icon'      => 'fa fa-pie-chart',
+                'directive' => 'services-piechart180-widget',
+                'width'     => 6,
+                'height'    => 11
+            ],
+            [
+                'type_id'   => 11,
+                'title'     => __('Traffic light'),
+                'icon'      => 'fas fa-road',
+                'directive' => 'trafficlight-widget',
+                'width'     => 3,
+                'height'    => 14
+            ],
+            [
+                'type_id'   => 12,
+                'title'     => __('Tachometer'),
+                'icon'      => 'fas fa-tachometer-alt',
+                'directive' => 'tachometer-widget',
+                'width'     => 3,
+                'height'    => 14
+            ],
+            [
+                'type_id'   => 22,
+                'title'     => __('Tactical overview for services'),
+                'icon'      => 'fas fa-th-list',
+                'directive' => 'tactical-overview-services-widget',
+                'width'     => 6,
+                'height'    => 16
+            ],
+            [
+                'type_id'   => 21,
+                'title'     => __('Tactical overview for hosts'),
+                'icon'      => 'fas fa-th-list',
+                'directive' => 'tactical-overview-hosts-widget',
+                'width'     => 6,
+                'height'    => 15
+            ],
+            [
+                'type_id'   => 13,
+                'title'     => __('Notice'),
+                'icon'      => 'fas fa-pencil-square',
+                'directive' => 'notice-widget',
+                'width'     => 6,
+                'height'    => 13
+            ],
+            [
+                'type_id'   => 23,
+                'title'     => __('Today'),
+                'icon'      => 'fas fa-calendar-day',
+                'directive' => 'today-widget', //AngularJS directive,
+                'width'     => 2,
+                'height'    => 9
+            ],
+            [
+                'type_id'   => 24,
+                'title'     => __('Calendar'),
+                'icon'      => 'fas fa-calendar-alt',
+                'directive' => 'calendar-widget', //AngularJS directive,
+                'width'     => 4,
+                'height'    => 9
+            ],
+            [
+                'type_id'   => 16,
+                'title'     => __('Host status overview'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'host-status-overview-widget',
+                'width'     => 3,
+                'height'    => 15
+            ],
+            [
+                'type_id'   => 14,
+                'title'     => __('Host status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'host-status-overview-extended-widget',
+                'width'     => 3,
+                'height'    => 15
+            ],
+            [
+                'type_id'   => 17,
+                'title'     => __('Service status overview'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'service-status-overview-widget',
+                'width'     => 3,
+                'height'    => 15
+            ],
+            [
+                'type_id'   => 20,
+                'title'     => __('Service status overview (extended)'),
+                'icon'      => 'fas fa-info-circle',
+                'directive' => 'service-status-overview-extended-widget',
+                'width'     => 3,
+                'height'    => 15
+            ]
+
+            /*
+            [
+                'type_id'   => 15,
+                'title'     => __('Graphgenerator'),
+                'icon'      => 'fa-area-chart',
+                'directive' => 'graphgenerator-widget',
+                'width'     => 6,
+                'height'    => 7
+            ]
+            */
+        ];
+
+        //Depands on user rights
+        if (isset($ACL_PERMISSIONS['downtimes']['host'])) {
+            $widgets[] = [
+                'type_id'   => 5,
+                'title'     => __('Hosts in downtime'),
+                'icon'      => 'fas fa-power-off',
+                'directive' => 'hosts-downtime-widget',
+                'width'     => 12,
+                'height'    => 15,
+                'default'   => [
+                    'row' => 18,
+                    'col' => 0
+                ]
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['downtimes']['service'])) {
+            $widgets[] = [
+                'type_id'   => 6,
+                'title'     => __('Services in downtime'),
+                'icon'      => 'fas fa-power-off',
+                'directive' => 'services-downtime-widget',
+                'width'     => 12,
+                'height'    => 15,
+                'default'   => [
+                    'row' => 32,
+                    'col' => 0
+                ]
+            ];
+        }
+
+        if (isset($ACL_PERMISSIONS['hosts']['index'])) {
+            $widgets[] = [
+                'type_id'   => 9,
+                'title'     => __('Host status list'),
+                'icon'      => 'far fa-list-alt',
+                'directive' => 'hosts-status-widget',
+                'width'     => 12,
+                'height'    => 16
+            ];
+
             $widgets[] = [
                 'type_id'   => 25,
                 'title'     => __('Host status list (extended)'),
@@ -353,30 +665,6 @@ class WidgetsTable extends Table {
                 'icon'      => 'far fa-list-alt',
                 'directive' => 'services-status-widget',
                 'width'     => 12,
-                'height'    => 16
-            ];
-            $widgets[] = [
-                'type_id'   => 17,
-                'title'     => __('Service status overview'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'service-status-overview-widget',
-                'width'     => 3,
-                'height'    => 15
-            ];
-            $widgets[] = [
-                'type_id'   => 20,
-                'title'     => __('Service status overview (extended)'),
-                'icon'      => 'fas fa-info-circle',
-                'directive' => 'service-status-overview-extended-widget',
-                'width'     => 3,
-                'height'    => 15
-            ];
-            $widgets[] = [
-                'type_id'   => 22,
-                'title'     => __('Tactical overview for services'),
-                'icon'      => 'fas fa-th-list',
-                'directive' => 'tactical-overview-services-widget',
-                'width'     => 6,
                 'height'    => 16
             ];
             $widgets[] = [

@@ -64,7 +64,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewExtendedWidget',
                     $('#HostsNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
                     $('#ServicesKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Service.keywords);
                     $('#ServicesNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Service.not_keywords);
-                    $scope.loadServicegroups();
+
                 });
             };
 
@@ -74,6 +74,7 @@ angular.module('openITCOCKPIT').directive('serviceStatusOverviewExtendedWidget',
                 $scope.$broadcast('FLIP_EVENT_IN');
             };
             $scope.showConfig = function(){
+                $scope.loadServicegroups();
                 $('#widget-content-' + $scope.widget.id).css('overflow', 'auto');
                 $scope.$broadcast('FLIP_EVENT_OUT');
             };
