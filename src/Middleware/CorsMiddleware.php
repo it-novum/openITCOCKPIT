@@ -18,11 +18,12 @@ class CorsMiddleware implements MiddlewareInterface {
 
         if ($response instanceof Response) {
             if ($request instanceof ServerRequest) {
+                // @todo fix localhost
                 $response = $response
                     ->cors($request)
-                    ->allowOrigin(['*'])
+                    ->allowOrigin(['http://localhost:4200'])
                     ->allowMethods(['*'])
-                    ->allowHeaders(['*'])
+                    ->allowHeaders(['X-CSRF-Token'])
                     ->allowCredentials()
                     ->build()
                     ->withStatus(200, __('You shall pass!!'));
