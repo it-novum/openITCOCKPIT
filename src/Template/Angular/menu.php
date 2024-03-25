@@ -28,8 +28,18 @@
     {{headline.alias}}
 </li>
 <li ng-repeat-end="" ng-repeat="item in headline.items" ng-class="{'menufilterSelectable': !item.items}">
-    <a ng-if="!item.items" ui-sref="{{item.state}}" class="waves-effect waves-themed" ui-sref-opts="{ inherit: false }"
+    <!-- AngularJS Route -->
+    <a ng-if="!item.items && !item.isAngular" ui-sref="{{item.state}}" class="waves-effect waves-themed" ui-sref-opts="{ inherit: false }"
        title="{{item.name}}" data-filter-tags="{{item.tags}}" ng-click="scrollTop();">
+        <i class="{{item.icon}}"></i>
+        <span class="menu-item-parent nav-link-text">
+            {{item.name}}
+        </span>
+    </a>
+
+    <!-- New Shiny Angular -->
+    <a ng-if="!item.items && item.isAngular" href="{{item.angularUrl}}" class="waves-effect waves-themed"
+       title="{{item.name}}">
         <i class="{{item.icon}}"></i>
         <span class="menu-item-parent nav-link-text">
             {{item.name}}
@@ -43,10 +53,21 @@
             {{item.alias}}
         </span>
     </a>
+
     <ul ng-if="item.items.length > 0">
         <li ng-repeat="subItem in item.items" class="menufilterSelectable">
-            <a ui-sref="{{subItem.state}}" class="waves-effect waves-themed" ui-sref-opts="{ inherit: false }"
+            <!-- AngularJS -->
+            <a ui-sref="{{subItem.state}}" class="waves-effect waves-themed" ui-sref-opts="{ inherit: false }" ng-if="!subItem.isAngular"
                title="{{subItem.name}}" data-filter-tags="{{subItem.tags}}" ng-click="scrollTop();">
+                <i class="{{subItem.icon}}"></i>
+                <span class="nav-link-text">
+                    {{subItem.name}}
+                </span>
+            </a>
+
+            <!-- New Shiny Angular -->
+            <a href="{{subItem.angularUrl}}" class="waves-effect waves-themed" ng-if="subItem.isAngular"
+               title="{{subItem.name}}" data-filter-tags="{{subItem.tags}}"
                 <i class="{{subItem.icon}}"></i>
                 <span class="nav-link-text">
                     {{subItem.name}}

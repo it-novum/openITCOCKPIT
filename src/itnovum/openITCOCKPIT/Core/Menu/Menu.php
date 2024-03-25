@@ -246,7 +246,9 @@ class Menu {
                     '',
                     'fa fa-terminal',
                     [],
-                    2
+                    2,
+                    true,
+                    '/a/commands/index'
                 ))
                 ->addLink(new MenuLink(
                     __('User Defined Macros'),
