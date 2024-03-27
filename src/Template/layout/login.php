@@ -30,21 +30,12 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 ?>
 
 <!DOCTYPE html>
-<html ng-app="openITCOCKPITLogin">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- font awesome 4 is usd by the checkbox fa-check -->
-    <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css">
-
-    <link rel="stylesheet" type="text/css" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
-
-    <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/noty.css">
-
-    <link rel="stylesheet" type="text/css" href="/css/login/adminator.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/login/login.css">
+    <link rel="stylesheet" type="text/css" href="/webpack/main.css">
 
     <title><?= __('Sign In') ?></title>
 
@@ -89,13 +80,6 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
         }
     </style>
 
-    <script>
-        <?php if($disableAnimation): ?>
-        var disableLoginAnimation = true;
-        <?php else: ?>
-        var disableLoginAnimation = false;
-        <?php endif; ?>
-    </script>
 
 </head>
 <body class="app">
@@ -108,6 +92,10 @@ endif;
 ?>
 
 
+<?php /* <<<<<<< HEAD */ ?>
+<login-layout></login-layout>
+<!-- todo restore custom bg upload -->
+<?php /*=======
 <div class="peers ai-s fxw-nw h-100vh" ng-controller="LoginLayoutController">
 
     <?php if ($disableAnimation === false && $Logo->isCustomLoginBackground() === false): ?>
@@ -122,11 +110,10 @@ endif;
     <?php else: ?>
         <div class="login-screen-vnc"></div>
     <?php endif; ?>
+>>>>>>> 62e9a51f9bba6b47bbdff0b5074b62cba82a4f41*/ ?>
 
 
-    <?= $this->fetch('content') ?>
-
-</div>
+<?php /*
 
 <script src="/node_modules/jquery/dist/jquery.min.js"></script>
 <script src="/node_modules/angular/angular.min.js"></script>
@@ -138,7 +125,9 @@ endif;
 <script src="/js/login/ng.login-app.js"></script>
 <script src="/js/login/LoginLayoutController.js"></script>
 <script src="/js/login/UsersLoginController.js"></script>
+*/ ?>
 
+<script src="/webpack/main.js"></script>
 
 </body>
 </html>

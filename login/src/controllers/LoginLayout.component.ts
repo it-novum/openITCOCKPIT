@@ -1,10 +1,98 @@
-loginApp.controller("LoginLayoutController", function($scope, $http){
+import * as angular from 'angular';
 
-    //
-    // On page load is on the end of THIS file
-    //
 
-    var getDefaultConfig = function(){
+import {tsParticles} from "tsparticles-engine"
+import {loadFull} from "tsparticles";
+
+import '@angular/compiler';
+import {Inject, Component} from "@angular/core";
+import {downgradeComponent} from "@angular/upgrade/static";
+import {HttpClient} from "@angular/common/http";
+
+@Component({
+    selector: "login-layout", // maps to <login-layout>
+    template: `
+        <div class="login-screen" *ngIf="images">
+            <figure>
+                <figcaption>
+                    {{ images.images[0].credit }}
+                    <span ng-if="$ctrl.images.description != ''">- {{images.description}}</span>
+                </figcaption>
+            </figure>
+            <figure>
+                <figcaption>
+                    {{ images.images[1].credit }}
+                    <span ng-if="$ctrl.images.description != ''">- {{images.description}}</span>
+                </figcaption>
+            </figure>
+        </div>
+
+        <users-login></users-login>
+    `
+})
+
+export class LoginLayoutComponent {
+    public images;
+
+    private $http;
+
+    constructor(@Inject(HttpClient) private http: HttpClient) {
+        this.$http = http;
+    }
+
+    ngOnInit() {
+        this.load();
+    }
+
+    load() {
+        // in case you get an error like this:
+        // Potentially invalid reference access to a class field via 'this.' of a nested function
+        // use the "fat arrow" sytnax () => { } instead of var _this = this
+        // https://stackoverflow.com/a/57839163/11885414
+        this.$http.get("/users/login.json", {
+            params: {
+                'angular': true
+            }
+        }).toPromise().then((result) => {
+            this.images = result.images;
+
+            var particlesConfig = null;
+
+            switch (this.images.particles) {
+                case 'none':
+                    break;
+
+                case 'snow':
+                    particlesConfig = this.getSnowConfig();
+                    break;
+
+                case 'stars':
+                    particlesConfig = this.getStarsConfig();
+                    break;
+
+                case 'bubble':
+                    particlesConfig = this.getBubbleConfig();
+                    break;
+
+                default:
+                    particlesConfig = this.getDefaultConfig();
+                    break;
+            }
+
+            // TODO implement disableLoginAnimation
+            if (particlesConfig) {
+                (async () => {
+                    await loadFull(tsParticles);
+                    await tsParticles.load({
+                        'id': "tsparticles",
+                        options: particlesConfig
+                    });
+                })();
+            }
+        });
+    }
+
+    private getDefaultConfig() {
         return {
             "particles": {
                 "number": {
@@ -121,9 +209,9 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
                 "background_size": "cover"
             }
         }
-    };
+    }
 
-    var getSnowConfig = function(){
+    private getSnowConfig() {
         return {
             "particles": {
                 "number": {
@@ -234,9 +322,9 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
             "retina_detect": true,
             "fpsLimit": 30
         };
-    };
+    }
 
-    var getStarsConfig = function(){
+    private getStarsConfig() {
         return {
             "particles": {
                 "number": {
@@ -347,9 +435,9 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
             "retina_detect": true,
             "fpsLimit": 30
         };
-    };
+    }
 
-    var getBubbleConfig = function(){
+    private getBubbleConfig() {
         return {
             "particles": {
                 "number": {
@@ -460,51 +548,11 @@ loginApp.controller("LoginLayoutController", function($scope, $http){
             "retina_detect": true,
             "fpsLimit": 30
         };
-    };
+    }
+}
 
-    $scope.load = function(){
-        $http.get("/users/login.json", {
-            params: {
-                'angular': true
-            }
-        }).then(function(result){
-            $scope.images = result.data.images;
-
-            var particlesConfig = false;
-
-            switch($scope.images.particles){
-                case 'none':
-                    break;
-
-                case 'snow':
-                    particlesConfig = getSnowConfig();
-                    break;
-
-                case 'stars':
-                    particlesConfig = getStarsConfig();
-                    break;
-
-                case 'bubble':
-                    particlesConfig = getBubbleConfig();
-                    break;
-
-                default:
-                    particlesConfig = getDefaultConfig();
-                    break;
-            }
-
-            if(disableLoginAnimation === false){ //disableLoginAnimation gets set in login layout
-                if(particlesConfig){
-                    particlesJS('tsparticles',
-                        particlesConfig
-                    );
-                }
-            }
-        });
-    };
-
-    //Fire on page load
-    localStorage.removeItem('browserUuid');
-    $scope.load();
-
-});
+angular
+    .module('openITCOCKPITLogin')
+    .directive('loginLayout', downgradeComponent({
+        component: LoginLayoutComponent
+    }))
