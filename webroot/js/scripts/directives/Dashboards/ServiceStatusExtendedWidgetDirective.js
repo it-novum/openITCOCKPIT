@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
             $scope.min_scroll_intervall = 5000;
 
             // ITC-3037
-            $scope.readOnly    = $scope.widget.isReadonly;
+            $scope.readOnly = $scope.widget.isReadonly;
 
             var $widget = $('#widget-' + $scope.widget.id);
 
@@ -134,8 +134,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                     'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
                     'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                     'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
-                    'noConditionFilter[Servicestatus.state_older_than]': $scope.filter.Servicestatus.state_older_than,
-                    'noConditionFilter[Servicestatus.state_older_than_unit]': $scope.filter.Servicestatus.state_older_than_unit,
+                    'filter[Servicestatus.state_older_than]': $scope.filter.Servicestatus.state_older_than,
+                    'filter[Servicestatus.state_older_than_unit]': $scope.filter.Servicestatus.state_older_than_unit,
                     'limit': $scope.limit,
                 };
 

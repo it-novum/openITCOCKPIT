@@ -69,6 +69,10 @@ class ServiceFilter extends Filter {
             'like_or_rlike' => [
                 'Hosts.name',
                 'servicename'
+            ],
+            'greater'       => [
+                'Servicestatus.state_older_than',
+                'Servicestatus.state_older_than_unit'
             ]
         ];
 

@@ -14,7 +14,7 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
             $scope.min_scroll_intervall = 5000;
 
             // ITC-3037
-            $scope.readOnly    = $scope.widget.isReadonly;
+            $scope.readOnly = $scope.widget.isReadonly;
 
             var $widget = $('#widget-' + $scope.widget.id);
 
@@ -116,8 +116,8 @@ angular.module('openITCOCKPIT').directive('hostsStatusWidget', function($http, $
                     'filter[Hoststatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Hoststatus.current_state),
                     'filter[Hoststatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                     'filter[Hoststatus.scheduled_downtime_depth]': inDowntime,
-                    'noConditionFilter[Hoststatus.state_older_than]': $scope.filter.Hoststatus.state_older_than,
-                    'noConditionFilter[Hoststatus.state_older_than_unit]': $scope.filter.Hoststatus.state_older_than_unit,
+                    'filter[Hoststatus.state_older_than]': $scope.filter.Hoststatus.state_older_than,
+                    'filter[Hoststatus.state_older_than_unit]': $scope.filter.Hoststatus.state_older_than_unit,
                     'limit': $scope.limit
                 };
 

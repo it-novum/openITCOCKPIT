@@ -943,20 +943,22 @@ class HostsTable extends Table {
             unset($where['hostdescription LIKE']);
         }
 
-        $noConditionFilters = $HostFilter->getNoConditionFilters();
-        if (!empty($noConditionFilters['Hoststatus.state_older_than']) && is_numeric($noConditionFilters['Hoststatus.state_older_than']) && $noConditionFilters['Hoststatus.state_older_than'] > 0) {
+        if (isset($where['Hoststatus.state_older_than >']) && is_numeric($where['Hoststatus.state_older_than >']) && $where['Hoststatus.state_older_than >'] > 0) {
             $intervalUnit = 'MINUTE';
-            if (in_array($noConditionFilters['Hoststatus.state_older_than_unit'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
-                $intervalUnit = $noConditionFilters['Hoststatus.state_older_than_unit'];
+            if (in_array($where['Hoststatus.state_older_than_unit >'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
+                $intervalUnit = $where['Hoststatus.state_older_than_unit >'];
             }
             $query->where([
                 sprintf('Hoststatus.last_state_change <= UNIX_TIMESTAMP(DATE(NOW() - INTERVAL %s %s))',
-                    $noConditionFilters['Hoststatus.state_older_than'],
+                    $where['Hoststatus.state_older_than >'],
                     $intervalUnit
                 )
             ]);
 
+            unset($where['Hoststatus.state_older_than >']);
         }
+
+        unset($where['Hoststatus.state_older_than_unit >']);
 
         $query->where($where);
 
@@ -1107,21 +1109,22 @@ class HostsTable extends Table {
             unset($where['hostdescription LIKE']);
         }
 
-        $noConditionFilters = $HostFilter->getNoConditionFilters();
-        if (!empty($noConditionFilters['Hoststatus.state_older_than']) && is_numeric($noConditionFilters['Hoststatus.state_older_than']) && $noConditionFilters['Hoststatus.state_older_than'] > 0) {
+        if (isset($where['Hoststatus.state_older_than >']) && is_numeric($where['Hoststatus.state_older_than >']) && $where['Hoststatus.state_older_than >'] > 0) {
             $intervalUnit = 'MINUTE';
-            if (in_array($noConditionFilters['Hoststatus.state_older_than_unit'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
-                $intervalUnit = $noConditionFilters['Hoststatus.state_older_than_unit'];
+            if (in_array($where['Hoststatus.state_older_than_unit >'], ['SECOND', 'MINUTE', 'HOUR', 'DAY'], true)) {
+                $intervalUnit = $where['Hoststatus.state_older_than_unit >'];
             }
             $query->where([
                 sprintf('Hoststatus.last_state_change <= UNIX_TIMESTAMP(DATE(NOW() - INTERVAL %s %s))',
-                    $noConditionFilters['Hoststatus.state_older_than'],
+                    $where['Hoststatus.state_older_than >'],
                     $intervalUnit
                 )
             ]);
 
+            unset($where['Hoststatus.state_older_than >']);
         }
 
+        unset($where['Hoststatus.state_older_than_unit >']);
 
         $query->where($where);
         $query->disableHydration();

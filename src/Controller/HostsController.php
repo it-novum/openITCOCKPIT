@@ -155,8 +155,6 @@ class HostsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $HostFilter = new HostFilter($this->request);
-        $noConditionFilter = $this->request->getQuery('noConditionFilter');
-        $HostFilter->setNoConditionFilters($noConditionFilter);
 
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
