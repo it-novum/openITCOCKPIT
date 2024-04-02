@@ -1036,8 +1036,8 @@ class ServicetemplategroupsController extends AppController {
         $this->set('servicetemplates', $servicetemplates);
         $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
-    
-    public function loadServicetemplatesByString() {
+
+    public function loadServicetemplates() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
