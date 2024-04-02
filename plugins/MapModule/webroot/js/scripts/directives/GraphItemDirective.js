@@ -196,14 +196,14 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 var thresholdAreas = [];
                 switch(setup.scale.type){
                     case "W<O":
-                        thresholdAreas.push({below: 9999999999999999999, color: GraphDefaultsObj.okFillColor});
+                        thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.okFillColor});
                         thresholdAreas.push({
                             below: setup.warn.low,
                             color: GraphDefaultsObj.warningFillColor
                         });
                         break;
                     case "C<W<O":
-                        thresholdAreas.push({below: 99999999999999999999999999, color: GraphDefaultsObj.okFillColor});
+                        thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.okFillColor});
                         thresholdAreas.push({
                             below: setup.crit.low,
                             color: GraphDefaultsObj.criticalFillColor
