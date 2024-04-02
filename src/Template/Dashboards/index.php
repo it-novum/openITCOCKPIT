@@ -159,31 +159,13 @@
                                ng-class="{ 'fa-lock': dashboardIsLocked, 'fa-unlock': !dashboardIsLocked }"></i>
                         </button>
 
-
                         <div class="btn-group btn-group-xs margin-right-5"
                              ng-hide="isReadonly">
-                            <button class="btn btn-success dropdown-toggle waves-effect waves-themed" type="button"
-                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                            <button class="btn btn-success waves-effect waves-themed" type="button"
+                                    data-toggle="modal" data-target="#addWidgetModal" ng-click="resetWidgetSearch()"
                                     ng-disabled="dashboardIsLocked">
                                 <?php echo __('Add Widget'); ?>
                             </button>
-                            <div class="dropdown-menu" x-placement="bottom-start"
-                                 style="position: absolute; will-change: top, left; top: 37px; left: 0px;">
-                                <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
-                                   ng-click="addWidgetToTab(availableWidget.type_id)"
-                                   class="dropdown-item dropdown-item-xs">
-                                    <i class="{{availableWidget.icon}}"></i>&nbsp;
-                                    {{availableWidget.title}}
-                                </a>
-
-                                <div class="dropdown-divider"></div>
-                                <a href="javascript:void(0);"
-                                   ng-click="restoreDefault()"
-                                   class="dropdown-item dropdown-item-xs">
-                                    <i class="fa fa-recycle"></i>
-                                    <?php echo __('Restore default'); ?>
-                                </a>
-                            </div>
                         </div>
 
                         <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="refresh()"
@@ -770,10 +752,10 @@
 
             <div class="modal-footer">
                 <?php if ($this->Acl->hasPermission('delete', 'DashboardAllocations')): ?>
-                <button type="button" ng-show="post.DashboardAllocation.id"
-                        class="btn btn-danger mr-auto" ng-click="deleteAllocation(post.DashboardAllocation.id)">
-                    <?php echo __('Delete'); ?>
-                </button>
+                    <button type="button" ng-show="post.DashboardAllocation.id"
+                            class="btn btn-danger mr-auto" ng-click="deleteAllocation(post.DashboardAllocation.id)">
+                        <?php echo __('Delete'); ?>
+                    </button>
                 <?php endif; ?>
                 <button type="button" ng-hide="post.DashboardAllocation.id" class="btn btn-primary"
                         ng-click="addDashboardAllocation()">
@@ -784,6 +766,77 @@
                     <?php echo __('Update Allocation'); ?>
                 </button>
                 <button type="button" class="btn btn-default" data-dismiss="modal">
+                    <?php echo __('Close'); ?>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add widget modal -->
+<div id="addWidgetModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-plus"></i>
+                    <?php echo __('Add Widget'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        ng-click="resetWidgetSearch()">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label class="control-label">
+                                <?php echo __('Search'); ?>
+                            </label>
+                            <input
+                                class="form-control"
+                                type="text"
+                                size="255"
+                                placeholder="<?php echo __('Search for widgets'); ?>"
+                                ng-model="widgetSearchStr">
+                            <div ng-if="noWidgetsFound">
+                                <div
+                                    class="help-block text-danger"><?php echo __('No matching widgets found.'); ?></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12 margin-top-20 mb-1">
+                        <span><?php echo __('List of Widgets'); ?></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="list-group">
+                            <a href="javascript:void(0);" ng-repeat="availableWidget in availableWidgets"
+                               ng-show="widgetSearchStr.length === 0 || availableWidget.title.toLowerCase().includes(widgetSearchStr.toLowerCase())"
+                               ng-click="addWidgetToTab(availableWidget.type_id)"
+                               class="list-group-item list-group-item-action py-2">
+                                <i class="{{availableWidget.icon}}"></i>&nbsp;
+                                {{availableWidget.title}}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger mr-auto" ng-click="restoreDefault()">
+                    <i class="fa fa-recycle"></i>
+                    <?php echo __('Restore default'); ?>
+                </button>
+
+                <button type="button" class="btn btn-default" data-dismiss="modal" ng-click="resetWidgetSearch()">
                     <?php echo __('Close'); ?>
                 </button>
             </div>

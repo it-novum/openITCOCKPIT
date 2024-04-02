@@ -65,10 +65,13 @@ chmod 777 /opt/openitc/frontend/tmp
 
 echo "Create required system folders"
 mkdir -p /opt/openitc/etc/{mysql,grafana,carbon,frontend,nagios,nsta,statusengine} /opt/openitc/etc/statusengine/Config
+mkdir -p /opt/openitc/etc/mod_gearman
+mkdir -p /opt/openitc/logs/mod_gearman
 
 mkdir -p /opt/openitc/logs/frontend/nagios
 chown www-data:www-data /opt/openitc/logs/frontend
 chown nagios:nagios /opt/openitc/logs/frontend/nagios
+chown nagios:nagios /opt/openitc/logs/mod_gearman
 chmod 775 /opt/openitc/logs/frontend
 chmod 775 /opt/openitc/logs/frontend/nagios
 
@@ -436,6 +439,14 @@ oitc usage_flag
 
 oitc nagios_export
 
+if [ ! -f /opt/openitc/etc/mod_gearman/secret.file ]; then
+    echo "Generate new shared secret for Mod-Gearman"
+    MG_KEY=$(php -r "echo bin2hex(openssl_random_pseudo_bytes(16, \$cstrong));")
+    echo $MG_KEY > /opt/openitc/etc/mod_gearman/secret.file
+fi
+chown nagios:nagios /opt/openitc/etc/mod_gearman/secret.file
+chmod 400 /opt/openitc/etc/mod_gearman/secret.file
+
 echo "Enabling webserver configuration"
 rm -rf /etc/nginx/sites-enabled/openitc
 ln -s /etc/nginx/sites-available/openitc /etc/nginx/sites-enabled/openitc
@@ -461,8 +472,18 @@ systemctl restart\
  openitcockpit-node.service\
  oitc_cronjobs.timer
 
+# Restart services if they are running
 for srv in supervisor.service; do
   if systemctl is-active --quiet $srv; then
+    systemctl restart $srv
+  fi
+done
+
+# Restart services if they exists
+# Mod_Gearman workers are optional because they could be offloaded to a different host
+for srv in mod-gearman-worker.service; do
+  if systemctl is-enabled --quiet $srv &>/dev/null; then
+    echo "Restart service: $srv"
     systemctl restart $srv
   fi
 done

@@ -40,6 +40,7 @@ class GeneratorRegistry {
     public function getAllConfigFiles() {
         $configFiles = [
             new NagiosCfg(),
+            new ModGearmanModule(),
             new AfterExport(),
             //new NagiosModuleConfig(),
             //new phpNSTAMaster(),
@@ -74,7 +75,7 @@ class GeneratorRegistry {
      * ITC-2986
      * @return array
      */
-    public function getAllConfigFilesForContainer(){
+    public function getAllConfigFilesForContainer() {
         $configFiles = [
             new AfterExport(),
             new DbBackend(),
@@ -102,7 +103,8 @@ class GeneratorRegistry {
                 new Gearman()
             ],
             __('Monitoring engine')                           => [
-                new NagiosCfg()
+                new NagiosCfg(),
+                new ModGearmanModule(),
             ],
             __('Statusengine')                                => [
                 new StatusengineCfg(),
@@ -117,7 +119,7 @@ class GeneratorRegistry {
             __('Carbon and Whisper (Graphing)')               => [
                 new GraphingDocker()
             ],
-            __('PHP-FPM')               => [
+            __('PHP-FPM')                                     => [
                 new PhpFpmOitc()
             ]
         ];
