@@ -1592,7 +1592,14 @@ class DashboardsController extends AppController {
                     $metric = array_keys($perfdata)[0];
                     $perfdata = $perfdata[$metric];
                     $perfdata['metric'] = $metric;
-                    $serviceForJs['Servicestatus']['perfdata'] = "{$perfdata['metric']}={$perfdata['current']}{$perfdata['unit']};{$perfdata['warning']};{$perfdata['critical']};-50;50;";
+                    $serviceForJs['Servicestatus']['perfdata'] = sprintf(
+                        '%s=%s%s;%s;%s;-50;50;',
+                        h($perfdata['metric']),
+                        h($perfdata['current']),
+                        h($perfdata['unit']),
+                        h($perfdata['warning']),
+                        h($perfdata['critical'])
+                    );
                 }
 
                 return $serviceForJs;
