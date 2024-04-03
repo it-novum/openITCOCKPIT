@@ -92,7 +92,7 @@ echo $this->element('emails/style');
                                     &nbsp;
                                 <?php endif; ?>
                                 <span>
-                                    <a href="<?php printf('https://%s/#!/hosts/browser/%s', $systemAddress, $Host->getUuid()); ?>"
+                                    <a href="<?php printf('https://%s/#!/hosts/browser/%s#acknowledge', $systemAddress, $Host->getUuid()); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
                                             <?php echo h($Host->getHostname()); ?>

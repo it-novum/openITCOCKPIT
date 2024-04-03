@@ -1,0 +1,28 @@
+{
+    "name": "openitcockpit/msteamsmodule",
+    "description": "MSTeamsModule plugin for openITCOCKPIT",
+    "type": "cakephp-plugin",
+    "license": "Proprietary",
+    "require": {
+        "microsoft/microsoft-graph":  "^2.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "MSTeamsModule\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "MSTeamsModule\\Test\\": "tests/",
+            "Cake\\Test\\": "vendor/cakephp/cakephp/tests/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    }
+}
