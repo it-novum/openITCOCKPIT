@@ -5336,7 +5336,7 @@ class HostsTable extends Table {
     public function isHostInSla($id): bool {
         $query = $this->find();
         $query->select([
-            'is_sla_host' => $query->newExpr('IF(Hosts.id IS NULL, Hosttemplates.sla_id, Hosts.sla_id) > 0'),
+            'is_sla_host' => $query->newExpr('IF(Hosts.sla_id IS NULL, Hosttemplates.sla_id, Hosts.sla_id) > 0'),
         ])
             ->where([
                 'Hosts.id' => $id
