@@ -1,9 +1,31 @@
 <?php
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\Model\Table;
 
 use App\itnovum\openITCOCKPIT\Filter\SystemHealthUsersFilter;
-use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
@@ -21,7 +43,7 @@ use itnovum\openITCOCKPIT\Database\PaginateOMat;
  */
 class SystemHealthUsersTable extends Table {
 
-    use Cake2ResultTableTrait;
+    use CustomValidationTrait;
     use PaginationAndScrollIndexTrait;
 
     /**
@@ -57,6 +79,11 @@ class SystemHealthUsersTable extends Table {
             ->requirePresence('user_id', 'create')
             ->integer('user_id')
             ->allowEmptyString('user_id', null, false);
+
+        $validator->add('notify_on_recovery', 'custom', [
+            'rule'    => [$this, 'checkNotificationOptionsSystemHealth'], //\App\Lib\Traits\CustomValidationTrait
+            'message' => __('You must specify at least one notification option.')
+        ]);
 
         return $validator;
     }
