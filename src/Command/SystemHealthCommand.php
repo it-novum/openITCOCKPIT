@@ -27,8 +27,10 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\itnovum\openITCOCKPIT\Core\SystemHealthNotification;
 use App\itnovum\openITCOCKPIT\Supervisor\Supervisorctl;
 use App\Model\Table\SystemsettingsTable;
+use Cake\Cache\Cache;
 use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
@@ -38,6 +40,7 @@ use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
+use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
 use itnovum\openITCOCKPIT\Core\System\Health\Disks;
 use itnovum\openITCOCKPIT\Core\System\Health\MemoryUsage;
@@ -47,6 +50,9 @@ use itnovum\openITCOCKPIT\Filter\SatelliteFilter;
  * SystemHealth command.
  */
 class SystemHealthCommand extends Command implements CronjobInterface {
+
+    private $state = 'unknown';
+
     /**
      * Hook method for defining this command's option parser.
      *
@@ -72,7 +78,10 @@ class SystemHealthCommand extends Command implements CronjobInterface {
         $io->out('Fetch system health information...', 0);
 
         $data = $this->fetchInformation();
+        $dataForEmail = $this->determineState($data);
+        $sendingMail = $this->checkSendingMail($io);
         $this->saveToCache($data);
+        $this->sendHealthNotification($dataForEmail, $sendingMail);
 
         $io->success('   Ok');
         $io->hr();
@@ -234,7 +243,142 @@ class SystemHealthCommand extends Command implements CronjobInterface {
         return $data;
     }
 
+    public function sendHealthNotification($data, $sendingMail) {
+
+        if ($sendingMail) {
+
+            $notify_on_warning = 0;
+            $notify_on_critical = 0;
+            $notify_on_recovery = 0;
+
+            switch (strtoupper($this->state)) {
+                case 'OK':
+                    $notify_on_recovery = 1;
+                    break;
+                case 'WARNING':
+                    $notify_on_warning = 1;
+                    break;
+                case 'CRITICAL':
+                    $notify_on_critical = 1;
+                    break;
+                default:
+                    break;
+            }
+
+            if (!$notify_on_recovery && !$notify_on_critical && !$notify_on_warning) {
+                return;
+            }
+
+            /** @var $SystemHealthUsersTable SystemHealthUsersTable */
+            $SystemHealthUsersTable = TableRegistry::getTableLocator()->get('SystemHealthUsers');
+            $users = $SystemHealthUsersTable->getUsersForNotifications($notify_on_warning, $notify_on_critical, $notify_on_recovery);
+
+            $systemHealthNotification = new SystemHealthNotification($users, $this->state);
+            $systemHealthNotification->setData($data);
+            $systemHealthNotification->sendNotification();
+
+        }
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function checkSendingMail($io) {
+
+        $cache = Cache::read('system_health', 'permissions');
+        $sendingMail = false;
+        if (!empty($cache) && !empty($cache['previousState']) && $cache['previousState'] !== $this->state) {
+            $sendingMail = true;
+        }
+        $io->out($sendingMail, 0);
+        return $sendingMail;
+    }
+
+    /**
+     * @return array
+     */
+    public function determineState($data) {
+
+        $dataForEmail = $data;
+
+        $dataForEmail['cache_readable'] = true;
+        $dataForEmail['gearman_reachable'] = false;
+        $dataForEmail['gearman_worker_running'] = false;
+
+        $GearmanClient = new Gearman();
+        $GearmanClient->setTimeout(5000);
+        $dataForEmail['gearman_reachable'] = $GearmanClient->ping();
+
+
+        exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
+        $dataForEmail['gearman_worker_running'] = sizeof($output) > 0;
+        if (!$dataForEmail['gearman_worker_running']) {
+            $this->setHealthState('critical');
+        }
+
+        if (!$dataForEmail['isNagiosRunning']) {
+            $this->setHealthState('critical');
+        }
+
+        if (!$dataForEmail['isOitcCmdRunning']) {
+            $this->setHealthState('warning');
+        }
+
+        if (!$dataForEmail['isSudoServerRunning']) {
+            $this->setHealthState('warning');
+        }
+
+        if (!$dataForEmail['gearman_reachable'] || !$dataForEmail['gearman_worker_running']) {
+            $this->setHealthState('critical');
+        }
+
+        if ($dataForEmail['isStatusengineInstalled'] && !$dataForEmail['isStatusengineRunning']) {
+            $this->setHealthState('critical');
+        }
+
+        if ($dataForEmail['isStatusenginePerfdataProcessor'] && !$dataForEmail['isStatusengineRunning']) {
+            $this->setHealthState('critical');
+        }
+
+        if (!$dataForEmail['isStatusenginePerfdataProcessor'] && !$dataForEmail['isNpcdRunning']) {
+            $this->setHealthState('critical');
+        }
+
+        if ($dataForEmail['isDistributeModuleInstalled'] && !$dataForEmail['isNstaRunning']) {
+            $this->setHealthState('warning');
+        }
+
+        $this->setHealthState($dataForEmail['memory_usage']['memory']['state']);
+        $this->setHealthState($dataForEmail['memory_usage']['swap']['state']);
+        $this->setHealthState($dataForEmail['load']['state']);
+        foreach ($dataForEmail['disk_usage'] as $disk) {
+            $this->setHealthState($disk['state']);
+        }
+
+        $dataForEmail['state'] = $this->state;
+
+        return $dataForEmail;
+
+    }
+
+    private function setHealthState($state) {
+
+        //Do not overwrite critical with ok or warning
+        if ($this->state === 'critical') {
+            return;
+        }
+
+        //Do not overwrite warning with ok
+        if ($this->state === 'warning' && $state !== 'critical') {
+            return;
+        }
+
+        $this->state = $state;
+    }
+
     public function saveToCache($data) {
+        $data['previousState'] = $this->state;
         $data['update'] = time();
 
         $redisHost = env('OITC_REDIS_HOST', '127.0.0.1');
