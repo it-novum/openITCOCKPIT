@@ -323,9 +323,9 @@
                             </h5>
                             <div class="input-group input-group-sm" ng-if="filter.Servicestatus">
                                 <div class="input-group-prepend input-group-append">
-                                <span class="input-group-text">
-                                    <i class="far fa-clock fa-lg"></i>
-                                </span>
+                                    <span class="input-group-text">
+                                        <i class="far fa-clock fa-lg"></i>
+                                    </span>
                                 </div>
                                 <input ng-model="filter.Servicestatus.state_older_than"
                                        placeholder="<?= __('Leave empty for all'); ?>"
@@ -335,18 +335,18 @@
                                             ng-switch="filter.Servicestatus.state_older_than_unit"
                                             type="button" data-toggle="dropdown"
                                             aria-haspopup="true" aria-expanded="false">
-                                    <span ng-switch-when="SECOND">
-                                        <?= __('seconds'); ?>
-                                    </span>
+                                        <span ng-switch-when="SECOND">
+                                            <?= __('seconds'); ?>
+                                        </span>
                                         <span ng-switch-when="MINUTE">
-                                        <?= __('minutes'); ?>
-                                    </span>
+                                            <?= __('minutes'); ?>
+                                        </span>
                                         <span ng-switch-when="HOUR">
-                                        <?= __('hours'); ?>
-                                    </span>
+                                            <?= __('hours'); ?>
+                                        </span>
                                         <span ng-switch-when="DAY">
-                                        <?= __('days'); ?>
-                                    </span>
+                                            <?= __('days'); ?>
+                                        </span>
                                     </button>
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="javascript:void(0);"
@@ -368,24 +368,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-xs-12 col-lg-6 margin-bottom-5">
-                            <fieldset>
-                                <h5><?php echo __('Sort by'); ?></h5>
-                                <div class="form-group smart-form">
-                                    <select
-                                        id="SortingSetting-{{widget.id}}"
-                                        data-placeholder="<?php echo __('Sort by column'); ?>"
-                                        class="form-control"
-                                        chosen="column"
-                                        ng-model="sort"
-                                        ng-model-options="{debounce: 500}">
-                                        <option value="Servicestatus.current_state"><?php echo __('State'); ?></option>
-                                        <option
-                                            value="Servicestatus.last_state_change"><?php echo __('State since'); ?></option>
-                                    </select>
-                                </div>
-                            </fieldset>
                         </div>
                     </div>
 
