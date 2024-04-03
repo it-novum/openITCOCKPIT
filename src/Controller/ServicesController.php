@@ -3080,8 +3080,8 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid host'));
         }
 
-        $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
-        if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
+        $host = $HostsTable->getHostForSlaBrowserTabWithHosttemplateById($service->get('host_id'));
+        if (!$this->allowedByContainerId($host['hosts_to_containers_sharing']['_ids'])) {
             $this->render403();
             return;
         }
@@ -3090,7 +3090,7 @@ class ServicesController extends AppController {
         if (Plugin::isLoaded('SLAModule')) {
             /** @var SlasTable $SlasTable */
             $SlasTable = TableRegistry::getTableLocator()->get('SLAModule.Slas');
-            $hostSlaId = $host['Host']['sla_id'];
+            $hostSlaId = $host['sla_id'] ?? $host['hosttemplate']['sla_id'];
             if (!empty($hostSlaId)) {
                 if (!$SlasTable->existsById($hostSlaId)) {
                     throw new NotFoundException(__('Invalid sla'));
