@@ -5433,7 +5433,7 @@ msgstr "Habilitar de nuevo los permisos predeterminados para el grupo de usuario
 
 #: ./src/Command/SetupCommand.php:129
 msgid "Setup will continue in {0} seconds. Press CTRL + C to abort."
-msgstr "La instalación continuará en {0} segundos. Pulse CTRL + C para cancelar".
+msgstr "La instalación continuará en {0} segundos. Pulse CTRL + C para cancelar."
 
 #: ./src/Command/SetupCommand.php:142
 msgid "This shell helps you to setup your fresh installation of openITCOCKPIT."
@@ -7860,7 +7860,7 @@ msgstr "Servidor macOS"
 
 #: ./src/Model/Table/WizardAssignmentsTable.php:181
 msgid "Monitoring for your macOS Server with openITCOCKPIT Agent"
-msgstr "msgid "Supervisando su Servidor macOS con el Agente openITCOCKPIT"
+msgstr "Supervisando su Servidor macOS con el Agente openITCOCKPIT"
 
 #: ./src/Model/Table/WizardAssignmentsTable.php:192
 msgid "Mysql"
@@ -11919,7 +11919,7 @@ msgstr "Servicio 1"
 #: ./src/Template/Automaps/edit.php:429
 #: ./src/Template/Automaps/edit.php:430
 msgid "Service 2"
-msgstr Servicio 2"
+msgstr "Servicio 2"
 
 #: ./src/Template/Automaps/add.php:444
 msgid "Create auto map"
@@ -29740,4 +29740,3 @@ msgstr "VMware Host"
 #: .-modules/VMwareSnapshotModule/templates/Wizards/vmwaresnapshot.php:96
 msgid "VMware Snapshot services"
 msgstr "Servicios de VMware Snapshot"
-
