@@ -5276,4 +5276,24 @@ class HostsTable extends Table {
         $query->group(['Hoststatus.current_state']);
         return $this->emptyArrayIfNull($query->toArray());
     }
+
+    /**
+     * @param $id
+     * @return bool
+     */
+    public function isHostInSla($id) {
+        $query = $this->find();
+        $query->select([
+            'is_sla_host' => $query->newExpr('IF(Hosts.id IS NULL, Hosttemplates.sla_id, Hosts.sla_id) > 0'),
+        ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'Hosttemplates'
+            ])
+            ->disableHydration();
+        $result = $query->first();
+        return isset($result['is_sla_host']) && $result['is_sla_host'];
+    }
 }

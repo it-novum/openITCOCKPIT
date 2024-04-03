@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -704,6 +709,8 @@ class ServicesController extends AppController {
 
         $service = $ServicesTable->getServiceForEdit($id);
         $host = $HostsTable->getHostForServiceEdit($service['Service']['host_id']);
+        $isSlaHost = $HostsTable->isHostInSla($service['Service']['host_id']);
+
 
         $hostContactsAndContactgroups = $HostsTable->getContactsAndContactgroupsById($host['Host']['id']);
         $hosttemplateContactsAndContactgroups = $HosttemplatesTable->getContactsAndContactgroupsById($host['Host']['hosttemplate_id']);
@@ -739,6 +746,7 @@ class ServicesController extends AppController {
             $this->set('areContactsInheritedFromHost', $ServiceMergerForView->areContactsInheritedFromHost());
             $this->set('areContactsInheritedFromServicetemplate', $ServiceMergerForView->areContactsInheritedFromServicetemplate());
             $this->set('serviceType', $serviceType);
+            $this->set('isSlaHost', $isSlaHost);
 
 
             $this->viewBuilder()->setOption('serialize', [
@@ -750,7 +758,8 @@ class ServicesController extends AppController {
                 'areContactsInheritedFromHosttemplate',
                 'areContactsInheritedFromHost',
                 'areContactsInheritedFromServicetemplate',
-                'serviceType'
+                'serviceType',
+                'isSlaHost'
             ]);
             return;
         }
@@ -2611,6 +2620,7 @@ class ServicesController extends AppController {
         }
 
         $containerId = $HostsTable->getHostPrimaryContainerIdByHostId($hostId);
+        $isSlaHost = $HostsTable->isHostInSla($hostId);
 
         if ($serviceId != 0) {
             try {
@@ -2649,6 +2659,7 @@ class ServicesController extends AppController {
         $this->set('contacts', $contacts);
         $this->set('contactgroups', $contactgroups);
         $this->set('existingServices', $existingServices);
+        $this->set('isSlaHost', $isSlaHost);
 
         $this->viewBuilder()->setOption('serialize', [
             'servicetemplates',
@@ -2657,7 +2668,8 @@ class ServicesController extends AppController {
             'checkperiods',
             'contacts',
             'contactgroups',
-            'existingServices'
+            'existingServices',
+            'isSlaHost'
         ]);
     }
 
@@ -3060,7 +3072,8 @@ class ServicesController extends AppController {
 
         $service = $ServicesTable->get($id, [
             'contain' => [
-                'Hosts'
+                'Hosts',
+                'Servicetemplates'
             ]
         ]);
         if (!$HostsTable->existsById($service->get('host_id'))) {
@@ -3081,6 +3094,21 @@ class ServicesController extends AppController {
             if (!empty($hostSlaId)) {
                 if (!$SlasTable->existsById($hostSlaId)) {
                     throw new NotFoundException(__('Invalid sla'));
+                }
+
+                $isSlaRelevant = $service->sla_relevant;
+                if (is_null($isSlaRelevant)) {
+                    $isSlaRelevant = $service->servicetemplate->sla_relevant;
+                }
+                if ($isSlaRelevant == 0) {
+
+                    $slaOverview = [
+                        'state'          => 'not_sla_relevant',
+                        'evaluation_end' => time()
+                    ];
+                    $this->set('slaOverview', $slaOverview);
+                    $this->viewBuilder()->setOption('serialize', ['slaOverview']);
+                    return;
                 }
 
                 $SlaInformation = $SlasTable->getSlaStatusInformationByServiceIdAndSlaId($id, $hostSlaId);

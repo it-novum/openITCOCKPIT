@@ -1,4 +1,26 @@
 <?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\Model\Table;
 
@@ -5481,7 +5503,7 @@ class ServicesTable extends Table {
      * @param bool $enableHydration
      * @return \Cake\Datasource\ResultSetInterface
      */
-    public function getActiveServicesWithServicetemplateByHostId($id, $enableHydration = true) {
+    public function getActiveServicesWithSlaRelevanceWithServicetemplateByHostId($id, $enableHydration = true) {
         $query = $this->find();
         $query->select([
             'Services.id',
@@ -5490,7 +5512,8 @@ class ServicesTable extends Table {
             ->contain('Servicetemplates')
             ->where([
                 'Services.host_id'  => $id,
-                'Services.disabled' => 0
+                'Services.disabled' => 0,
+                $query->newExpr('IF(Services.sla_relevant IS NULL, Servicetemplates.sla_relevant, Services.sla_relevant) = 1')
             ])
             ->order([
                 'servicename',
@@ -5499,6 +5522,31 @@ class ServicesTable extends Table {
             ->enableHydration($enableHydration)
             ->all();
         return $query;
+    }
+
+    /**
+     * @param $id
+     * @return array
+     */
+    public function getActiveAndSlaRelavantServicesIdsByHostIdAsList($id) {
+        //$list = $this->MODEL->find('list', ['keyField' => 'id', 'valueField' => ('user_type')])->toArray();
+        $query = $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => 'id'
+        ]);
+        $query->select([
+            'Services.id',
+            'is_sla_relevant' => $query->newExpr('IF(Services.sla_relevant IS NULL, Servicetemplates.sla_relevant, Services.sla_relevant)')
+        ])
+            ->contain(['Servicetemplates'])
+            ->where([
+                'Services.host_id'  => $id,
+                'Services.disabled' => 0,
+                $query->newExpr('IF(Services.sla_relevant IS NULL, Servicetemplates.sla_relevant, Services.sla_relevant) = 1')
+            ])
+            ->disableHydration()
+            ->all();
+        return $this->emptyArrayIfNull($query->toArray());
     }
 
     /**
