@@ -314,22 +314,18 @@ use Cake\Core\Plugin;
                                 <td>
                                     {{ host.Hoststatus.last_state_change }}
                                 </td>
-
                                 <td>
-                                <span
-                                    ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.lastCheck }}</span>
-                                    <span
-                                        ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
-                                    <?php echo __('n/a'); ?>
-                                </span>
+                                    <span>
+                                        {{ host.Hoststatus.lastCheck }}
+                                    </span>
                                 </td>
                                 <td>
-                                <span
-                                    ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">{{ host.Hoststatus.nextCheck }}</span>
-                                    <span
-                                        ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
-                                                <?php echo __('n/a'); ?>
-                                            </span>
+                                    <span ng-if="host.Hoststatus.activeChecksEnabled && host.Host.is_satellite_host === false">
+                                        {{ host.Hoststatus.nextCheck }}
+                                    </span>
+                                    <span ng-if="host.Hoststatus.activeChecksEnabled === false || host.Host.is_satellite_host === true">
+                                        <?php echo __('n/a'); ?>
+                                    </span>
                                 </td>
                                 <td class="width-160">
                                     <div class="btn-group btn-group-justified btn-group-xs" role="group">
