@@ -50,6 +50,27 @@ use MSTeamsModule\Lib\Notification\TeamsNotification;
  * TeamsNotification command.
  */
 class TeamsNotificationCommand extends Command {
+
+    private const LEVEL_CRITICAL = 'CRITICAL';
+    private const LEVEL_WARNING = 'WARNING';
+    private const LEVEL_OK = 'OK';
+    private const LEVEL_UNKNOWN = 'UNKNOWN';
+    private const COLOR_CRITICAL = 'Attention';
+    private const COLOR_WARNING = 'Warning';
+    private const COLOR_OK = 'Good';
+    private const COLOR_DEFAULT = 'Attention';
+    private const SERVICE_LEVELS = [
+        0 => self::LEVEL_OK,
+        1 => self::LEVEL_WARNING,
+        2 => self::LEVEL_CRITICAL,
+        3 => self::LEVEL_UNKNOWN,
+    ];
+    private const COLOR_MAPPING = [
+        self::LEVEL_OK       => self::COLOR_OK,
+        self::LEVEL_WARNING  => self::COLOR_WARNING,
+        self::LEVEL_CRITICAL => self::COLOR_CRITICAL,
+        self::LEVEL_UNKNOWN  => self::COLOR_DEFAULT,
+    ];
     /** @var string I am the UUID of the Host. */
     private $hostUuid;
 
@@ -61,6 +82,9 @@ class TeamsNotificationCommand extends Command {
 
     /** @var MSTeamsSettings */
     private $settings;
+
+    /** @var int */
+    private $state;
 
 
     /**
@@ -105,10 +129,10 @@ class TeamsNotificationCommand extends Command {
      */
     private function buildNotification(): TeamsNotification {
         $notification = new TeamsNotification();
-        $notification->level = 'ERROR';
+        $notification->level = self::SERVICE_LEVELS[$this->state] ?? self::LEVEL_UNKNOWN;
+        $notification->color = self::COLOR_MAPPING[$notification->level] ?? self::COLOR_DEFAULT;
         $notification->hostId = $this->getHost()->getId();
         $notification->hostName = $this->getHost()->getHostname();
-        $notification->color = $this->getColor($notification->level);
         $notification->output = $this->output;
 
         if ($this->type === 'service') {
@@ -119,21 +143,6 @@ class TeamsNotificationCommand extends Command {
         return $notification;
     }
 
-    #clear && /opt/openitc/frontend/bin/cake MSTeamsModule.teams_notification --type Host --notificationtype PROBLEM --hostuuid "95d20332-7f9c-446c-8924-0f031a8473d2" --state "ERROR" --output "OK - 127.5.6.7: rta 0,054ms, lost 0%"
-
-
-    private function getColor(string $level): string {
-        switch ($level) {
-            case 'ERROR':
-                return 'Attention';
-            case 'WARNING':
-                return 'Warning';
-            case 'OK':
-                return 'Good';
-            default:
-                return 'Default';
-        }
-    }
 
     /**
      * Based on the user's input hostUuid, I will return the correct Host.
@@ -169,6 +178,14 @@ class TeamsNotificationCommand extends Command {
 
 
     private function buildServiceMessage(TeamsNotification $notification): array {
+        $actions = [];
+        $indent = false;
+        if ($this->state > 0) {
+            $actions[] = $this->buildAckServiceButton();
+            $indent = true;
+        }
+        $actions[] = $this->buildHostLink($notification, $indent);
+        $actions[] = $this->buildServiceLink($notification, $indent);
         return [
             'type'        => 'message',
             'attachments' => [
@@ -225,11 +242,7 @@ class TeamsNotificationCommand extends Command {
                                 ]
                             ]
                         ],
-                        'actions' => [
-                            $this->buildAckServiceButton(),
-                            $this->buildHostLink($notification),
-                            $this->buildServiceLink($notification)
-                        ]
+                        'actions' => $actions
                     ]
                 ]
             ]
@@ -237,6 +250,11 @@ class TeamsNotificationCommand extends Command {
     }
 
     private function buildHostMessage(TeamsNotification $notification): array {
+        $actions = [];
+        if ($this->state === 3) {
+            $actions[] = $this->buildAckHostButton();
+        }
+        $actions[] = $this->buildHostLink($notification);
         return [
             'type'        => 'message',
             'attachments' => [
@@ -289,10 +307,7 @@ class TeamsNotificationCommand extends Command {
                                 ]
                             ]
                         ],
-                        'actions' => [
-                            $this->buildAckHostButton(),
-                            $this->buildHostLink($notification),
-                        ]
+                        'actions' => $actions
                     ]
                 ]
             ]
@@ -301,6 +316,7 @@ class TeamsNotificationCommand extends Command {
 
     /**
      * I will solely build the correct message type based on the user's arguments.
+     * @param TeamsNotification $notification
      * @return array
      */
     private function buildMessage(TeamsNotification $notification): array {
@@ -325,6 +341,8 @@ class TeamsNotificationCommand extends Command {
 
             // Build notification.
             $notification = $this->buildNotification();
+
+            print_r($notification);
 
             // Build Data.
             $data = [
@@ -445,12 +463,12 @@ class TeamsNotificationCommand extends Command {
     private function buildAckHostButton(): array {
         return
             [
-                "type"  => "Action.OpenUrl",
-                "title" => "✔️ Acknowledge",
-                "url"   => $this->buildHostAcknowledgement($this->getHost()),
-                "role"  => "Button",
-                "style" => "positive",
-                "mode"  => "primary"
+                'type'  => 'Action.OpenUrl',
+                'title' => '✔️ Acknowledge',
+                'url'   => $this->buildHostAcknowledgement($this->getHost()),
+                'role'  => 'Button',
+                'style' => 'positive',
+                'mode'  => 'primary'
             ];
     }
 
@@ -460,52 +478,54 @@ class TeamsNotificationCommand extends Command {
      */
     private function buildAckServiceButton(): array {
         return [
-            "type"  => "Action.OpenUrl",
-            "title" => "✔️ Acknowledge",
-            "url"   => $this->buildServiceAcknowledgement($this->getService()),
-            "role"  => "Button",
-            "style" => "positive",
-            "mode"  => "primary"
+            'type'  => 'Action.OpenUrl',
+            'title' => '✔️ Acknowledge',
+            'url'   => $this->buildServiceAcknowledgement($this->getService()),
+            'role'  => 'Button',
+            'style' => 'positive',
+            'mode'  => 'primary'
         ];
     }
 
     /**
      * I will solely generate the AdaptiveCard definition for the [Host] button.
      * @param TeamsNotification $notification
+     * @param bool $indent
      * @return string[]
      */
-    private function buildHostLink(TeamsNotification $notification): array {
+    private function buildHostLink(TeamsNotification $notification, bool $indent): array {
         return
             [
-                "type"  => "Action.OpenUrl",
-                "title" => "🖥️ View Host",
+                'type'  => 'Action.OpenUrl',
+                'title' => '🖥️ View Host',
                 'url'   => sprintf(
                     'https://%s/#!/hosts/browser/%s',
                     $this->settings->oitcUrl,
                     $notification->hostId
                 ),
-                "role"  => "Button",
-                "mode"  => "secondary"
+                'role'  => 'Button',
+                'mode'  => $indent ? 'secondary' : 'primary'
             ];
     }
 
     /**
      * I will solely generate the AdaptiveCard definition for the [Service] button.
      * @param TeamsNotification $notification
+     * @param bool $indent
      * @return string[]
      */
-    private function buildServiceLink(TeamsNotification $notification): array {
+    private function buildServiceLink(TeamsNotification $notification, bool $indent): array {
         return
             [
-                "type"  => "Action.OpenUrl",
-                "title" => "⚙ View Service",
+                'type'  => 'Action.OpenUrl',
+                'title' => '⚙ View Service',
                 'url'   => sprintf(
                     'https://%s/#!/hosts/browser/%s',
                     $this->settings->oitcUrl,
                     $notification->serviceId
                 ),
-                "role"  => "Button",
-                "mode"  => "secondary"
+                'role'  => 'Button',
+                'mode'  => $indent ? 'secondary' : 'primary'
             ];
     }
 

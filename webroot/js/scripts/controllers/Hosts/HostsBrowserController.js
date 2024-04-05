@@ -191,6 +191,7 @@ angular.module('openITCOCKPIT')
                 // Acknowledge if param is passed.
                 if(window.location.href.indexOf('#acknowledge') > -1){
                     $scope.acknowledgeHost($scope.getObjectsForExternalCommand());
+                    window.location.href = window.location.href.replace('#acknowledge', '');
                 }
 
                 setTimeout(function(){
