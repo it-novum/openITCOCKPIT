@@ -42,6 +42,11 @@
 
 echo $this->element('emails/style');
 
+$acknowledge = '';
+if ($ServicestatusIcon->getState() !== 0) {
+    $acknowledge = '#acknowledge';
+}
+
 ?>
 <!-- ########## EMAIL CONTENT ############### -->
 
@@ -96,7 +101,7 @@ echo $this->element('emails/style');
                                     &nbsp;
                                 <?php endif; ?>
                                 <span>
-                                    <a href="<?php printf('https://%s/#!/services/browser/%s#acknowledge', $systemAddress, $Service->getUuid()); ?>"
+                                    <a href="<?php printf('https://%s/#!/services/browser/%s%s', $systemAddress, $Service->getUuid(), $acknowledge); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($ServicestatusIcon->getTextColor()) ?>">
                                             <?php echo h($Service->getServicename()); ?>
