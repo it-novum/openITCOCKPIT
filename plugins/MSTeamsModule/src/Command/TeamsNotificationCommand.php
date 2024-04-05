@@ -236,6 +236,10 @@ class TeamsNotificationCommand extends Command {
                                             [
                                                 'title' => 'Service:',
                                                 'value' => $notification->serviceName
+                                            ],
+                                            [
+                                                'title' => 'Output:',
+                                                'value' => $notification->output
                                             ]
                                         ]
                                     ]
