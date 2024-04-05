@@ -61,7 +61,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
                     $('#HostsKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
                     $('#HostsNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
 
-                    $scope.loadHostgroups();
+
                 });
             };
 
@@ -73,6 +73,7 @@ angular.module('openITCOCKPIT').directive('hostStatusOverviewExtendedWidget', fu
             $scope.showConfig = function(){
                 $('#widget-content-' + $scope.widget.id).css('overflow', 'auto');
                 $scope.$broadcast('FLIP_EVENT_OUT');
+                $scope.loadHostgroups();
             };
 
 
