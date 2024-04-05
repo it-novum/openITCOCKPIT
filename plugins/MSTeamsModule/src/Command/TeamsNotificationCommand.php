@@ -85,6 +85,8 @@ class TeamsNotificationCommand extends Command {
 
     /** @var int */
     private $state;
+    /** @var string */
+    private $notificationtype;
 
 
     /**
@@ -180,7 +182,7 @@ class TeamsNotificationCommand extends Command {
     private function buildServiceMessage(TeamsNotification $notification): array {
         $actions = [];
         $indent = false;
-        if ($this->state > 0) {
+        if ($this->state > 0 && $this->notificationtype !== 'ACKNOWLEDGEMENT') {
             $actions[] = $this->buildAckServiceButton();
             $indent = true;
         }
@@ -255,7 +257,7 @@ class TeamsNotificationCommand extends Command {
 
     private function buildHostMessage(TeamsNotification $notification): array {
         $actions = [];
-        if ($this->state === 3) {
+        if ($this->state > 0 && $this->notificationtype !== 'ACKNOWLEDGEMENT') {
             $actions[] = $this->buildAckHostButton();
         }
         $actions[] = $this->buildHostLink($notification);
