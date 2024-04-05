@@ -346,8 +346,6 @@ class TeamsNotificationCommand extends Command {
             // Build notification.
             $notification = $this->buildNotification();
 
-            print_r($notification);
-
             // Build Data.
             $data = [
                 'json'    => $this->buildMessage($notification),
