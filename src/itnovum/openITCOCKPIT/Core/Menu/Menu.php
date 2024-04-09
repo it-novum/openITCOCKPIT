@@ -59,7 +59,7 @@ class Menu {
                 'dashboards',
                 'index',
                 '',
-                'fas fa-tachometer-alt',
+                'cil-speedometer',
                 ['dashboard'],
                 1
             ))
@@ -69,7 +69,7 @@ class Menu {
                 'browsers',
                 'index',
                 '',
-                'fa fa-list',
+                'cil-list',
                 ['browser'],
                 3
             ))
@@ -78,7 +78,7 @@ class Menu {
                     'maps_category',
                     __('Maps'),
                     3,
-                    'fa fa-map-marker'
+                    'cil-map'
                 ))
                     ->addLink(new MenuLink(
                         __('Status Map'),
@@ -86,7 +86,7 @@ class Menu {
                         'statusmaps',
                         'index',
                         '',
-                        'fa fa-globe',
+                        'cil-globe-alt',
                         ['statusmap', 'status', 'map'],
                         1
                     ))
@@ -96,7 +96,7 @@ class Menu {
                         'automaps',
                         'index',
                         '',
-                        'fa-solid fa-wand-magic-sparkles',
+                        'cil-sync',
                         ['automaps', 'auto', 'map'],
                         2
                     ))
@@ -107,7 +107,7 @@ class Menu {
                     'reports_category',
                     __('Reports'),
                     4,
-                    'fa fa-file-invoice'
+                    'cil-spreadsheet'
                 ))
 
                     ->addLink(new MenuLink(
@@ -116,7 +116,7 @@ class Menu {
                         'instantreports',
                         'index',
                         '',
-                        'fa fa-file-invoice',
+                        'cil-spreadsheet',
                         ['instantreports'],
                         1
                     ))
@@ -126,7 +126,7 @@ class Menu {
                         'downtimereports',
                         'index',
                         '',
-                        'fa fa-file-invoice',
+                        'cil-spreadsheet',
                         [],
                         2
                     ))
@@ -136,7 +136,7 @@ class Menu {
                         'currentstatereports',
                         'index',
                         '',
-                        'fa fa-file-invoice',
+                        'cil-spreadsheet',
                         [],
                         3
                     ))
@@ -146,7 +146,7 @@ class Menu {
                         'statuspages',
                         'index',
                         '',
-                        'fas fa-info-circle',
+                        'cil-info',
                         [],
                         3
                     ))
@@ -156,7 +156,7 @@ class Menu {
                     'logs_category',
                     __('Logs'),
                     5,
-                    'fa fa-file-text '
+                    'cil-excerpt '
                 ))
                     ->addLink(new MenuLink(
                         __('Notifications'),
@@ -164,7 +164,7 @@ class Menu {
                         'notifications',
                         'index',
                         '',
-                        'fa fa-envelope',
+                        'cil-envelope-closed',
                         [],
                         1
                     ))
@@ -174,7 +174,7 @@ class Menu {
                         'logentries',
                         'index',
                         '',
-                        'fa fa-file-text',
+                        'cil-excerpt',
                         [],
                         2
                     ))
@@ -184,7 +184,7 @@ class Menu {
                         'changelogs',
                         'index',
                         '',
-                        'fa fa-code-fork',
+                        'cil-fork',
                         [],
                         3
                     ))
@@ -198,7 +198,7 @@ class Menu {
                 'hosts',
                 'index',
                 '',
-                'fa fa-desktop',
+                'cil-screen-desktop',
                 ['hosts'],
                 1
             ))
@@ -208,7 +208,7 @@ class Menu {
                 'services',
                 'index',
                 '',
-                'fa fa-cogs',
+                'cil-cog',
                 ['hosts'],
                 2
             ))
@@ -343,7 +343,7 @@ class Menu {
                     'servicegroups',
                     'index',
                     '',
-                    'fa fa-cogs',
+                    'cil-cog',
                     [],
                     2
                 ))
@@ -648,7 +648,7 @@ class Menu {
                     'agentchecks',
                     'index',
                     '',
-                    'fa fa-cogs',
+                    'cil-cog',
                     [],
                     3
                 ))
@@ -666,7 +666,7 @@ class Menu {
                 'settings_category',
                 __('System'),
                 3,
-                'fa fa-cogs'
+                'cil-cog'
             ))
                 ->addLink(new MenuLink(
                     __('System Settings'),
@@ -684,7 +684,7 @@ class Menu {
                     'ConfigurationFiles',
                     'index',
                     '',
-                    'fa fa-file-text',
+                    'cil-excerpt',
                     [],
                     1
                 ))
