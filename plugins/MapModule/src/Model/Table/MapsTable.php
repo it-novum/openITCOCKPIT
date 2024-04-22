@@ -755,26 +755,24 @@ class MapsTable extends Table {
             $iconProperty = $this->ackAndDowntimeIcon;
         }
 
-        $perfdata = [];
         $ServiceObj = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceArray);
         if (Plugin::isLoaded('PrometheusModule') && $serviceArray['service_type'] === PROMETHEUS_SERVICE) {
             // Query Prometheus to get all metrics
 
             $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
             $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj);
-            $metric   = array_keys($perfdata)[0];
-            $perfdata = $perfdata[$metric];
-            $adapter  = new PrometheusAdapter();
+            $adapter = new PrometheusAdapter();
             // Query Prometheus to get all metrics
         } else {
             // Classic service - parse Naemon perfdata string to get current perfdata information
             $PerfdataParser = new PerfdataParser($servicestatus->getPerfdata());
-            $perfdata       = $PerfdataParser->parse();
-            $adapter        = new NagiosAdapter();
-            $metric         = array_keys($perfdata)[0];
-            $perfdata       = $perfdata[$metric];
+            $perfdata = $PerfdataParser->parse();
+            $adapter = new NagiosAdapter();
         }
-        $perfdata[0]['datasource']['setup'] = $adapter->getPerformanceData($ServiceObj, $perfdata)->toArray();
+        foreach ($perfdata as $metric => $perfdatum) {
+            $perfdata[$metric]['datasource']['setup'] = $adapter->getPerformanceData($ServiceObj, $perfdatum)->toArray();
+        }
+
 
         $tmpServicestatus = $servicestatus->toArray();
         if ($includeServiceOutput === true) {
