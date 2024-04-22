@@ -1466,7 +1466,7 @@ class DashboardsController extends AppController {
             $service = $this->getServicestatusByServiceId($serviceId);
             $data = [];
             $metrics = array_keys($service['Perfdata']);
-            foreach($metrics as $metric) {
+            foreach ($metrics as $metric) {
                 if (Plugin::isLoaded('PrometheusModule') && $service['Service']['serviceType'] === PROMETHEUS_SERVICE) {
                     $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
                     $Service = new Service($service);
@@ -1592,17 +1592,17 @@ class DashboardsController extends AppController {
 
                     $serviceForJs['Perfdata'] = $perfdata;
 
-                    $metric = array_keys($perfdata)[0];
-                    $perfdata = $perfdata[$metric];
-                    $perfdata['metric'] = $metric;
-                    $serviceForJs['Servicestatus']['perfdata'] = sprintf(
-                        '%s=%s%s;%s;%s;-50;50;',
-                        h($perfdata['metric']),
-                        h($perfdata['current']),
-                        h($perfdata['unit']),
-                        h($perfdata['warning']),
-                        h($perfdata['critical'])
-                    );
+                    foreach ($serviceForJs['Perfdata'] as $metric => $perfdata) {
+                        $serviceForJs['Perfdata'][$metric]['metric'] = $metric;
+                        $serviceForJs['Servicestatus']['perfdata'] = sprintf(
+                            '%s=%s%s;%s;%s;-50;50;',
+                            h($metric),
+                            h($perfdata['current']),
+                            h($perfdata['unit']),
+                            h($perfdata['warning']),
+                            h($perfdata['critical'])
+                        );
+                    }
                 }
 
                 return $serviceForJs;
@@ -2049,9 +2049,10 @@ class DashboardsController extends AppController {
 
                     $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
                     $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
-                    $metric = array_keys($perfdata)[0];
                     $adapter = new PrometheusAdapter();
-                    $perfdata[$metric]['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+                    foreach ($perfdata as $metric => $data) {
+                        $perfdata[$metric]['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+                    }
                 } else {
                     $ServicestatusFields = new ServicestatusFields($this->DbBackend);
                     $ServicestatusFields->perfdata();
