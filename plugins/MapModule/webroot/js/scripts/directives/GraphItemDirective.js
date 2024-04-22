@@ -404,7 +404,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
             var renderGraph = function(){
                 let performance_data = $scope.perfdata,
                     setup = performance_data.datasource.setup;
-                if(!performance_data){
+                if(!performance_data || !setup){
                     return;
                 }
                 initTooltip();
