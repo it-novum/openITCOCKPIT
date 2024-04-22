@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -257,7 +262,8 @@
                                             <?php if ($this->Acl->hasPermission('browser', 'hosts')): ?>
                                                 <a ui-sref="HostsBrowser({id: servicestatusObject.Host.id})"
                                                    class="txt-color-white">
-                                                        {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
+                                                    {{servicestatusObject.Host.hostname}}
+                                                    ({{servicestatusObject.Host.address}})
                                                 </a>
                                             <?php else: ?>
                                                 {{servicestatusObject.Host.hostname}} ({{servicestatusObject.Host.address}})
@@ -287,7 +293,8 @@
                                         </div>
                                         <div class="col-lg-2">
                                             <span
-                                                ng-if="servicestatusObject.Hoststatus.activeChecksEnabled && servicestatusObject.Host.is_satellite_host === false">{{ servicestatusObject.Hoststatus.nextCheck }}</span>
+                                                ng-if="servicestatusObject.Hoststatus.activeChecksEnabled && servicestatusObject.Host.is_satellite_host === false">{{ servicestatusObject.Hoststatus.nextCheck
+                                                }}</span>
                                             <span
                                                 ng-if="servicestatusObject.Hoststatus.activeChecksEnabled === false || servicestatusObject.Host.is_satellite_host === true">
                                                 <?php echo __('n/a'); ?>
@@ -340,7 +347,7 @@
                                         <th><?php echo __('Next check'); ?></th>
                                         <th><?php echo __('State type'); ?></th>
                                         <th><?php echo __('Output'); ?></th>
-                                        <th style="max-width:300px;" ><?php echo __('Performance data'); ?></th>
+                                        <th style="max-width:300px;"><?php echo __('Performance data'); ?></th>
                                         <th></th>
                                     </tr>
                                     </thead>
@@ -371,7 +378,7 @@
                                                ng-show="serviceDetails.Servicestatus.scheduledDowntimeDepth > 0"></i>
                                             <span title="<?php echo __('Passively transferred service'); ?>"
                                                   ng-show="serviceDetails.Service.active_checks_enabled === false || servicestatusObject.Host.is_satellite_host === true">
-                                                    P
+                                                P
                                             </span>
                                         </td>
                                         <td>
@@ -387,19 +394,16 @@
                                             {{serviceDetails.Servicestatus.lastHardStateChange}}
                                         </td>
                                         <td>
-                                            <span
-                                                ng-if="serviceDetails.Service.active_checks_enabled && servicestatusObject.Host.is_satellite_host === false">{{ serviceDetails.Servicestatus.lastCheck }}</span>
-                                            <span ng-if="serviceDetails.Service.active_checks_enabled === false">
-                                                <?php echo __('n/a'); ?>
-                                            </span>
+                                            {{ serviceDetails.Servicestatus.lastCheck }}
                                         </td>
                                         <td>
                                             <span
-                                                ng-if="serviceDetails.Service.active_checks_enabled && servicestatusObject.Host.is_satellite_host === false">{{ serviceDetails.Servicestatus.nextCheck }}</span>
+                                                ng-if="serviceDetails.Service.active_checks_enabled && servicestatusObject.Host.is_satellite_host === false">{{ serviceDetails.Servicestatus.nextCheck
+                                                }}</span>
                                             <span
                                                 ng-if="serviceDetails.Service.active_checks_enabled === false || servicestatusObject.Host.is_satellite_host === true">
-                                                 <?php echo __('n/a'); ?>
-                                             </span>
+                                                <?php echo __('n/a'); ?>
+                                            </span>
                                         </td>
                                         <td>
                                             <span ng-show="serviceDetails.Servicestatus.isHardstate">
@@ -424,23 +428,23 @@
                                                         <div
                                                             style="width: {{getProgressbarData(perfdata, label).currentPercentage}}%; position: unset;"
                                                             class="progress-bar bg-{{getProgressbarData(perfdata, label).backgroundColorClass}}">
-                                                                <span
-                                                                    class="justify-content-center d-flex position-absolute w-100">{{getProgressbarData(perfdata, label).perfdataString}}</span>
+                                                            <span
+                                                                class="justify-content-center d-flex position-absolute w-100">{{getProgressbarData(perfdata, label).perfdataString}}</span>
                                                         </div>
                                                     </div>
                                                 </span>
 
                                                 <span ng-if="$index > 0"
                                                       ng-hide="!showDetails[serviceDetails.Service.id]">
-                                                   <div class="progress progress-md bg-primary position-relative"
-                                                        style="margin-top: 4px;">
+                                                    <div class="progress progress-md bg-primary position-relative"
+                                                         style="margin-top: 4px;">
                                                         <div
                                                             style="width: {{getProgressbarData(perfdata, label).currentPercentage}}%; position: unset;"
                                                             class="progress-bar bg-{{getProgressbarData(perfdata, label).backgroundColorClass}}">
-                                                                <span
-                                                                    class="justify-content-center d-flex position-absolute w-100 ellipsis">{{getProgressbarData(perfdata, label).perfdataString}}</span>
+                                                            <span
+                                                                class="justify-content-center d-flex position-absolute w-100 ellipsis">{{getProgressbarData(perfdata, label).perfdataString}}</span>
                                                         </div>
-                                                     </div>
+                                                    </div>
                                                 </span>
                                             </span>
                                             <span
