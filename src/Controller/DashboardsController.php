@@ -1465,22 +1465,24 @@ class DashboardsController extends AppController {
 
             $service = $this->getServicestatusByServiceId($serviceId);
             $data = [];
-
-            if (! empty($service['Service'])) {
+            $metrics = array_keys($service['Perfdata']);
+            foreach($metrics as $metric) {
                 if (Plugin::isLoaded('PrometheusModule') && $service['Service']['serviceType'] === PROMETHEUS_SERVICE) {
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $Service = new Service($service);
+                    $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
                     // Query Prometheus to get all metrics
                     $adapter = new PrometheusAdapter();
-                    $metrics = array_keys($service['Perfdata']);
-                    $service['Perfdata'][$metrics[0]]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), [])->toArray();
+                    $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), $perfdata[$metric])->toArray();
                 } else {
                     $PerfdataParser = new PerfdataParser($service['Servicestatus']['perfdata']);
-                    $perfdata       = $PerfdataParser->parse();
-                    $metric         = array_keys($perfdata)[0];
-                    $perfdata       = $perfdata[$metric];
-                    $adapter       = new NagiosAdapter();
+                    $perfdata = $PerfdataParser->parse();
+                    $perfdata = $perfdata[$metric] ?? [];
+                    $adapter = new NagiosAdapter();
                     $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), $perfdata)->toArray();
                 }
             }
+
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
             }
