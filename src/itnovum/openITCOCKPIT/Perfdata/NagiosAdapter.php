@@ -19,20 +19,7 @@ final class NagiosAdapter extends PerformanceDataAdapter {
     /**
      * @inheritDoc
      */
-    function getPerformanceData(Service $service, array $performanceData = []): PerformanceDataSetup {
-        if (empty($performanceData)) {
-            // Classic service - parse Naemon perfdata string to get current perfdata information
-            // Normal Naemon services
-            $db = new DbBackend();
-            $ServicestatusTable = $db->getServicestatusTable();
-            $ServicestatusFields = new ServicestatusFields($db);
-            $ServicestatusFields->perfdata();
-            $servicestatus  = $ServicestatusTable->byUuid($service->getUuid(), $ServicestatusFields);
-            $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-            $perfdata       = $PerfdataParser->parse();
-            $metric         = array_keys($perfdata)[0];
-            $performanceData       = $perfdata[$metric];
-        }
+    function getPerformanceData(Service $service, array $performanceData): PerformanceDataSetup {
         $warn = $performanceData['warn'] ?? $performanceData['warning'] ?? '';
         $crit = $performanceData['crit'] ?? $performanceData['critical'] ?? '';
 
