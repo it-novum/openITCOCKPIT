@@ -86,17 +86,22 @@ class GraphgeneratorsController extends AppController {
             $Service = new Service($service);
 
             if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
-                $PerfdataLoader   = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
-                $adapter          = new PrometheusAdapter();
+                $PerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                $adapter = new PrometheusAdapter();
                 // @todo: Both dataLoaders may share one interface for future (?)
                 $performance_data = $PerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug, $gauge);
             } else {
-                $PerfdataLoader   = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
-                $adapter          = new NagiosAdapter();
+                $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
+                $adapter = new NagiosAdapter();
                 $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, $aggregation, $gauge, $scale, $forcedUnit, $debug);
             }
             // Generate Setup
-            $performance_data[0]['datasource']['setup'] = $adapter->getPerformanceData($Service, $performance_data[0]['datasource'])->toArray();
+            foreach ($performance_data as $index => $object) {
+                if (!isset($object['datasource'])) {
+                    continue;
+                }
+                $performance_data[$index]['datasource']['setup'] = $adapter->getPerformanceData($Service, $object['datasource'])->toArray();
+            }
             $this->set('performance_data', $performance_data);
             $this->viewBuilder()->setOption('serialize', ['performance_data']);
         } catch (Exception $e) {
