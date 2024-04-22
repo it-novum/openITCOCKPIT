@@ -1540,6 +1540,7 @@ class DashboardsController extends AppController {
             return [
                 'Service'       => [],
                 'Servicestatus' => [],
+                'Perfdata'      => []
             ];
         }
 
