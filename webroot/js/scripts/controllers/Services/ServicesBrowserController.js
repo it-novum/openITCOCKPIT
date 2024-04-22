@@ -540,14 +540,14 @@ angular.module('openITCOCKPIT')
             var thresholdAreas = [];
             switch(setup.scale.type){
                 case "W<O":
-                    thresholdAreas.push({below: 9999999999999999999, color: GraphDefaultsObj.okFillColor});
+                    thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.okFillColor});
                     thresholdAreas.push({
                         below: setup.warn.low,
                         color: GraphDefaultsObj.warningFillColor
                     });
                     break;
                 case "C<W<O":
-                    thresholdAreas.push({below: 99999999999999999999999999, color: GraphDefaultsObj.okFillColor});
+                    thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.okFillColor});
                     thresholdAreas.push({
                         below: setup.crit.low,
                         color: GraphDefaultsObj.criticalFillColor
@@ -565,7 +565,7 @@ angular.module('openITCOCKPIT')
                     break;
                 case "O<W<C":
                     thresholdAreas.push({
-                        below: 999999999999999999999999999,
+                        below: Infinity,
                         color: GraphDefaultsObj.criticalFillColor
                     });
                     thresholdAreas.push({
@@ -578,7 +578,7 @@ angular.module('openITCOCKPIT')
                     });
                     break;
                 case "C<W<O<W<C":
-                    thresholdAreas.push({below: 99999999999999999, color: GraphDefaultsObj.criticalFillColor});
+                    thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.criticalFillColor});
                     thresholdAreas.push({
                         below: setup.crit.high,
                         color: GraphDefaultsObj.warningFillColor
@@ -598,7 +598,7 @@ angular.module('openITCOCKPIT')
                     break;
                 case "O<W<C<W<O":
                     thresholdAreas.push({
-                        below: 99999999999999999999999999,
+                        below: Infinity,
                         color: GraphDefaultsObj.okFillColor
                     });
                     thresholdAreas.push({

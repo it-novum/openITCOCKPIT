@@ -221,7 +221,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                         break;
                     case "O<W<C":
                         thresholdAreas.push({
-                            below: 999999999999999999999999999,
+                            below: Infinity,
                             color: GraphDefaultsObj.criticalFillColor
                         });
                         thresholdAreas.push({
@@ -234,7 +234,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                         });
                         break;
                     case "C<W<O<W<C":
-                        thresholdAreas.push({below: 99999999999999999, color: GraphDefaultsObj.criticalFillColor});
+                        thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.criticalFillColor});
                         thresholdAreas.push({
                             below: setup.crit.high,
                             color: GraphDefaultsObj.warningFillColor
@@ -254,7 +254,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                         break;
                     case "O<W<C<W<O":
                         thresholdAreas.push({
-                            below: 99999999999999999999999999,
+                            below: Infinity,
                             color: GraphDefaultsObj.okFillColor
                         });
                         thresholdAreas.push({
