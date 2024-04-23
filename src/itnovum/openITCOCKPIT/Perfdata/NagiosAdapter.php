@@ -91,6 +91,12 @@ final class NagiosAdapter extends PerformanceDataAdapter {
             }
         }
 
+        // Edge case: The scale range is too small.
+        if ($scaleMax - $scaleMin < 10) {
+            $scaleMin = 0;
+            $scaleMax = 100;
+        }
+
         // Create Setup
         $setup = new PerformanceDataSetup();
         $setup->metric = new Metric($current, $unit, $name);
