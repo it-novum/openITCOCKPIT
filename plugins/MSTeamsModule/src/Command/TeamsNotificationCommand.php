@@ -157,6 +157,10 @@ class TeamsNotificationCommand extends Command {
         $notification = new TeamsNotification();
         $notification->level = self::LEVEL_MAPPING[$this->type][$this->state] ?? self::SERVICE_STATUS_UNKNOWN;
         $notification->color = self::COLOR_MAPPING[$this->type][$notification->level] ?? self::COLOR_DEFAULT;
+        if ($this->notificationtype === 'ACKNOWLEDGEMENT') {
+            $notification->color = self::COLOR_OK;
+            $notification->level = 'Acknowledgement';
+        }
         $notification->hostId = $this->getHost()->getId();
         $notification->hostName = $this->getHost()->getHostname();
         $notification->output = $this->output;
