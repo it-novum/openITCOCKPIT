@@ -611,6 +611,16 @@ class Menu {
                     [],
                     7
                 ))
+                ->addLink(new MenuLink(
+                    __('System health notification list'),
+                    'SystemHealthUsersIndex',
+                    'systemHealthUsers',
+                    'index',
+                    '',
+                    'fa fa-user',
+                    [],
+                    8
+                ))
             )
             ->addCategory((new MenuCategory(
                 'agent_category',

@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -887,6 +890,37 @@
                             </div>
                         </div>
                         <!-- SERVICE MACRO CONFIGURATION END -->
+                        <?php if (Plugin::isLoaded('SLAModule')): ?>
+                            <!-- SLA CONFIGURATION START -->
+                            <div class="card margin-bottom-10">
+                                <div class="card-header">
+                                    <i class="fa-solid fa-award"></i> <?= __('Service Level Agreement'); ?>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox margin-bottom-10">
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
+                                                   id="isSlaRelevant"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0"
+                                                   ng-model="post.Servicetemplate.sla_relevant">
+                                            <label class="custom-control-label" for="isSlaRelevant">
+                                                <?php echo __('SLA relevant'); ?>
+                                            </label>
+                                        </div>
+                                        <div class="col-xs-12 col-lg-offset-2 col-lg-12">
+                                            <div class="help-block mt-0 text-danger">
+                                                <span class="font-lg">⚠️</span>
+                                                <?= __('This setting affects all services, which are using this service template. If deactivated, all SLA related data will be removed permanently.
+To exclude single services, please edit the service configuration directly instead.'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- SLA CONFIGURATION END -->
+                        <?php endif; ?>
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">

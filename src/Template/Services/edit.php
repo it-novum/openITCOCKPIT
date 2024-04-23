@@ -22,6 +22,9 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -62,7 +65,8 @@
                     </span>
 
                     <?php if ($this->Acl->hasPermission('browser', 'services')): ?>
-                        <a ui-sref="ServicesBrowser({id: post.Service.id})" class="btn btn-primary btn-xs mr-1 shadow-0">
+                        <a ui-sref="ServicesBrowser({id: post.Service.id})"
+                           class="btn btn-primary btn-xs mr-1 shadow-0">
                             <i class="fa fa-desktop"></i>
                             <?= __('View'); ?>
                         </a>
@@ -129,14 +133,14 @@
                                         <?php endif; ?>
                                     </label>
                                     <div
-                                            ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?> && post.Service.service_type !== <?php echo OITC_AGENT_SERVICE; ?>">
+                                        ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?> && post.Service.service_type !== <?php echo OITC_AGENT_SERVICE; ?>">
                                         <select
-                                                id="ServiceServicetemplateSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="servicetemplates"
-                                                ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
-                                                ng-model="post.Service.servicetemplate_id">
+                                            id="ServiceServicetemplateSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="servicetemplates"
+                                            ng-options="servicetemplate.key as servicetemplate.value for servicetemplate in servicetemplates"
+                                            ng-model="post.Service.servicetemplate_id">
                                         </select>
                                     </div>
                                     <div ng-show="post.Service.host_id > 0 && post.Service.servicetemplate_id < 1"
@@ -145,7 +149,7 @@
                                     </div>
 
                                     <div
-                                            ng-if="post.Service.service_type == <?php echo MK_SERVICE; ?> || post.Service.service_type == <?php echo OITC_AGENT_SERVICE; ?>">
+                                        ng-if="post.Service.service_type == <?php echo MK_SERVICE; ?> || post.Service.service_type == <?php echo OITC_AGENT_SERVICE; ?>">
                                         <!-- Service template of MK_SERVICES can't be changed -->
                                         <!-- For better design we use a fake select box to display the service template name -->
                                         <div class="chosen-container chosen-container-single chosen-disabled"
@@ -172,11 +176,11 @@
                                     <div class="input-group"
                                          ng-if="post.Service.service_type !== <?php echo MK_SERVICE; ?> && post.Service.service_type !== <?php echo EXTERNAL_SERVICE; ?>">
                                         <input
-                                                id="ServiceName"
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.Service.name"
-                                                ng-blur="checkForDuplicateServicename();">
+                                            id="ServiceName"
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="post.Service.name"
+                                            ng-blur="checkForDuplicateServicename();">
                                         <template-diff ng-show="post.Service.servicetemplate_id"
                                                        value="post.Service.name"
                                                        template-value="servicetemplate.Servicetemplate.name"></template-diff>
@@ -230,9 +234,9 @@
                                         </label>
                                         <div class="input-group">
                                             <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="post.Service.description">
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="post.Service.description">
 
                                             <template-diff ng-show="post.Service.servicetemplate_id"
                                                            value="post.Service.description"
@@ -250,13 +254,13 @@
                                         </label>
                                         <div class="input-group">
                                             <select
-                                                    id="ServicegroupsSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="custom-select"
-                                                    chosen="servicegroups"
-                                                    multiple
-                                                    ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
-                                                    ng-model="post.Service.servicegroups._ids">
+                                                id="ServicegroupsSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="custom-select"
+                                                chosen="servicegroups"
+                                                multiple
+                                                ng-options="servicegroup.key as servicegroup.value for servicegroup in servicegroups"
+                                                ng-model="post.Service.servicegroups._ids">
                                             </select>
                                             <template-diff ng-show="post.Service.servicetemplate_id"
                                                            value="post.Service.servicegroups._ids"
@@ -336,12 +340,12 @@
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="CheckPeriodSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="checkperiods"
-                                                ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
-                                                ng-model="post.Service.check_period_id">
+                                            id="CheckPeriodSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="checkperiods"
+                                            ng-options="checkperiod.key as checkperiod.value for checkperiod in checkperiods"
+                                            ng-model="post.Service.check_period_id">
                                         </select>
                                         <template-diff ng-show="post.Service.servicetemplate_id"
                                                        value="post.Service.check_period_id"
@@ -405,7 +409,7 @@
                                         <?php echo __('Freshness threshold'); ?>
                                     </label>
                                     <interval-input-directive
-                                            interval="post.Service.freshness_threshold"></interval-input-directive>
+                                        interval="post.Service.freshness_threshold"></interval-input-directive>
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.freshness_threshold">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -426,12 +430,12 @@
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="ServiceCheckCommandSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="commands"
-                                                ng-options="command.key as command.value for command in commands"
-                                                ng-model="post.Service.command_id">
+                                            id="ServiceCheckCommandSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="commands"
+                                            ng-options="command.key as command.value for command in commands"
+                                            ng-model="post.Service.command_id">
                                         </select>
                                         <template-diff ng-show="post.Service.servicetemplate_id"
                                                        value="post.Service.command_id"
@@ -455,12 +459,12 @@
                                     <div class="col-xs-12 col-lg-8">
                                         <div class="input-group">
                                             <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="servicecommandargumentvalue.value">
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="servicecommandargumentvalue.value">
                                             <template-diff
-                                                    value="servicecommandargumentvalue.value"
-                                                    template-value="servicetemplate.Servicetemplate.servicetemplatecommandargumentvalues[$index].value"></template-diff>
+                                                value="servicecommandargumentvalue.value"
+                                                template-value="servicetemplate.Servicetemplate.servicetemplatecommandargumentvalues[$index].value"></template-diff>
                                         </div>
                                         <div ng-repeat="error in errors.servicecommandargumentvalues">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -485,9 +489,9 @@
                                         <?php echo __('Check interval'); ?>
                                     </label>
                                     <interval-input-with-differ-directive
-                                            template-id="post.Service.servicetemplate_id"
-                                            interval="post.Service.check_interval"
-                                            template-value="servicetemplate.Servicetemplate.check_interval"></interval-input-with-differ-directive>
+                                        template-id="post.Service.servicetemplate_id"
+                                        interval="post.Service.check_interval"
+                                        template-value="servicetemplate.Servicetemplate.check_interval"></interval-input-with-differ-directive>
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.check_interval">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -500,9 +504,9 @@
                                         <?php echo __('Retry interval'); ?>
                                     </label>
                                     <interval-input-with-differ-directive
-                                            template-id="post.Service.servicetemplate_id"
-                                            interval="post.Service.retry_interval"
-                                            template-value="servicetemplate.Servicetemplate.retry_interval"></interval-input-with-differ-directive>
+                                        template-id="post.Service.servicetemplate_id"
+                                        interval="post.Service.retry_interval"
+                                        template-value="servicetemplate.Servicetemplate.retry_interval"></interval-input-with-differ-directive>
 
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.retry_interval">
@@ -522,10 +526,10 @@
                                             <div class="btn-group flex-wrap">
                                                 <?php for ($i = 1; $i <= 10; $i++): ?>
                                                     <button
-                                                            type="button"
-                                                            class="btn btn-default"
-                                                            ng-click="post.Service.max_check_attempts = <?php echo h($i) ?>"
-                                                            ng-class="{'active': post.Service.max_check_attempts == <?php echo h($i); ?>}">
+                                                        type="button"
+                                                        class="btn btn-default"
+                                                        ng-click="post.Service.max_check_attempts = <?php echo h($i) ?>"
+                                                        ng-class="{'active': post.Service.max_check_attempts == <?php echo h($i); ?>}">
                                                         <?php echo h($i); ?>
                                                     </button>
                                                 <?php endfor; ?>
@@ -534,10 +538,10 @@
                                         <div class="col-xs-12 col-lg-6">
                                             <div class="input-group" style="width: 100%;">
                                                 <input
-                                                        class="form-control"
-                                                        type="number"
-                                                        min="0"
-                                                        ng-model="post.Service.max_check_attempts">
+                                                    class="form-control"
+                                                    type="number"
+                                                    min="0"
+                                                    ng-model="post.Service.max_check_attempts">
                                                 <template-diff ng-show="post.Service.servicetemplate_id"
                                                                value="post.Service.max_check_attempts"
                                                                template-value="servicetemplate.Servicetemplate.max_check_attempts"></template-diff>
@@ -551,7 +555,7 @@
                                         <div class="help-block">
                                             <?php echo __('Worst case time delay until notification command gets executed after state hits a non ok state: '); ?>
                                             <human-time-directive
-                                                    seconds="(post.Service.check_interval + (post.Service.max_check_attempts -1) * post.Service.retry_interval)"></human-time-directive>
+                                                seconds="(post.Service.check_interval + (post.Service.max_check_attempts -1) * post.Service.retry_interval)"></human-time-directive>
                                         </div>
                                         <div ng-repeat="error in errors.max_check_attempts">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -605,12 +609,12 @@
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="NotificationPeriod"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="timeperiods"
-                                                ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
-                                                ng-model="post.Service.notify_period_id">
+                                            id="NotificationPeriod"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="timeperiods"
+                                            ng-options="timeperiod.key as timeperiod.value for timeperiod in timeperiods"
+                                            ng-model="post.Service.notify_period_id">
                                         </select>
                                         <template-diff ng-show="post.Service.servicetemplate_id"
                                                        value="post.Service.notify_period_id"
@@ -627,9 +631,9 @@
                                         <?php echo __('Notification interval'); ?>
                                     </label>
                                     <interval-input-with-differ-directive
-                                            template-id="post.Service.servicetemplate_id"
-                                            interval="post.Service.notification_interval"
-                                            template-value="servicetemplate.Servicetemplate.notification_interval"></interval-input-with-differ-directive>
+                                        template-id="post.Service.servicetemplate_id"
+                                        interval="post.Service.notification_interval"
+                                        template-value="servicetemplate.Servicetemplate.notification_interval"></interval-input-with-differ-directive>
                                     <div class="col-xs-12 col-lg-offset-2">
                                         <div ng-repeat="error in errors.notification_interval">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -699,13 +703,13 @@
                                         </label>
                                         <div class="input-group" style="width: 100%">
                                             <select
-                                                    id="ContactsPeriodSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="contacts"
-                                                    multiple
-                                                    ng-options="contact.key as contact.value for contact in contacts"
-                                                    ng-model="post.Service.contacts._ids">
+                                                id="ContactsPeriodSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="contacts"
+                                                multiple
+                                                ng-options="contact.key as contact.value for contact in contacts"
+                                                ng-model="post.Service.contacts._ids">
                                             </select>
                                             <template-diff ng-show="post.Service.servicetemplate_id"
                                                            value="post.Service.contacts._ids"
@@ -724,13 +728,13 @@
                                         </label>
                                         <div class="input-group" style="width: 100%;">
                                             <select
-                                                    id="ContactgroupsSelect"
-                                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                                    class="form-control"
-                                                    chosen="contactgroups"
-                                                    multiple
-                                                    ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
-                                                    ng-model="post.Service.contactgroups._ids">
+                                                id="ContactgroupsSelect"
+                                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                                class="form-control"
+                                                chosen="contactgroups"
+                                                multiple
+                                                ng-options="contactgroup.key as contactgroup.value for contactgroup in contactgroups"
+                                                ng-model="post.Service.contactgroups._ids">
                                             </select>
                                             <template-diff ng-show="post.Service.servicetemplate_id"
                                                            value="post.Service.contactgroups._ids"
@@ -795,8 +799,8 @@
                                     <div class="row">
                                         <?php foreach ($serviceOptions as $serviceOption): ?>
                                             <div
-                                                    class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                    ng-class="{'has-error': errors.<?php echo $serviceOption['field']; ?>}">
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $serviceOption['field']; ?>}">
                                                 <input type="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -806,7 +810,7 @@
                                                 <label for="<?php echo $serviceOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $serviceOption['class']; ?> padding-top-0 margin-right-10 ">
                                                     <span
-                                                            class="badge badge-<?php echo $serviceOption['class']; ?> notify-label-small">
+                                                        class="badge badge-<?php echo $serviceOption['class']; ?> notify-label-small">
                                                         <?php echo $serviceOption['text']; ?>
                                                     </span>
                                                 </label>
@@ -838,10 +842,10 @@
                                     </label>
                                     <div class="input-group">
                                         <input
-                                                class="form-control"
-                                                placeholder="https://issues.example.org?host=$HOSTNAME$&service=$SERVICEDESC$"
-                                                type="text"
-                                                ng-model="post.Service.service_url">
+                                            class="form-control"
+                                            placeholder="https://issues.example.org?host=$HOSTNAME$&service=$SERVICEDESC$"
+                                            type="text"
+                                            ng-model="post.Service.service_url">
 
                                         <template-diff ng-show="post.Service.servicetemplate_id"
                                                        value="post.Service.service_url"
@@ -861,9 +865,9 @@
                                     </label>
                                     <div class="input-group">
                                         <input
-                                                class="form-control"
-                                                type="text"
-                                                ng-model="post.Service.notes">
+                                            class="form-control"
+                                            type="text"
+                                            ng-model="post.Service.notes">
                                         <template-diff ng-show="post.Service.servicetemplate_id"
                                                        value="post.Service.notes"
                                                        template-value="servicetemplate.Servicetemplate.notes"></template-diff>
@@ -935,8 +939,8 @@
                                     <div class="row">
                                         <?php foreach ($serviceFlapOptions as $serviceFlapOption): ?>
                                             <div
-                                                    class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
-                                                    ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
+                                                class="custom-control custom-checkbox margin-bottom-10 custom-control-right"
+                                                ng-class="{'has-error': errors.<?php echo $serviceFlapOption['field']; ?>}">
                                                 <input type="checkbox" name="checkbox"
                                                        class="custom-control-input"
                                                        ng-true-value="1"
@@ -947,7 +951,7 @@
                                                 <label for="<?php echo $serviceFlapOption['field']; ?>"
                                                        class="col col-md-6 custom-control-label custom-control-label-<?php echo $serviceFlapOption['class']; ?> padding-top-0 margin-right-10">
                                                     <span
-                                                            class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
+                                                        class="badge badge-<?php echo $serviceFlapOption['class']; ?> notify-label-small">
                                                         <?php echo $serviceFlapOption['text']; ?>
                                                     </span>
                                                 </label>
@@ -1013,19 +1017,20 @@
                                                ng-if="post.Service.eventhandler_command_id > 0">
                                                 <?php echo __('Event Handler'); ?>
                                             </a>
-                                            <span ng-if="post.Service.eventhandler_command_id == 0"><?php echo __('Event Handler'); ?></span>
+                                            <span
+                                                ng-if="post.Service.eventhandler_command_id == 0"><?php echo __('Event Handler'); ?></span>
                                         <?php else: ?>
                                             <?php echo __('Event Handler'); ?>
                                         <?php endif; ?>
                                     </label>
                                     <div class="input-group" style="width: 100%;">
                                         <select
-                                                id="ServiceEventHandlerSelect"
-                                                data-placeholder="<?php echo __('Please choose'); ?>"
-                                                class="form-control"
-                                                chosen="eventhandlerCommands"
-                                                ng-options="eventhandler.key as eventhandler.value for eventhandler in eventhandlerCommands"
-                                                ng-model="post.Service.eventhandler_command_id">
+                                            id="ServiceEventHandlerSelect"
+                                            data-placeholder="<?php echo __('Please choose'); ?>"
+                                            class="form-control"
+                                            chosen="eventhandlerCommands"
+                                            ng-options="eventhandler.key as eventhandler.value for eventhandler in eventhandlerCommands"
+                                            ng-model="post.Service.eventhandler_command_id">
                                         </select>
                                         <template-diff ng-show="post.Service.servicetemplate_id"
                                                        value="post.Service.eventhandler_command_id"
@@ -1045,12 +1050,12 @@
                                     <div class="col-xs-12 col-lg-8">
                                         <div class="input-group">
                                             <input
-                                                    class="form-control"
-                                                    type="text"
-                                                    ng-model="serviceeventcommandargumentvalue.value">
+                                                class="form-control"
+                                                type="text"
+                                                ng-model="serviceeventcommandargumentvalue.value">
                                             <template-diff
-                                                    value="serviceeventcommandargumentvalue.value"
-                                                    template-value="servicetemplate.Servicetemplate.servicetemplateeventcommandargumentvalues[$index].value"></template-diff>
+                                                value="serviceeventcommandargumentvalue.value"
+                                                template-value="servicetemplate.Servicetemplate.servicetemplateeventcommandargumentvalues[$index].value"></template-diff>
                                         </div>
                                         <div ng-repeat="error in errors.serviceeventcommandargumentvalue">
                                             <div class="help-block text-danger">{{ error }}</div>
@@ -1112,6 +1117,47 @@
                             </div>
                         </div>
                         <!-- SERVICE MACRO CONFIGURATION END -->
+                        <?php if (Plugin::isLoaded('SLAModule')): ?>
+                            <!-- SLA CONFIGURATION START -->
+                            <div ng-show="post.Service.servicetemplate_id"
+                                 class="card margin-bottom-10">
+                                <div class="card-header">
+                                    <i class="fa-solid fa-award"></i> <?= __('Service Level Agreement'); ?>
+                                    <span ng-show="!isSlaHost" class="italic pl-2">
+                                        <i class="fa-solid fa-circle-info text-primary"></i>
+                                        <?= __('The selected host is not associated with an SLA!'); ?>
+                                    </span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox"
+                                                   class="custom-control-input"
+                                                   id="isSlaRelevant"
+                                                   ng-true-value="1"
+                                                   ng-false-value="0"
+                                                   ng-disabled="!isSlaHost"
+                                                   ng-model="post.Service.sla_relevant">
+                                            <label class="custom-control-label" for="isSlaRelevant">
+                                                <?php echo __('SLA relevant'); ?>
+                                            </label>
+                                            <template-diff-button ng-show="post.Service.servicetemplate_id && isSlaHost"
+                                                                  value="post.Service.sla_relevant"
+                                                                  template-value="servicetemplate.Servicetemplate.sla_relevant">
+                                            </template-diff-button>
+
+                                        </div>
+                                        <div class="col-xs-12 col-lg-offset-2 col-lg-12">
+                                            <div class="help-block mt-0 text-warning" ng-show="isSlaHost">
+                                                <span class="font-lg">⚠️</span>
+                                                <?= __('If deactivated, the service will be ignored in the SLA calculation and the related data from the service will be permanently removed.'); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- SLA CONFIGURATION END -->
+                        <?php endif; ?>
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">

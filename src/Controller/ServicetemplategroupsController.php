@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -52,6 +57,7 @@ use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\HostgroupFilter;
+use itnovum\openITCOCKPIT\Filter\ServicetemplateFilter;
 use itnovum\openITCOCKPIT\Filter\ServicetemplategroupsFilter;
 
 /**
@@ -1019,22 +1025,28 @@ class ServicetemplategroupsController extends AppController {
             throw new MethodNotAllowedException();
         }
 
+        $containerId = $this->request->getQuery('containerId');
+        $selected = $this->request->getQuery('selected');
+        $ServicetemplateFilter = new ServicetemplateFilter($this->request);
+
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
         /** @var $ServicetemplatesTable ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
-        if (!$ContainersTable->existsById($containerId)) {
-            throw new NotFoundException(__('Invalid container id'));
+        $containerIds = [ROOT_CONTAINER, $containerId];
+        if ($containerId == ROOT_CONTAINER) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true);
         }
 
-        $containerId = $ContainersTable->resolveChildrenOfContainerIds($containerId);
-        $servicetemplates = $ServicetemplatesTable->getServicetemplatesByContainerId($containerId, 'list');
-        $servicetemplates = Api::makeItJavaScriptAble($servicetemplates);
+        $servicetemplates = Api::makeItJavaScriptAble(
+            $ServicetemplatesTable->getServicetemplatesForAngular($containerIds, $ServicetemplateFilter, $selected)
+        );
 
         $this->set('servicetemplates', $servicetemplates);
         $this->viewBuilder()->setOption('serialize', ['servicetemplates']);
     }
+
 
     public function loadServicetemplategroupsByString() {
         if (!$this->isAngularJsRequest()) {
@@ -1084,5 +1096,4 @@ class ServicetemplategroupsController extends AppController {
         $this->set('hostgroups', $hostgroups);
         $this->viewBuilder()->setOption('serialize', ['hostgroups']);
     }
-
 }

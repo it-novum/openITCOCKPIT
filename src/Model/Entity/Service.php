@@ -53,6 +53,7 @@ use Cake\Utility\Hash;
  * @property int|null $own_contactgroups
  * @property int|null $own_customvariables
  * @property string|null $service_url
+ * @property int|null $sla_relevant
  * @property int $service_type
  * @property int|null $disabled
  * @property int $usage_flag
@@ -120,6 +121,7 @@ class Service extends Entity {
         'own_contactgroups'                 => true,
         'own_customvariables'               => true,
         'service_url'                       => true,
+        'sla_relevant'                      => true,
         'service_type'                      => true,
         'disabled'                          => true,
         'usage_flag'                        => true,

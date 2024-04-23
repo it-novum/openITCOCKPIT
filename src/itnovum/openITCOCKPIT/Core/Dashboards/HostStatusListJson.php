@@ -34,16 +34,18 @@ class HostStatusListJson extends DashboardJsonStandardizer {
      */
     protected $fields = [
         'Hoststatus'      => [
-            'current_state'    => [
+            'current_state'         => [
                 'up'          => false,
                 'down'        => false,
                 'unreachable' => false
             ],
-            'acknowledged'     => false,
-            'not_acknowledged' => false,
-            'in_downtime'      => false,
-            'not_in_downtime'  => false,
-            'output'           => '',
+            'acknowledged'          => false,
+            'not_acknowledged'      => false,
+            'in_downtime'           => false,
+            'not_in_downtime'       => false,
+            'output'                => '',
+            'state_older_than'      => null,
+            'state_older_than_unit' => 'MINUTE'
         ],
         'Host'            => [
             'name'         => '',
