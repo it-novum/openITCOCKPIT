@@ -67,19 +67,18 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         $unit = (string)$performanceData['unit'];
         $name = (string)($performanceData['name'] ?? $performanceData['metric']);
         $scaleArray = explode(':', (string)($performanceData['min'] ?? ''));
-        $scaleMin = (float)$performanceData['min'];
-        $scaleMax = (float)$performanceData['max'];
+        $scaleMin = $performanceData['min'];
+        $scaleMax = $performanceData['max'];
 
-
-        if (!$scaleMin && !$scaleMax) {
+        if (!is_numeric($scaleMin) || !is_numeric($scaleMax)) {
             // Maybe the scale range came from the performance data min and needs splitting from ":"...
             if (is_numeric($scaleArray[0] ?? false) && is_numeric($scaleArray[1] ?? false)) {
                 $scaleMin = (float)$scaleArray[0];
                 $scaleMax = (float)$scaleArray[1];
             } // Otherwise, we let the scale range be derived from min and max thresholds.
             else {
-                $proposeMin = ScaleType::findMin($critHi, $critLo, $warnHi, $warnLo);
-                $proposeMax = ScaleType::findMax($critHi, $critLo, $warnHi, $warnLo);
+                $proposeMin = ScaleType::findMin($scaleMin, $critHi, $critLo, $warnHi, $warnLo);
+                $proposeMax = ScaleType::findMax($scaleMax, $critHi, $critLo, $warnHi, $warnLo);
 
                 // Trap for the case where the min and max are NULL or are invalid.
                 if ($proposeMax !== null && $proposeMin !== null && $proposeMax > $proposeMin) {
@@ -97,7 +96,7 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         $setup->metric = new Metric($current, $unit, $name);
         $setup->warn = new Threshold($warnLo, $warnHi);
         $setup->crit = new Threshold($critLo, $critHi);
-        $setup->scale = new Scale($scaleMin, $scaleMax);
+        $setup->scale = new Scale((float)$scaleMin, (float)$scaleMax);
 
         // Fetch the ScaleType. If not working, reset it to the default one.
         try {
