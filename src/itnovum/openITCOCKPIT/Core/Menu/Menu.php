@@ -101,7 +101,6 @@ class Menu {
                         2
                     ))
             )
-
             ->addCategory(
                 (new MenuCategory(
                     'reports_category',
@@ -109,7 +108,6 @@ class Menu {
                     4,
                     'fa fa-file-invoice'
                 ))
-
                     ->addLink(new MenuLink(
                         __('Instant reports'),
                         'InstantreportsIndex',
@@ -612,6 +610,16 @@ class Menu {
                     'fa fa-line-chart',
                     [],
                     7
+                ))
+                ->addLink(new MenuLink(
+                    __('System health notification list'),
+                    'SystemHealthUsersIndex',
+                    'systemHealthUsers',
+                    'index',
+                    '',
+                    'fa fa-user',
+                    [],
+                    8
                 ))
             )
             ->addCategory((new MenuCategory(
