@@ -57,44 +57,29 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         $warnArr = explode(':', $warn);
         $critArr = explode(':', $crit);
 
-        #var_dump($inverted);
-        #var_dump($warnArr);
-        #var_dump($critArr);
         // Make better names.
-        $warnLo     = isset($warnArr[0]) && strlen($warnArr[0]) > 0 ? (float)str_replace('@', '', $warnArr[0]) : null;
-        $warnHi     = isset($warnArr[1]) && strlen($warnArr[1]) > 0 ? (float)str_replace('@', '', $warnArr[1]) : null;
-        $critLo     = isset($critArr[0]) && strlen($critArr[0]) > 0 ? (float)str_replace('@', '', $critArr[0]) : null;
-        $critHi     = isset($critArr[1]) && strlen($critArr[1]) > 0 ? (float)str_replace('@', '', $critArr[1]) : null;
+        $warnLo = isset($warnArr[0]) && strlen($warnArr[0]) > 0 ? (float)str_replace('@', '', $warnArr[0]) : null;
+        $warnHi = isset($warnArr[1]) && strlen($warnArr[1]) > 0 ? (float)str_replace('@', '', $warnArr[1]) : null;
+        $critLo = isset($critArr[0]) && strlen($critArr[0]) > 0 ? (float)str_replace('@', '', $critArr[0]) : null;
+        $critHi = isset($critArr[1]) && strlen($critArr[1]) > 0 ? (float)str_replace('@', '', $critArr[1]) : null;
 
-        $current    = (float)($performanceData['act'] ?? $performanceData['current'] ?? null);
-        $unit       = (string)$performanceData['unit'];
-        $name       = (string)($performanceData['name'] ?? $performanceData['metric']);
+        $current = (float)($performanceData['act'] ?? $performanceData['current'] ?? null);
+        $unit = (string)$performanceData['unit'];
+        $name = (string)($performanceData['name'] ?? $performanceData['metric']);
         $scaleArray = explode(':', (string)($performanceData['min'] ?? ''));
-        $scaleMin   = (float)$performanceData['min'];
-        $scaleMax   = (float)$performanceData['max'];
+        $scaleMin = (float)$performanceData['min'];
+        $scaleMax = (float)$performanceData['max'];
 
-
-        #var_dump("ScaleMin: $scaleMin");
-        #var_dump("ScaleMax: $scaleMax");
 
         if (!$scaleMin && !$scaleMax) {
             // Maybe the scale range came from the performance data min and needs splitting from ":"...
             if (is_numeric($scaleArray[0] ?? false) && is_numeric($scaleArray[1] ?? false)) {
                 $scaleMin = (float)$scaleArray[0];
                 $scaleMax = (float)$scaleArray[1];
-            }
-            // Otherwise, we let the scale range be derived from min and max thresholds.
+            } // Otherwise, we let the scale range be derived from min and max thresholds.
             else {
-                #var_dump("WarnLo: $warnLo");
-                #var_dump("WarnHi: $warnHi");
-                #var_dump("CritLo: $critLo");
-                #var_dump("CritHi: $critHi");
                 $proposeMin = ScaleType::findMin($critHi, $critLo, $warnHi, $warnLo);
                 $proposeMax = ScaleType::findMax($critHi, $critLo, $warnHi, $warnLo);
-
-                #var_dump("proposeMin: $proposeMin");
-                #var_dump("proposeMax: $proposeMax");
-
 
                 // Trap for the case where the min and max are NULL or are invalid.
                 if ($proposeMax !== null && $proposeMin !== null && $proposeMax > $proposeMin) {
@@ -104,18 +89,15 @@ final class NagiosAdapter extends PerformanceDataAdapter {
                     $scaleMin = 0;
                     $scaleMax = 100;
                 }
-
-                #var_dump("ScaleMin: $scaleMin");
-                #var_dump("ScaleMax: $scaleMax");die('A');
             }
         }
 
         // Create Setup
-        $setup              = new PerformanceDataSetup();
-        $setup->metric      = new Metric($current, $unit, $name);
-        $setup->warn        = new Threshold($warnLo, $warnHi);
-        $setup->crit        = new Threshold($critLo, $critHi);
-        $setup->scale       = new Scale($scaleMin, $scaleMax);
+        $setup = new PerformanceDataSetup();
+        $setup->metric = new Metric($current, $unit, $name);
+        $setup->warn = new Threshold($warnLo, $warnHi);
+        $setup->crit = new Threshold($critLo, $critHi);
+        $setup->scale = new Scale($scaleMin, $scaleMax);
 
         // Fetch the ScaleType. If not working, reset it to the default one.
         try {
