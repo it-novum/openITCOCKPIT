@@ -141,7 +141,7 @@ class ScaleType {
     }
 
     public static function findMin(): ?float {
-        $last   = 0;
+        $last   = INF;
         $values = func_get_args();
         foreach ($values as $value) {
             if ($value === null) {
@@ -158,7 +158,7 @@ class ScaleType {
     }
 
     public static function findMax(): ?float {
-        $last = 100;
+        $last = -INF;
         $values = func_get_args();
         foreach ($values as $value) {
             if ($value === null) {
