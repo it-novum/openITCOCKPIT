@@ -59,7 +59,7 @@ class Menu {
                 'dashboards',
                 'index',
                 '',
-                'cil-speedometer',
+                'fas fa-tachometer-alt',
                 ['dashboard'],
                 1
             ))
@@ -69,7 +69,7 @@ class Menu {
                 'browsers',
                 'index',
                 '',
-                'cil-list',
+                'fa fa-list',
                 ['browser'],
                 3
             ))
@@ -78,7 +78,7 @@ class Menu {
                     'maps_category',
                     __('Maps'),
                     3,
-                    'cil-map'
+                    'fa fa-map-marker'
                 ))
                     ->addLink(new MenuLink(
                         __('Status Map'),
@@ -86,7 +86,7 @@ class Menu {
                         'statusmaps',
                         'index',
                         '',
-                        'cil-globe-alt',
+                        'fa fa-globe',
                         ['statusmap', 'status', 'map'],
                         1
                     ))
@@ -96,27 +96,25 @@ class Menu {
                         'automaps',
                         'index',
                         '',
-                        'cil-sync',
+                        'fa-solid fa-wand-magic-sparkles',
                         ['automaps', 'auto', 'map'],
                         2
                     ))
             )
-
             ->addCategory(
                 (new MenuCategory(
                     'reports_category',
                     __('Reports'),
                     4,
-                    'cil-spreadsheet'
+                    'fa fa-file-invoice'
                 ))
-
                     ->addLink(new MenuLink(
                         __('Instant reports'),
                         'InstantreportsIndex',
                         'instantreports',
                         'index',
                         '',
-                        'cil-spreadsheet',
+                        'fa fa-file-invoice',
                         ['instantreports'],
                         1
                     ))
@@ -126,7 +124,7 @@ class Menu {
                         'downtimereports',
                         'index',
                         '',
-                        'cil-spreadsheet',
+                        'fa fa-file-invoice',
                         [],
                         2
                     ))
@@ -136,7 +134,7 @@ class Menu {
                         'currentstatereports',
                         'index',
                         '',
-                        'cil-spreadsheet',
+                        'fa fa-file-invoice',
                         [],
                         3
                     ))
@@ -146,7 +144,7 @@ class Menu {
                         'statuspages',
                         'index',
                         '',
-                        'cil-info',
+                        'fas fa-info-circle',
                         [],
                         3
                     ))
@@ -156,7 +154,7 @@ class Menu {
                     'logs_category',
                     __('Logs'),
                     5,
-                    'cil-excerpt '
+                    'fa fa-file-text '
                 ))
                     ->addLink(new MenuLink(
                         __('Notifications'),
@@ -164,7 +162,7 @@ class Menu {
                         'notifications',
                         'index',
                         '',
-                        'cil-envelope-closed',
+                        'fa fa-envelope',
                         [],
                         1
                     ))
@@ -174,7 +172,7 @@ class Menu {
                         'logentries',
                         'index',
                         '',
-                        'cil-excerpt',
+                        'fa fa-file-text',
                         [],
                         2
                     ))
@@ -184,7 +182,7 @@ class Menu {
                         'changelogs',
                         'index',
                         '',
-                        'cil-fork',
+                        'fa fa-code-fork',
                         [],
                         3
                     ))
@@ -198,7 +196,7 @@ class Menu {
                 'hosts',
                 'index',
                 '',
-                'cil-screen-desktop',
+                'fa fa-desktop',
                 ['hosts'],
                 1
             ))
@@ -208,7 +206,7 @@ class Menu {
                 'services',
                 'index',
                 '',
-                'cil-cog',
+                'fa fa-cogs',
                 ['hosts'],
                 2
             ))
@@ -246,9 +244,7 @@ class Menu {
                     '',
                     'fa fa-terminal',
                     [],
-                    2,
-                    true,
-                    '/a/commands/index'
+                    2
                 ))
                 ->addLink(new MenuLink(
                     __('User Defined Macros'),
@@ -343,7 +339,7 @@ class Menu {
                     'servicegroups',
                     'index',
                     '',
-                    'cil-cog',
+                    'fa fa-cogs',
                     [],
                     2
                 ))
@@ -648,7 +644,7 @@ class Menu {
                     'agentchecks',
                     'index',
                     '',
-                    'cil-cog',
+                    'fa fa-cogs',
                     [],
                     3
                 ))
@@ -666,7 +662,7 @@ class Menu {
                 'settings_category',
                 __('System'),
                 3,
-                'cil-cog'
+                'fa fa-cogs'
             ))
                 ->addLink(new MenuLink(
                     __('System Settings'),
@@ -684,7 +680,7 @@ class Menu {
                     'ConfigurationFiles',
                     'index',
                     '',
-                    'cil-excerpt',
+                    'fa fa-file-text',
                     [],
                     1
                 ))
