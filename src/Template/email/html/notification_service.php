@@ -101,7 +101,7 @@ if ($ServicestatusIcon->getState() !== 0) {
                                     &nbsp;
                                 <?php endif; ?>
                                 <span>
-                                    <a href="<?php printf('https://%s/#!/services/browser/%s%s', $systemAddress, $Service->getUuid(), $acknowledge); ?>"
+                                    <a href="<?php printf('https://%s/#!/services/browser/%s', $systemAddress, $Service->getUuid()); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($ServicestatusIcon->getTextColor()) ?>">
                                             <?php echo h($Service->getServicename()); ?>
@@ -167,6 +167,17 @@ if ($ServicestatusIcon->getState() !== 0) {
                                         <?= h($ServicestatusIcon->getHumanState()); ?>
                                     </td>
                                 </tr>
+                                <?php if($acknowledge): ?>
+                                    <tr>
+                                        <td>
+                                            <a href="<?php printf('https://%s/#!/services/browser/%s%s', $systemAddress, $Service->getUuid(), $acknowledge); ?>"
+                                               style="text-decoration:none"
+                                               class="<?= strtoupper($ServicestatusIcon->getTextColor()) ?>">
+                                                <?php echo __('Acknowledge'); ?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </table>
                             <br/>
                             <strong><?php echo __('Output'); ?>:</strong>
