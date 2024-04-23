@@ -421,7 +421,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     gaugeData.push([frontEndTimestamp, performance_data.data[timestamp]]);
                 }
 
-                var label = $scope.service.servicename + ' "' + setup.label + '"';
+                var label = $scope.service.servicename + ' "' + setup.metric.name + '"';
                 if(setup.metric.unit){
                     label = label + ' in ' + setup.metric.unit;
                 }
