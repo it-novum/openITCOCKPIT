@@ -51,25 +51,49 @@ use MSTeamsModule\Lib\Notification\TeamsNotification;
  */
 class TeamsNotificationCommand extends Command {
 
-    private const LEVEL_CRITICAL = 'CRITICAL';
-    private const LEVEL_WARNING = 'WARNING';
-    private const LEVEL_OK = 'OK';
-    private const LEVEL_UNKNOWN = 'UNKNOWN';
+    private const SERVICE_STATUS_CRITICAL = 'CRITICAL';
+    private const SERVICE_STATUS_WARNING = 'WARNING';
+    private const SERVICE_STATUS_OK = 'OK';
+    private const SERVICE_STATUS_UNKNOWN = 'UNKNOWN';
     private const COLOR_CRITICAL = 'Attention';
     private const COLOR_WARNING = 'Warning';
     private const COLOR_OK = 'Good';
     private const COLOR_DEFAULT = 'Attention';
-    private const SERVICE_LEVELS = [
-        0 => self::LEVEL_OK,
-        1 => self::LEVEL_WARNING,
-        2 => self::LEVEL_CRITICAL,
-        3 => self::LEVEL_UNKNOWN,
+    private const LEVEL_MAPPING = [
+        'service' => [
+            0 => self::SERVICE_STATUS_OK,
+            1 => self::SERVICE_STATUS_WARNING,
+            2 => self::SERVICE_STATUS_CRITICAL,
+            3 => self::SERVICE_STATUS_UNKNOWN,
+        ],
+        'host'    => [
+            0 => self::HOST_STATUS_UP,
+            1 => self::HOST_STATUS_DOWN,
+            2 => self::HOST_STATUS_UNREACHABLE,
+        ]
     ];
     private const COLOR_MAPPING = [
-        self::LEVEL_OK       => self::COLOR_OK,
-        self::LEVEL_WARNING  => self::COLOR_WARNING,
-        self::LEVEL_CRITICAL => self::COLOR_CRITICAL,
-        self::LEVEL_UNKNOWN  => self::COLOR_DEFAULT,
+        'service' => [
+            self::SERVICE_STATUS_OK       => self::COLOR_OK,
+            self::SERVICE_STATUS_WARNING  => self::COLOR_WARNING,
+            self::SERVICE_STATUS_CRITICAL => self::COLOR_CRITICAL,
+            self::SERVICE_STATUS_UNKNOWN  => self::COLOR_DEFAULT,
+        ],
+        'host'    => [
+            self::HOST_STATUS_UP          => self::COLOR_OK,
+            self::HOST_STATUS_DOWN        => self::COLOR_CRITICAL,
+            self::HOST_STATUS_UNREACHABLE => self::COLOR_WARNING,
+        ]
+    ];
+
+    private const HOST_STATUS_UP = 'UP';
+    private const HOST_STATUS_DOWN = 'DOWN';
+    private const HOST_STATUS_UNREACHABLE = 'UNREACHABLE';
+
+    private const HOST_STATUS = [
+        0 => self::HOST_STATUS_UP,
+        1 => self::HOST_STATUS_DOWN,
+        3 => self::HOST_STATUS_UNREACHABLE,
     ];
     /** @var string I am the UUID of the Host. */
     private $hostUuid;
@@ -131,8 +155,8 @@ class TeamsNotificationCommand extends Command {
      */
     private function buildNotification(): TeamsNotification {
         $notification = new TeamsNotification();
-        $notification->level = self::SERVICE_LEVELS[$this->state] ?? self::LEVEL_UNKNOWN;
-        $notification->color = self::COLOR_MAPPING[$notification->level] ?? self::COLOR_DEFAULT;
+        $notification->level = self::LEVEL_MAPPING[$this->type][$this->state] ?? self::SERVICE_STATUS_UNKNOWN;
+        $notification->color = self::COLOR_MAPPING[$this->type][$notification->level] ?? self::COLOR_DEFAULT;
         $notification->hostId = $this->getHost()->getId();
         $notification->hostName = $this->getHost()->getHostname();
         $notification->output = $this->output;
@@ -257,10 +281,12 @@ class TeamsNotificationCommand extends Command {
 
     private function buildHostMessage(TeamsNotification $notification): array {
         $actions = [];
+        $indent = false;
         if ($this->state > 0 && $this->notificationtype !== 'ACKNOWLEDGEMENT') {
+            $indent = true;
             $actions[] = $this->buildAckHostButton();
         }
-        $actions[] = $this->buildHostLink($notification);
+        $actions[] = $this->buildHostLink($notification, $indent);
         return [
             'type'        => 'message',
             'attachments' => [
