@@ -283,7 +283,7 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
 
             var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
                 numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
-                let tickSize = Math.ceil((perfdataMax - perfdataMin) / numberOfTicks),
+                let tickSize = Math.round((perfdataMax - perfdataMin) / numberOfTicks),
                     tickArr = [],
                     myTick = perfdataMin;
 
