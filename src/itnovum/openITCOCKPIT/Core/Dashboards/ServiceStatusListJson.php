@@ -34,17 +34,19 @@ class ServiceStatusListJson extends DashboardJsonStandardizer {
      */
     protected $fields = [
         'Servicestatus'   => [
-            'current_state'    => [
+            'current_state'         => [
                 'ok'       => false,
                 'warning'  => false,
                 'critical' => false,
                 'unknown'  => false,
             ],
-            'acknowledged'     => false,
-            'not_acknowledged' => false,
-            'in_downtime'      => false,
-            'not_in_downtime'  => false,
-            'output'           => '',
+            'acknowledged'          => false,
+            'not_acknowledged'      => false,
+            'in_downtime'           => false,
+            'not_in_downtime'       => false,
+            'output'                => '',
+            'state_older_than'      => null,
+            'state_older_than_unit' => 'MINUTE'
         ],
         'Host'            => [
             'name'         => '',

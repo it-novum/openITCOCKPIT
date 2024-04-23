@@ -311,7 +311,7 @@
                                     <div role="content" id="widget-content-{{widget.id}}"
                                          style="height:100%; overflow: auto;" class="card-body">
                                         <ng-include
-                                            src="'/dashboards/dynamicDirective?directive='+widget.directive"></ng-include>
+                                            src="'/dashboards/dynamicDirective?directive='+ widget.directive + '&readonly=' + widget.isReadonly"></ng-include>
                                     </div>
                                 </div>
                                 <div ng-if="$last" ng-init="$last?enableWatch():null"></div>
