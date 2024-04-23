@@ -60,6 +60,14 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         $critArr = explode(':', $crit);
         $scaleArray = explode(':', (string)($performanceData['min'] ?? ''));
 
+        // If we have a range threshold, we can use the min and max values from the performance data.
+        if (count($scaleArray) !== 2) {
+            $scaleArray = [
+                (float)($performanceData['min'] ?? ''),
+                (float)($performanceData['max'] ?? '')
+            ];
+        }
+
         // Make better names.
         $warnLo   = isset($warnArr[0]) && strlen($warnArr[0]) > 0 ? (float)str_replace('@', '', $warnArr[0]) : null;
         $warnHi   = isset($warnArr[1]) && strlen($warnArr[1]) > 0 ? (float)str_replace('@', '', $warnArr[1]) : null;
