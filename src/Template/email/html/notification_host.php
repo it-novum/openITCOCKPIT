@@ -97,7 +97,7 @@ if ($HoststatusIcon->getState() !== 0) {
                                     &nbsp;
                                 <?php endif; ?>
                                 <span>
-                                    <a href="<?php printf('https://%s/#!/hosts/browser/%s%s', $systemAddress, $Host->getUuid(), $acknowledge); ?>"
+                                    <a href="<?php printf('https://%s/#!/hosts/browser/%s', $systemAddress, $Host->getUuid()); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
                                             <?php echo h($Host->getHostname()); ?>
@@ -152,6 +152,17 @@ if ($HoststatusIcon->getState() !== 0) {
                                         <?= h($HoststatusIcon->getHumanState()); ?>
                                     </td>
                                 </tr>
+                                <?php if($acknowledge): ?>
+                                    <tr>
+                                        <td>
+                                            <a href="<?php printf('https://%s/#!/hosts/browser/%s%s', $systemAddress, $Host->getUuid(), $acknowledge); ?>"
+                                               style="text-decoration:none"
+                                               class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
+                                                <?php echo __('Acknowledge'); ?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </table>
                             <br/>
                             <strong><?php echo __('Output'); ?>:</strong>
