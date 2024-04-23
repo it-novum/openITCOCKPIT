@@ -25,15 +25,12 @@
 namespace App\itnovum\openITCOCKPIT\Perfdata;
 
 use \InvalidArgumentException;
-use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Perfdata\Metric;
 use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Perfdata\Scale;
 use itnovum\openITCOCKPIT\Perfdata\ScaleType;
 use itnovum\openITCOCKPIT\Perfdata\Threshold;
-use Statusengine\PerfdataParser;
 
 final class NagiosAdapter extends PerformanceDataAdapter {
 
@@ -44,6 +41,7 @@ final class NagiosAdapter extends PerformanceDataAdapter {
     function getPerformanceData(Service $service, array $performanceData): PerformanceDataSetup {
         $warn = $performanceData['warn'] ?? $performanceData['warning'] ?? '';
         $crit = $performanceData['crit'] ?? $performanceData['critical'] ?? '';
+
 
         // $warn and $crit could be an int or float in case we do not have a range threshold.
         // to make substr and explode work on php8.2 we have to cast the values to be strings
@@ -58,39 +56,57 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         // Split nagios Thresholds
         $warnArr = explode(':', $warn);
         $critArr = explode(':', $crit);
-        $scaleArray = explode(':', (string)($performanceData['min'] ?? ''));
 
-        // If we have a range threshold, we can use the min and max values from the performance data.
-        if (count($scaleArray) !== 2) {
-            $scaleArray = [
-                (float)($performanceData['min'] ?? ''),
-                (float)($performanceData['max'] ?? '')
-            ];
-        }
-
+        #var_dump($inverted);
+        #var_dump($warnArr);
+        #var_dump($critArr);
         // Make better names.
-        $warnLo   = isset($warnArr[0]) && strlen($warnArr[0]) > 0 ? (float)str_replace('@', '', $warnArr[0]) : null;
-        $warnHi   = isset($warnArr[1]) && strlen($warnArr[1]) > 0 ? (float)str_replace('@', '', $warnArr[1]) : null;
-        $critLo   = isset($critArr[0]) && strlen($critArr[0]) > 0 ? (float)str_replace('@', '', $critArr[0]) : null;
-        $critHi   = isset($critArr[1]) && strlen($critArr[1]) > 0 ? (float)str_replace('@', '', $critArr[1]) : null;
-        $current  = (float)($performanceData['act'] ?? $performanceData['current'] ?? null);
-        $unit     = (string)$performanceData['unit'];
-        $name     = (string)($performanceData['name'] ?? $performanceData['metric']);
+        $warnLo     = isset($warnArr[0]) && strlen($warnArr[0]) > 0 ? (float)str_replace('@', '', $warnArr[0]) : null;
+        $warnHi     = isset($warnArr[1]) && strlen($warnArr[1]) > 0 ? (float)str_replace('@', '', $warnArr[1]) : null;
+        $critLo     = isset($critArr[0]) && strlen($critArr[0]) > 0 ? (float)str_replace('@', '', $critArr[0]) : null;
+        $critHi     = isset($critArr[1]) && strlen($critArr[1]) > 0 ? (float)str_replace('@', '', $critArr[1]) : null;
+
+        $current    = (float)($performanceData['act'] ?? $performanceData['current'] ?? null);
+        $unit       = (string)$performanceData['unit'];
+        $name       = (string)($performanceData['name'] ?? $performanceData['metric']);
+        $scaleArray = explode(':', (string)($performanceData['min'] ?? ''));
+        $scaleMin   = (float)$performanceData['min'];
+        $scaleMax   = (float)$performanceData['max'];
 
 
-        // Interprete Scale
-        if (is_numeric($scaleArray[0] ?? false) && is_numeric($scaleArray[1] ?? false)) {
-            $scaleMin = (float)$scaleArray[0];
-            $scaleMax = (float)$scaleArray[1];
-        } else {
-            $proposeMin = ScaleType::findMin($critHi, $critLo, $warnHi, $warnLo);
-            $proposeMax = ScaleType::findMax($critHi, $critLo, $warnHi, $warnLo);
-            if ($proposeMax !== null && $proposeMin !== null) {
-                $scaleMin = $proposeMin;
-                $scaleMax = $proposeMax;
-            } else {
-                $scaleMin = null;
-                $scaleMax = null;
+        #var_dump("ScaleMin: $scaleMin");
+        #var_dump("ScaleMax: $scaleMax");
+
+        if (!$scaleMin && !$scaleMax) {
+            // Maybe the scale range came from the performance data min and needs splitting from ":"...
+            if (is_numeric($scaleArray[0] ?? false) && is_numeric($scaleArray[1] ?? false)) {
+                $scaleMin = (float)$scaleArray[0];
+                $scaleMax = (float)$scaleArray[1];
+            }
+            // Otherwise, we let the scale range be derived from min and max thresholds.
+            else {
+                #var_dump("WarnLo: $warnLo");
+                #var_dump("WarnHi: $warnHi");
+                #var_dump("CritLo: $critLo");
+                #var_dump("CritHi: $critHi");
+                $proposeMin = ScaleType::findMin($critHi, $critLo, $warnHi, $warnLo);
+                $proposeMax = ScaleType::findMax($critHi, $critLo, $warnHi, $warnLo);
+
+                #var_dump("proposeMin: $proposeMin");
+                #var_dump("proposeMax: $proposeMax");
+
+
+                // Trap for the case where the min and max are NULL or are invalid.
+                if ($proposeMax !== null && $proposeMin !== null && $proposeMax > $proposeMin) {
+                    $scaleMin = $proposeMin;
+                    $scaleMax = $proposeMax;
+                } else {
+                    $scaleMin = 0;
+                    $scaleMax = 100;
+                }
+
+                #var_dump("ScaleMin: $scaleMin");
+                #var_dump("ScaleMax: $scaleMax");die('A');
             }
         }
 
