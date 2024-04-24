@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -199,7 +204,8 @@
 
                                     <th class="no-sort text-center"
                                         ng-click="orderBy('Servicestatus.scheduled_downtime_depth')">
-                                        <i class="fa" ng-class="getSortClass('Servicestatus.scheduled_downtime_depth')"></i>
+                                        <i class="fa"
+                                           ng-class="getSortClass('Servicestatus.scheduled_downtime_depth')"></i>
                                         <i class="fa fa-power-off"
                                            title="<?php echo __('is in downtime'); ?>"></i>
                                     </th>
@@ -371,12 +377,7 @@
                                     </td>
 
                                     <td>
-                                        <span
-                                            ng-if="service.Service.active_checks_enabled && host.is_satellite_host === false">{{
-                                            service.Servicestatus.lastCheck }}</span>
-                                        <span ng-if="service.Service.active_checks_enabled === false">
-                                            <?php echo __('n/a'); ?>
-                                        </span>
+                                        {{ service.Servicestatus.lastCheck }}
                                     </td>
 
                                     <td>
@@ -537,7 +538,7 @@
                                             </a>
                                         <?php endif; ?>
 
-                                        <?php if ($this->Acl->hasPermission('externalcommands', 'hosts')): ?>
+                                        <?php if ($this->Acl->hasPermission('externalcommands', 'services')): ?>
                                             <a class="dropdown-item" href="javascript:void(0);"
                                                ng-click="reschedule(getObjectsForExternalCommand())">
                                                 <i class="fa fa-refresh"></i> <?php echo __('Reset check time'); ?>

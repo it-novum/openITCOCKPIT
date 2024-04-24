@@ -38,7 +38,8 @@
                                 </label>
 
                                 <div class="slidecontainer">
-                                    <input type="range" step="5000" min="5000" max="300000" class="slider" ng-disabled="readOnly"
+                                    <input type="range" step="5000" min="0" max="300000" class="slider"
+                                           ng-disabled="readOnly"
                                            style="width: 100%"
                                            ng-model="scroll_interval" ng-model-options="{debounce: 500}">
                                 </div>
@@ -220,6 +221,61 @@
                                            type="text"
                                            id="HostExcludedTags-{{widget.id}}"
                                            ng-model="filter.Host.not_keywords">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xs-12 col-lg-6 margin-bottom-5">
+                            <h5 class="pt-1">
+                                <?= __('Status older than'); ?>
+                            </h5>
+                            <div class="input-group input-group-sm" ng-if="filter.Hoststatus">
+                                <div class="input-group-prepend input-group-append">
+                                    <span class="input-group-text">
+                                        <i class="far fa-clock fa-lg"></i>
+                                    </span>
+                                </div>
+                                <input ng-model="filter.Hoststatus.state_older_than"
+                                       placeholder="<?= __('Leave empty for all'); ?>"
+                                       class="form-control" type="number" min="1">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-primary dropdown-toggle"
+                                            ng-switch="filter.Hoststatus.state_older_than_unit"
+                                            type="button" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false">
+                                        <span ng-switch-when="SECOND">
+                                            <?= __('seconds'); ?>
+                                        </span>
+                                        <span ng-switch-when="MINUTE">
+                                            <?= __('minutes'); ?>
+                                        </span>
+                                        <span ng-switch-when="HOUR">
+                                            <?= __('hours'); ?>
+                                        </span>
+                                        <span ng-switch-when="DAY">
+                                            <?= __('days'); ?>
+                                        </span>
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="filter.Hoststatus.state_older_than_unit = 'SECOND'">
+                                            <?= __('seconds'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="filter.Hoststatus.state_older_than_unit = 'MINUTE'">
+                                            <?= __('minutes'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="filter.Hoststatus.state_older_than_unit = 'HOUR'">
+                                            <?= __('hours'); ?>
+                                        </a>
+                                        <a class="dropdown-item" href="javascript:void(0);"
+                                           ng-click="filter.Hoststatus.state_older_than_unit = 'DAY'">
+                                            <?= __('days'); ?>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -418,8 +474,8 @@
                                                ng-show="hostBrowser.acknowledgement.is_sticky"></i>
                                             <?php echo __('State of host is acknowledged'); ?>
                                             <span ng-show="hostBrowser.acknowledgement.is_sticky">
-                                                        (<?php echo __('Sticky'); ?>)
-                                                    </span>
+                                                (<?php echo __('Sticky'); ?>)
+                                            </span>
                                         </h4>
                                     </div>
                                     <div class="padding-top-5">

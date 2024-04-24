@@ -49,7 +49,6 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
 
                     $scope.hoststatusSummary = result.data.hoststatusSummary;
 
-                    $scope.loadHostgroups();
                 });
             };
 
@@ -90,6 +89,7 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
                 $scope.$broadcast('FLIP_EVENT_IN');
             };
             $scope.showConfig = function(){
+                $scope.loadHostgroups();
                 $scope.$broadcast('FLIP_EVENT_OUT');
             };
 
