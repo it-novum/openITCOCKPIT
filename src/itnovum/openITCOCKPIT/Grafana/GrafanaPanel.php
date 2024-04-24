@@ -29,6 +29,7 @@ namespace itnovum\openITCOCKPIT\Grafana;
 
 use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
+use itnovum\openITCOCKPIT\Perfdata\Scale;
 use itnovum\openITCOCKPIT\Perfdata\ScaleType;
 
 class GrafanaPanel {
@@ -179,6 +180,10 @@ class GrafanaPanel {
         ],
         "pluginVersion" => "9.0.2"
     ];
+    /**
+     * @var Scale|null
+     */
+    private $scale = null;
 
     /**
      * GrafanaPanel constructor.
@@ -208,6 +213,12 @@ class GrafanaPanel {
         $this->panel['title'] = $this->title;
         $this->panel['targets'] = $this->targets;
         $this->panel['span'] = $this->span;
+
+        // If the scale is set, can use the min and max values for the panel.
+        if ($this->scale && $this->scale->min !== null && $this->scale->max !== null) {
+            $this->panel['fieldConfig']['defaults']['min'] = $this->scale->min;
+            $this->panel['fieldConfig']['defaults']['max'] = $this->scale->max;
+        }
 
         $this->panel['type'] = $this->visualization_type;
         if ($this->visualization_type === 'bargaugeretro') {
@@ -292,6 +303,14 @@ class GrafanaPanel {
             $units = $grafanaTargetCollection->getUnits();
             // Set the first unit as default unit for the panel
             $this->defaultUnit = $units[0] ?? null;
+        }
+
+        // If the targets share the same Setup, we'll use the scale from the setup for this panel.
+        foreach ($grafanaTargetCollection->getTargets() as $grafanaTarget) {
+            $setup = $grafanaTarget->getSetup();
+            if ($setup !== null) {
+                $this->scale = $setup->scale;
+            }
         }
 
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
