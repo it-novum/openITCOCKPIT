@@ -162,6 +162,17 @@ echo $this->element('emails/style');
                                         <?= h($ServicestatusIcon->getHumanState()); ?>
                                     </td>
                                 </tr>
+                                <?php if($ServicestatusIcon->getState() !== 0): ?>
+                                    <tr>
+                                        <td>
+                                            <a href="<?php printf('https://%s/#!/services/browser/%s%s', $systemAddress, $Service->getUuid(), $acknowledge); ?>"
+                                               style="text-decoration:none"
+                                               class="<?= strtoupper($ServicestatusIcon->getTextColor()) ?>">
+                                                <?php echo __('Acknowledge'); ?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </table>
                             <br/>
                             <strong><?php echo __('Output'); ?>:</strong>

@@ -147,6 +147,17 @@ echo $this->element('emails/style');
                                         <?= h($HoststatusIcon->getHumanState()); ?>
                                     </td>
                                 </tr>
+                                <?php if ($HoststatusIcon->getState() !== 0): ?>
+                                    <tr>
+                                        <td>
+                                            <a href="<?php printf('https://%s/#!/hosts/browser/%s%s', $systemAddress, $Host->getUuid(), $acknowledge); ?>"
+                                               style="text-decoration:none"
+                                               class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
+                                                <?php echo __('Acknowledge'); ?>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                <?php endif; ?>
                             </table>
                             <br/>
                             <strong><?php echo __('Output'); ?>:</strong>
