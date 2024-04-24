@@ -26,6 +26,7 @@ use App\Identifier\SslIdentifier;
 use App\Identity\AppIdentity;
 use App\Lib\PluginManager;
 use App\Middleware\AppAuthenticationMiddleware;
+use App\Middleware\CorsMiddleware;
 use App\Middleware\LdapUsergroupIdMiddleware;
 use App\Model\Table\SystemsettingsTable;
 use App\Policy\RequestPolicy;
@@ -235,6 +236,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
      */
     public function middleware($middlewareQueue): MiddlewareQueue {
         $middlewareQueue
+            ->add(new CorsMiddleware())
+
             ->add(new BodyParserMiddleware())
 
             // Catch any exceptions in the lower layers,

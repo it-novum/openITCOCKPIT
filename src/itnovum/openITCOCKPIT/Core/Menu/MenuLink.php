@@ -45,17 +45,23 @@ class MenuLink {
 
     private $icon;
 
-    public function __construct(string $name, string $state, string $controller, string $action, string $plugin = '', string $icon = '', array $tags = [], int $order = 0) {
+    private $isAngular;
+
+    private $angularUrl;
+
+    public function __construct(string $name, string $state, string $controller, string $action, string $plugin = '', string $icon = '', array $tags = [], int $order = 0, bool $isAngular = false, string $angularUrl = '') {
         $this->name = $name;
         $this->state = $state;
         $this->controller = $controller;
         $this->action = $action;
         $this->plugin = $plugin;
         $this->icon = $icon;
-        foreach ($tags as $tag){
+        foreach ($tags as $tag) {
             $this->tags[] = strtolower($tag);
         }
         $this->order = $order;
+        $this->isAngular = $isAngular;
+        $this->angularUrl = $angularUrl;
     }
 
     /**
@@ -93,6 +99,14 @@ class MenuLink {
         return strtolower($this->plugin);
     }
 
+    public function isAngular(): bool {
+        return $this->isAngular;
+    }
+
+    public function getAngularUrl(): string {
+        return $this->angularUrl;
+    }
+
     /**
      * @return array
      */
@@ -105,7 +119,9 @@ class MenuLink {
             'plugin'     => $this->plugin,
             'tags'       => $this->tags,
             'order'      => $this->order,
-            'icon'       => $this->icon
+            'icon'       => $this->icon,
+            'isAngular'  => $this->isAngular,
+            'angularUrl' => $this->angularUrl
         ];
     }
 
