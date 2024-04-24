@@ -25,15 +25,12 @@
 namespace App\itnovum\openITCOCKPIT\Perfdata;
 
 use \InvalidArgumentException;
-use itnovum\openITCOCKPIT\Core\DbBackend;
-use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Perfdata\Metric;
 use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Perfdata\Scale;
 use itnovum\openITCOCKPIT\Perfdata\ScaleType;
 use itnovum\openITCOCKPIT\Perfdata\Threshold;
-use Statusengine\PerfdataParser;
 
 final class NagiosAdapter extends PerformanceDataAdapter {
 
@@ -41,24 +38,7 @@ final class NagiosAdapter extends PerformanceDataAdapter {
     /**
      * @inheritDoc
      */
-<<<<<<< HEAD
-    function getPerformanceData(Service $service, array $performanceData = []): PerformanceDataSetup {
-        if (empty($performanceData)) {
-            // Classic service - parse Naemon perfdata string to get current perfdata information
-            // Normal Naemon services
-            $db = new DbBackend();
-            $ServicestatusTable = $db->getServicestatusTable();
-            $ServicestatusFields = new ServicestatusFields($db);
-            $ServicestatusFields->perfdata();
-            $servicestatus  = $ServicestatusTable->byUuid($service->getUuid(), $ServicestatusFields);
-            $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-            $perfdata       = $PerfdataParser->parse();
-            $metric         = array_keys($perfdata)[0];
-            $performanceData       = $perfdata[$metric];
-        }
-=======
     function getPerformanceData(Service $service, array $performanceData): PerformanceDataSetup {
->>>>>>> development
         $warn = $performanceData['warn'] ?? $performanceData['warning'] ?? '';
         $crit = $performanceData['crit'] ?? $performanceData['critical'] ?? '';
 
@@ -76,33 +56,6 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         // Split nagios Thresholds
         $warnArr = explode(':', $warn);
         $critArr = explode(':', $crit);
-<<<<<<< HEAD
-        $scaleArray = explode(':', (string)($performanceData['min'] ?? ''));
-
-        // Make better names.
-        $warnLo   = isset($warnArr[0]) && strlen($warnArr[0]) > 0 ? (float)str_replace('@', '', $warnArr[0]) : null;
-        $warnHi   = isset($warnArr[1]) && strlen($warnArr[1]) > 0 ? (float)str_replace('@', '', $warnArr[1]) : null;
-        $critLo   = isset($critArr[0]) && strlen($critArr[0]) > 0 ? (float)str_replace('@', '', $critArr[0]) : null;
-        $critHi   = isset($critArr[1]) && strlen($critArr[1]) > 0 ? (float)str_replace('@', '', $critArr[1]) : null;
-        $current  = (float)($performanceData['act'] ?? $performanceData['current'] ?? null);
-        $unit     = (string)$performanceData['unit'];
-        $name     = (string)($performanceData['name'] ?? $performanceData['metric']);
-
-
-        // Interprete Scale
-        if (is_numeric($scaleArray[0] ?? false) && is_numeric($scaleArray[1] ?? false)) {
-            $scaleMin = (float)$scaleArray[0];
-            $scaleMax = (float)$scaleArray[1];
-        } else {
-            $proposeMin = ScaleType::findMin($critHi, $critLo, $warnHi, $warnLo);
-            $proposeMax = ScaleType::findMax($critHi, $critLo, $warnHi, $warnLo);
-            if ($proposeMax !== null && $proposeMin !== null) {
-                $scaleMin = $proposeMin;
-                $scaleMax = $proposeMax;
-            } else {
-                $scaleMin = null;
-                $scaleMax = null;
-=======
 
         // Make better names.
         $warnLo = isset($warnArr[0]) && strlen($warnArr[0]) > 0 ? (float)str_replace('@', '', $warnArr[0]) : null;
@@ -135,7 +88,6 @@ final class NagiosAdapter extends PerformanceDataAdapter {
                     $scaleMin = 0;
                     $scaleMax = 100;
                 }
->>>>>>> development
             }
         }
 
