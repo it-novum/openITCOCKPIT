@@ -457,12 +457,14 @@ class MapeditorsController extends AppController {
 
         $Service = new Service($service);
         if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
-            $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
-            $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
-
+            $PerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
             $adapter = new PrometheusAdapter();
-            $metric  = array_keys($perfdata)[0];
-            $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+
+            $perfdata = $PerfdataLoader->getAvailableMetricsByService($Service, false, true);
+            $adapter = new PrometheusAdapter();
+            foreach ($perfdata as $metric => $data) {
+                $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+            }
         } else {
             $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
             $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());

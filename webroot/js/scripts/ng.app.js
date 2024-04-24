@@ -1036,6 +1036,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ContactgroupsUsedByController"
             })
 
+            .state('SystemHealthUsersAdd', {
+                url: '/systemHealthUsers/add',
+                templateUrl: "/systemHealthUsers/add.html",
+                controller: "SystemHealthUsersAddController"
+            })
+
+            .state('SystemHealthUsersEdit', {
+                url: '/systemHealthUsers/edit/:id',
+                templateUrl: "/systemHealthUsers/edit.html",
+                controller: "SystemHealthUsersEditController"
+            })
+
+            .state('SystemHealthUsersIndex', {
+                url: '/systemHealthUsers/index',
+                templateUrl: "/systemHealthUsers/index.html",
+                controller: "SystemHealthUsersIndexController"
+            })
+
             .state('HostescalationsIndex', {
                 url: '/hostescalations/index',
                 params: {
@@ -1272,7 +1290,13 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             .state('HostsBrowser', {
                 url: '/hosts/browser/:id',
                 templateUrl: "/hosts/browser.html",
-                controller: "HostsBrowserController"
+                controller: "HostsBrowserController",
+                params: {
+                    selectedTab: {
+                        value: null,
+                        array: true
+                    }
+                },
             })
 
             .state('HostsAdd', {

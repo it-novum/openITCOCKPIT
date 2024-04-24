@@ -184,11 +184,16 @@ class DashboardsController extends AppController {
 
     public function dynamicDirective() {
         $directiveName = $this->request->getQuery('directive');
+        $readOnly =   filter_var($this->request->getQuery('readonly'), FILTER_VALIDATE_BOOLEAN);
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
-
-        $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
+        if($readOnly) {
+            $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
+        } else {
+            $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
+        }
+       // $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
         $isValidDirective = false;
         foreach ($widgets as $widget) {
             if ($widget['directive'] === $directiveName) {
@@ -1465,20 +1470,24 @@ class DashboardsController extends AppController {
 
             $service = $this->getServicestatusByServiceId($serviceId);
             $data = [];
-            $metric = array_keys($service['Perfdata'])[0];
-
-            if (Plugin::isLoaded('PrometheusModule') && $service['Service']['serviceType'] === PROMETHEUS_SERVICE) {
-                // Query Prometheus to get all metrics
-                $adapter = new PrometheusAdapter();
-                $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), [])->toArray();
-            } else {
-                $PerfdataParser = new PerfdataParser($service['Servicestatus']['perfdata']);
-                $perfdata       = $PerfdataParser->parse();
-                $metric         = array_keys($perfdata)[0];
-                $perfdata       = $perfdata[$metric];
-                $adapter       = new NagiosAdapter();
-                $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), $perfdata)->toArray();
+            $metrics = array_keys($service['Perfdata']);
+            foreach ($metrics as $metric) {
+                if (Plugin::isLoaded('PrometheusModule') && $service['Service']['serviceType'] === PROMETHEUS_SERVICE) {
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $Service = new Service($service);
+                    $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
+                    // Query Prometheus to get all metrics
+                    $adapter = new PrometheusAdapter();
+                    $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), $perfdata[$metric])->toArray();
+                } else {
+                    $PerfdataParser = new PerfdataParser($service['Servicestatus']['perfdata']);
+                    $perfdata = $PerfdataParser->parse();
+                    $perfdata = $perfdata[$metric] ?? [];
+                    $adapter = new NagiosAdapter();
+                    $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), $perfdata)->toArray();
+                }
             }
+
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
             }
@@ -1535,7 +1544,8 @@ class DashboardsController extends AppController {
         if ($id === null) {
             return [
                 'Service'       => [],
-                'Servicestatus' => []
+                'Servicestatus' => [],
+                'Perfdata'      => []
             ];
         }
 
@@ -1587,10 +1597,17 @@ class DashboardsController extends AppController {
 
                     $serviceForJs['Perfdata'] = $perfdata;
 
-                    $metric = array_keys($perfdata)[0];
-                    $perfdata = $perfdata[$metric];
-                    $perfdata['metric'] = $metric;
-                    $serviceForJs['Servicestatus']['perfdata'] = "{$perfdata['metric']}={$perfdata['current']}{$perfdata['unit']};{$perfdata['warning']};{$perfdata['critical']};-50;50;";
+                    foreach ($serviceForJs['Perfdata'] as $metric => $perfdata) {
+                        $serviceForJs['Perfdata'][$metric]['metric'] = $metric;
+                        $serviceForJs['Servicestatus']['perfdata'] = sprintf(
+                            '%s=%s%s;%s;%s;-50;50;',
+                            h($metric),
+                            h($perfdata['current']),
+                            h($perfdata['unit']),
+                            h($perfdata['warning']),
+                            h($perfdata['critical'])
+                        );
+                    }
                 }
 
                 return $serviceForJs;
@@ -2037,9 +2054,10 @@ class DashboardsController extends AppController {
 
                     $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
                     $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
-                    $metric = array_keys($perfdata)[0];
                     $adapter = new PrometheusAdapter();
-                    $perfdata[$metric]['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+                    foreach ($perfdata as $metric => $data) {
+                        $perfdata[$metric]['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+                    }
                 } else {
                     $ServicestatusFields = new ServicestatusFields($this->DbBackend);
                     $ServicestatusFields->perfdata();

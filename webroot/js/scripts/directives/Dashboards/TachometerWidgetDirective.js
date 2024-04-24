@@ -205,8 +205,11 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
             }
 
             var renderGauge = function(){
-                let setup = $scope.setup,
-                    units = setup.metric.unit,
+                let setup = $scope.setup;
+                if (typeof (setup) === "undefined") {
+                    return;
+                }
+                let units = setup.metric.unit,
                     label = setup.metric.name;
 
                 if(label.length > 20){
@@ -280,7 +283,7 @@ angular.module('openITCOCKPIT').directive('tachometerWidget', function($http){
 
             var getMajorTicks = function(perfdataMin, perfdataMax, numberOfTicks){
                 numberOfTicks = Math.abs(Math.ceil(numberOfTicks));
-                let tickSize = Math.ceil((perfdataMax - perfdataMin) / numberOfTicks),
+                let tickSize = Math.round((perfdataMax - perfdataMin) / numberOfTicks),
                     tickArr = [],
                     myTick = perfdataMin;
 

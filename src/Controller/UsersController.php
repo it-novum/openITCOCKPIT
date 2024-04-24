@@ -708,7 +708,7 @@ class UsersController extends AppController {
         $Mailer->setEmailFormat('text');
         $Mailer->setAttachments([
             'logo.png' => [
-                'file'      => $Logo->getSmallLogoDiskPath(),
+                'file'      => $Logo->getSmallLogoPdfPath(),
                 'mimetype'  => 'image/png',
                 'contentId' => '100'
             ]

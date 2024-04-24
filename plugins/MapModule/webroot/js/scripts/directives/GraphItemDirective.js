@@ -196,14 +196,14 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                 var thresholdAreas = [];
                 switch(setup.scale.type){
                     case "W<O":
-                        thresholdAreas.push({below: 9999999999999999999, color: GraphDefaultsObj.okFillColor});
+                        thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.okFillColor});
                         thresholdAreas.push({
                             below: setup.warn.low,
                             color: GraphDefaultsObj.warningFillColor
                         });
                         break;
                     case "C<W<O":
-                        thresholdAreas.push({below: 99999999999999999999999999, color: GraphDefaultsObj.okFillColor});
+                        thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.okFillColor});
                         thresholdAreas.push({
                             below: setup.crit.low,
                             color: GraphDefaultsObj.criticalFillColor
@@ -221,7 +221,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                         break;
                     case "O<W<C":
                         thresholdAreas.push({
-                            below: 999999999999999999999999999,
+                            below: Infinity,
                             color: GraphDefaultsObj.criticalFillColor
                         });
                         thresholdAreas.push({
@@ -234,7 +234,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                         });
                         break;
                     case "C<W<O<W<C":
-                        thresholdAreas.push({below: 99999999999999999, color: GraphDefaultsObj.criticalFillColor});
+                        thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.criticalFillColor});
                         thresholdAreas.push({
                             below: setup.crit.high,
                             color: GraphDefaultsObj.warningFillColor
@@ -254,7 +254,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                         break;
                     case "O<W<C<W<O":
                         thresholdAreas.push({
-                            below: 99999999999999999999999999,
+                            below: Infinity,
                             color: GraphDefaultsObj.okFillColor
                         });
                         thresholdAreas.push({
@@ -404,7 +404,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
             var renderGraph = function(){
                 let performance_data = $scope.perfdata,
                     setup = performance_data.datasource.setup;
-                if(!performance_data){
+                if(!performance_data || !setup){
                     return;
                 }
                 initTooltip();
@@ -421,7 +421,7 @@ angular.module('openITCOCKPIT').directive('graphItem', function($http, $q, $time
                     gaugeData.push([frontEndTimestamp, performance_data.data[timestamp]]);
                 }
 
-                var label = $scope.service.servicename + ' "' + setup.label + '"';
+                var label = $scope.service.servicename + ' "' + setup.metric.name + '"';
                 if(setup.metric.unit){
                     label = label + ' in ' + setup.metric.unit;
                 }

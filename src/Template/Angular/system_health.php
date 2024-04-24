@@ -205,13 +205,14 @@
                         </span>
                     </li>
 
-                    <li ng-repeat="satellite in systemHealth.satellites" ng-if="satellite.satellite_status.status !== 1">
+                    <li ng-repeat="satellite in systemHealth.satellites"
+                        ng-if="satellite.satellite_status.status !== 1">
                         <span>
                             <div class="padding-5">
                                 <p class="margin-bottom-5">
-                                    <i><?php echo __('Sync status'); ?> <?php echo __('failed')?></i>
+                                    <i><?php echo __('Sync status'); ?><?php echo __('failed') ?></i>
                                     <br/>
-                                    <i>{{ satellite.name }}, <?php echo __('last seen')?> {{ satellite.satellite_status.last_seen }}</i>
+                                    <i>{{ satellite.name }}, <?php echo __('last seen') ?> {{ satellite.satellite_status.last_seen }}</i>
                                 </p>
                             </div>
                         </span>
@@ -302,10 +303,23 @@
                 </li>
             </ul>
         </div>
-        <!-- ngIf: systemHealth.state === 'unknown' -->
-        <div class="padding-5 italic text-info text-right">
-            <?= __('Last update'); ?>: {{ systemHealth.update }}
-        </div>
+        <?php if ($this->Acl->hasPermission('index', 'systemHealthUsers')): ?>
+            <div class="padding-5 d-flex justify-content-between">
+                <a ui-sref="SystemHealthUsersIndex" class="btn btn-primary btn-xs mr-1 shadow-0"
+                   title="<?php echo __('System health notification list'); ?>">
+                    <i class="fa fa-user"></i>
+                </a>
+                <!-- ngIf: systemHealth.state === 'unknown' -->
+                <div class="italic text-info text-right">
+                    <?= __('Last update'); ?>: {{ systemHealth.update }}
+                </div>
+            </div>
+        <?php else: ?>
+            <!-- ngIf: systemHealth.state === 'unknown' -->
+            <div class="padding-5 italic text-info text-right">
+                <?= __('Last update'); ?>: {{ systemHealth.update }}
+            </div>
+        <?php endif; ?>
     </div>
 
     <button class="btn {{btnClass}}"

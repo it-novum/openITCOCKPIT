@@ -5,9 +5,14 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
 
         $scope.activeTab = 'active';
-
         $scope.currentPage = 1;
         $scope.selectedTab = 'tab1';
+
+        if(typeof $stateParams.selectedTab !== "undefined"){
+            if($stateParams.selectedTab !== null){
+                $scope.selectedTab = $stateParams.selectedTab;
+            }
+        }
 
         $scope.massChange = {};
         $scope.selectedElements = 0;

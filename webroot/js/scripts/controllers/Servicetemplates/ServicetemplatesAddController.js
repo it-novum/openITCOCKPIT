@@ -69,7 +69,8 @@ angular.module('openITCOCKPIT')
                     },
                     customvariables: [],
                     servicetemplatecommandargumentvalues: [],
-                    servicetemplateeventcommandargumentvalues: []
+                    servicetemplateeventcommandargumentvalues: [],
+                    sla_relevant: 1
                 }
             };
         };

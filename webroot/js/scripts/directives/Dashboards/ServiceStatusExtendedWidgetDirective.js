@@ -1,4 +1,29 @@
-angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', function($http, $rootScope, $interval, NotyService){
+/*
+ * Copyright (C) <2015>  <it-novum GmbH>
+ *
+ * This file is dual licensed
+ *
+ * 1.
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, version 3 of the License.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * 2.
+ *     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+ *     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+ *     License agreement and license key will be shipped with the order
+ *     confirmation.
+ */
+
+angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', function($http, $rootScope, $interval, NotyService) {
     return {
         restrict: 'E',
         templateUrl: '/dashboards/servicesStatusListExtendedWidget.html',
@@ -6,18 +31,19 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
             'widget': '='
         },
 
-        controller: function($scope){
+        controller: function($scope) {
             $scope.interval = null;
             $scope.init = true;
             $scope.useScroll = true;
             $scope.scroll_interval = 30000;
+            $scope.min_scroll_intervall = 5000;
 
             // ITC-3037
-            $scope.readOnly    = $scope.widget.isReadonly;
+            $scope.readOnly = $scope.widget.isReadonly;
 
             var $widget = $('#widget-' + $scope.widget.id);
 
-            $widget.on('resize', function(event, items){
+            $widget.on('resize', function(event, items) {
                 hasResize();
             });
 
@@ -39,7 +65,9 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                     not_acknowledged: false,
                     in_downtime: false,
                     not_in_downtime: false,
-                    output: ''
+                    output: '',
+                    state_older_than: null,
+                    state_older_than_unit: 'minutes'
                 },
                 Host: {
                     name: '',
@@ -55,8 +83,8 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                 }
             };
 
-            $scope.loadWidgetConfig = function(){
-                $http.get("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result){
+            $scope.loadWidgetConfig = function() {
+                $http.get("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result) {
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
                     $('#HostTags-' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
@@ -73,39 +101,40 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                     $scope.filter.Servicestatus.not_acknowledged = result.data.config.Servicestatus.not_acknowledged;
                     $scope.filter.Servicestatus.in_downtime = result.data.config.Servicestatus.in_downtime;
                     $scope.filter.Servicestatus.not_in_downtime = result.data.config.Servicestatus.not_in_downtime;
+                    $scope.filter.Servicestatus.state_older_than = result.data.config.Servicestatus.state_older_than ? parseInt(result.data.config.Servicestatus.state_older_than, 10) : null;
                     $scope.direction = result.data.config.direction;
                     $scope.sort = result.data.config.sort;
                     $scope.useScroll = result.data.config.useScroll;
                     $scope.filter.Host.name_regex = result.data.config.Host.name_regex;
                     $scope.filter.Service.name_regex = result.data.config.Service.name_regex;
                     var scrollInterval = parseInt(result.data.config.scroll_interval);
-                    if(scrollInterval < 5000){
-                        scrollInterval = 5000;
-                    }
                     $scope.scroll_interval = scrollInterval;
-                    if($scope.useScroll){
+                    if(scrollInterval < 5000) {
+                        $scope.pauseScroll();
+                    } else {
                         $scope.startScroll();
                     }
+
 
                     $scope.load();
                 });
             };
 
-            $scope.$on('$destroy', function(){
+            $scope.$on('$destroy', function() {
                 $scope.pauseScroll();
             });
 
-            $scope.load = function(options){
+            $scope.load = function(options) {
 
                 options = options || {};
                 options.save = options.save || false;
 
                 var hasBeenAcknowledged = '';
                 var inDowntime = '';
-                if($scope.filter.Servicestatus.acknowledged ^ $scope.filter.Servicestatus.not_acknowledged){
+                if($scope.filter.Servicestatus.acknowledged ^ $scope.filter.Servicestatus.not_acknowledged) {
                     hasBeenAcknowledged = $scope.filter.Servicestatus.acknowledged === true;
                 }
-                if($scope.filter.Servicestatus.in_downtime ^ $scope.filter.Servicestatus.not_in_downtime){
+                if($scope.filter.Servicestatus.in_downtime ^ $scope.filter.Servicestatus.not_in_downtime) {
                     inDowntime = $scope.filter.Servicestatus.in_downtime === true;
                 }
 
@@ -128,16 +157,20 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                     'filter[Servicestatus.current_state][]': $rootScope.currentStateForApi($scope.filter.Servicestatus.current_state),
                     'filter[Servicestatus.problem_has_been_acknowledged]': hasBeenAcknowledged,
                     'filter[Servicestatus.scheduled_downtime_depth]': inDowntime,
+                    'filter[Servicestatus.last_state_change][]': [
+                        $scope.filter.Servicestatus.state_older_than || null,
+                        $scope.filter.Servicestatus.state_older_than_unit || null
+                    ],
                     'limit': $scope.limit
                 };
 
                 $http.get("/services/index.json", {
                     params: params
-                }).then(function(result){
+                }).then(function(result) {
                     $scope.services = result.data.all_services;
                     $scope.scroll = result.data.scroll;
 
-                    if(options.save === true){
+                    if(options.save === true) {
                         $scope.saveSettings(params);
                     }
 
@@ -145,9 +178,9 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                 });
             };
 
-            $scope.getSortClass = function(field){
-                if(field === $scope.sort){
-                    if($scope.direction === 'asc'){
+            $scope.getSortClass = function(field) {
+                if(field === $scope.sort) {
+                    if($scope.direction === 'asc') {
                         return 'fa-sort-asc';
                     }
                     return 'fa-sort-desc';
@@ -155,45 +188,47 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                 return 'fa-sort';
             };
 
-            $scope.orderBy = function(field){
-                if(field !== $scope.sort){
+            $scope.orderBy = function(field) {
+                if(field !== $scope.sort) {
                     $scope.direction = 'asc';
                     $scope.sort = field;
                     $scope.load();
                     return;
                 }
 
-                if($scope.direction === 'asc'){
+                if($scope.direction === 'asc') {
                     $scope.direction = 'desc';
-                }else{
+                } else {
                     $scope.direction = 'asc';
                 }
                 $scope.load();
             };
 
-            var hasResize = function(){
-                if($scope.serviceListTimeout){
+            var hasResize = function() {
+                if($scope.serviceListTimeout) {
                     clearTimeout($scope.serviceListTimeout);
                 }
-                $scope.serviceListTimeout = setTimeout(function(){
+                $scope.serviceListTimeout = setTimeout(function() {
                     $scope.serviceListTimeout = null;
                     $scope.limit = getLimit($widget.height());
-                    if($scope.limit <= 0){
+                    if($scope.limit <= 0) {
                         $scope.limit = 1;
                     }
                     $scope.load();
                 }, 500);
             };
 
-            $scope.startScroll = function(){
+            $scope.startScroll = function() {
                 $scope.pauseScroll();
+                if(!$scope.useScroll && $scope.scroll_interval === 0) {
+                    $scope.scroll_interval = $scope.min_scroll_intervall;
+                }
                 $scope.useScroll = true;
-
-                $scope.interval = $interval(function(){
+                $scope.interval = $interval(function() {
                     var page = $scope.currentPage;
-                    if($scope.scroll.hasNextPage){
+                    if($scope.scroll.hasNextPage) {
                         page++;
-                    }else{
+                    } else {
                         page = 1;
                     }
                     $scope.changepage(page)
@@ -201,15 +236,15 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
 
             };
 
-            $scope.pauseScroll = function(){
-                if($scope.interval !== null){
+            $scope.pauseScroll = function() {
+                if($scope.interval !== null) {
                     $interval.cancel($scope.interval);
                     $scope.interval = null;
                 }
                 $scope.useScroll = false;
             };
 
-            var getLimit = function(height){
+            var getLimit = function(height) {
                 height = height - 42 - 61 - 10 - 37; //Unit: px
                 //                ^ Widget play/pause div
                 //                     ^ Paginator
@@ -217,57 +252,57 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
                 //                                ^ Table header
 
                 var limit = Math.floor(height / 36); // 36px = table row height;
-                if(limit <= 0){
+                if(limit <= 0) {
                     limit = 1;
                 }
                 return limit;
             };
 
-            $scope.saveSettings = function(){
+            $scope.saveSettings = function() {
                 var settings = $scope.filter;
                 settings['scroll_interval'] = $scope.scroll_interval;
                 settings['useScroll'] = $scope.useScroll;
                 settings['sort'] = $scope.sort;
                 settings['direction'] = $scope.direction;
-                $http.post("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result){
+                $http.post("/dashboards/servicesStatusListWidget.json?angular=true&widgetId=" + $scope.widget.id, settings).then(function(result) {
                     $scope.currentPage = 1;
                     $scope.loadWidgetConfig();
                     $scope.hideConfig();
-                    if($scope.init === true){
+                    if($scope.init === true) {
                         return true;
                     }
                     return true;
                 });
             };
 
-            var getTimeString = function(){
-                return (new Date($scope.scroll_interval * 60)).toUTCString().match(/(\d\d:\d\d)/)[0] + " minutes";
+            var getTimeString = function() {
+                return ( new Date($scope.scroll_interval * 60) ).toUTCString().match(/(\d\d:\d\d)/)[0] + " minutes";
             };
 
-            $scope.changepage = function(page){
-                if(page !== $scope.currentPage){
+            $scope.changepage = function(page) {
+                if(page !== $scope.currentPage) {
                     $scope.currentPage = page;
                     $scope.load();
                 }
             };
 
-            $scope.hideConfig = function(){
+            $scope.hideConfig = function() {
                 $scope.$broadcast('FLIP_EVENT_IN');
             };
-            $scope.showConfig = function(){
+            $scope.showConfig = function() {
                 $scope.$broadcast('FLIP_EVENT_OUT');
                 $scope.loadWidgetConfig();
             };
 
-            $scope.loadServiceBrowserDetails = function(serviceId){
+            $scope.loadServiceBrowserDetails = function(serviceId) {
                 $http.get("/services/browser/" + serviceId + ".json", {
                     params: {
                         'angular': true
                     }
-                }).then(function(result){
+                }).then(function(result) {
                     $scope.serviceBrowser = result.data;
                     $('#serviceBrowserModal' + $scope.widget.id).modal('show');
-                }, function errorCallback(result){
+                }, function errorCallback(result) {
                     NotyService.genericError();
                 });
             }
@@ -276,45 +311,48 @@ angular.module('openITCOCKPIT').directive('servicesStatusExtendedWidget', functi
 
             $scope.loadWidgetConfig();
 
-            jQuery(function(){
+            jQuery(function() {
                 $("input[data-role=tagsinput]").tagsinput();
             });
 
-            $scope.$watch('scroll_interval', function(){
+            $scope.$watch('scroll_interval', function(scrollInterval) {
                 $scope.pagingTimeString = getTimeString();
-                if($scope.init === true){
+                if($scope.init === true) {
                     return true;
                 }
                 $scope.pauseScroll();
-                $scope.startScroll();
-                $scope.load({
-                    save: true
-                });
-            });
-
-            $scope.$watch('sort', function(){
-                if($scope.init === true){
-                    return true;
+                if(scrollInterval > 0) {
+                    $scope.startScroll();
                 }
                 $scope.load({
                     save: true
                 });
-            });
+            }, true);
+
+            $scope.$watch('[sort, direction]', function() {
+                if($scope.init === true) {
+                    return true;
+                }
+
+                $scope.load({
+                    save: true
+                });
+            }, true);
 
             // Fix modal appearing under background / backdrop shadow
             //Issue: If possible have no position fixed, absolute or relative elements above the .modal
-            setTimeout(function(){
+            setTimeout(function() {
                 $('#serviceBrowserModal' + $scope.widget.id).appendTo("body");
             }, 250);
 
             // Remove modal HTML from DOM when scope changes
             // https://weblog.west-wind.com/posts/2016/sep/14/bootstrap-modal-dialog-showing-under-modal-background
-            $scope.$on('$destroy', function(){
+            $scope.$on('$destroy', function() {
                 //console.log('Remove modal: #serviceBrowserModal' + $scope.widget.id);
                 $('#serviceBrowserModal' + $scope.widget.id).remove();
             });
         },
-        link: function($scope, element, attr){
+        link: function($scope, element, attr) {
 
         }
     };

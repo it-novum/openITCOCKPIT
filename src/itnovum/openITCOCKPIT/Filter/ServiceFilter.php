@@ -4,28 +4,26 @@
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\Filter;
 
-
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class ServiceFilter extends Filter {
 
@@ -34,24 +32,24 @@ class ServiceFilter extends Filter {
      */
     public function indexFilter() {
         $filters = [
-            'bool'          => [
+            'bool'           => [
                 'Servicestatus.problem_has_been_acknowledged',
                 'Servicestatus.notifications_enabled',
                 'Servicestatus.active_checks_enabled'
             ],
-            'like'          => [
+            'like'           => [
                 'Servicestatus.output',
                 'servicedescription'
             ],
-            'rlike'         => [
+            'rlike'          => [
                 'Hosts.keywords',
                 'keywords'
             ],
-            'notrlike'      => [
+            'notrlike'       => [
                 'Hosts.not_keywords',
                 'not_keywords'
             ],
-            'equals'        => [
+            'equals'         => [
                 'Hosts.id',
                 'Hosts.satellite_id',
                 'Services.id',
@@ -60,15 +58,18 @@ class ServiceFilter extends Filter {
                 'servicepriority',
                 'Services.service_type',
             ],
-            'downtime'      => [
+            'downtime'       => [
                 'Servicestatus.scheduled_downtime_depth',
             ],
-            'state'         => [
+            'state'          => [
                 'Servicestatus.current_state'
             ],
-            'like_or_rlike' => [
+            'like_or_rlike'  => [
                 'Hosts.name',
                 'servicename'
+            ],
+            'interval_older' => [
+                'Servicestatus.last_state_change'
             ]
         ];
 

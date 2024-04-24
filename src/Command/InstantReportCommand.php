@@ -169,7 +169,7 @@ class InstantReportCommand extends Command implements CronjobInterface {
                     $Mailer->setTo($user->get('email'));
                     $Mailer->setAttachments([
                         'logo.png'                => [
-                            'file'      => $Logo->getSmallLogoDiskPath(),
+                            'file'      => $Logo->getSmallLogoPdfPath(),
                             'mimetype'  => 'image/png',
                             'contentId' => '100'
                         ],

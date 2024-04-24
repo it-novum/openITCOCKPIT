@@ -33,6 +33,7 @@ angular.module('openITCOCKPIT').directive('massdelete', function($http, $filter,
                             if(i === count && issueCount === 0){
                                 $scope.isDeleting = false;
                                 $scope.percentage = 0;
+                                $scope.undoSelection();
                                 $scope.load();
                                 $('#angularMassDelete').modal('hide');
                             }

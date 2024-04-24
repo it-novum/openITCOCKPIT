@@ -1267,7 +1267,7 @@ class Agent extends Importer {
                 'human_args'       => null,
                 'uuid'             => 'e96abe8e-af71-4565-9997-dfeb9e518cac',
                 'description'      => "Monitores if the system clock is synchronized to a time source like NTP.\n" .
-                    "Warning and Critical thresholds are integer values in seconds (e.g. 60 or 90).\n" .
+                    "Warning and Critical thresholds are range integer values in seconds (e.g. -60:60 or -90:90).\n" .
                     "On macOS clients the system time will be compared against the server time",
                 'commandarguments' => [
                     [
@@ -3563,11 +3563,11 @@ class Agent extends Importer {
                 'servicetemplatecommandargumentvalues'      => [
                     [
                         'commandargument_id' => '$ARG1$',
-                        'value'              => '60',
+                        'value'              => '-60:60',
                     ],
                     [
                         'commandargument_id' => '$ARG2$',
-                        'value'              => '90',
+                        'value'              => '-90:90',
                     ]
                 ],
                 'customvariables'                           => [],
