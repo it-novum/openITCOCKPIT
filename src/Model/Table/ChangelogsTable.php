@@ -1,4 +1,26 @@
 <?php
+// Copyright (C) <2015>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\Model\Table;
 
@@ -890,4 +912,31 @@ class ChangelogsTable extends Table {
         $dataUnserialized = Hash::insert($dataUnserialized, '{n}.{s}.data.{n}[password=1].value', '🤫');
         return $dataUnserialized;
     }
+
+    /**
+     * @param string $action
+     * @return string[]
+     */
+    public function getFaIconByAction(string $action) {
+        switch ($action) {
+            case 'add':
+                return ['fas', 'plus'];
+            case 'delete':
+                return ['fas', 'trash'];
+            case 'activate':
+                return ['fas', 'asterisk'];
+            case 'deactivate':
+                return ['fas', 'plug'];
+            case 'copy':
+                return ['fas', 'copy'];
+            case 'export':
+            case 'synchronization':
+                return ['fas', 'retweet'];
+            case 'import':
+                return ['fas', 'file-import'];
+            default:
+                return ['fas', 'edit'];
+        }
+    }
+
 }
