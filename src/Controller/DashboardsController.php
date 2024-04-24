@@ -29,6 +29,7 @@ namespace App\Controller;
 
 use App\itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewExtendedJson;
 use App\itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewExtendedJson;
+use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Entity\DashboardTab;
 use App\Model\Table\ContainersTable;
@@ -41,6 +42,7 @@ use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
+use Cake\Core\Plugin;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -68,9 +70,11 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\DashboardTabsFilter;
 use ParsedownExtra;
+use PrometheusModule\Lib\PrometheusAdapter;
 use RuntimeException;
 use Statusengine\PerfdataParser;
 
@@ -1465,8 +1469,25 @@ class DashboardsController extends AppController {
             }
 
             $service = $this->getServicestatusByServiceId($serviceId);
-
             $data = [];
+            $metrics = array_keys($service['Perfdata']);
+            foreach ($metrics as $metric) {
+                if (Plugin::isLoaded('PrometheusModule') && $service['Service']['serviceType'] === PROMETHEUS_SERVICE) {
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $Service = new Service($service);
+                    $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
+                    // Query Prometheus to get all metrics
+                    $adapter = new PrometheusAdapter();
+                    $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), $perfdata[$metric])->toArray();
+                } else {
+                    $PerfdataParser = new PerfdataParser($service['Servicestatus']['perfdata']);
+                    $perfdata = $PerfdataParser->parse();
+                    $perfdata = $perfdata[$metric] ?? [];
+                    $adapter = new NagiosAdapter();
+                    $service['Perfdata'][$metric]['datasource']['setup'] = $adapter->getPerformanceData(new Service($service), $perfdata)->toArray();
+                }
+            }
+
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
             }
@@ -1523,7 +1544,8 @@ class DashboardsController extends AppController {
         if ($id === null) {
             return [
                 'Service'       => [],
-                'Servicestatus' => []
+                'Servicestatus' => [],
+                'Perfdata'      => []
             ];
         }
 
@@ -1565,6 +1587,29 @@ class DashboardsController extends AppController {
 
                 $serviceForJs['Service']['id'] = (int)$serviceForJs['Service']['id'];
                 $serviceForJs['Host']['id'] = (int)$serviceForJs['Host']['id'];
+
+                if (Plugin::isLoaded('PrometheusModule') && $service->service_type === PROMETHEUS_SERVICE) {
+                    // Query Prometheus to get all metrics
+                    $ServiceObj = new Service($service->toArray());
+
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj, false, true);
+
+                    $serviceForJs['Perfdata'] = $perfdata;
+
+                    foreach ($serviceForJs['Perfdata'] as $metric => $perfdata) {
+                        $serviceForJs['Perfdata'][$metric]['metric'] = $metric;
+                        $serviceForJs['Servicestatus']['perfdata'] = sprintf(
+                            '%s=%s%s;%s;%s;-50;50;',
+                            h($metric),
+                            h($perfdata['current']),
+                            h($perfdata['unit']),
+                            h($perfdata['warning']),
+                            h($perfdata['critical'])
+                        );
+                    }
+                }
+
                 return $serviceForJs;
             }
         }
@@ -1998,23 +2043,34 @@ class DashboardsController extends AppController {
             throw new NotFoundException();
         }
 
+
         $service = $ServicesTable->getServiceById($serviceId);
+        $perfdata = [];
         if ($service) {
             if ($this->allowedByContainerId($service->get('host')->getContainerIds(), false)) {
-                $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-                $ServicestatusFields->perfdata();
-                $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+                if (Plugin::isLoaded('PrometheusModule') && $service->service_type === PROMETHEUS_SERVICE) {
+                    // Query Prometheus to get all metrics
+                    $Service = new Service($service->toArray());
 
-                if (!empty($servicestatus)) {
-                    $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
-                    $this->set('perfdata', $PerfdataParser->parse());
-                    $this->viewBuilder()->setOption('serialize', ['perfdata']);
-                    return;
+                    $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($Service, false, true);
+                    $adapter = new PrometheusAdapter();
+                    foreach ($perfdata as $metric => $data) {
+                        $perfdata[$metric]['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+                    }
+                } else {
+                    $ServicestatusFields = new ServicestatusFields($this->DbBackend);
+                    $ServicestatusFields->perfdata();
+                    $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
+
+                    if (!empty($servicestatus)) {
+                        $PerfdataParser = new PerfdataParser($servicestatus['Servicestatus']['perfdata']);
+                        $perfdata = $PerfdataParser->parse();
+                    }
                 }
             }
         }
-
-        $this->set('perfdata', []);
+        $this->set('perfdata', $perfdata);
         $this->viewBuilder()->setOption('serialize', ['perfdata']);
     }
 

@@ -25,6 +25,7 @@
 
 namespace MapModule\Controller;
 
+use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Lib\Exceptions\MissingDbBackendException;
 use App\Model\Table\DashboardTabsTable;
 use App\Model\Table\HostgroupsTable;
@@ -56,6 +57,7 @@ use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapitem;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapline;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Mapsummaryitem;
 use itnovum\openITCOCKPIT\Maps\ValueObjects\Maptext;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 use MapModule\Model\Table\MapgadgetsTable;
 use MapModule\Model\Table\MapiconsTable;
 use MapModule\Model\Table\MapitemsTable;
@@ -64,6 +66,7 @@ use MapModule\Model\Table\MapsTable;
 use MapModule\Model\Table\MapsummaryitemsTable;
 use MapModule\Model\Table\MaptextsTable;
 use MapModule\Model\Table\MapUploadsTable;
+use PrometheusModule\Lib\PrometheusAdapter;
 use RuntimeException;
 use Statusengine\PerfdataParser;
 use Symfony\Component\Finder\Finder;
@@ -261,6 +264,7 @@ class MapeditorsController extends AppController {
             case 'service':
                 $includeServiceOutput = $includeServiceOutput === 'true';
                 $service = $ServicesTable->getServiceByIdWithHostAndServicetemplate($objectId);
+                $host = $service->host;
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {
@@ -451,6 +455,24 @@ class MapeditorsController extends AppController {
                 break;
         }
 
+        $Service = new Service($service);
+        if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
+            $PerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+            $adapter = new PrometheusAdapter();
+
+            $perfdata = $PerfdataLoader->getAvailableMetricsByService($Service, false, true);
+            $adapter = new PrometheusAdapter();
+            foreach ($perfdata as $metric => $data) {
+                $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+            }
+        } else {
+            $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
+            $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
+
+            $adapter = new NagiosAdapter();
+            $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $performance_data[0]['datasource'])->toArray();
+        }
+
         return [
             'type'      => $type,
             'data'      => $properties,
@@ -541,11 +563,11 @@ class MapeditorsController extends AppController {
         $ServicestatusTable = $this->DbBackend->getServicestatusTable();
 
         $MY_RIGHTS = $this->hasRootPrivileges ? [] : $this->MY_RIGHTS;
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
         switch ($this->request->getQuery('type')) {
             case 'host':
-                /** @var HostsTable $HostsTable */
-                $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
                 $host = $HostsTable->getHostsWithServicesByIdsForMapeditor($objectId, $MY_RIGHTS, true);
 
@@ -572,6 +594,7 @@ class MapeditorsController extends AppController {
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
                 $service = $ServicesTable->getServiceById($objectId)->toArray();
+                $host = $HostsTable->getHostById($service['host_id']);
 
                 if (!empty($service)) {
                     if ($this->hasRootPrivileges === false) {

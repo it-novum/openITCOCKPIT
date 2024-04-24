@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace MapModule\Model\Table;
 
+use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Lib\Interfaces\HoststatusTableInterface;
 use App\Lib\Interfaces\ServicestatusTableInterface;
 use App\Lib\Traits\Cake2ResultTableTrait;
@@ -65,6 +66,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapFilter;
 use MapModule\Model\Entity\Map;
+use PrometheusModule\Lib\PrometheusAdapter;
 use Statusengine\PerfdataParser;
 
 /**
@@ -753,18 +755,24 @@ class MapsTable extends Table {
             $iconProperty = $this->ackAndDowntimeIcon;
         }
 
-        $perfdata = [];
+        $ServiceObj = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceArray);
         if (Plugin::isLoaded('PrometheusModule') && $serviceArray['service_type'] === PROMETHEUS_SERVICE) {
             // Query Prometheus to get all metrics
-            $ServiceObj = new \itnovum\openITCOCKPIT\Core\Views\Service($serviceArray);
 
             $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
             $perfdata = $PrometheusPerfdataLoader->getAvailableMetricsByService($ServiceObj);
+            $adapter = new PrometheusAdapter();
+            // Query Prometheus to get all metrics
         } else {
             // Classic service - parse Naemon perfdata string to get current perfdata information
             $PerfdataParser = new PerfdataParser($servicestatus->getPerfdata());
             $perfdata = $PerfdataParser->parse();
+            $adapter = new NagiosAdapter();
         }
+        foreach ($perfdata as $metric => $perfdatum) {
+            $perfdata[$metric]['datasource']['setup'] = $adapter->getPerformanceData($ServiceObj, $perfdatum)->toArray();
+        }
+
 
         $tmpServicestatus = $servicestatus->toArray();
         if ($includeServiceOutput === true) {
