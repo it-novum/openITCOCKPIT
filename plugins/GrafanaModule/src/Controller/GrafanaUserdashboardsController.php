@@ -29,6 +29,7 @@ use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
 use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\WidgetsTable;
@@ -67,6 +68,7 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
 use PrometheusModule\Lib\PrometheusAdapter;
 use Statusengine\PerfdataParser;
 
@@ -919,6 +921,8 @@ class GrafanaUserdashboardsController extends AppController {
 
             /** @var ServicesTable $ServicesTable */
             $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
             foreach ($rows as $row) {
                 $GrafanaRow = new GrafanaRow();
@@ -933,14 +937,15 @@ class GrafanaUserdashboardsController extends AppController {
                     foreach ($panel['metrics'] as $metric) {
                         // Normal Naemon services
                         $service = $ServicesTable->get($metric['service_id']);
+                        $host = $HostsTable->getHostById($service->host_id);
                         if ($metric['service']['service_type'] !== PROMETHEUS_SERVICE) {
                             /**  TODO implement perfdata backends **/
                             $replacedMetricName = preg_replace('/[^a-zA-Z^0-9\-\.]/', '_', $metric['metric']);
-
-
                             // Fetch first info version.
+                            $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
+                            $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
                             $adapter = new NagiosAdapter();
-                            $setup   = $adapter->getPerformanceData(new Service($service));
+                            $setup = $adapter->getPerformanceData(new Service($service), $performance_data[0]['datasource']);
 
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetWhisper(
@@ -997,9 +1002,16 @@ class GrafanaUserdashboardsController extends AppController {
                             }
                             $GrafanaPanel->setMetricCount($metricCount);
 
+                            // Fetch data
+                            $PerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                            $perfdata = $PerfdataLoader->getAvailableMetricsByService(new Service($service), false, true);
+
+
                             // Fetch first info version.
                             $adapter = new PrometheusAdapter();
-                            $setup   = $adapter->getPerformanceData(new Service($service));
+                            foreach ($perfdata as $metricName => $data) {
+                                $setup = $adapter->getPerformanceData(new Service($service), $perfdata[$metricName]);
+                            }
 
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetPrometheus(
@@ -1022,7 +1034,7 @@ class GrafanaUserdashboardsController extends AppController {
                 }
                 $GrafanaDashboard->addRow($GrafanaRow);
             }
-            $json =$GrafanaDashboard->getGrafanaDashboardJson();
+            $json = $GrafanaDashboard->getGrafanaDashboardJson();
             if ($json) {
                 $request = new Request('POST', $GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
                 try {
