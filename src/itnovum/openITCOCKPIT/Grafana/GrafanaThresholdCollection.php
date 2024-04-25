@@ -31,7 +31,7 @@ use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
 use itnovum\openITCOCKPIT\Perfdata\ScaleType;
 
 class GrafanaThresholdCollection {
-    private const COLOR_CRITICAL = '#CC0000';
+    private const COLOR_CRITICAL = '#CC0101';
     private const COLOR_WARNING = '#ffbb33';
     private const COLOR_SUCCESS = '#00C851';
 
