@@ -933,7 +933,6 @@ class GrafanaUserdashboardsController extends AppController {
                     $GrafanaPanel->setTitle($panel['title']);
                     $GrafanaPanel->setVisualizationType($panel['visualization_type']);
                     $GrafanaPanel->setStackingMode($panel['stacking_mode']);
-
                     foreach ($panel['metrics'] as $metric) {
                         // Normal Naemon services
                         $service = $ServicesTable->get($metric['service_id']);
@@ -944,8 +943,16 @@ class GrafanaUserdashboardsController extends AppController {
                             // Fetch first info version.
                             $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
                             $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
+
+                            $perfData = [];
+                            foreach ($performance_data as $object) {
+                                if (!isset($object['datasource']['metric']) || $object['datasource']['metric'] !== $metric['metric']) {
+                                    continue;
+                                }
+                                $perfData = $object['datasource'] ?? [];
+                            }
                             $adapter = new NagiosAdapter();
-                            $setup = $adapter->getPerformanceData(new Service($service), $performance_data[0]['datasource'] ?? []);
+                            $setup = $adapter->getPerformanceData(new Service($service), $perfData);
 
                             $thresholds = new GrafanaThresholds($setup->warn->low, $setup->crit->low);
                             if ($setup->scale->inverted) {
@@ -1013,16 +1020,28 @@ class GrafanaUserdashboardsController extends AppController {
 
 
                             // Fetch first info version.
-                            $adapter = new PrometheusAdapter();
+                            $perfData = [];
                             foreach ($perfdata as $metricName => $data) {
-                                $setup = $adapter->getPerformanceData(new Service($service), $perfdata[$metricName]);
+                                if ($metricName === $metric['metric']) {
+                                    $perfData = $data;
+                                    break;
+                                }
+                            }
+
+
+                            $adapter = new PrometheusAdapter();
+                            $setup = $adapter->getPerformanceData(new Service($service), $perfData);
+
+                            $thresholds = new GrafanaThresholds($setup->warn->low, $setup->crit->low);
+                            if ($setup->scale->inverted) {
+                                $thresholds = new GrafanaThresholds($setup->crit->low, $setup->warn->low);
                             }
 
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetPrometheus(
                                     $promql,
                                     new GrafanaTargetUnit($panel['unit'], true),
-                                    new GrafanaThresholds($setup->warn->low, $setup->crit->low),
+                                    $thresholds,
                                     $alias,
                                     $metric['color'] ?? null,
                                     $setup
