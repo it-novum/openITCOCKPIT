@@ -118,6 +118,22 @@ class GrafanaUserdashboardsTable extends Table {
             ->greaterThan('configuration_id', 0)
             ->notEmptyString('configuration_id');
 
+        $validator
+            ->scalar('refresh')
+            ->maxLength('refresh', 255)
+            ->notEmptyString('refresh');
+
+        $validator
+            ->scalar('range')
+            ->maxLength('range', 255)
+            ->notEmptyString('range');
+
+        $validator
+            ->integer('configuration_id')
+            ->greaterThan('configuration_id', -1)
+            ->lessThan('configuration_id', 3)
+            ->notEmptyString('configuration_id');
+
         return $validator;
     }
 

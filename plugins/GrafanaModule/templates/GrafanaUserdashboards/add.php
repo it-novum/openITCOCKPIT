@@ -111,6 +111,14 @@
                             </div>
                         </div>
 
+                        <div class="form-group required" ng-class="{'has-error':errors.name}">
+                            <label class="control-label">
+                                <?php echo __('Range & Refresh'); ?>
+                            </label>
+                            <br />
+                            <grafana-timepicker selected-timerange="post.GrafanaUserdashboard.range" selected-auto-refresh="post.GrafanaUserdashboard.refresh" callback="grafanaTimepickerCallback"></grafana-timepicker>
+                        </div>
+
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">

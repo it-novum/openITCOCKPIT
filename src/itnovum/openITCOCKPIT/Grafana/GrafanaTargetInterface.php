@@ -27,6 +27,8 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
+
 interface GrafanaTargetInterface {
 
 
@@ -69,6 +71,11 @@ interface GrafanaTargetInterface {
      * @return null|string
      */
     public function getColor();
+
+    /**
+     * @return PerformanceDataSetup|null
+     */
+    public function getSetup(): ?PerformanceDataSetup;
 
     /**
      * @param string $refId
