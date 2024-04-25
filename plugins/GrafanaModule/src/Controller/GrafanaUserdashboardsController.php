@@ -945,7 +945,12 @@ class GrafanaUserdashboardsController extends AppController {
                             $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
                             $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
                             $adapter = new NagiosAdapter();
-                            $setup = $adapter->getPerformanceData(new Service($service), $performance_data[0]['datasource']);
+                            $setup = $adapter->getPerformanceData(new Service($service), $performance_data[0]['datasource'] ?? []);
+
+                            $thresholds = new GrafanaThresholds($setup->warn->low, $setup->crit->low);
+                            if ($setup->scale->inverted) {
+                                $thresholds = new GrafanaThresholds($setup->crit->low, $setup->warn->low);
+                            }
 
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetWhisper(
@@ -957,7 +962,7 @@ class GrafanaUserdashboardsController extends AppController {
                                         $replacedMetricName
                                     ),
                                     new GrafanaTargetUnit($panel['unit'], true),
-                                    new GrafanaThresholds($setup->warn->low, $setup->crit->low),
+                                    $thresholds,
                                     sprintf(
                                         '%s.%s.%s',
                                         $this->replaceUmlauts($metric['Host']['hostname']),
