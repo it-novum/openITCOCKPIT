@@ -25,17 +25,20 @@
 namespace itnovum\openITCOCKPIT\Perfdata;
 
 class Scale {
-    /** @var float */
+    /** @var float|null */
     public $min;
-    /** @var float */
+    /** @var float|null */
     public $max;
     /** @var string */
     public $type;
+    /** @var bool */
+    public $inverted;
 
-    public function __construct(?float $min = null, ?float $max = null, ?string $type = ScaleType::O) {
+    public function __construct(?float $min = null, ?float $max = null, ?string $type = ScaleType::O, ?bool $inverted = false) {
         $this->min = $min;
         $this->max = $max;
         $this->type = $type;
+        $this->inverted = $inverted;
     }
 
     public function toArray(): array {
