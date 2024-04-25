@@ -809,6 +809,7 @@ class ChangelogsTable extends Table {
                         } else {
                             $idsBeforeSave = Hash::extract($changes['before'], '{n}.id');
                             $idsAfterSave = Hash::extract($changes['after'], '{n}.id');
+
                             if (!empty($idsBeforeSave) || !empty($idsAfterSave)) {
                                 foreach ($idsBeforeSave as $id) {
                                     if (!in_array($id, $idsAfterSave, true)) {
@@ -844,7 +845,6 @@ class ChangelogsTable extends Table {
                                         ];
                                     }
                                 }
-
                                 if (!empty($changes['after']) && empty($idsAfterSave)) {
                                     // all old ids are removed or are empty
                                     // add only brand new changes to changes array
