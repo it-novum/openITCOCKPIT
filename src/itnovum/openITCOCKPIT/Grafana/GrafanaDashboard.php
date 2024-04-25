@@ -26,12 +26,20 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use App\itnovum\openITCOCKPIT\Grafana\GrafanaTooltip;
+
 class GrafanaDashboard {
 
     /**
      * @var string
      */
     private $title;
+
+    /**
+     * @var int
+     * @see GrafanaTooltip::ALL
+     */
+    private $graphTooltip = GrafanaTooltip::DEFAULT;
 
     /**
      * @var array
@@ -54,15 +62,25 @@ class GrafanaDashboard {
      */
 
     private $grafanaDashboardDataArray = [
+        'annotations'  => [
+            'list' => []
+        ],
+        "editable"     => false, // testing true
+        "fiscalYearStartMonth" => 0,
+        "graphTooltip" => GrafanaTooltip::DEFAULT,
         "id"           => null,
+        "links"        => [],
+        "liveNow"      => false,
+        "panels"       => [],
+
+
+
+
         "uid"          => null,
         "title"        => "",
         "tags"         => [],
         //"style" => "light",
         "timezone"     => "browser",
-        "editable"     => false, // testing true
-        "graphTooltip" => 0,
-        "panels"       => [],
         "time"         => [
             "from" => "now-6h",
             "to"   => "now"
@@ -95,10 +113,6 @@ class GrafanaDashboard {
         "templating"   => [
             "list" => []
         ],
-        'annotations'  => [
-            'list' => []
-        ],
-        "links"        => [],
         "rows"         => [
             //Insert rows here
         ],
@@ -113,7 +127,10 @@ class GrafanaDashboard {
         $this->grafanaDashboardDataArray['rows'] = $this->rows;
         $this->grafanaDashboardDataArray['editable'] = $this->editable;
         $this->grafanaDashboardDataArray['tags'] = $this->tags;
-        return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/]/*, JSON_PRETTY_PRINT*/);
+
+        // Decide some things basedon the setup.
+        $this->grafanaDashboardDataArray['graphTooltip'] = $this->graphTooltip;
+        return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/], JSON_PRETTY_PRINT);
     }
 
     /**
@@ -121,6 +138,13 @@ class GrafanaDashboard {
      */
     public function setTitle($title) {
         $this->title = $title;
+    }
+
+    public function setTooltip(int $graphTooltip) {
+        if (!in_array($graphTooltip, GrafanaTooltip::ALL, true)) {
+            return;
+        }
+        $this->graphTooltip = $graphTooltip;
     }
 
     public function addRow(GrafanaRow $grafanaRow) {
@@ -136,9 +160,9 @@ class GrafanaDashboard {
         $this->grafanaDashboardDataArray['refresh'] = $value;
     }
 
-    public function setTimeInHours($value) {
+    public function setTimeRange(string $value) {
         $this->grafanaDashboardDataArray['time'] = [
-            "from" => sprintf("now-%sh", $value),
+            "from" => $value,
             "to"   => "now"
         ];
     }

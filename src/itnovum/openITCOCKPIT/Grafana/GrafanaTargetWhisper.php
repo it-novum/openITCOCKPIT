@@ -27,6 +27,8 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
+
 class GrafanaTargetWhisper implements GrafanaTargetInterface {
 
     /**
@@ -53,6 +55,7 @@ class GrafanaTargetWhisper implements GrafanaTargetInterface {
      * @var null|string
      */
     private $color = null;
+    private $setup;
 
     /**
      * GrafanaTargetWhisper constructor.
@@ -62,12 +65,13 @@ class GrafanaTargetWhisper implements GrafanaTargetInterface {
      * @param null $alias
      * @param null|string $color
      */
-    public function __construct($target, GrafanaTargetUnit $grafanaTargetUnit, GrafanaThresholds $grafanaThresholds, $alias = null, $color = null) {
+    public function __construct($target, GrafanaTargetUnit $grafanaTargetUnit, GrafanaThresholds $grafanaThresholds, $alias = null, $color = null, ?PerformanceDataSetup  $setup = null) {
         $this->target = $target;
         $this->unit = $grafanaTargetUnit;
         $this->thresholds = $grafanaThresholds;
         $this->alias = $alias;
         $this->color = $color;
+        $this->setup = $setup;
     }
 
     /**
@@ -111,6 +115,13 @@ class GrafanaTargetWhisper implements GrafanaTargetInterface {
      */
     public function getColor() {
         return $this->color;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSetup(): ?PerformanceDataSetup {
+        return $this->setup;
     }
 
     /**

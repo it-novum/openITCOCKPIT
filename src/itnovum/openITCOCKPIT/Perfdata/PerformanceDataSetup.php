@@ -46,4 +46,8 @@ class PerformanceDataSetup {
             'crit'   => $this->crit->toArray()
         ];
     }
+
+    public function getWarnString(): string {
+        return "{$this->scale->type}<{$this->crit->low}<{$this->warn->low}<{$this->warn->high}<{$this->crit->high}";
+    }
 }

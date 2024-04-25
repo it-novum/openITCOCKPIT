@@ -28,6 +28,9 @@ namespace itnovum\openITCOCKPIT\Grafana;
 
 
 use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
+use itnovum\openITCOCKPIT\Perfdata\Scale;
+use itnovum\openITCOCKPIT\Perfdata\ScaleType;
 
 class GrafanaPanel {
 
@@ -177,6 +180,10 @@ class GrafanaPanel {
         ],
         "pluginVersion" => "9.0.2"
     ];
+    /**
+     * @var Scale|null
+     */
+    private $scale = null;
 
     /**
      * GrafanaPanel constructor.
@@ -221,12 +228,13 @@ class GrafanaPanel {
             $this->panel['fieldConfig']['overrides'] = $this->Overrides->getOverrides();
         }
 
-        $thresholdsAsArray = $this->ThresholdCollection->getThresholdsAsArray();
+        $thresholdsAsArray = $this->ThresholdCollection->getThresholds();
         if (!empty($thresholdsAsArray) && empty($this->panel['fieldConfig']['overrides']) && sizeof($this->panel['targets']) === 1) {
-
             $this->panel['fieldConfig']['defaults']['thresholds'] = [
+                'mode' => 'absolute',
                 'steps' => $thresholdsAsArray
             ];
+
 
             if ($this->getMetricCount() > 1 && in_array($this->visualization_type, ['timeseries'])) {
                 // show threshold lines in chart with more than one metric - can be used for all charts if needed
@@ -239,6 +247,7 @@ class GrafanaPanel {
             }
         }
         if ($this->ColorOverrides->hasOverrides() && in_array($this->visualization_type, ['timeseries', 'bargauge'])) {
+            // This overrides the colour that comes from thresholds. Maybe just dont do that if we have thresholds in a timeseries type display?
             $this->panel['fieldConfig']['overrides'] = $this->ColorOverrides->getOverrides();
         }
 
@@ -288,6 +297,14 @@ class GrafanaPanel {
             $units = $grafanaTargetCollection->getUnits();
             // Set the first unit as default unit for the panel
             $this->defaultUnit = $units[0] ?? null;
+        }
+
+        // If the targets share the same Setup, we'll use the scale from the setup for this panel.
+        foreach ($grafanaTargetCollection->getTargets() as $grafanaTarget) {
+            $setup = $grafanaTarget->getSetup();
+            if ($setup !== null) {
+                $this->scale = $setup->scale;
+            }
         }
 
         $this->targets = $grafanaTargetCollection->getTargetsAsArray();
