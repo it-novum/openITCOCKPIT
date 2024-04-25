@@ -809,7 +809,6 @@ class ChangelogsTable extends Table {
                         } else {
                             $idsBeforeSave = Hash::extract($changes['before'], '{n}.id');
                             $idsAfterSave = Hash::extract($changes['after'], '{n}.id');
-
                             if (!empty($idsBeforeSave) || !empty($idsAfterSave)) {
                                 foreach ($idsBeforeSave as $id) {
                                     if (!in_array($id, $idsAfterSave, true)) {
@@ -843,6 +842,20 @@ class ChangelogsTable extends Table {
                                             'old' => Hash::remove(Hash::extract($changes['before'], '{n}[id=' . $id . ']')[0], 'id'),
                                             'new' => Hash::remove(Hash::extract($changes['after'], '{n}[id=' . $id . ']')[0], 'id'),
                                         ];
+                                    }
+                                }
+
+                                if (!empty($changes['after']) && empty($idsAfterSave)) {
+                                    // all old ids are removed or are empty
+                                    // add only brand new changes to changes array
+                                    foreach ($changes['after'] as $after) {
+                                        if (!isset($after['id'])) {
+                                            //New created object
+                                            $diffs[] = [
+                                                'old' => null,
+                                                'new' => $after
+                                            ];
+                                        }
                                     }
                                 }
                             } else if (empty($idsBeforeSave) && empty($idsAfterSave)) {
