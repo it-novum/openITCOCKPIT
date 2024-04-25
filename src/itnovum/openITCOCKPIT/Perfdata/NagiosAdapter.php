@@ -64,13 +64,13 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         $critHi = isset($critArr[1]) && strlen($critArr[1]) > 0 ? (float)str_replace('@', '', $critArr[1]) : null;
 
         $current = (float)($performanceData['act'] ?? $performanceData['current'] ?? null);
-        $unit = (string)$performanceData['unit'];
-        $name = (string)($performanceData['name'] ?? $performanceData['metric']);
+        $unit = (string)($performanceData['unit'] ??'');
+        $name = (string)($performanceData['name'] ?? $performanceData['metric'] ?? null);
         $scaleArray = explode(':', (string)($performanceData['min'] ?? ''));
-        $scaleMin = $performanceData['min'];
-        $scaleMax = $performanceData['max'];
+        $scaleMin = $performanceData['min'] ?? null;
+        $scaleMax = $performanceData['max'] ?? null;
 
-        if (!is_numeric($scaleMin) || !is_numeric($scaleMax)) {
+        if ($scaleMin === null || $scaleMax === null) {
             // Maybe the scale range came from the performance data min and needs splitting from ":"...
             if (is_numeric($scaleArray[0] ?? false) && is_numeric($scaleArray[1] ?? false)) {
                 $scaleMin = (float)$scaleArray[0];
@@ -85,16 +85,19 @@ final class NagiosAdapter extends PerformanceDataAdapter {
                     $scaleMin = $proposeMin;
                     $scaleMax = $proposeMax;
                 } else {
-                    $scaleMin = 0;
-                    $scaleMax = 100;
+                    $scaleMin = null;
+                    $scaleMax = null;
                 }
             }
+        } else {
+            $scaleMin = (float)$scaleMin;
+            $scaleMax = (float)$scaleMax;
         }
 
         // Edge case: The scale range is too small.
         if ($scaleMax - $scaleMin < 10) {
-            $scaleMin = 0;
-            $scaleMax = 100;
+            $scaleMin = null;
+            $scaleMax = null;
         }
 
         // Create Setup
@@ -102,7 +105,7 @@ final class NagiosAdapter extends PerformanceDataAdapter {
         $setup->metric = new Metric($current, $unit, $name);
         $setup->warn = new Threshold($warnLo, $warnHi);
         $setup->crit = new Threshold($critLo, $critHi);
-        $setup->scale = new Scale((float)$scaleMin, (float)$scaleMax);
+        $setup->scale = new Scale($scaleMin, $scaleMax, null, $inverted);
 
         // Fetch the ScaleType. If not working, reset it to the default one.
         try {
