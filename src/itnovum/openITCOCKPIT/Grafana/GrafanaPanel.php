@@ -214,12 +214,6 @@ class GrafanaPanel {
         $this->panel['targets'] = $this->targets;
         $this->panel['span'] = $this->span;
 
-        // If the scale is set, can use the min and max values for the panel.
-        if ($this->scale && $this->scale->min !== null && $this->scale->max !== null) {
-            $this->panel['fieldConfig']['defaults']['min'] = $this->scale->min;
-            $this->panel['fieldConfig']['defaults']['max'] = $this->scale->max;
-        }
-
         $this->panel['type'] = $this->visualization_type;
         if ($this->visualization_type === 'bargaugeretro') {
             $this->panel['type'] = 'bargauge';
