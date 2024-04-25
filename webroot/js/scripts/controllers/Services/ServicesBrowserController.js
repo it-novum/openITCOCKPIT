@@ -221,6 +221,12 @@ angular.module('openITCOCKPIT')
                         jQuery("[rel=tooltip]").tooltip();
                     });
                 }, 250);
+
+                // Acknowledge if param is passed, also remove the param from URL
+                if(window.location.href.indexOf('#acknowledge') > -1){
+                    $scope.acknowledgeService($scope.getObjectsForExternalCommand());
+                    window.location.href = window.location.href.replace('#acknowledge', '');
+                }
             }, function errorCallback(results){
                 if(results.status === 403){
                     $state.go('403');
