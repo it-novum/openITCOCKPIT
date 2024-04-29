@@ -73,21 +73,27 @@ class ChangelogsController extends AppController {
         $todayMidnight = strtotime('today');
 
         foreach ($all_changes as $index => $change) {
-            $controllerName = ucfirst(Inflector::pluralize($change['model']));
+            $modelPlural = Inflector::pluralize($change['model']);
+            $controllerName = ucfirst($modelPlural);
             $ngState = '';
+            $routerLink = [];
+
             if ($this->hasPermission('edit', $controllerName) && $change['action'] !== 'delete') {
+
                 if ($controllerName === 'Containers') {
                     $ngState = sprintf(
                         '%sIndex',
                         $controllerName
                     );
+                    $controllerAction = 'index';
                 } else {
                     $ngState = sprintf(
                         '%sEdit',
                         $controllerName
                     );
+                    $controllerAction = 'edit';
                 }
-
+                $routerLink = ['/', lcfirst($modelPlural), $controllerAction, $change['object_id']];
             }
             if ($this->hasRootPrivileges === false) {
                 if ($controllerName === 'Tenants') {
@@ -98,6 +104,7 @@ class ChangelogsController extends AppController {
                     }
                 }
             }
+
 
             $changeTimestamp = $change['created']->getTimestamp();
             $all_changes[$index]['time'] = $UserTime->format($changeTimestamp);
@@ -127,6 +134,7 @@ class ChangelogsController extends AppController {
             $all_changes[$index]['recordExists'] = $ChangelogsTable->recordExists($change['model'], $change['object_id']);
             $all_changes[$index]['data_unserialized'] = $dataUnserialized;
             $all_changes[$index]['ngState'] = $ngState;
+            $all_changes[$index]['routerLink'] = $routerLink;
             $all_changes[$index]['color'] = $ChangelogsTable->getColorByAction($change['action']);
             $all_changes[$index]['icon'] = $ChangelogsTable->getIconByAction($change['action']);
             $all_changes[$index]['faIcon'] = $ChangelogsTable->getFaIconByAction($change['action']);
