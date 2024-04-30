@@ -277,6 +277,24 @@ class MapeditorsController extends AppController {
                     $properties = $MapsTable->getServiceInformation($ServicestatusTable, $service, $includeServiceOutput);
                     break;
                 }
+
+                $Service = new Service($service);
+                if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
+                    $PerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                    $adapter = new PrometheusAdapter();
+
+                    $perfdata = $PerfdataLoader->getAvailableMetricsByService($Service, false, true);
+                    $adapter = new PrometheusAdapter();
+                    foreach ($perfdata as $metric => $data) {
+                        $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
+                    }
+                } else {
+                    $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
+                    $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
+
+                    $adapter = new NagiosAdapter();
+                    $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $performance_data[0]['datasource'])->toArray();
+                }
                 $allowView = false;
                 break;
 
@@ -453,24 +471,6 @@ class MapeditorsController extends AppController {
             default:
                 throw new RuntimeException('Unknown map item type');
                 break;
-        }
-
-        $Service = new Service($service);
-        if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
-            $PerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
-            $adapter = new PrometheusAdapter();
-
-            $perfdata = $PerfdataLoader->getAvailableMetricsByService($Service, false, true);
-            $adapter = new PrometheusAdapter();
-            foreach ($perfdata as $metric => $data) {
-                $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $perfdata[$metric])->toArray();
-            }
-        } else {
-            $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
-            $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
-
-            $adapter = new NagiosAdapter();
-            $properties['Perfdata']["'value'"]['datasource']['setup'] = $adapter->getPerformanceData($Service, $performance_data[0]['datasource'])->toArray();
         }
 
         return [
