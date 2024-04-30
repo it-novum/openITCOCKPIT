@@ -686,7 +686,9 @@ class Menu {
                     '',
                     ['fas', 'wrench'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/systemsettings/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Config file editor'),
