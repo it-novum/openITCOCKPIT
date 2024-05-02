@@ -5,9 +5,14 @@ angular.module('openITCOCKPIT')
         $scope.id = $stateParams.id;
 
         $scope.activeTab = 'active';
-
         $scope.currentPage = 1;
         $scope.selectedTab = 'tab1';
+
+        if(typeof $stateParams.selectedTab !== "undefined"){
+            if($stateParams.selectedTab !== null){
+                $scope.selectedTab = $stateParams.selectedTab;
+            }
+        }
 
         $scope.massChange = {};
         $scope.selectedElements = 0;
@@ -182,6 +187,12 @@ angular.module('openITCOCKPIT')
                 }
 
                 $scope.init = false;
+
+                // Acknowledge if param is passed, also remove the param from URL
+                if(window.location.href.indexOf('#acknowledge') > -1){
+                    $scope.acknowledgeHost($scope.getObjectsForExternalCommand());
+                    window.location.href = window.location.href.replace('#acknowledge', '');
+                }
 
                 setTimeout(function(){
                     jQuery(function(){

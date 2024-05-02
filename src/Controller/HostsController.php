@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -155,7 +160,6 @@ class HostsController extends AppController {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         $HostFilter = new HostFilter($this->request);
-
         $HostControllerRequest = new HostControllerRequest($this->request, $HostFilter);
         $HostCondition = new HostConditions();
         if ($HostControllerRequest->isRequestFromBrowser() === false) {
@@ -171,7 +175,6 @@ class HostsController extends AppController {
                     return;
                 }
             }
-
             $HostCondition->setIncludeDisabled(false);
             $HostCondition->setContainerIds($browserContainerIds);
 
@@ -221,6 +224,16 @@ class HostsController extends AppController {
         $ServiceTable = TableRegistry::getTableLocator()->get('Services');
         $typesForView = $HostsTable->getHostTypesWithStyles();
 
+        $additionalInformationExists = false;
+        $existingImportedHostIdsByHostIds = [];
+        if (Plugin::isLoaded('ImportModule') && !empty($hosts)) {
+            /** @var ImportedHostsTable $ImportedHostsTable */
+            $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
+            $existingImportedHostIdsByHostIds = $ImportedHostsTable->existingImportedHostIdsByHostIds(
+                Hash::extract($hosts, '{n}.Host.id')
+            );
+            $existingImportedHostIdsByHostIds = Hash::combine($existingImportedHostIdsByHostIds, '{n}', '{n}');
+        }
         foreach ($hosts as $host) {
             $serviceUuids = $ServiceTable->find('list', [
                 'valueField' => 'uuid'
@@ -230,6 +243,9 @@ class HostsController extends AppController {
                 ])
                 ->all()
                 ->toList();
+            if (!empty($existingImportedHostIdsByHostIds)) {
+                $additionalInformationExists = isset($existingImportedHostIdsByHostIds[$host['Host']['id']]);
+            }
 
             $servicestatus = $ServicestatusTable->byUuids($serviceUuids, $ServicestatusFields);
             $ServicestatusObjects = Servicestatus::fromServicestatusByUuid($servicestatus);
@@ -258,6 +274,7 @@ class HostsController extends AppController {
                 $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $Host->getContainerIds());
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
+
 
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
@@ -297,6 +314,7 @@ class HostsController extends AppController {
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
             $tmpRecord['Host']['type'] = $typesForView[$host['Host']['host_type']];
+            $tmpRecord['Host']['additionalInformationExists'] = $additionalInformationExists;
 
             $all_hosts[] = $tmpRecord;
         }
@@ -456,7 +474,7 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                if(isset($SatelliteNames[$Host->getSatelliteId()])){
+                if (isset($SatelliteNames[$Host->getSatelliteId()])) {
                     $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
                     $satellite_id = $Host->getSatelliteId();
                 }
@@ -1400,7 +1418,7 @@ class HostsController extends AppController {
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
             if ($Host->isSatelliteHost()) {
-                if(isset( $SatelliteNames[$Host->getSatelliteId()])){
+                if (isset($SatelliteNames[$Host->getSatelliteId()])) {
                     $satelliteName = $SatelliteNames[$Host->getSatelliteId()];
                     $satellite_id = $Host->getSatelliteId();
                 }

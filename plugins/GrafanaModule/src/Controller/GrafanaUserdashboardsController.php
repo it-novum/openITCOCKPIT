@@ -26,8 +26,10 @@
 namespace GrafanaModule\Controller;
 
 use App\itnovum\openITCOCKPIT\Grafana\GrafanaColorOverrides;
+use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabsTable;
+use App\Model\Table\HostsTable;
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\WidgetsTable;
@@ -66,6 +68,8 @@ use itnovum\openITCOCKPIT\Grafana\GrafanaTargetUnits;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetWhisper;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholdCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaThresholds;
+use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
+use PrometheusModule\Lib\PrometheusAdapter;
 use Statusengine\PerfdataParser;
 
 /**
@@ -911,9 +915,14 @@ class GrafanaUserdashboardsController extends AppController {
             $GrafanaDashboard->setTitle($dashboard['name']);
             $GrafanaDashboard->setEditable(true);
             $GrafanaDashboard->setTags($tag->getTag());
-            $GrafanaDashboard->setAutoRefresh('1m');
-            $GrafanaDashboard->setTimeInHours('3');
+            $GrafanaDashboard->setAutoRefresh($dashboard['refresh']);
+            $GrafanaDashboard->setTimeRange($dashboard['range']);
+            $GrafanaDashboard->setTooltip((int)$dashboard['tooltip']);
 
+            /** @var ServicesTable $ServicesTable */
+            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+            /** @var HostsTable $HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
             foreach ($rows as $row) {
                 $GrafanaRow = new GrafanaRow();
@@ -924,11 +933,32 @@ class GrafanaUserdashboardsController extends AppController {
                     $GrafanaPanel->setTitle($panel['title']);
                     $GrafanaPanel->setVisualizationType($panel['visualization_type']);
                     $GrafanaPanel->setStackingMode($panel['stacking_mode']);
-
                     foreach ($panel['metrics'] as $metric) {
+                        // Normal Naemon services
+                        $service = $ServicesTable->get($metric['service_id']);
+                        $host = $HostsTable->getHostById($service->host_id);
                         if ($metric['service']['service_type'] !== PROMETHEUS_SERVICE) {
                             /**  TODO implement perfdata backends **/
                             $replacedMetricName = preg_replace('/[^a-zA-Z^0-9\-\.]/', '_', $metric['metric']);
+                            // Fetch first info version.
+                            $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
+                            $performance_data = $PerfdataLoader->getPerfdataByUuid($host->uuid, $service->uuid, time(), time());
+
+                            $perfData = [];
+                            foreach ($performance_data as $object) {
+                                if (!isset($object['datasource']['metric']) || $object['datasource']['metric'] !== $metric['metric']) {
+                                    continue;
+                                }
+                                $perfData = $object['datasource'] ?? [];
+                            }
+                            $adapter = new NagiosAdapter();
+                            $setup = $adapter->getPerformanceData(new Service($service), $perfData);
+
+                            $thresholds = new GrafanaThresholds($setup->warn->low, $setup->crit->low);
+                            if ($setup->scale->inverted) {
+                                $thresholds = new GrafanaThresholds($setup->crit->low, $setup->warn->low);
+                            }
+
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetWhisper(
                                     sprintf(
@@ -939,14 +969,15 @@ class GrafanaUserdashboardsController extends AppController {
                                         $replacedMetricName
                                     ),
                                     new GrafanaTargetUnit($panel['unit'], true),
-                                    new GrafanaThresholds(null, null),
+                                    $thresholds,
                                     sprintf(
                                         '%s.%s.%s',
                                         $this->replaceUmlauts($metric['Host']['hostname']),
                                         $this->replaceUmlauts($metric['Service']['servicename']),
                                         $this->replaceUmlauts($metric['metric'])
                                     ),//Alias
-                                    $metric['color'] ?? null
+                                    $metric['color'] ?? null,
+                                    $setup
                                 ));
                         } else {
                             //Prometheus Service
@@ -983,13 +1014,37 @@ class GrafanaUserdashboardsController extends AppController {
                             }
                             $GrafanaPanel->setMetricCount($metricCount);
 
+                            // Fetch data
+                            $PerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                            $perfdata = $PerfdataLoader->getAvailableMetricsByService(new Service($service), false, true);
+
+
+                            // Fetch first info version.
+                            $perfData = [];
+                            foreach ($perfdata as $metricName => $data) {
+                                if ($metricName === $metric['metric']) {
+                                    $perfData = $data;
+                                    break;
+                                }
+                            }
+
+
+                            $adapter = new PrometheusAdapter();
+                            $setup = $adapter->getPerformanceData(new Service($service), $perfData);
+
+                            $thresholds = new GrafanaThresholds($setup->warn->low, $setup->crit->low);
+                            if ($setup->scale->inverted) {
+                                $thresholds = new GrafanaThresholds($setup->crit->low, $setup->warn->low);
+                            }
+
                             $GrafanaTargetCollection->addTarget(
                                 new GrafanaTargetPrometheus(
                                     $promql,
                                     new GrafanaTargetUnit($panel['unit'], true),
-                                    new GrafanaThresholds($metric['service']['prometheus_alert_rule']['warning_min'], $metric['service']['prometheus_alert_rule']['critical_min']),
+                                    $thresholds,
                                     $alias,
-                                    $metric['color'] ?? null
+                                    $metric['color'] ?? null,
+                                    $setup
                                 ));
                         }
                     }
@@ -1084,6 +1139,9 @@ class GrafanaUserdashboardsController extends AppController {
 
                     $GrafanaConfiguration = GrafanaApiConfiguration::fromArray($grafanaConfiguration);
                     if ($GrafanaConfigurationsTable->existsUserDashboard($GrafanaConfiguration, $ProxiesTable->getSettings(), $dashboard->get('grafana_uid'))) {
+                        $GrafanaConfiguration->setRefresh($dashboard->refresh);
+                        $GrafanaConfiguration->setRange($dashboard->range);
+                        $GrafanaConfiguration->setGraphTooltip($dashboard->tooltip);
                         $iframeUrl = $GrafanaConfiguration->getIframeUrlForUserDashboard($dashboard->get('grafana_url'));
                     }
                 }

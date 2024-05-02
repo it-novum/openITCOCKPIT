@@ -221,6 +221,12 @@ angular.module('openITCOCKPIT')
                         jQuery("[rel=tooltip]").tooltip();
                     });
                 }, 250);
+
+                // Acknowledge if param is passed, also remove the param from URL
+                if(window.location.href.indexOf('#acknowledge') > -1){
+                    $scope.acknowledgeService($scope.getObjectsForExternalCommand());
+                    window.location.href = window.location.href.replace('#acknowledge', '');
+                }
             }, function errorCallback(results){
                 if(results.status === 403){
                     $state.go('403');
@@ -536,63 +542,222 @@ angular.module('openITCOCKPIT')
                 .fadeIn(200);
         };
 
+        $scope.getThresholdAreas = function(setup, GraphDefaultsObj){
+            var thresholdAreas = [];
+            switch(setup.scale.type){
+                case "W<O":
+                    thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.okFillColor});
+                    thresholdAreas.push({
+                        below: setup.warn.low,
+                        color: GraphDefaultsObj.warningFillColor
+                    });
+                    break;
+                case "C<W<O":
+                    thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.okFillColor});
+                    thresholdAreas.push({
+                        below: setup.crit.low,
+                        color: GraphDefaultsObj.criticalFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.warn.low,
+                        color: GraphDefaultsObj.warningFillColor
+                    });
+                    break;
+                case "O<W":
+                    thresholdAreas.push({
+                        below: setup.warn.high,
+                        color: GraphDefaultsObj.warningFillColor
+                    });
+                    break;
+                case "O<W<C":
+                    thresholdAreas.push({
+                        below: Infinity,
+                        color: GraphDefaultsObj.criticalFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.crit.low,
+                        color: GraphDefaultsObj.warningFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.warn.low,
+                        color: GraphDefaultsObj.okFillColor
+                    });
+                    break;
+                case "C<W<O<W<C":
+                    thresholdAreas.push({below: Infinity, color: GraphDefaultsObj.criticalFillColor});
+                    thresholdAreas.push({
+                        below: setup.crit.high,
+                        color: GraphDefaultsObj.warningFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.warn.high,
+                        color: GraphDefaultsObj.okFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.warn.low,
+                        color: GraphDefaultsObj.warningFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.crit.low,
+                        color: GraphDefaultsObj.criticalFillColor
+                    });
+                    break;
+                case "O<W<C<W<O":
+                    thresholdAreas.push({
+                        below: Infinity,
+                        color: GraphDefaultsObj.okFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.crit.high,
+                        color: GraphDefaultsObj.warningFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.warn.high,
+                        color: GraphDefaultsObj.criticalFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.warn.low,
+                        color: GraphDefaultsObj.warningFillColor
+                    });
+                    thresholdAreas.push({
+                        below: setup.crit.low,
+                        color: GraphDefaultsObj.okFillColor
+                    });
+                    break;
+                case "O":
+                default:
+                    break;
+            }
+            return thresholdAreas;
+        }
+
+        $scope.getThresholdLines = function(setup, GraphDefaultsObj){
+            var thresholdLines = [];
+            switch(setup.scale.type){
+                case "W<O":
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: setup.warn.low,
+                            to: setup.warn.low
+                        }
+                    });
+                    break;
+                case "C<W<O":
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.criticalBorderColor,
+                        yaxis: {
+                            from: setup.crit.low,
+                            to: setup.crit.low
+                        }
+                    });
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: setup.warn.low,
+                            to: setup.warn.low
+                        }
+                    });
+                    break;
+                case "O<W":
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: setup.warn.high,
+                            to: setup.warn.high
+                        }
+                    });
+                    break;
+                case "O<W<C":
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.criticalBorderColor,
+                        yaxis: {
+                            from: setup.crit.low,
+                            to: setup.crit.low
+                        }
+                    });
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: setup.warn.low,
+                            to: setup.warn.low
+                        }
+                    });
+                    break;
+                case "C<W<O<W<C":
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.criticalBorderColor,
+                        yaxis: {
+                            from: setup.crit.low,
+                            to: setup.crit.low
+                        }
+                    });
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: setup.warn.low,
+                            to: setup.warn.low
+                        }
+                    });
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: setup.warn.high,
+                            to: setup.warn.high
+                        }
+                    });
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.criticalBorderColor,
+                        yaxis: {
+                            from: setup.crit.high,
+                            to: setup.crit.high
+                        }
+                    });
+                    break;
+                case "O<W<C<W<O":
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: setup.crit.low,
+                            to: setup.crit.low
+                        }
+                    });
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.criticalBorderColor,
+                        yaxis: {
+                            from: setup.warn.low,
+                            to: setup.warn.low
+                        }
+                    });
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.criticalBorderColor,
+                        yaxis: {
+                            from: setup.warn.high,
+                            to: setup.warn.high
+                        }
+                    });
+                    thresholdLines.push({
+                        color: GraphDefaultsObj.warningBorderColor,
+                        yaxis: {
+                            from: setup.crit.high,
+                            to: setup.crit.high
+                        }
+                    });
+                    break;
+                case "O":
+                default:
+                    break;
+            }
+            return thresholdLines;
+        }
+
         var renderGraph = function(performance_data){
             initTooltip();
 
-            var thresholdLines = [];
-            var thresholdAreas = [];
-
-            var GraphDefaultsObj = new GraphDefaults();
-
-            var defaultColor = GraphDefaultsObj.defaultFillColor;
-            if(performance_data.datasource.warn !== "" &&
-                performance_data.datasource.crit !== "" &&
-                performance_data.datasource.warn !== null &&
-                performance_data.datasource.crit !== null){
-
-                var warn = parseFloat(performance_data.datasource.warn);
-                var crit = parseFloat(performance_data.datasource.crit);
-
-                //Add warning and critical line to chart
-                thresholdLines.push({
-                    color: GraphDefaultsObj.warningBorderColor,
-                    yaxis: {
-                        from: warn,
-                        to: warn
-                    }
-                });
-
-                thresholdLines.push({
-                    color: GraphDefaultsObj.criticalBorderColor,
-                    yaxis: {
-                        from: crit,
-                        to: crit
-                    }
-                });
-
-                //Change color of the area chart for warning and critical
-                if(warn > crit){
-                    defaultColor = GraphDefaultsObj.okFillColor;
-                    thresholdAreas.push({
-                        below: warn,
-                        color: GraphDefaultsObj.warningFillColor
-                    });
-                    thresholdAreas.push({
-                        below: crit,
-                        color: GraphDefaultsObj.criticalFillColor
-                    });
-                }else{
-                    defaultColor = GraphDefaultsObj.criticalFillColor;
-                    thresholdAreas.push({
-                        below: crit,
-                        color: GraphDefaultsObj.warningFillColor
-                    });
-                    thresholdAreas.push({
-                        below: warn,
-                        color: GraphDefaultsObj.okFillColor
-                    });
-                }
-            }
+            var GraphDefaultsObj     = new GraphDefaults();
+            var defaultColor  = GraphDefaultsObj.defaultFillColor;
+            var thresholdLines = $scope.getThresholdLines(performance_data.datasource.setup, GraphDefaultsObj);
+            var thresholdAreas = $scope.getThresholdAreas(performance_data.datasource.setup, GraphDefaultsObj);
 
             var graph_data = [];
             for(var timestamp in performance_data.data){
@@ -630,12 +795,7 @@ angular.module('openITCOCKPIT')
             $scope.start = options.xaxis.min;
             $scope.end = options.xaxis.max;
 
-            options.yaxis.axisLabel = performance_data.datasource.unit;
-
-            //$scope.currentGraphUnit = null;
-            //if(performance_data.datasource.unit){
-            //    $scope.currentGraphUnit = performance_data.datasource.unit;
-            //}
+            options.yaxis.axisLabel = performance_data.datasource.setup.metric.unit;
 
             if($scope.graph.smoothInterpolation === true){
                 // Enable curved lines

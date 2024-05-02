@@ -27,6 +27,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
 use App\Model\Table\ServicesTable;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\MethodNotAllowedException;
@@ -35,6 +37,7 @@ use Exception;
 use GuzzleHttp\Exception\GuzzleException;
 use itnovum\openITCOCKPIT\Core\Views\Service;
 use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
+use PrometheusModule\Lib\PrometheusAdapter;
 
 
 /**
@@ -64,7 +67,6 @@ class GraphgeneratorsController extends AppController {
         $aggregation = $this->request->getQuery('aggregation', 'avg');
         $debug = $this->request->getQuery('debug', 'false') === 'true';
 
-        $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
         if (is_numeric($hours)) {
             $hours = (int)$hours;
             $start = time() - ($hours * 3600);
@@ -84,14 +86,23 @@ class GraphgeneratorsController extends AppController {
             $Service = new Service($service);
 
             if (Plugin::isLoaded('PrometheusModule') && $Service->getServiceType() === PROMETHEUS_SERVICE) {
-                $PrometheusPerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
-                $start = (int)$start;
-                $end = (int)$end;
-                $performance_data = $PrometheusPerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug, $gauge);
+                $PerfdataLoader = new \PrometheusModule\Lib\PrometheusPerfdataLoader();
+                $adapter = new PrometheusAdapter();
+                // @todo: Both dataLoaders may share one interface for future (?)
+                $performance_data = $PerfdataLoader->getPerfdataByUuid($Service, $start, $end, $jsTimestamp, $scale, $forcedUnit, $debug, $gauge);
             } else {
+                $PerfdataLoader = new PerfdataLoader($this->DbBackend, $this->PerfdataBackend);
+                $adapter = new NagiosAdapter();
                 $performance_data = $PerfdataLoader->getPerfdataByUuid($hostUuid, $serviceUuid, $start, $end, $jsTimestamp, $aggregation, $gauge, $scale, $forcedUnit, $debug);
-                $this->set('performance_data', $performance_data);
             }
+            // Generate Setup
+            foreach ($performance_data as $index => $object) {
+                if (!isset($object['datasource'])) {
+                    continue;
+                }
+                $performance_data[$index]['datasource']['setup'] = $adapter->getPerformanceData($Service, $object['datasource'])->toArray();
+            }
+            $this->set('performance_data', $performance_data);
             $this->viewBuilder()->setOption('serialize', ['performance_data']);
         } catch (Exception $e) {
             error_log($e->getMessage());
@@ -104,6 +115,5 @@ class GraphgeneratorsController extends AppController {
 
         $this->set('performance_data', $performance_data);
         $this->viewBuilder()->setOption('serialize', ['performance_data']);
-
     }
 }

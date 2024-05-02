@@ -34,6 +34,7 @@ angular.module('openITCOCKPIT').directive('massactivate', function($http, $filte
                             if(i === count && issueCount === 0){
                                 $scope.isActivating = false;
                                 $scope.percentage = 0;
+                                $scope.undoSelection();
                                 $scope.load();
                                 $('#angularMassAactivate').modal('hide');
                             }

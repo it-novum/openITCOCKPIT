@@ -27,6 +27,8 @@
 namespace itnovum\openITCOCKPIT\Grafana;
 
 
+use itnovum\openITCOCKPIT\Perfdata\PerformanceDataSetup;
+
 class GrafanaThresholds {
 
     /**
@@ -88,5 +90,14 @@ class GrafanaThresholds {
         }
 
         return $this->critical;
+    }
+
+    /**
+     *
+     * @param PerformanceDataSetup $setup
+     * @return array
+     */
+    public static function fromSetup(PerformanceDataSetup  $setup) : array {
+
     }
 }

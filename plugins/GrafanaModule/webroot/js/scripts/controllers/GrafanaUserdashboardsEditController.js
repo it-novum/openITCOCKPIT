@@ -63,5 +63,11 @@ angular.module('openITCOCKPIT')
             });
         };
 
+        $scope.grafanaTimepickerCallback = function(selectedTimerange, selectedAutorefresh){
+            $scope.post.range   = selectedTimerange;
+            $scope.post.refresh = selectedAutorefresh;
+        };
+
+
         $scope.loadContainers();
     });

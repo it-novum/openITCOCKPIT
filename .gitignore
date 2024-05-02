@@ -125,3 +125,4 @@ plugins/VMwareSnapshotModule
 plugins/CustomalertModule
 plugins/SLAModule
 plugins/ChangecalendarModule
+plugins/MSTeamsModule
