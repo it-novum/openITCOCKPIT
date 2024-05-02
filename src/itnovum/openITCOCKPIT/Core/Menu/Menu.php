@@ -613,7 +613,9 @@ class Menu {
                     '',
                     ['fas', 'chart-line'],
                     [],
-                    7
+                    7,
+                    true,
+                    '/statistics/index'
                 ))
                 ->addLink(new MenuLink(
                     __('System health notification list'),
