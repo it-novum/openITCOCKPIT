@@ -730,7 +730,9 @@ class Menu {
                     '',
                     ['fas', 'life-ring'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/supports/issue'
                 ))
                 ->addLink(new MenuLink(
                     __('Documentation'),
