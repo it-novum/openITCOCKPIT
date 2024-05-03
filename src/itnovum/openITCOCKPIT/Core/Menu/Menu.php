@@ -710,7 +710,9 @@ class Menu {
                     '',
                     ['fas', 'globe'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/proxy/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Registration'),
