@@ -618,7 +618,7 @@ class Menu {
                     '/statistics/index'
                 ))
                 ->addLink(new MenuLink(
-                    __('System health notification list'),
+                    __('System health notifications'),
                     'SystemHealthUsersIndex',
                     'systemHealthUsers',
                     'index',
