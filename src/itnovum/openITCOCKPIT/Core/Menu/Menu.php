@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -278,7 +278,9 @@ class Menu {
                     '',
                     ['fas', 'calendar'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/calendars/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Host Escalations'),
