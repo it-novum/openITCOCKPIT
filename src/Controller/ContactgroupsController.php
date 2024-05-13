@@ -580,8 +580,17 @@ class ContactgroupsController extends AppController {
             return;
         }
 
+        $total = 0;
+        $total += sizeof($contactgroupWithRelations['serviceescalations']);
+        $total += sizeof($contactgroupWithRelations['hostescalations']);
+        $total += sizeof($contactgroupWithRelations['services']);
+        $total += sizeof($contactgroupWithRelations['servicetemplates']);
+        $total += sizeof($contactgroupWithRelations['hosts']);
+        $total += sizeof($contactgroupWithRelations['hosttemplates']);
+
         $this->set('contactgroupWithRelations', $contactgroupWithRelations);
-        $this->viewBuilder()->setOption('serialize', ['contactgroupWithRelations']);
+        $this->set('total', $total);
+        $this->viewBuilder()->setOption('serialize', ['contactgroupWithRelations', 'total']);
         $this->set('back_url', $this->referer());
     }
 
