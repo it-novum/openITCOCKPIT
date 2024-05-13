@@ -565,7 +565,9 @@ class Menu {
                     '',
                     ['far', 'clock'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/cronjobs/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Package Manager'),
