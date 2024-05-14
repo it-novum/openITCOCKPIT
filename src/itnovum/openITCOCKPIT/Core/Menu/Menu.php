@@ -184,7 +184,9 @@ class Menu {
                         '',
                         ['fas', 'code-fork'],
                         [],
-                        3
+                        3,
+                        true,
+                        '/changelogs/index'
                     ))
             );
 
