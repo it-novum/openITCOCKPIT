@@ -184,7 +184,9 @@ class Menu {
                         '',
                         ['fas', 'code-fork'],
                         [],
-                        3
+                        3,
+                        true,
+                        '/changelogs/index'
                     ))
             );
 
@@ -234,7 +236,9 @@ class Menu {
                     '',
                     ['fas', 'user'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/contacts/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Commands'),
@@ -357,7 +361,9 @@ class Menu {
                     '',
                     ['fas', 'users'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/contactgroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Template Grps.'),
