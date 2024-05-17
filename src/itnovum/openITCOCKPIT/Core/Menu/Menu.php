@@ -605,7 +605,9 @@ class Menu {
                     '',
                     ['fas', 'jet-fighter'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/nagiostats/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Backup / Restore'),
