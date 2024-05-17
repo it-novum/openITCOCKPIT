@@ -447,7 +447,9 @@ class Menu {
                     '',
                     ['fas', 'pen-to-square'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/hosttemplates/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Templates'),
