@@ -447,7 +447,9 @@ class Menu {
                     '',
                     ['fas', 'pen-to-square'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/hosttemplates/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Templates'),
@@ -603,7 +605,9 @@ class Menu {
                     '',
                     ['fas', 'jet-fighter'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/nagiostats/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Backup / Restore'),
