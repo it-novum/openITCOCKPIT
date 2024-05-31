@@ -296,7 +296,9 @@ class Menu {
                     '',
                     ['fas', 'bomb'],
                     [],
-                    6
+                    6,
+                    true,
+                    '/hostescalations/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Escalations'),
