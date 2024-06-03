@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\PluginManager;
 use App\Model\Entity\User;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
@@ -1014,7 +1015,12 @@ class UsersController extends AppController {
             //Only ship HTML template
             return;
         }
+
+        $modules = PluginManager::getAvailablePlugins();
+
+
         $this->set('permissions', $this->PERMISSIONS);
-        $this->viewBuilder()->setOption('serialize', ['permissions']);
+        $this->set('modules', $modules);
+        $this->viewBuilder()->setOption('serialize', ['permissions', 'modules']);
     }
 }
