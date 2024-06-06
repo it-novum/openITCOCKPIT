@@ -463,7 +463,9 @@ class Menu {
                     '',
                     ['fas', 'pen-to-square'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/servicetemplates/index'
                 ))
             );
 
