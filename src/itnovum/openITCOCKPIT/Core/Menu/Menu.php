@@ -200,7 +200,9 @@ class Menu {
                 '',
                 ['fas', 'desktop'],
                 ['hosts'],
-                1
+                1,
+                true,
+                '/hosts/index'
             ))
             ->addLink(new MenuLink(
                 __('Services'),
