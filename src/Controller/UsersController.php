@@ -156,7 +156,7 @@ class UsersController extends AppController {
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
                 if ($userFromDb !== null) {
                     $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('firstname'), $userFromDb->get('lastname'), $userFromDb->get('email'));
-                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $loginData, [], false);
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
                 }
             }
         }
@@ -194,7 +194,7 @@ class UsersController extends AppController {
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
                 if ($userFromDb !== null) {
                     $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('firstname'), $userFromDb->get('lastname'), $userFromDb->get('email'));
-                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $loginData, [], false);
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
                 }
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;

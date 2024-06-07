@@ -51,11 +51,11 @@ class Eventlog extends Entity {
      * @var array<string, bool>
      */
     protected $_accessible = [
-        'type'                    => true,
-        'model'                   => true,
-        'object_id'               => true,
-        'data'                    => true,
-        'created'                 => true,
-        'eventlogs_to_containers' => true,
+        'type'       => true,
+        'model'      => true,
+        'object_id'  => true,
+        'data'       => true,
+        'created'    => true,
+        'containers' => true
     ];
 }

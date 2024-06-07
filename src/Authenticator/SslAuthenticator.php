@@ -37,6 +37,7 @@ use Authentication\Authenticator\AbstractAuthenticator;
 use Authentication\Authenticator\Result;
 use Authentication\Authenticator\ResultInterface;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use Psr\Http\Message\ServerRequestInterface;
 
 class SslAuthenticator extends AbstractAuthenticator {
@@ -69,7 +70,7 @@ class SslAuthenticator extends AbstractAuthenticator {
             $userFromDb = $UsersTable->getUserByEmailForLoginLog($user->get('email'));
             if ($userFromDb !== null) {
                 $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('firstname'), $userFromDb->get('lastname'), $userFromDb->get('email'));
-                $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $loginData, [], false);
+                $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
             }
 
         }

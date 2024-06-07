@@ -27,6 +27,19 @@ declare(strict_types=1);
 use Migrations\AbstractMigration;
 
 class CreateEventlogs extends AbstractMigration {
+
+    /**
+     * Whether the tables created in this migration
+     * should auto-create an `id` field or not
+     *
+     * This option is global for all tables created in the migration file.
+     * If you set it to false, you have to manually add the primary keys for your
+     * tables using the Migrations\Table::addPrimaryKey() method
+     *
+     * @var bool
+     */
+    public $autoId = false;
+
     /**
      * Change Method.
      *
@@ -37,6 +50,13 @@ class CreateEventlogs extends AbstractMigration {
     public function change(): void {
         if (!$this->hasTable('eventlogs')) {
             $this->table('eventlogs')
+                ->addColumn('id', 'biginteger', [
+                    'autoIncrement' => true,
+                    'default'       => null,
+                    'limit'         => 11,
+                    'null'          => false,
+                    'signed'        => true,
+                ])
                 ->addPrimaryKey(['id'])
                 ->addColumn('type', 'string', [
                     'default' => null,
@@ -73,8 +93,15 @@ class CreateEventlogs extends AbstractMigration {
 
         if (!$this->hasTable('eventlogs_to_containers')) {
             $this->table('eventlogs_to_containers')
+                ->addColumn('id', 'biginteger', [
+                    'autoIncrement' => true,
+                    'default'       => null,
+                    'limit'         => 11,
+                    'null'          => false,
+                    'signed'        => true,
+                ])
                 ->addPrimaryKey(['id'])
-                ->addColumn('eventlog_id', 'integer', [
+                ->addColumn('eventlog_id', 'biginteger', [
                     'default' => null,
                     'limit'   => 11,
                     'null'    => false,

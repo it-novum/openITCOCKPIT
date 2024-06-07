@@ -29,6 +29,7 @@ namespace App\Model\Table;
 use App\itnovum\openITCOCKPIT\Filter\EventlogsFilter;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Log\Log;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
@@ -150,12 +151,12 @@ class EventlogsTable extends Table {
 
         $query = $this->find()
             ->select($select)
-            /*->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $q->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
                 return $q;
-            })*/
+            })
             ->contain($contain)
             ->enableHydration($enableHydration);
 
@@ -278,17 +279,17 @@ class EventlogsTable extends Table {
             $container_ids = [$container_ids];
         }
 
-        if (!empty($type) && !empty($model) && !empty($objectId) && !empty($data) /*&& !empty($container_ids)*/) {
+        if (!empty($type) && !empty($model) && !empty($objectId) && !empty($data) && !empty($container_ids)) {
 
             $eventlog = $this->newEmptyEntity();
             $eventlog = $this->patchEntity($eventlog, [
                 'type'       => $type,
                 'model'      => $model,
                 'object_id'  => $objectId,
-                'data'       => ($dataIsJSon) ? json_encode($data) : $data,
                 'containers' => [
                     '_ids' => $container_ids
                 ],
+                'data'       => ($dataIsJSon) ? json_encode($data) : $data,
             ]);
             $this->save($eventlog);
             if ($eventlog->hasErrors()) {

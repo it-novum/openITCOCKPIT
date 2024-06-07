@@ -35,7 +35,6 @@ namespace App\Controller;
 use App\itnovum\openITCOCKPIT\Filter\EventlogsFilter;
 use App\Model\Table\EventlogsTable;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 
@@ -216,7 +215,6 @@ class EventlogsController extends AppController {
         $header[] = 'time';
 
         $this->set('data', $all_events);
-        FileDebugger::dump($all_events);
 
         $filename = __('Eventlogs_') . date('dmY_his') . '.csv';
         $this->setResponse($this->getResponse()->withDownload($filename));

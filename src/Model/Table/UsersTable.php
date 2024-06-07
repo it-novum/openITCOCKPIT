@@ -1056,11 +1056,27 @@ class UsersTable extends Table {
      * @return array|EntityInterface|null
      */
     public function getUserByEmailForLoginLog(string $email) {
-
+        $query = $this->find()
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ]);
+        
         if (!str_contains($email, '@')) {
-            return $this->getUserBySamAccountName($email);
+            return $query
+                ->where([
+                    'Users.samaccountname' => $email,
+                    'Users.is_active'      => 1
+                ])
+                ->first();
         } else {
-            return $this->getUserByEmailForLogin($email);
+            return $query
+                ->where([
+                    'email'           => $email,
+                    'Users.is_active' => 1
+                ])->first();
         }
     }
 
