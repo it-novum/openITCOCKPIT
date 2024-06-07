@@ -308,7 +308,9 @@ class Menu {
                     '',
                     ['fas', 'bomb'],
                     [],
-                    7
+                    7,
+                    true,
+                    '/serviceescalations/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Host Dependencies'),
