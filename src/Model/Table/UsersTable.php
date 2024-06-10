@@ -1063,21 +1063,18 @@ class UsersTable extends Table {
                     'Containers'
                 ]
             ]);
-        
+        $where = [
+            'Users.is_active' => 1
+        ];
+
         if (!str_contains($email, '@')) {
-            return $query
-                ->where([
-                    'Users.samaccountname' => $email,
-                    'Users.is_active'      => 1
-                ])
-                ->first();
+            $where['Users.samaccountname'] = $email;
         } else {
-            return $query
-                ->where([
-                    'email'           => $email,
-                    'Users.is_active' => 1
-                ])->first();
+            $where['email'] = $email;
         }
+
+        return $query->where($where)->first();
+
     }
 
     /**
