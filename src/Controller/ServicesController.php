@@ -3061,9 +3061,7 @@ class ServicesController extends AppController {
 
 
         $reorderServicesArray = Hash::sort($reorderServicesArray, '{s}', 'asc', 'natural');
-        $services = Api::makeItJavaScriptAble(
-            $reorderServicesArray
-        );
+        $services = array_values($reorderServicesArray);
 
         $this->set('services', $services);
         $this->viewBuilder()->setOption('serialize', ['services']);

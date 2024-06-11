@@ -5223,6 +5223,7 @@ class ServicesTable extends Table {
         $query = $this->find();
         $query->select([
             'Services.' . $index,
+            'Hosts.id',
             'Hosts.name',
             'Services.disabled',
             'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))')
