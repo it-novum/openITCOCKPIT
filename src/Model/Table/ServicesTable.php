@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -639,6 +639,7 @@ class ServicesTable extends Table {
                 'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                 'Services.id',
                 'Services.disabled',
+                'Hosts.id',
                 'Hosts.name'
             ])
             ->where(
@@ -676,6 +677,7 @@ class ServicesTable extends Table {
                     'servicename' => $query->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                     'Services.id',
                     'Services.disabled',
+                    'Hosts.id',
                     'Hosts.name'
                 ])
                 ->where([
