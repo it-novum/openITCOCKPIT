@@ -367,7 +367,7 @@ class ServiceescalationsController extends AppController {
             $reorderServicesArray[$service['_matchingData']['Hosts']['name']]['items'][] = [
                 'label'    => $serviceName,
                 'value'    => $service['id'],
-                'disabled' => ($service['disabled'] == 1)
+                'disabled' => ($service['disabled'] == 1) // if needed can be configured by parameter
             ];
         }
 
