@@ -367,14 +367,14 @@ class ServiceescalationsController extends AppController {
             $reorderServicesArray[$service['_matchingData']['Hosts']['name']]['items'][] = [
                 'label'    => $serviceName,
                 'value'    => $service['id'],
-                'disabled' => $service['disabled']
+                'disabled' => ($service['disabled'] == 1)
             ];
         }
 
 
         $reorderServicesArray = Hash::sort($reorderServicesArray, '{s}', 'asc', 'natural');
         $excludedServices = array_values($reorderServicesArray);
-        
+
         $this->set(compact(['excludedServices']));
         $this->viewBuilder()->setOption('serialize', ['excludedServices']);
     }

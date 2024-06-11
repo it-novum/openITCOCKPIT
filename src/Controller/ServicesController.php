@@ -3055,7 +3055,7 @@ class ServicesController extends AppController {
             $reorderServicesArray[$service['_matchingData']['Hosts']['name']]['items'][] = [
                 'label'    => $serviceName,
                 'value'    => $service['id'],
-                'disabled' => $service['disabled']
+                'disabled' => ($service['disabled'] == 1)
             ];
         }
 
