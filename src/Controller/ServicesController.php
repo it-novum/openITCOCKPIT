@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -2990,6 +2990,87 @@ class ServicesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
 
+    public function loadServicesByStringForOptionGroup($onlyHostsWithWritePermission = false) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $selected = $this->request->getQuery('selected');
+        $containerId = $this->request->getQuery('containerId');
+        $resolveContainerIds = $this->request->getQuery('resolveContainerIds', false);
+
+        if (empty($containerId)) {
+            $containerId = $this->MY_RIGHTS;
+        }
+
+        if (!$this->allowedByContainerId($containerId, false)) {
+            $this->render403();
+            return;
+        }
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+
+        if ($containerId !== ROOT_CONTAINER && $resolveContainerIds) {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true);
+            $containerIds = array_merge($containerIds, [ROOT_CONTAINER, $containerId]);
+        }
+
+        $ServicesFilter = new ServiceFilter($this->request);
+
+        $ServiceConditions = new ServiceConditions($ServicesFilter->indexFilter());
+
+        if ($onlyHostsWithWritePermission) {
+            $writeContainers = [];
+            foreach ($containerIds as $index => $containerId) {
+                if (isset($this->MY_RIGHTS_LEVEL[$containerId])) {
+                    if ($this->MY_RIGHTS_LEVEL[$containerId] === WRITE_RIGHT) {
+                        $writeContainers[] = $containerId;
+                    }
+                }
+            }
+            $containerIds = $writeContainers;
+        }
+
+        $ServiceConditions->setContainerIds($containerIds);
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = $ServicesTable->getServicesForAngularCake4($ServiceConditions, $selected, true);
+        $reorderServicesArray = [];
+        foreach ($services as $service) {
+            if (!isset($reorderServicesArray[$service['_matchingData']['Hosts']['name']])) {
+                $reorderServicesArray[$service['_matchingData']['Hosts']['name']] = [
+                    'label' => $service['_matchingData']['Hosts']['name'],
+                    'value' => $service['_matchingData']['Hosts']['id'],
+                    'items' => []
+                ];
+            }
+            $serviceName = $service['servicename'];
+            if ($service['disabled'] == 1) {
+                $serviceName .= '🔌';
+            }
+            $reorderServicesArray[$service['_matchingData']['Hosts']['name']]['items'][] = [
+                'label'    => $serviceName,
+                'value'    => $service['id'],
+                'disabled' => ($service['disabled'] == 1)  // if needed can be configured by parameter
+            ];
+        }
+
+
+        $reorderServicesArray = Hash::sort($reorderServicesArray, '{s}', 'asc', 'natural');
+        $services = array_values($reorderServicesArray);
+
+        $this->set('services', $services);
+        $this->viewBuilder()->setOption('serialize', ['services']);
+    }
+
+    /**
+     * @return void
+     * @deprecated
+     */
     public function loadServicesByContainerIdCake4() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

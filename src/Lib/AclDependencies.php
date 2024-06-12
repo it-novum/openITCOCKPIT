@@ -196,7 +196,8 @@ class AclDependencies {
             ->allow('Services', 'details')
             ->allow('Services', 'byUuid')
             ->allow('Services', 'loadServicesByStringCake4')
-            ->allow('Services', 'loadServicesByContainerIdCake4');
+            ->allow('Services', 'loadServicesByContainerIdCake4')
+            ->allow('Services', 'loadServicesByStringForOptionGroup');
 
         $this
             ->allow('Graphgenerators', 'getPerfdataByUuid');
@@ -489,10 +490,12 @@ class AclDependencies {
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadElementsByContainerId')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds')
+            ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIdsForOptionGroup')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadContainers')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadElementsByContainerId')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
-            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds');
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds')
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIdsForOptionGroup');
 
 
         $this
