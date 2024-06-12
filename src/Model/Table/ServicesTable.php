@@ -5208,7 +5208,6 @@ class ServicesTable extends Table {
             $containerIds = [$containerIds];
         }
         $containerIds = array_unique($containerIds);
-
         if (!is_array($servicegroupIds)) {
             $servicegroupIds = [$servicegroupIds];
         }
@@ -5217,6 +5216,17 @@ class ServicesTable extends Table {
             'Hosts.disabled IN'    => [0],
             'Services.disabled IN' => [0]
         ];
+        if (!empty($where['servicename LIKE'])) {
+            $_where[] = new Comparison(
+                'IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)',
+                sprintf('%%%s%%', $where['servicename LIKE']),
+                'string',
+                'LIKE'
+            );
+            unset($where['servicename LIKE']);
+
+        }
+
 
         $where = Hash::merge($_where, $where);
 

@@ -47,6 +47,7 @@ use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
 
 /**
@@ -321,6 +322,13 @@ class ServiceescalationsController extends AppController {
         $containerId = $this->request->getQuery('containerId');
         $servicegroupIds = $this->request->getQuery('servicegroupIds');
 
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'servicename'
+            ]
+        ]);
+
         /** @var ContainersTable $ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
@@ -349,7 +357,13 @@ class ServiceescalationsController extends AppController {
         }
 
 
-        $excludedServices = $ServicesTable->getServicesByContainerIdAndServicegroupIds($containerIds, $servicegroupIds, 'list', 'id');
+        $excludedServices = $ServicesTable->getServicesByContainerIdAndServicegroupIds(
+            $containerIds,
+            $servicegroupIds,
+            'list',
+            'id',
+            $GenericFilter->genericFilters()
+        );
 
         $reorderServicesArray = [];
         foreach ($excludedServices as $service) {
