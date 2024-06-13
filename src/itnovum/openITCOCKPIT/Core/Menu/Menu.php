@@ -381,7 +381,9 @@ class Menu {
                     '',
                     ['fas', 'pen-to-square'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/servicetemplategroups/index'
                 ))
             )
             ->addCategory((new MenuCategory(
