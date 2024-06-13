@@ -322,7 +322,9 @@ class Menu {
                     '',
                     ['fas', 'sitemap'],
                     [],
-                    8
+                    8,
+                    true,
+                    '/hostdependencies/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Dependencies'),
@@ -381,7 +383,9 @@ class Menu {
                     '',
                     ['fas', 'pen-to-square'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/servicetemplategroups/index'
                 ))
             )
             ->addCategory((new MenuCategory(
