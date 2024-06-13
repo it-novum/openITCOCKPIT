@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -346,6 +346,13 @@ class ChangelogsTable extends Table {
             ],
             'container'            => [
                 'container' => '{(name)}'
+            ],
+            'user'                 => [
+                'User'                            => '{(email|firstname|lastname|company|position|phone|paginatorlength|showstatsinmenu|recursive_browser|dashboard_tab_rotation|dateformat|timezone|is_active|i18n|password|is_oauth)}',
+                'User.usercontainerroles'         => '{(id|name)}',
+                'User.ContainersUsersMemberships' => '{(id|name)}',
+                'User.apikeys'                    => '{n}.{(id|apikey|description)}',
+                'Usergroup'                       => '{n}.{(id|name)}',
             ],
         ];
 
