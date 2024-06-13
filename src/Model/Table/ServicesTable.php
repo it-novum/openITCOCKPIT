@@ -4376,9 +4376,9 @@ class ServicesTable extends Table {
                         'services',
                         $serviceId,
                         OBJECT_SERVICE,
-                        $host['Host']['container_id'],
+                        $host['container_id'],
                         $userId,
-                        $host['Host']['name'] . '/' . $serviceName,
+                        $host['name'] . '/' . $serviceName,
                         []
                     );
                     if ($changelog_data) {
