@@ -80,7 +80,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-xs-12 col-md-6 margin-bottom-10" ng-show="tableColumns.login.full_name">
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -93,8 +93,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-md-6 margin-bottom-10"
-                                     ng-show="tableColumns.login.users_email">
+                                <div class="col-xs-12 col-md-6 margin-bottom-10">
                                     <div class="form-group">
                                         <div class="input-group">
                                             <div class="input-group-prepend">

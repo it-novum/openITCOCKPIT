@@ -78,7 +78,8 @@ class EventlogsController extends AppController {
             $changeTimestamp = $event['created']->getTimestamp();
             $all_events[$index]['time'] = $UserTime->format($changeTimestamp);
             $all_events[$index]['recordExists'] = $EventlogsTable->recordExists($event['model'], $event['object_id']);
-            if (json_validate($all_events[$index]['data'])) {
+            json_decode($all_events[$index]['data'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
                 $all_events[$index]['data'] = json_decode($all_events[$index]['data'], true);
             }
         }
@@ -122,7 +123,8 @@ class EventlogsController extends AppController {
             $changeTimestamp = $event['created']->getTimestamp();
             $all_events[$index]['time'] = $UserTime->format($changeTimestamp);
             $all_events[$index]['recordExists'] = $EventlogsTable->recordExists($event['model'], $event['object_id']);
-            if (json_validate($all_events[$index]['data'])) {
+            json_decode($all_events[$index]['data'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
                 $all_events[$index]['data'] = json_decode($all_events[$index]['data'], true);
             }
         }
@@ -175,7 +177,8 @@ class EventlogsController extends AppController {
             $changeTimestamp = $event['created']->getTimestamp();
             $events[$index]['time'] = $UserTime->format($changeTimestamp);
             $recordExists = $EventlogsTable->recordExists($event['model'], $event['object_id']);
-            if (json_validate($event['data'])) {
+            json_decode($event['data'], true);
+            if (json_last_error() === JSON_ERROR_NONE) {
                 $events[$index]['data'] = json_decode($event['data'], true);
             }
 
