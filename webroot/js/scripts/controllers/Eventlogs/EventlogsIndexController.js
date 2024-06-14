@@ -50,12 +50,7 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.tableColumns = {
-            login: {
-                full_name: 0,
-                user_email: 0
-            }
-        }
+        $scope.logTypes = [];
 
         /*** Filter Settings ***/
         var defaultFilter = function() {
@@ -102,7 +97,7 @@ angular.module('openITCOCKPIT')
                 params: params
             }).then(function(result) {
                 $scope.events = result.data.all_events;
-                $scope.tableColumns = result.data.tableColumns;
+                $scope.logTypes = result.data.logTypes;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;

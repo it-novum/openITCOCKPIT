@@ -58,7 +58,9 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        $tableColumns = $this->getFrontendTableColumnsByTypes($logTypes);
+        if (!is_array($logTypes)) {
+            $logTypes = [$logTypes];
+        }
 
         $all_events = [];
         if (!empty($logTypes)) {
@@ -79,8 +81,8 @@ class EventlogsController extends AppController {
         }
 
         $this->set('all_events', $all_events);
-        $this->set('tableColumns', $tableColumns);
-        $this->viewBuilder()->setOption('serialize', ['all_events', 'tableColumns']);
+        $this->set('logTypes', $logTypes);
+        $this->viewBuilder()->setOption('serialize', ['all_events', 'logTypes']);
     }
 
     public function listToPdf() {
@@ -97,7 +99,9 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        $tableColumns = $this->getFrontendTableColumnsByTypes($logTypes);
+        if (!is_array($logTypes)) {
+            $logTypes = [$logTypes];
+        }
 
         $all_events = [];
         if (!empty($logTypes)) {
@@ -118,7 +122,7 @@ class EventlogsController extends AppController {
         }
 
         $this->set('all_events', $all_events);
-        $this->set('tableColumns', $tableColumns);
+        $this->set('logTypes', $logTypes);
 
         $this->viewBuilder()->setOption(
             'pdfConfig',
@@ -143,7 +147,9 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        $tableColumns = $this->getFrontendTableColumnsByTypes($logTypes);
+        if (!is_array($logTypes)) {
+            $logTypes = [$logTypes];
+        }
 
         $events = [];
         if (!empty($logTypes)) {
@@ -168,19 +174,13 @@ class EventlogsController extends AppController {
                 $event['type']
             ];
 
-            if ($tableColumns['login']['full_name']) {
+            if (in_array('login', $logTypes)) {
                 if ($recordExists) {
-                    $all_events[$index][1] = $event['full_name'];
+                    $all_events[$index][] = $event['full_name'];
+                    $all_events[$index][] = $event['user']['email'];
                 } else {
-                    $all_events[$index][1] = $events[$index]['data']['full_name'];
-                }
-            }
-            if ($tableColumns['login']['user_email']) {
-                if ($recordExists) {
-                    $all_events[$index][2] = $event['user']['email'];
-                } else {
-                    $all_events[$index][2] = $events[$index]['data']['user_email'];
-
+                    $all_events[$index][] = $events[$index]['data']['full_name'];
+                    $all_events[$index][] = $events[$index]['data']['user_email'];
                 }
             }
             $all_events[$index][] = $events[$index]['time'];
@@ -191,12 +191,11 @@ class EventlogsController extends AppController {
             'event_type',
         ];
 
-        if ($tableColumns['login']['full_name']) {
+        if (in_array('login', $logTypes)) {
             $header[] = 'full_name';
-        }
-        if ($tableColumns['login']['user_email']) {
             $header[] = 'user_email';
         }
+
         $header[] = 'time';
 
         $this->set('data', $all_events);
@@ -211,28 +210,6 @@ class EventlogsController extends AppController {
                 'serialize' => 'data',
                 'header'    => $header,
             ]);
-    }
-
-    /**
-     * @param $logTypes
-     * @return array
-     */
-    private function getFrontendTableColumnsByTypes($logTypes) {
-
-        if (!is_array($logTypes)) {
-            $logTypes = [$logTypes];
-        }
-
-        $tableColumns = [];
-        if (!empty($logTypes)) {
-            if (in_array('login', $logTypes)) {
-                $tableColumns['login'] = [
-                    'full_name'  => 1,
-                    'user_email' => 1,
-                ];
-            }
-        }
-        return $tableColumns;
     }
 
 }

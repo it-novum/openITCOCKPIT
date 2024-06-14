@@ -187,12 +187,12 @@
                                     <?php echo __('Type'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('full_name')"
-                                    ng-show="tableColumns.login.full_name">
+                                    ng-show="logTypes.includes('login')">
                                     <i class="fa" ng-class="getSortClass('full_name')"></i>
                                     <?php echo __('Full name'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Users.email')"
-                                    ng-show="tableColumns.login.user_email">
+                                    ng-show="logTypes.includes('login')">
                                     <i class="fa" ng-class="getSortClass('Users.email')"></i>
                                     <?php echo __('Email'); ?>
                                 </th>
@@ -205,7 +205,7 @@
                             <tbody>
                             <tr ng-repeat="event in events">
                                 <td>{{event.type}}</td>
-                                <td ng-show="tableColumns.login.full_name">
+                                <td ng-show="logTypes.includes('login')">
                                     <span ng-if="event.recordExists">
                                         {{event.full_name}}
                                     </span>
@@ -213,7 +213,7 @@
                                         <s>{{event.data['full_name']}}</s>
                                     </span>
                                 </td>
-                                <td ng-show="tableColumns.login.user_email">
+                                <td ng-show="logTypes.includes('login')">
                                     <span ng-if="event.recordExists">
                                         {{event.user.email}}
                                     </span>

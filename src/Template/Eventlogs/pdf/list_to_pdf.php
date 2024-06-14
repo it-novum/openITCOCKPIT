@@ -33,7 +33,7 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
 /**
  * @var \App\View\AppView $this
  * @var array $all_events
- * @var array $tableColumns
+ * @var array $logTypes
  */
 
 $Logo = new Logo();
@@ -73,12 +73,10 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
             <th>
                 <?php echo __('Type'); ?>
             </th>
-            <?php if ($tableColumns['login']['full_name']): ?>
+            <?php if (in_array('login', $logTypes)): ?>
                 <th>
                     <?php echo __('Full name'); ?>
                 </th>
-            <?php endif; ?>
-            <?php if ($tableColumns['login']['user_email']): ?>
                 <th>
                     <?php echo __('Email'); ?>
                 </th>
@@ -94,7 +92,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                 <td>
                     <?= h($event['type']); ?>
                 </td>
-                <?php if ($tableColumns['login']['full_name']): ?>
+                <?php if (in_array('login', $logTypes)): ?>
                     <td>
                         <?php if ($event['recordExists']): ?>
                             <?= h($event['full_name']); ?>
@@ -102,8 +100,6 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                             <s><?= h($event['data']['full_name']); ?></s>
                         <?php endif; ?>
                     </td>
-                <?php endif; ?>
-                <?php if ($tableColumns['login']['user_email']): ?>
                     <td>
                         <?php if ($event['recordExists']): ?>
                             <?= h($event['user']['email']); ?>
