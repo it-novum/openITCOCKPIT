@@ -120,13 +120,18 @@ class EventlogsTable extends Table {
 
     /**
      * @param EventlogsFilter $EventlogsFilter
+     * @param array $logTypes
      * @param PaginateOMat|null $PaginateOMat
      * @param array $MY_RIGHTS
-     * @param array $logTypeQueriesArray
      * @param bool $enableHydration
      * @return array
      */
-    public function getEventlogIndex(EventlogsFilter $EventlogsFilter, $PaginateOMat = null, $MY_RIGHTS = [], $logTypeQueriesArray = [], $enableHydration = true) {
+    public function getEventlogIndex(EventlogsFilter $EventlogsFilter, $logTypes, $PaginateOMat = null, $MY_RIGHTS = [], $enableHydration = true) {
+
+        if (!is_array($logTypes)) {
+            $logTypes = [$logTypes];
+        }
+
         $contain = ['Containers'];
         $select = [
             'id',
@@ -137,16 +142,18 @@ class EventlogsTable extends Table {
             'created'
         ];
 
-        if (!empty($logTypeQueriesArray)) {
-            for ($i = 0; $i < count($logTypeQueriesArray); $i++) {
-                $logTypeQueryArray = $logTypeQueriesArray[$i];
-                if (!empty($logTypeQueryArray['select'])) {
-                    $select = array_merge($select, $logTypeQueryArray['select']);
-                }
-                if (!empty($logTypeQueryArray['contain'])) {
-                    $contain = array_merge($contain, $logTypeQueryArray['contain']);
-                }
-            }
+        if (in_array('login', $logTypes)) {
+            $select = array_merge($select, [
+                'Users.id',
+                'Users.email',
+                'full_name' =>
+                    $this->find()->func()->concat([
+                        'Users.firstname' => 'literal',
+                        ' ',
+                        'Users.lastname'  => 'literal'
+                    ])
+            ]);
+            $contain[] = 'Users';
         }
 
         $query = $this->find()
@@ -172,15 +179,6 @@ class EventlogsTable extends Table {
 
         $where['Eventlogs.created >='] = date('Y-m-d H:i:s', $EventlogsFilter->getFrom());
         $where['Eventlogs.created <='] = date('Y-m-d H:i:s', $EventlogsFilter->getTo());
-
-        if (!empty($logTypeQueriesArray)) {
-            for ($i = 0; $i < count($logTypeQueriesArray); $i++) {
-                $logTypeQueryArray = $logTypeQueriesArray[$i];
-                if (!empty($logTypeQueryArray['where'])) {
-                    $where = array_merge($where, $logTypeQueryArray['where']);
-                }
-            }
-        }
 
         $query->group(['Eventlogs.id']);
 
@@ -230,38 +228,6 @@ class EventlogsTable extends Table {
     }
 
     /**
-     * creates an array with query data for the user table
-     *  Returns an array with query data
-     *
-     * @return array
-     */
-    public function getUserQuery() {
-
-        $query = $this->find();
-        $select = [
-            'Users.id',
-            'Users.email',
-            'full_name' =>
-                $query->func()->concat([
-                    'Users.firstname' => 'literal',
-                    ' ',
-                    'Users.lastname'  => 'literal'
-                ])
-        ];
-
-        $where = [
-        ];
-
-        $contain = ['Users'];
-
-        return [
-            'select'  => $select,
-            'where'   => $where,
-            'contain' => $contain
-        ];
-    }
-
-    /**
      * Saves record in eventlogs table
      *  Returns true for successful
      *
@@ -273,7 +239,7 @@ class EventlogsTable extends Table {
      * @param bool $dataIsJSon
      * @return bool
      */
-    public function saveNewEntity(string $type, string $model, int $objectId, string $data, array $container_ids, bool $dataIsJSon = true) {
+    public function saveNewEntity($type, $model, $objectId, $data, $container_ids, $dataIsJSon = true) {
 
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -328,24 +294,5 @@ class EventlogsTable extends Table {
             'user_email' => $email
         ];
         return json_encode($data);
-    }
-
-    /**
-     * creates an array with query data for the given log types
-     *  Returns an array with query data
-     *
-     * @param array $logTypes
-     * @return array
-     */
-    public function getQueriesByTypes($logTypes) {
-        $logTypeQueriesArray = [];
-        if (!empty($logTypes)) {
-            foreach ($logTypes as $logType) {
-                if ($logType === 'login') {
-                    $logTypeQueriesArray[] = $this->getUserQuery();
-                }
-            }
-        }
-        return $logTypeQueriesArray;
     }
 }

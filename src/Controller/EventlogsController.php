@@ -58,17 +58,11 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        if (getType($logTypes) === 'string') {
-            $logTypes = [$logTypes];
-        }
-
-        $logTypeQueriesArray = $EventlogsTable->getQueriesByTypes($logTypes);
         $tableColumns = $this->getFrontendTableColumnsByTypes($logTypes);
 
+        $all_events = [];
         if (!empty($logTypes)) {
-            $all_events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $PaginateOMat, $MY_RIGHTS, $logTypeQueriesArray, false);
-        } else {
-            $all_events = [];
+            $all_events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, $PaginateOMat, $MY_RIGHTS, false);
         }
 
         $User = new User($this->getUser());
@@ -103,17 +97,11 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        if (getType($logTypes) === 'string') {
-            $logTypes = [$logTypes];
-        }
-
-        $logTypeQueriesArray = $EventlogsTable->getQueriesByTypes($logTypes);
         $tableColumns = $this->getFrontendTableColumnsByTypes($logTypes);
 
+        $all_events = [];
         if (!empty($logTypes)) {
-            $all_events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $PaginateOMat, $MY_RIGHTS, $logTypeQueriesArray, false);
-        } else {
-            $all_events = [];
+            $all_events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, $PaginateOMat, $MY_RIGHTS, false);
         }
 
         $User = new User($this->getUser());
@@ -155,17 +143,11 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        if (getType($logTypes) === 'string') {
-            $logTypes = [$logTypes];
-        }
-
-        $logTypeQueriesArray = $EventlogsTable->getQueriesByTypes($logTypes);
         $tableColumns = $this->getFrontendTableColumnsByTypes($logTypes);
 
+        $events = [];
         if (!empty($logTypes)) {
-            $events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $PaginateOMat, $MY_RIGHTS, $logTypeQueriesArray, false);
-        } else {
-            $events = [];
+            $events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, $PaginateOMat, $MY_RIGHTS, false);
         }
 
         $User = new User($this->getUser());
@@ -236,15 +218,18 @@ class EventlogsController extends AppController {
      * @return array
      */
     private function getFrontendTableColumnsByTypes($logTypes) {
+
+        if (!is_array($logTypes)) {
+            $logTypes = [$logTypes];
+        }
+
         $tableColumns = [];
         if (!empty($logTypes)) {
-            foreach ($logTypes as $logType) {
-                if ($logType === 'login') {
-                    $tableColumns[$logType] = [
-                        'full_name'  => 1,
-                        'user_email' => 1,
-                    ];
-                }
+            if (in_array('login', $logTypes)) {
+                $tableColumns['login'] = [
+                    'full_name'  => 1,
+                    'user_email' => 1,
+                ];
             }
         }
         return $tableColumns;
