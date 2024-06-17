@@ -171,15 +171,14 @@ class EventlogsController extends AppController {
             }
 
             $all_events[$index] = [
-                $event['type']
+                $event['type'],
+                $event['name']
             ];
 
             if (in_array('login', $logTypes)) {
                 if ($recordExists) {
-                    $all_events[$index][] = $event['name'];
                     $all_events[$index][] = $event['user_email'];
                 } else {
-                    $all_events[$index][] = $event['name'];
                     $all_events[$index][] = $events[$index]['data']['user_email'];
                 }
             }
