@@ -35,8 +35,8 @@ class EventlogsFilter extends Filter {
     public function indexFilter() {
         $filters = [
             'like'   => [
-                'full_name',
-                'Users.email',
+                'name',
+                'user_email',
             ],
             'equals' => [
                 'Eventlogs.model',

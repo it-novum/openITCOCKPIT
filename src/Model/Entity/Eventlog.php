@@ -54,6 +54,7 @@ class Eventlog extends Entity {
         'type'       => true,
         'model'      => true,
         'object_id'  => true,
+        'name'       => true,
         'data'       => true,
         'created'    => true,
         'containers' => true

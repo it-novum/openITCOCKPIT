@@ -176,10 +176,10 @@ class EventlogsController extends AppController {
 
             if (in_array('login', $logTypes)) {
                 if ($recordExists) {
-                    $all_events[$index][] = $event['full_name'];
+                    $all_events[$index][] = $event['name'];
                     $all_events[$index][] = $event['user']['email'];
                 } else {
-                    $all_events[$index][] = $events[$index]['data']['full_name'];
+                    $all_events[$index][] = $event['name'];
                     $all_events[$index][] = $events[$index]['data']['user_email'];
                 }
             }
@@ -192,7 +192,7 @@ class EventlogsController extends AppController {
         ];
 
         if (in_array('login', $logTypes)) {
-            $header[] = 'full_name';
+            $header[] = 'name';
             $header[] = 'user_email';
         }
 

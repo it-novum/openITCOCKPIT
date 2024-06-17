@@ -155,8 +155,9 @@ class UsersController extends AppController {
                 $UsersTable->saveLastLoginDate($loginData['email']);
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
                 if ($userFromDb !== null) {
-                    $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('firstname'), $userFromDb->get('lastname'), $userFromDb->get('email'));
-                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
+                    $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('email'));
+                    $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
                 }
             }
         }
@@ -193,8 +194,9 @@ class UsersController extends AppController {
                 $UsersTable->saveLastLoginDate($loginData['email']);
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
                 if ($userFromDb !== null) {
-                    $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('firstname'), $userFromDb->get('lastname'), $userFromDb->get('email'));
-                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
+                    $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('email'));
+                    $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
                 }
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;

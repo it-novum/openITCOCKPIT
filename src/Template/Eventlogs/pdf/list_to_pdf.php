@@ -73,10 +73,10 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
             <th>
                 <?php echo __('Type'); ?>
             </th>
+            <th>
+                <?php echo __('Name'); ?>
+            </th>
             <?php if (in_array('login', $logTypes)): ?>
-                <th>
-                    <?php echo __('Full name'); ?>
-                </th>
                 <th>
                     <?php echo __('Email'); ?>
                 </th>
@@ -95,14 +95,14 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                 <?php if (in_array('login', $logTypes)): ?>
                     <td>
                         <?php if ($event['recordExists']): ?>
-                            <?= h($event['full_name']); ?>
+                            <?= h($event['name']); ?>
                         <?php else: ?>
-                            <s><?= h($event['data']['full_name']); ?></s>
+                            <s><?= h($event['name']); ?></s>
                         <?php endif; ?>
                     </td>
                     <td>
                         <?php if ($event['recordExists']): ?>
-                            <?= h($event['user']['email']); ?>
+                            <?= h($event['user_email']); ?>
                         <?php else: ?>
                             <s><?= h($event['data']['user_email']); ?></s>
                         <?php endif; ?>

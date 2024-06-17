@@ -31,25 +31,6 @@ angular.module('openITCOCKPIT')
         $scope.useScroll = true;
         $scope.currentPage = 1;
 
-        $scope.events = {
-            Event: {
-                id: 1,
-                model: "",
-                type: "",
-                object_id: 0,
-                data: '',
-                created: '',
-                full_name: '',
-                user: {
-                    id: 0,
-                    email: ''
-                },
-                containers: [],
-                time: '',
-                recordExists: true
-            }
-        };
-
         $scope.logTypes = [];
 
         /*** Filter Settings ***/
@@ -57,10 +38,8 @@ angular.module('openITCOCKPIT')
             var now = new Date();
 
             $scope.filter = {
-                full_name: '',
-                Users: {
-                    email: ''
-                },
+                name: '',
+                user_email: '',
                 Types: {
                     login: 1
                 },
@@ -87,8 +66,8 @@ angular.module('openITCOCKPIT')
                 'types': getTypesFilter(),
                 'direction': SortService.getDirection(),
                 'filter[Eventlogs.type][]': getTypesFilter(),
-                'filter[full_name]': $scope.filter.full_name,
-                'filter[Users.email]': $scope.filter.Users.email,
+                'filter[name]': $scope.filter.name,
+                'filter[user_email]': $scope.filter.user_email,
                 'filter[from]': $scope.filter.from,
                 'filter[to]': $scope.filter.to
             };
@@ -129,8 +108,8 @@ angular.module('openITCOCKPIT')
                 'direction': SortService.getDirection(),
                 'types': getTypesFilter(),
                 'filter[Eventlogs.type][]': getTypesFilter(),
-                'filter[full_name]': $scope.filter.full_name,
-                'filter[Users.email]': $scope.filter.Users.email,
+                'filter[name]': $scope.filter.name,
+                'filter[user_email]': $scope.filter.user_email,
                 'filter[from]': $scope.filter.from,
                 'filter[to]': $scope.filter.to
             };

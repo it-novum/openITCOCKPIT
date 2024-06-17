@@ -73,6 +73,11 @@ class CreateEventlogs extends AbstractMigration {
                     'limit'   => 11,
                     'null'    => false,
                 ])
+                ->addColumn('name', 'text', [
+                    'default' => null,
+                    'limit'   => null,
+                    'null'    => false,
+                ])
                 ->addColumn('data', 'text', [
                     'default' => null,
                     'limit'   => null,

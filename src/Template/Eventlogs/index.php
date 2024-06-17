@@ -87,8 +87,8 @@
                                                 <span class="input-group-text"><i class="fa fa-filter"></i></span>
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
-                                                   placeholder="<?php echo __('Filter by full name'); ?>"
-                                                   ng-model="filter.full_name"
+                                                   placeholder="<?php echo __('Filter by name'); ?>"
+                                                   ng-model="filter.name"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -101,7 +101,7 @@
                                             </div>
                                             <input type="text" class="form-control form-control-sm"
                                                    placeholder="<?php echo __('Filter by email'); ?>"
-                                                   ng-model="filter.Users.email"
+                                                   ng-model="filter.user_email"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
                                     </div>
@@ -145,7 +145,7 @@
 
                                         <?php
                                         $types = [
-                                            'login' => __('Login'),
+                                            'login' => __('User Login'),
                                         ];
                                         ?>
 
@@ -186,14 +186,13 @@
                                     <i class="fa" ng-class="getSortClass('Eventlogs.type')"></i>
                                     <?php echo __('Type'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('full_name')"
-                                    ng-show="logTypes.includes('login')">
-                                    <i class="fa" ng-class="getSortClass('full_name')"></i>
-                                    <?php echo __('Full name'); ?>
+                                <th class="no-sort" ng-click="orderBy('name')">
+                                    <i class="fa" ng-class="getSortClass('name')"></i>
+                                    <?php echo __('Name'); ?>
                                 </th>
-                                <th class="no-sort" ng-click="orderBy('Users.email')"
+                                <th class="no-sort" ng-click="orderBy('user_email')"
                                     ng-show="logTypes.includes('login')">
-                                    <i class="fa" ng-class="getSortClass('Users.email')"></i>
+                                    <i class="fa" ng-class="getSortClass('user_email')"></i>
                                     <?php echo __('Email'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('Eventlogs.created')">
@@ -205,17 +204,17 @@
                             <tbody>
                             <tr ng-repeat="event in events">
                                 <td>{{event.type}}</td>
-                                <td ng-show="logTypes.includes('login')">
+                                <td>
                                     <span ng-if="event.recordExists">
-                                        {{event.full_name}}
+                                        {{event.name}}
                                     </span>
                                     <span ng-if="!event.recordExists">
-                                        <s>{{event.data['full_name']}}</s>
+                                        <s>{{event.name}}</s>
                                     </span>
                                 </td>
                                 <td ng-show="logTypes.includes('login')">
                                     <span ng-if="event.recordExists">
-                                        {{event.user.email}}
+                                        {{event.user_email}}
                                     </span>
                                     <span ng-if="!event.recordExists">
                                         <s>{{event.data['user_email']}}</s>

@@ -111,6 +111,12 @@ class EventlogsTable extends Table {
             ->notEmptyString('object_id');
 
         $validator
+            ->scalar('name')
+            ->maxLength('name', 255)
+            ->requirePresence('name', 'create')
+            ->notEmptyString('name');
+
+        $validator
             ->scalar('data')
             ->requirePresence('data', 'create')
             ->notEmptyString('data');
@@ -132,49 +138,40 @@ class EventlogsTable extends Table {
             $logTypes = [$logTypes];
         }
 
-        $contain = ['Containers'];
-        $select = [
+        $query = $this->find();
+
+        $query = $query->select([
             'id',
             'model',
             'type',
             'object_id',
+            'name'       => $query->newExpr('IF(Users.email IS NULL, Eventlogs.name, CONCAT(Users.firstname, " ", Users.lastname))'),
+            'user_email' => $query->newExpr('IF(Users.email IS NOT NULL, Users.email, NULL)'),
             'data',
             'created'
-        ];
+        ])->contain(['Containers', 'Users']);
 
-        if (in_array('login', $logTypes)) {
-            $select = array_merge($select, [
-                'Users.id',
-                'Users.email',
-                'full_name' =>
-                    $this->find()->func()->concat([
-                        'Users.firstname' => 'literal',
-                        ' ',
-                        'Users.lastname'  => 'literal'
-                    ])
-            ]);
-            $contain[] = 'Users';
+        if (!empty($logTypes)) {
+            $query->where(['Eventlogs.type IN' => $logTypes]);
         }
 
-        $query = $this->find()
-            ->select($select)
-            ->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
-                if (!empty($MY_RIGHTS)) {
-                    return $q->where(['Containers.id IN' => $MY_RIGHTS]);
-                }
-                return $q;
-            })
-            ->contain($contain)
+        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            if (!empty($MY_RIGHTS)) {
+                return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+            }
+            return $q;
+        })
             ->enableHydration($enableHydration);
 
         $where = $EventlogsFilter->indexFilter();
         $having = [];
-        if (isset($where['full_name LIKE'])) {
-            $having['full_name LIKE'] = $where['full_name LIKE'];
-            unset($where['full_name LIKE']);
+        if (isset($where['name LIKE'])) {
+            $having['name LIKE'] = $where['name LIKE'];
+            unset($where['name LIKE']);
         }
-        if (!empty($MY_RIGHTS)) {
-            $where['Containers.id IN'] = $MY_RIGHTS;
+        if (isset($where['user_email LIKE'])) {
+            $having['user_email LIKE'] = $where['user_email LIKE'];
+            unset($where['user_email LIKE']);
         }
 
         $where['Eventlogs.created >='] = date('Y-m-d H:i:s', $EventlogsFilter->getFrom());
@@ -234,24 +231,26 @@ class EventlogsTable extends Table {
      * @param string $type
      * @param string $model
      * @param int $objectId
+     * @param string $name
      * @param string $data
      * @param array $container_ids
      * @param bool $dataIsJSon
      * @return bool
      */
-    public function saveNewEntity($type, $model, $objectId, $data, $container_ids, $dataIsJSon = true) {
+    public function saveNewEntity($type, $model, $objectId, $name, $data, $container_ids, $dataIsJSon = true) {
 
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
         }
 
-        if (!empty($type) && !empty($model) && !empty($objectId) && !empty($data) && !empty($container_ids)) {
+        if (!empty($type) && !empty($model) && !empty($objectId) && !empty($name) && !empty($data) && !empty($container_ids)) {
 
             $eventlog = $this->newEmptyEntity();
             $eventlog = $this->patchEntity($eventlog, [
                 'type'       => $type,
                 'model'      => $model,
                 'object_id'  => $objectId,
+                'name'       => $name,
                 'containers' => [
                     '_ids' => $container_ids
                 ],
@@ -283,14 +282,11 @@ class EventlogsTable extends Table {
      * cerates a json for the data column of the eventlogs table for the login type
      *  Returns a json
      *
-     * @param string $firstname
-     * @param string $lastname
      * @param string $email
      * @return string
      */
-    public function createLoginDataJson(string $firstname, string $lastname, string $email): string {
+    public function createLoginDataJson(string $email): string {
         $data = [
-            'full_name'  => $firstname . ' ' . $lastname,
             'user_email' => $email
         ];
         return json_encode($data);
