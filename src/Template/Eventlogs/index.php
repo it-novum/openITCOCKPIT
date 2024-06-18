@@ -145,7 +145,9 @@
 
                                         <?php
                                         $types = [
-                                            'login' => __('User Login'),
+                                            'login'                => __('User Login'),
+                                            'user_delete'          => __('User Delete'),
+                                            'user_password_change' => __('User Password Change'),
                                         ];
                                         ?>
 
@@ -191,7 +193,7 @@
                                     <?php echo __('Name'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('user_email')"
-                                    ng-show="logTypes.includes('login')">
+                                    ng-show="logTypes.includes('login') || logTypes.includes('user_delete') || logTypes.includes('user_password_change')">
                                     <i class="fa" ng-class="getSortClass('user_email')"></i>
                                     <?php echo __('Email'); ?>
                                 </th>
@@ -212,7 +214,7 @@
                                         <s>{{event.name}}</s>
                                     </span>
                                 </td>
-                                <td ng-show="logTypes.includes('login')">
+                                <td ng-show="logTypes.includes('login') || logTypes.includes('user_delete') || logTypes.includes('user_password_change')">
                                     <span ng-if="event.recordExists">
                                         {{event.user_email}}
                                     </span>

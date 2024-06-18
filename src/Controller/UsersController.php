@@ -154,10 +154,10 @@ class UsersController extends AppController {
                 $loginData = $result->getData();
                 $UsersTable->saveLastLoginDate($loginData['email']);
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
-                if ($userFromDb !== null) {
+                if (!empty($userFromDb)) {
                     $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('email'));
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
-                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
                 }
             }
         }
@@ -193,10 +193,10 @@ class UsersController extends AppController {
                 $loginData = $this->request->getData();
                 $UsersTable->saveLastLoginDate($loginData['email']);
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
-                if ($userFromDb !== null) {
+                if (!empty($userFromDb)) {
                     $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('email'));
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
-                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
                 }
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
@@ -574,8 +574,19 @@ class UsersController extends AppController {
             return;
         }
 
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
         $user = $UsersTable->get($id);
+        $userFromDb = $UsersTable->getUserByEmailForLoginLog($user->get('email'));
         if ($UsersTable->delete($user)) {
+
+            if (!empty($userFromDb)) {
+                $loginData = $EventlogsTable->createDeleteUserDataJson($userFromDb->get('email'));
+                $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
+                $EventlogsTable->saveNewEntity('user_delete', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
+            }
+
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
 

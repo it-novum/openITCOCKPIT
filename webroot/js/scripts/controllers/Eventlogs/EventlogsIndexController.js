@@ -41,7 +41,9 @@ angular.module('openITCOCKPIT')
                 name: '',
                 user_email: '',
                 Types: {
-                    login: 1
+                    login: 1,
+                    user_delete: 1,
+                    user_password_change: 1
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - ( 3600 * 24 * 30 * 4 )),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + ( 3600 * 24 * 5 ))
@@ -63,7 +65,7 @@ angular.module('openITCOCKPIT')
                 'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
-                'types': getTypesFilter(),
+                'types[]': getTypesFilter(),
                 'direction': SortService.getDirection(),
                 'filter[Eventlogs.type][]': getTypesFilter(),
                 'filter[name]': $scope.filter.name,
@@ -106,7 +108,7 @@ angular.module('openITCOCKPIT')
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
                 'direction': SortService.getDirection(),
-                'types': getTypesFilter(),
+                'types[]': getTypesFilter(),
                 'filter[Eventlogs.type][]': getTypesFilter(),
                 'filter[name]': $scope.filter.name,
                 'filter[user_email]': $scope.filter.user_email,

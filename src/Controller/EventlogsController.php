@@ -58,10 +58,6 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        if (!is_array($logTypes)) {
-            $logTypes = [$logTypes];
-        }
-
         $all_events = [];
         if (!empty($logTypes)) {
             $all_events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, $PaginateOMat, $MY_RIGHTS, false);
@@ -74,9 +70,9 @@ class EventlogsController extends AppController {
             $changeTimestamp = $event['created']->getTimestamp();
             $all_events[$index]['time'] = $UserTime->format($changeTimestamp);
             $all_events[$index]['recordExists'] = $EventlogsTable->recordExists($event['model'], $event['object_id']);
-            json_decode($all_events[$index]['data'], true);
+            $dataJson = json_decode($all_events[$index]['data'], true);
             if (json_last_error() === JSON_ERROR_NONE) {
-                $all_events[$index]['data'] = json_decode($all_events[$index]['data'], true);
+                $all_events[$index]['data'] = $dataJson;
             }
         }
 
@@ -99,10 +95,6 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        if (!is_array($logTypes)) {
-            $logTypes = [$logTypes];
-        }
-
         $all_events = [];
         if (!empty($logTypes)) {
             $all_events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, $PaginateOMat, $MY_RIGHTS, false);
@@ -115,9 +107,9 @@ class EventlogsController extends AppController {
             $changeTimestamp = $event['created']->getTimestamp();
             $all_events[$index]['time'] = $UserTime->format($changeTimestamp);
             $all_events[$index]['recordExists'] = $EventlogsTable->recordExists($event['model'], $event['object_id']);
-            json_decode($all_events[$index]['data'], true);
+            $dataJson = json_decode($all_events[$index]['data'], true);
             if (json_last_error() === JSON_ERROR_NONE) {
-                $all_events[$index]['data'] = json_decode($all_events[$index]['data'], true);
+                $all_events[$index]['data'] = $dataJson;
             }
         }
 
@@ -147,10 +139,6 @@ class EventlogsController extends AppController {
 
         $logTypes = $this->request->getQuery('types', []);
 
-        if (!is_array($logTypes)) {
-            $logTypes = [$logTypes];
-        }
-
         $events = [];
         if (!empty($logTypes)) {
             $events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, $PaginateOMat, $MY_RIGHTS, false);
@@ -165,9 +153,9 @@ class EventlogsController extends AppController {
             $changeTimestamp = $event['created']->getTimestamp();
             $events[$index]['time'] = $UserTime->format($changeTimestamp);
             $recordExists = $EventlogsTable->recordExists($event['model'], $event['object_id']);
-            json_decode($event['data'], true);
+            $dataJson = json_decode($event['data'], true);
             if (json_last_error() === JSON_ERROR_NONE) {
-                $events[$index]['data'] = json_decode($event['data'], true);
+                $events[$index]['data'] = $dataJson;
             }
 
             $all_events[$index] = [

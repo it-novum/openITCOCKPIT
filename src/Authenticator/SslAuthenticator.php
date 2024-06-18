@@ -68,10 +68,10 @@ class SslAuthenticator extends AbstractAuthenticator {
 
             $UsersTable->saveLastLoginDate($user->get('email'));
             $userFromDb = $UsersTable->getUserByEmailForLoginLog($user->get('email'));
-            if ($userFromDb !== null) {
+            if (!empty($userFromDb)) {
                 $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('email'));
                 $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
-                $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'), false);
+                $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
             }
 
         }

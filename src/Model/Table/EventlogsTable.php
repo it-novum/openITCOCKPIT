@@ -237,7 +237,7 @@ class EventlogsTable extends Table {
      * @param bool $dataIsJSon
      * @return bool
      */
-    public function saveNewEntity($type, $model, $objectId, $name, $data, $container_ids, $dataIsJSon = true) {
+    public function saveNewEntity($type, $model, $objectId, $name, $data, $container_ids) {
 
         if (!is_array($container_ids)) {
             $container_ids = [$container_ids];
@@ -254,7 +254,7 @@ class EventlogsTable extends Table {
                 'containers' => [
                     '_ids' => $container_ids
                 ],
-                'data'       => ($dataIsJSon) ? json_encode($data) : $data,
+                'data'       => $data,
             ]);
             $this->save($eventlog);
             if ($eventlog->hasErrors()) {
@@ -286,6 +286,20 @@ class EventlogsTable extends Table {
      * @return string
      */
     public function createLoginDataJson(string $email): string {
+        $data = [
+            'user_email' => $email
+        ];
+        return json_encode($data);
+    }
+
+    /**
+     * cerates a json for the data column of the eventlogs table for the delete user type
+     *  Returns a json
+     *
+     * @param string $email
+     * @return string
+     */
+    public function createDeleteUserDataJson(string $email): string {
         $data = [
             'user_email' => $email
         ];
