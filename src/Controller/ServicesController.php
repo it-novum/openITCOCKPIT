@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -319,8 +319,11 @@ class ServicesController extends AppController {
             $all_services[] = $tmpRecord;
         }
 
+        $satellites = Api::makeItJavaScriptAble($satellites);
         $this->set('all_services', $all_services);
-        $this->viewBuilder()->setOption('serialize', ['all_services']);
+        $this->set('username', $User->getFullName());
+        $this->set('satellites', $satellites);
+        $this->viewBuilder()->setOption('serialize', ['all_services', 'username', 'satellites']);
     }
 
     /**
