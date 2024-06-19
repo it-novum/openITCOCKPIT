@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -336,7 +336,9 @@ class Menu {
                     '',
                     ['fas', 'sitemap'],
                     [],
-                    9
+                    9,
+                    true,
+                    '/servicedependencies/index'
                 ))
             )
             ->addCategory((new MenuCategory(
