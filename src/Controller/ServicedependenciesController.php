@@ -127,6 +127,8 @@ class ServicedependenciesController extends AppController {
             );
 
             $validateRequestEntity = $ServicedependenciesTable->newEntity($this->request->getData('Servicedependency'));
+            $validateRequestEntity->set('uuid', UUID::v4());
+
             if ($validateRequestEntity->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $validateRequestEntity->getErrors());
