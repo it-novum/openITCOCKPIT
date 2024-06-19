@@ -164,7 +164,9 @@ class Menu {
                         '',
                         ['fas', 'envelope'],
                         [],
-                        1
+                        1,
+                        true,
+                        '/notifications/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Log entries'),
