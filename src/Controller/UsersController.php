@@ -155,7 +155,7 @@ class UsersController extends AppController {
                 $UsersTable->saveLastLoginDate($loginData['email']);
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
                 if (!empty($userFromDb)) {
-                    $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('email'));
+                    $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
                     $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
                 }
@@ -194,7 +194,7 @@ class UsersController extends AppController {
                 $UsersTable->saveLastLoginDate($loginData['email']);
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
                 if (!empty($userFromDb)) {
-                    $loginData = $EventlogsTable->createLoginDataJson($userFromDb->get('email'));
+                    $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
                     $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
                 }
@@ -526,6 +526,12 @@ class UsersController extends AppController {
                 unset($data['confirm_password']);
             }
 
+            $Hasher = $UsersTable->getDefaultPasswordHasher();
+            $passwordHasChanged = false;
+            if (array_key_exists('password', $data) && !empty($data['password'])) {
+                $passwordHasChanged = $Hasher->check($data['password'], $user->get('password')) !== true;
+            }
+
             $user = $UsersTable->patchEntity($user, $data);
             $UsersTable->save($user);
             if ($user->hasErrors()) {
@@ -533,6 +539,15 @@ class UsersController extends AppController {
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
+            }
+
+            if ($passwordHasChanged) {
+                /** @var EventlogsTable $EventlogsTable */
+                $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
+                $loginData = $EventlogsTable->createDataJsonForUser($user->get('email'));
+                $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
+                $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $loginData, Hash::extract($data['containers'], '{n}.id'));
             }
 
             Cache::clear('permissions');
@@ -582,7 +597,7 @@ class UsersController extends AppController {
         if ($UsersTable->delete($user)) {
 
             if (!empty($userFromDb)) {
-                $loginData = $EventlogsTable->createDeleteUserDataJson($userFromDb->get('email'));
+                $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
                 $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
                 $EventlogsTable->saveNewEntity('user_delete', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
             }

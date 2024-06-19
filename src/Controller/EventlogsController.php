@@ -163,7 +163,7 @@ class EventlogsController extends AppController {
                 $event['name']
             ];
 
-            if (in_array('login', $logTypes)) {
+            if (in_array('login', $logTypes) || in_array('user_delete', $logTypes) || in_array('user_password_change', $logTypes)) {
                 if ($recordExists) {
                     $all_events[$index][] = $event['user_email'];
                 } else {
@@ -178,7 +178,7 @@ class EventlogsController extends AppController {
             'event_type',
         ];
 
-        if (in_array('login', $logTypes)) {
+        if (in_array('login', $logTypes) || in_array('user_delete', $logTypes) || in_array('user_password_change', $logTypes)) {
             $header[] = 'name';
             $header[] = 'user_email';
         }

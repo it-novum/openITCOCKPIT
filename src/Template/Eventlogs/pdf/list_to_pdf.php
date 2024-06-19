@@ -76,7 +76,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
             <th>
                 <?php echo __('Name'); ?>
             </th>
-            <?php if (in_array('login', $logTypes)): ?>
+            <?php if (in_array('login', $logTypes) || in_array('user_delete', $logTypes) || in_array('user_password_change', $logTypes)): ?>
                 <th>
                     <?php echo __('Email'); ?>
                 </th>
@@ -92,14 +92,14 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                 <td>
                     <?= h($event['type']); ?>
                 </td>
-                <?php if (in_array('login', $logTypes)): ?>
-                    <td>
-                        <?php if ($event['recordExists']): ?>
-                            <?= h($event['name']); ?>
-                        <?php else: ?>
-                            <s><?= h($event['name']); ?></s>
-                        <?php endif; ?>
-                    </td>
+                <td>
+                    <?php if ($event['recordExists']): ?>
+                        <?= h($event['name']); ?>
+                    <?php else: ?>
+                        <s><?= h($event['name']); ?></s>
+                    <?php endif; ?>
+                </td>
+                <?php if (in_array('login', $logTypes) || in_array('user_delete', $logTypes) || in_array('user_password_change', $logTypes)): ?>
                     <td>
                         <?php if ($event['recordExists']): ?>
                             <?= h($event['user_email']); ?>

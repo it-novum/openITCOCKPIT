@@ -285,21 +285,7 @@ class EventlogsTable extends Table {
      * @param string $email
      * @return string
      */
-    public function createLoginDataJson(string $email): string {
-        $data = [
-            'user_email' => $email
-        ];
-        return json_encode($data);
-    }
-
-    /**
-     * cerates a json for the data column of the eventlogs table for the delete user type
-     *  Returns a json
-     *
-     * @param string $email
-     * @return string
-     */
-    public function createDeleteUserDataJson(string $email): string {
+    public function createDataJsonForUser(string $email): string {
         $data = [
             'user_email' => $email
         ];
