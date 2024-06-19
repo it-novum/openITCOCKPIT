@@ -545,9 +545,9 @@ class UsersController extends AppController {
                 /** @var EventlogsTable $EventlogsTable */
                 $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
 
-                $loginData = $EventlogsTable->createDataJsonForUser($user->get('email'));
+                $eventlogData = $EventlogsTable->createDataJsonForUser($user->get('email'));
                 $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
-                $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $loginData, Hash::extract($data['containers'], '{n}.id'));
+                $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, Hash::extract($data['containers'], '{n}.id'));
             }
 
             Cache::clear('permissions');
@@ -597,9 +597,9 @@ class UsersController extends AppController {
         if ($UsersTable->delete($user)) {
 
             if (!empty($userFromDb)) {
-                $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
+                $eventlogData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
                 $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
-                $EventlogsTable->saveNewEntity('user_delete', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
+                $EventlogsTable->saveNewEntity('user_delete', 'User', $userFromDb->id, $fullName, $eventlogData, Hash::extract($userFromDb['containers'], '{n}.id'));
             }
 
             $this->set('success', true);
