@@ -176,7 +176,9 @@ class Menu {
                         '',
                         ['fas', 'file-lines'],
                         [],
-                        2
+                        2,
+                        true,
+                        '/logentries/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Change Log'),
