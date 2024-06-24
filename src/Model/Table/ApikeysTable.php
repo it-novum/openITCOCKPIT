@@ -186,17 +186,4 @@ class ApikeysTable extends Table {
         return $apiKeyIdQuery->id;
 
     }
-
-    /**
-     * @param int $id
-     * @return array
-     */
-    public function getApikeyById($id) {
-        return $this->find()
-            ->where([
-                'Apikeys.id' => $id
-            ])
-            ->disableHydration()
-            ->first();
-    }
 }

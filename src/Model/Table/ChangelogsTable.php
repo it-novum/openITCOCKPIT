@@ -348,11 +348,10 @@ class ChangelogsTable extends Table {
                 'container' => '{(name)}'
             ],
             'user'                 => [
-                'User'                            => '{(email|firstname|lastname|company|position|phone|paginatorlength|showstatsinmenu|recursive_browser|dashboard_tab_rotation|dateformat|timezone|is_active|i18n|password|is_oauth)}',
-                'User.usercontainerroles'         => '{(id|name)}',
-                'User.ContainersUsersMemberships' => '{(id|name)}',
-                'User.apikeys'                    => '{n}.{(id|apikey|description)}',
-                'Usergroup'                       => '{n}.{(id|name)}',
+                'User'               => '{(email|firstname|lastname|company|position|phone|paginatorlength|showstatsinmenu|recursive_browser|dashboard_tab_rotation|dateformat|timezone|is_active|i18n|password|is_oauth)}',
+                'Usercontainerroles' => '{n}.{(id|name)}',
+                'Usergroup'          => '{(id|name)}',
+                'Containers'         => '{n}.{(id|name|permission_level)}',
             ],
         ];
 
@@ -765,6 +764,10 @@ class ChangelogsTable extends Table {
                         unset($changes['current_data']['container_id']);
                     }
 
+                    if (!empty(Hash::extract($changes['current_data'], 'password'))) {
+                        $changes['current_data'] = Hash::insert($changes['current_data'], 'password', '🤫');
+                    }
+
                     $dataUnserialized[$index][$tableName] = [
                         'data'    => $changes['current_data'] ?? [],
                         'isArray' => Hash::dimensions($changes) === 3
@@ -920,6 +923,10 @@ class ChangelogsTable extends Table {
                         if (!empty(Hash::extract($diffs, '{n}.new[password=1].value'))) {
                             $diffs = Hash::insert($diffs, '{n}.new[password=1].value', '🤫');
                         }
+                    }
+
+                    if (!empty(Hash::extract($diffs, 'password.new'))) {
+                        $diffs = Hash::insert($diffs, 'password.new', '🤫');
                     }
 
                     $dataUnserialized[$index][$tableName] = [

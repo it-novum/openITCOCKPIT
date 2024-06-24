@@ -354,14 +354,23 @@ class UsersController extends AppController {
                 /** @var ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-                $extDataForChangelog = $UsersTable->resolveDataForChangelog($user);
+                $data = [
+                    'User' => $data
+                ];
+
+                if (!empty($data['User']['password']) && !empty($data['User']['confirm_password'])) {
+                    $data['User']['password'] = '********';
+                    $data['User']['confirm_password'] = '********';
+                }
+
+                $extDataForChangelog = $UsersTable->resolveDataForChangelog($data);
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'users',
                     $user->get('id'),
                     OBJECT_USER,
-                    Hash::extract($data, 'containers.{n}.id'),
+                    Hash::extract($data, 'User.containers.{n}.id'),
                     $User->getId(),
                     $user->get('firstname') . ' ' . $user->get('lastname'),
                     array_merge($data, $extDataForChangelog)
@@ -395,6 +404,7 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForEdit($id);
+        $userForChangelog = $user;
         $containersToCheck = array_unique(
             array_merge(
                 $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
@@ -538,6 +548,12 @@ class UsersController extends AppController {
                 unset($data['confirm_password']);
             }
 
+            $Hasher = $UsersTable->getDefaultPasswordHasher();
+            $passwordHasChanged = false;
+            if (array_key_exists('password', $data) && !empty($data['password'])) {
+                $passwordHasChanged = $Hasher->check($data['password'], $user->get('password')) !== true;
+            }
+
             $user = $UsersTable->patchEntity($user, $data);
             $UsersTable->save($user);
             if ($user->hasErrors()) {
@@ -545,6 +561,36 @@ class UsersController extends AppController {
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
+            }
+
+            if ($passwordHasChanged) {
+                $data['password'] = '********';
+                $data['confirm_password'] = '********';
+            }
+
+            /** @var ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $data = [
+                'User' => $data
+            ];
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'edit',
+                'users',
+                $user->get('id'),
+                OBJECT_USER,
+                Hash::extract($data, 'User.containers.{n}.id'),
+                $User->getId(),
+                $user->get('firstname') . ' ' . $user->get('lastname'),
+                array_merge($UsersTable->resolveDataForChangelog($data), $data),
+                array_merge($UsersTable->resolveDataForChangelog($userForChangelog), $userForChangelog)
+            );
+
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
             }
 
             Cache::clear('permissions');
@@ -576,6 +622,7 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForPermissionCheck($id);
+        $userForChangelog = $UsersTable->getUserById($id);
         $containersToCheck = array_unique(array_merge(
             $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
             $user['containers']['_ids']) //Containers defined by the user itself
@@ -588,6 +635,26 @@ class UsersController extends AppController {
 
         $user = $UsersTable->get($id);
         if ($UsersTable->delete($user)) {
+
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'delete',
+                'users',
+                $id,
+                OBJECT_USER,
+                Hash::extract($userForChangelog, 'containers.{n}.id'),
+                $User->getId(),
+                $userForChangelog['firstname'] . ' ' . $userForChangelog['lastname'],
+                $userForChangelog
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
 
