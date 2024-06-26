@@ -71,12 +71,12 @@ class LogentriesController extends AppController {
 
         $all_logentries = $LogentriesTable->getLogentries($LogentryFilter, $PaginateOMat);
         $logentries = [];
-
         foreach ($all_logentries as $logentry) {
             $logentry = new Logentry($logentry, $UserTime);
             $logentry = $logentry->toArray();
 
             $logentry['logentry_data_html'] = $UuidCache->replaceUuidWithAngularJsLink(h($logentry['logentry_data']));
+            $logentry['logentry_data_angular_html'] = $UuidCache->replaceUuidWithAngularLink(h($logentry['logentry_data']), $this->PERMISSIONS);
             $logentries[] = $logentry;
         }
 
