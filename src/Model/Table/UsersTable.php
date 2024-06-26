@@ -1635,65 +1635,75 @@ class UsersTable extends Table {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         //container roles
-        if (array_key_exists('_ids', $dataToParse['User']['usercontainerroles'])) {
-            foreach ($dataToParse['User']['usercontainerroles']['_ids'] as $id) {
-                $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleById($id);
-                if (!empty($usercontainerrole)) {
+        if (array_key_exists('usercontainerroles', $dataToParse['User'])) {
+
+            if (array_key_exists('_ids', $dataToParse['User']['usercontainerroles'])) {
+                foreach ($dataToParse['User']['usercontainerroles']['_ids'] as $id) {
+                    $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleById($id);
+                    if (!empty($usercontainerrole)) {
+                        $extDataForChangelog['Usercontainerroles'][] = [
+                            'id'   => $usercontainerrole['id'],
+                            'name' => $usercontainerrole['name']
+                        ];
+                    }
+                }
+            } else {
+                foreach ($dataToParse['User']['usercontainerroles'] as $usercontainerrole) {
                     $extDataForChangelog['Usercontainerroles'][] = [
                         'id'   => $usercontainerrole['id'],
                         'name' => $usercontainerrole['name']
                     ];
                 }
             }
-        } else {
-            foreach ($dataToParse['User']['usercontainerroles'] as $usercontainerrole) {
-                $extDataForChangelog['Usercontainerroles'][] = [
-                    'id'   => $usercontainerrole['id'],
-                    'name' => $usercontainerrole['name']
-                ];
-            }
+
         }
 
         //containers
-        if (!empty($dataToParse['User']['containers']) && array_key_exists('name', $dataToParse['User']['containers'])) {
-            foreach ($dataToParse['User']['containers'] as $container) {
-                $extDataForChangelog['Containers'][] = [
-                    'id'               => $container['id'],
-                    'name'             => $container['name'],
-                    'permission_level' => $container['_joinData']['permission_level'],
-                ];
-            }
-        } else if (array_key_exists('_ids', $dataToParse['User']['containers']) && !empty($dataToParse['User']['ContainersUsersMemberships'])) {
-            foreach ($dataToParse['User']['containers']['_ids'] as $id) {
-                $containerWithName = $ContainersTable->getContainerById($id);
-                if (!empty($containerWithName)) {
-                    $extDataForChangelog['Containers'][] = [
-                        'id'               => $id,
-                        'name'             => $containerWithName['name'],
-                        'permission_level' => $dataToParse['User']['ContainersUsersMemberships'][$id],
-                    ];
-                }
-            }
-        } else {
-            foreach ($dataToParse['User']['containers'] as $container) {
-                $containerWithName = $ContainersTable->getContainerById($container['id']);
-                if (!empty($containerWithName)) {
+        if (array_key_exists('containers', $dataToParse['User'])) {
+
+            if (!empty($dataToParse['User']['containers']) && array_key_exists('name', $dataToParse['User']['containers'])) {
+                foreach ($dataToParse['User']['containers'] as $container) {
                     $extDataForChangelog['Containers'][] = [
                         'id'               => $container['id'],
-                        'name'             => $containerWithName['name'],
+                        'name'             => $container['name'],
                         'permission_level' => $container['_joinData']['permission_level'],
                     ];
                 }
+            } else if (array_key_exists('_ids', $dataToParse['User']['containers']) && !empty($dataToParse['User']['ContainersUsersMemberships'])) {
+                foreach ($dataToParse['User']['containers']['_ids'] as $id) {
+                    $containerWithName = $ContainersTable->getContainerById($id);
+                    if (!empty($containerWithName)) {
+                        $extDataForChangelog['Containers'][] = [
+                            'id'               => $id,
+                            'name'             => $containerWithName['name'],
+                            'permission_level' => $dataToParse['User']['ContainersUsersMemberships'][$id],
+                        ];
+                    }
+                }
+            } else {
+                foreach ($dataToParse['User']['containers'] as $container) {
+                    $containerWithName = $ContainersTable->getContainerById($container['id']);
+                    if (!empty($containerWithName)) {
+                        $extDataForChangelog['Containers'][] = [
+                            'id'               => $container['id'],
+                            'name'             => $containerWithName['name'],
+                            'permission_level' => $container['_joinData']['permission_level'],
+                        ];
+                    }
+                }
             }
+
         }
 
         //usergroup
-        $usergroup = $UsergroupsTable->getUsergroupById($dataToParse['User']['usergroup_id']);
-        if (!empty($usergroup)) {
-            $extDataForChangelog['Usergroup'] = [
-                'id'   => $usergroup['id'],
-                'name' => $usergroup['name']
-            ];
+        if (array_key_exists('usergroup_id', $dataToParse['User'])) {
+            $usergroup = $UsergroupsTable->getUsergroupById($dataToParse['User']['usergroup_id']);
+            if (!empty($usergroup)) {
+                $extDataForChangelog['Usergroup'] = [
+                    'id'   => $usergroup['id'],
+                    'name' => $usergroup['name']
+                ];
+            }
         }
 
         return $extDataForChangelog;

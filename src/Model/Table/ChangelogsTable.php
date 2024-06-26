@@ -348,7 +348,7 @@ class ChangelogsTable extends Table {
                 'container' => '{(name)}'
             ],
             'user'                 => [
-                'User'               => '{(email|firstname|lastname|company|position|phone|paginatorlength|showstatsinmenu|recursive_browser|dashboard_tab_rotation|dateformat|timezone|is_active|i18n|password|is_oauth)}',
+                'User'               => '{(email|firstname|lastname|company|position|phone|paginatorlength|showstatsinmenu|recursive_browser|dashboard_tab_rotation|dateformat|timezone|is_active|i18n|password|is_oauth|samaccountname|ldap_dn)}',
                 'Usercontainerroles' => '{n}.{(id|name)}',
                 'Usergroup'          => '{(id|name)}',
                 'Containers'         => '{n}.{(id|name|permission_level)}',
@@ -923,6 +923,10 @@ class ChangelogsTable extends Table {
                         if (!empty(Hash::extract($diffs, '{n}.new[password=1].value'))) {
                             $diffs = Hash::insert($diffs, '{n}.new[password=1].value', '🤫');
                         }
+                    }
+
+                    if (!empty(Hash::extract($diffs, 'password.old'))) {
+                        $diffs = Hash::insert($diffs, 'password.old', '********');
                     }
 
                     if (!empty(Hash::extract($diffs, 'password.new'))) {

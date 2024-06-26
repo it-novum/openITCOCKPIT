@@ -354,23 +354,41 @@ class UsersController extends AppController {
                 /** @var ChangelogsTable $ChangelogsTable */
                 $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
+                /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+                $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
                 $data = [
                     'User' => $data
                 ];
 
                 if (!empty($data['User']['password']) && !empty($data['User']['confirm_password'])) {
-                    $data['User']['password'] = '********';
-                    $data['User']['confirm_password'] = '********';
+                    $data['User']['password'] = $user->get('password');
+                    $data['User']['confirm_password'] = $user->get('password');
                 }
 
                 $extDataForChangelog = $UsersTable->resolveDataForChangelog($data);
+                $containerIds = Hash::extract($data, 'User.containers.{n}.id');
+
+                if (array_key_exists('_ids', $data['User']['usercontainerroles'])) {
+                    foreach ($data['User']['usercontainerroles']['_ids'] as $id) {
+                        $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
+                        $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+                    }
+                } else {
+                    foreach ($data['User']['usercontainerroles'] as $usercontainerrole) {
+                        $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
+                        $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+                    }
+                }
 
                 $changelog_data = $ChangelogsTable->parseDataForChangelog(
                     'add',
                     'users',
                     $user->get('id'),
                     OBJECT_USER,
-                    Hash::extract($data, 'User.containers.{n}.id'),
+                    $containerIds,
                     $User->getId(),
                     $user->get('firstname') . ' ' . $user->get('lastname'),
                     array_merge($data, $extDataForChangelog)
@@ -564,23 +582,42 @@ class UsersController extends AppController {
             }
 
             if ($passwordHasChanged) {
-                $data['password'] = '********';
-                $data['confirm_password'] = '********';
+                $data['password'] = $user->get('password');
+                $data['confirm_password'] = $user->get('password');
             }
 
             /** @var ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
+            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
             $data = [
                 'User' => $data
             ];
+
+            $containerIds = Hash::extract($data, 'User.containers.{n}.id');
+
+            if (array_key_exists('_ids', $data['User']['usercontainerroles'])) {
+                foreach ($data['User']['usercontainerroles']['_ids'] as $id) {
+                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
+                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+                }
+            } else {
+                foreach ($data['User']['usercontainerroles'] as $usercontainerrole) {
+                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
+                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+                }
+            }
 
             $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'edit',
                 'users',
                 $user->get('id'),
                 OBJECT_USER,
-                Hash::extract($data, 'User.containers.{n}.id'),
+                $containerIds,
                 $User->getId(),
                 $user->get('firstname') . ' ' . $user->get('lastname'),
                 array_merge($UsersTable->resolveDataForChangelog($data), $data),
@@ -791,6 +828,9 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->get($id);
+        $userForChangelog = [
+            'User' => $UsersTable->getUserById($id)
+        ];
         $newPassword = $UsersTable->generatePassword();
 
         $user->set('password', $newPassword);
@@ -827,6 +867,36 @@ class UsersController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+
+        $user = $UsersTable->getUserById($id);
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        $data = [
+            'User' => $user
+        ];
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'users',
+            $user['id'],
+            OBJECT_USER,
+            Hash::extract($user, 'containers.{n}.id'),
+            $User->getId(),
+            $user['firstname'] . ' ' . $user['lastname'],
+            array_merge($UsersTable->resolveDataForChangelog($data), $data),
+            array_merge($UsersTable->resolveDataForChangelog($userForChangelog), $userForChangelog)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
         $Mailer->deliver();
         $this->set('message', __('Password reset successfully. The new password was send to {0}', $user->email));
         $this->viewBuilder()->setOption('serialize', ['message']);
