@@ -341,65 +341,18 @@ class UsersController extends AppController {
                 $UsersTable->getValidator()->remove('confirm_password');
             }
 
-            $UsersTable->save($user);
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->createUser($user, $data, $User->getId());
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
-            } else {
-
-                $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
-
-                /** @var ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                /** @var UsercontainerrolesTable $UsercontainerrolesTable */
-                $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-
-                $data = [
-                    'User' => $data
-                ];
-
-                if (!empty($data['User']['password']) && !empty($data['User']['confirm_password'])) {
-                    $data['User']['password'] = $user->get('password');
-                    $data['User']['confirm_password'] = $user->get('password');
-                }
-
-                $extDataForChangelog = $UsersTable->resolveDataForChangelog($data);
-                $containerIds = Hash::extract($data, 'User.containers.{n}.id');
-
-                if (array_key_exists('_ids', $data['User']['usercontainerroles'])) {
-                    foreach ($data['User']['usercontainerroles']['_ids'] as $id) {
-                        $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
-                        $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-                    }
-                } else {
-                    foreach ($data['User']['usercontainerroles'] as $usercontainerrole) {
-                        $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
-                        $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-                    }
-                }
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'add',
-                    'users',
-                    $user->get('id'),
-                    OBJECT_USER,
-                    $containerIds,
-                    $User->getId(),
-                    $user->get('firstname') . ' ' . $user->get('lastname'),
-                    array_merge($data, $extDataForChangelog)
-                );
-
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-
             }
 
             Cache::clear('permissions');
@@ -573,61 +526,23 @@ class UsersController extends AppController {
             }
 
             $user = $UsersTable->patchEntity($user, $data);
-            $UsersTable->save($user);
-            if ($user->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $user->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            }
-
-            if ($passwordHasChanged) {
-                $data['password'] = $user->get('password');
-                $data['confirm_password'] = $user->get('password');
-            }
-
-            /** @var ChangelogsTable $ChangelogsTable */
-            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
-            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
             $data = [
                 'User' => $data
             ];
 
-            $containerIds = Hash::extract($data, 'User.containers.{n}.id');
-
-            if (array_key_exists('_ids', $data['User']['usercontainerroles'])) {
-                foreach ($data['User']['usercontainerroles']['_ids'] as $id) {
-                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
-                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-                }
-            } else {
-                foreach ($data['User']['usercontainerroles'] as $usercontainerrole) {
-                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
-                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-                }
-            }
-
-            $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                'edit',
-                'users',
-                $user->get('id'),
-                OBJECT_USER,
-                $containerIds,
+            $user = $UsersTable->updateUser(
+                $user,
+                $data,
+                $userForChangelog,
                 $User->getId(),
-                $user->get('firstname') . ' ' . $user->get('lastname'),
-                array_merge($UsersTable->resolveDataForChangelog($data), $data),
-                array_merge($UsersTable->resolveDataForChangelog($userForChangelog), $userForChangelog)
+                $passwordHasChanged
             );
-
-            if ($changelog_data) {
-                /** @var Changelog $changelogEntry */
-                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                $ChangelogsTable->save($changelogEntry);
+            if ($user->hasErrors()) {
+                $this->response = $this->response->withStatus(400);
+                $this->set('error', $user->getErrors());
+                $this->viewBuilder()->setOption('serialize', ['error']);
+                return;
             }
 
             Cache::clear('permissions');
@@ -784,13 +699,20 @@ class UsersController extends AppController {
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
-            $UsersTable->save($user);
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->createUser($user, $data, $User->getId());
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
+
 
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
