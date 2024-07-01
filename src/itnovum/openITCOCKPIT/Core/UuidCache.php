@@ -141,4 +141,43 @@ class UuidCache {
         }, $str);
         return $outputStr;
     }
+
+    /**
+     * @param $str
+     * @param $permissions
+     * @return array|string|string[]|null
+     */
+    public function replaceUuidWithAngularLink($str, $permissions) {
+
+        $outputStr = preg_replace_callback(UUID::regex(), function ($matches) use ($permissions){
+            foreach ($matches as $uuid) {
+                $object = null;
+                foreach (array_keys($this->cache) as $ObjectName) {
+                    if (isset($this->cache[$ObjectName][$uuid])) {
+                        $object = $this->cache[$ObjectName][$uuid];
+                        break;
+                    }
+                }
+
+                if ($object) {
+                    $objectType = strtolower($ObjectName);
+                    if(isset($permissions[$objectType]['index'])){
+                        return sprintf('<a rel="ng" href="/%s/index?filter.%s.id=%s"><b>%s</b></a>',
+                            $objectType,
+                            $ObjectName,
+                            $object['id'],
+                            h($object['name']));
+
+                    }else{
+                        return sprintf('<b>%s</b>', h($object['name']));
+
+                    }
+                } else {
+                    return '<i>[' . $uuid . ']</i>';
+                }
+            }
+            return '';
+        }, $str);
+        return $outputStr;
+    }
 }
