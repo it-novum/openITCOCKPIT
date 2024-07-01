@@ -34,13 +34,16 @@ use App\Model\Table\ContactsTable;
 use App\Model\Table\ContactsToContactgroupsTable;
 use App\Model\Table\ContainersTable;
 use Cake\Cache\Cache;
+use Cake\Core\Configure;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -629,4 +632,58 @@ class ContactgroupsController extends AppController {
         $this->set($data);
         $this->viewBuilder()->setOption('serialize', array_keys($data));
     }
+
+    public function nagiosConfiguration() {
+
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $contactgroupId = $this->request->getQuery('contactgroupId', null);
+
+        /** @var $ContactgroupsTable ContactgroupsTable */
+        $ContactgroupsTable = TableRegistry::getTableLocator()->get('Contactgroups');
+
+        if (!$ContactgroupsTable->existsById($contactgroupId)) {
+            throw new NotFoundException(__('Contact group not found'));
+        }
+
+        $contactgroup = $ContactgroupsTable->getContactgroupForEdit($contactgroupId);
+
+        if (!$this->allowedByContainerId($contactgroup['Contactgroup']['container']['parent_id'], false)) {
+            $this->render403();
+            return;
+        }
+
+        if (!empty($contactgroupId)) {
+
+            $TableName = "Contactgroups";
+            $confName = "contactgroups";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $contactgroupNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$contactgroupId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $contactgroupNagiosConfig = "Contact group Config Record not found.";
+        }
+
+        if (empty($contactgroupId) || gettype($contactgroupNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $contactgroupNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("contactgroupConfig", $contactgroupNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['contactgroupConfig']);
+
+
+    }
+
 }

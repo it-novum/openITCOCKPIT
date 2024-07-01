@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicedependenciesIndexController', function($scope, $http, $rootScope, $stateParams, MassChangeService, SortService, QueryStringService){
+    .controller('ServicedependenciesIndexController', function($scope, $http, $rootScope, $stateParams, MassChangeService, SortService, QueryStringService, NotyService){
 
         SortService.setSort(QueryStringService.getValue('sort', 'ServicedependenciesIndexController.id'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
@@ -11,6 +11,8 @@ angular.module('openITCOCKPIT')
 
         $scope.servicegroupFocus = true;
         $scope.servicegroupDependentFocus = false;
+
+        $scope.servicedependencyConfig = {};
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -145,6 +147,23 @@ angular.module('openITCOCKPIT')
                 }
             }
             return objects;
+        };
+
+        $scope.showNagiosConfiguration = function(servicedependencyId){
+            $http.get("/servicedependencies/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'servicedependencyId': servicedependencyId
+                }
+            }).then(function(result){
+                $scope.servicedependencyConfig = result.data.servicedependencyConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         //Fire on page load

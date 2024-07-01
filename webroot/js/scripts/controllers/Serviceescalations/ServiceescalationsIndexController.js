@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('ServiceescalationsIndexController', function($scope, $http, $stateParams, MassChangeService, SortService, QueryStringService){
+    .controller('ServiceescalationsIndexController', function($scope, $http, $stateParams, MassChangeService, SortService, QueryStringService, NotyService){
 
         SortService.setSort(QueryStringService.getValue('sort', 'Serviceescalations.id'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
@@ -11,6 +11,8 @@ angular.module('openITCOCKPIT')
 
         $scope.servicegroupFocus = true;
         $scope.servicegroupExcludeFocus = false;
+
+        $scope.serviceescalationConfig = {};
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -133,6 +135,23 @@ angular.module('openITCOCKPIT')
                 }
             }
             return objects;
+        };
+
+        $scope.showNagiosConfiguration = function(serviceescalationId){
+            $http.get("/serviceescalations/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'serviceescalationId': serviceescalationId
+                }
+            }).then(function(result){
+                $scope.serviceescalationConfig = result.data.serviceescalationConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
         };
 
         //Fire on page load
