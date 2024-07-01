@@ -1707,6 +1707,8 @@ class HostsController extends AppController {
                 if (!$HostsTable->existsById($host2copyData['Source']['id'])) {
                     continue;
                 }
+
+                $contactsIds = [];
                 if (!isset($host2copyData['Host']['id'])) {
                     $hostgroupsIds = [];
                     $parenthostsIds = [];
