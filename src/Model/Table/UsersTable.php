@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2019>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -27,6 +32,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Cake\Database\Query;
@@ -39,10 +45,8 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsersFilter;
 
 /**
@@ -1612,4 +1616,240 @@ class UsersTable extends Table {
         }
         return $dashboardTabs;
     }
+
+    /**
+     * @param array $dataToParse
+     * @return array
+     */
+    public function resolveDataForChangelog($dataToParse = []) {
+        $extDataForChangelog = [
+            'Usercontainerroles' => [],
+            'Containers'         => [],
+            'Usergroup'          => [],
+        ];
+
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+        /** @var UsergroupsTable $UsergroupsTable */
+        $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        //container roles
+        if (isset($dataToParse['User']['usercontainerroles'])) {
+
+            if (isset($dataToParse['User']['usercontainerroles']['_ids'])) {
+                foreach ($dataToParse['User']['usercontainerroles']['_ids'] as $id) {
+                    $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleById($id);
+                    if (!empty($usercontainerrole)) {
+                        $extDataForChangelog['Usercontainerroles'][] = [
+                            'id'   => $usercontainerrole['id'],
+                            'name' => $usercontainerrole['name']
+                        ];
+                    }
+                }
+            }
+
+            foreach ($dataToParse['User']['usercontainerroles'] as $usercontainerrole) {
+                if (isset($usercontainerrole['id'])) {
+                    if (!isset($usercontainerrole['name'])) {
+                        $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleById($usercontainerrole['id']);
+                    }
+                    $extDataForChangelog['Usercontainerroles'][] = [
+                        'id'   => $usercontainerrole['id'],
+                        'name' => $usercontainerrole['name']
+                    ];
+                }
+            }
+
+        }
+
+        //containers
+        if (isset($dataToParse['User']['containers'])) {
+
+            if (isset($dataToParse['User']['containers']['_ids']) && !empty($dataToParse['User']['ContainersUsersMemberships'])) {
+                foreach ($dataToParse['User']['containers']['_ids'] as $id) {
+                    $containerWithName = $ContainersTable->getContainerById($id);
+                    if (!empty($containerWithName)) {
+                        $extDataForChangelog['Containers'][] = [
+                            'id'               => $id,
+                            'name'             => $containerWithName['name'],
+                            'permission_level' => $dataToParse['User']['ContainersUsersMemberships'][$id],
+                        ];
+                    }
+                }
+            } else {
+                foreach ($dataToParse['User']['containers'] as $container) {
+                    $containerWithName = [];
+                    if (!isset($dataToParse['User']['containers']['name'])) {
+                        $containerWithName = $ContainersTable->getContainerById($container['id']);
+                    }
+                    $extDataForChangelog['Containers'][] = [
+                        'id'               => $container['id'],
+                        'name'             => (!empty($containerWithName)) ? $containerWithName['name'] : $container['name'],
+                        'permission_level' => $container['_joinData']['permission_level'],
+                    ];
+                }
+            }
+
+        }
+
+        //usergroup
+        if (isset($dataToParse['User']['usergroup_id'])) {
+            $usergroup = $UsergroupsTable->getUsergroupById($dataToParse['User']['usergroup_id']);
+            if (!empty($usergroup)) {
+                $extDataForChangelog['Usergroup'] = [
+                    'id'   => $usergroup['id'],
+                    'name' => $usergroup['name']
+                ];
+            }
+        }
+
+        return $extDataForChangelog;
+    }
+
+    /**
+     * This method provides a unified way to create new user. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param User $entity The entity that will be saved by the Table
+     * @param array $user The user as array ( [ User => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return User
+     */
+    public function createUser(User $entity, array $user, int $userId): User {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        //get the hashed password
+        if (!empty($user['User']['password']) && !empty($user['User']['confirm_password'])) {
+            $user['User']['password'] = $entity->get('password');
+            $user['User']['confirm_password'] = $entity->get('password');
+        }
+
+        $extDataForChangelog = $this->resolveDataForChangelog($user);
+        $containerIds = Hash::extract($user, 'User.containers.{n}.id');
+
+        //get container ids from usercontainerroles to show the changelog entry
+        if (isset($user['User']['usercontainerroles']['_ids'])) {
+            foreach ($user['User']['usercontainerroles']['_ids'] as $id) {
+                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
+                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+            }
+        } else {
+            foreach ($user['User']['usercontainerroles'] as $usercontainerrole) {
+                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
+                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+            }
+        }
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'add',
+            'users',
+            $entity->get('id'),
+            OBJECT_USER,
+            $containerIds,
+            $userId,
+            $entity->get('firstname') . ' ' . $entity->get('lastname'),
+            array_merge($user, $extDataForChangelog)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
+    /**
+     * This method provides a unified way to update an existing user. It will also make sure that the changelog is used
+     * It will always return an Entity object, so make sure to check for "hasErrors()"
+     *
+     * @param User $entity The entity that will be updated by the Table
+     * @param array $newUser The new user as array ( [ User => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param array $oldUser The old user as array ( [ User => [ name => Foo, type => 1 ... ] ] ) used by the Changelog
+     * @param int $userId The ID of the user that did the Change (0 = Cronjob)
+     * @return User
+     */
+    public function updateUser(User $entity, array $newUser, array $oldUser, int $userId, bool $passwordHasChanged = false): User {
+        $this->save($entity);
+        if ($entity->hasErrors()) {
+            // We have some validation errors
+            // Let the caller (probably CakePHP Controller) handle the error
+            return $entity;
+        }
+
+        //get the hashed password
+        if ($passwordHasChanged) {
+            $newUser['User']['password'] = $entity->get('password');
+            $newUser['User']['confirm_password'] = $entity->get('password');
+        }
+
+        //get the containers when password has been reset
+        if (!isset($newUser['User']['containers'])) {
+            $newUser = [
+                'User' => $this->getUserById($entity->get('id'))
+            ];
+        }
+
+        //No errors
+        /** @var ChangelogsTable $ChangelogsTable */
+        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        $containerIds = Hash::extract($newUser, 'User.containers.{n}.id');
+
+        //get container ids from usercontainerroles to show the changelog entry
+        if (isset($newUser['User']['usercontainerroles']['_ids'])) {
+            foreach ($newUser['User']['usercontainerroles']['_ids'] as $id) {
+                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
+                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+            }
+        } else {
+            foreach ($newUser['User']['usercontainerroles'] as $usercontainerrole) {
+                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
+                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+            }
+        }
+
+        $changelog_data = $ChangelogsTable->parseDataForChangelog(
+            'edit',
+            'users',
+            $entity->get('id'),
+            OBJECT_USER,
+            $containerIds,
+            $userId,
+            $entity->get('firstname') . ' ' . $entity->get('lastname'),
+            array_merge($this->resolveDataForChangelog($newUser), $newUser),
+            array_merge($this->resolveDataForChangelog($oldUser), $oldUser)
+        );
+
+        if ($changelog_data) {
+            /** @var Changelog $changelogEntry */
+            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+            $ChangelogsTable->save($changelogEntry);
+        }
+
+        return $entity;
+    }
+
 }

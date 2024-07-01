@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -27,7 +32,9 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Model\Entity\Changelog;
 use App\Model\Entity\User;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
@@ -334,7 +341,13 @@ class UsersController extends AppController {
                 $UsersTable->getValidator()->remove('confirm_password');
             }
 
-            $UsersTable->save($user);
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->createUser($user, $data, $User->getId());
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
@@ -362,6 +375,7 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForEdit($id);
+        $userForChangelog = $user;
         $containersToCheck = array_unique(
             array_merge(
                 $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
@@ -480,6 +494,12 @@ class UsersController extends AppController {
                             'through_ldap' => true // This got assigned automatically via LDAP
                         ]
                     ];
+                    $userForChangelog['User']['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => true // This got assigned automatically via LDAP
+                        ]
+                    ];
                 }
 
                 foreach ($usercontainerroles as $usercontainerroleId) {
@@ -505,8 +525,25 @@ class UsersController extends AppController {
                 unset($data['confirm_password']);
             }
 
+            $Hasher = $UsersTable->getDefaultPasswordHasher();
+            $passwordHasChanged = false;
+            if (array_key_exists('password', $data) && !empty($data['password'])) {
+                $passwordHasChanged = $Hasher->check($data['password'], $user->get('password')) !== true;
+            }
+
             $user = $UsersTable->patchEntity($user, $data);
-            $UsersTable->save($user);
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->updateUser(
+                $user,
+                $data,
+                $userForChangelog,
+                $User->getId(),
+                $passwordHasChanged
+            );
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
@@ -543,6 +580,7 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForPermissionCheck($id);
+        $userForChangelog = $UsersTable->getUserById($id);
         $containersToCheck = array_unique(array_merge(
             $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
             $user['containers']['_ids']) //Containers defined by the user itself
@@ -555,6 +593,46 @@ class UsersController extends AppController {
 
         $user = $UsersTable->get($id);
         if ($UsersTable->delete($user)) {
+
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+            $containerIds = Hash::extract($userForChangelog, 'containers.{n}.id');
+
+            //get container ids from usercontainerroles to show the changelog entry
+            if (isset($userForChangelog['usercontainerroles']['_ids'])) {
+                foreach ($userForChangelog['usercontainerroles']['_ids'] as $id) {
+                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
+                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+                }
+            } else {
+                foreach ($userForChangelog['usercontainerroles'] as $usercontainerrole) {
+                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
+                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+                }
+            }
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'delete',
+                'users',
+                $id,
+                OBJECT_USER,
+                $containerIds,
+                $User->getId(),
+                $userForChangelog['firstname'] . ' ' . $userForChangelog['lastname'],
+                $userForChangelog
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+            }
+
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
 
@@ -647,13 +725,20 @@ class UsersController extends AppController {
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
-            $UsersTable->save($user);
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->createUser($user, $data, $User->getId());
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
+
 
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
@@ -691,6 +776,9 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->get($id);
+        $userForChangelog = [
+            'User' => $UsersTable->getUserById($id)
+        ];
         $newPassword = $UsersTable->generatePassword();
 
         $user->set('password', $newPassword);
@@ -720,13 +808,26 @@ class UsersController extends AppController {
 
         $user->set('password', $newPassword);
 
-        $UsersTable->save($user);
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+        $data = [
+            'User' => $user->toArray()
+        ];
+
+        $user = $UsersTable->updateUser(
+            $user,
+            $data,
+            $userForChangelog,
+            $User->getId(),
+            true
+        );
         if ($user->hasErrors()) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $user->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+
         $Mailer->deliver();
         $this->set('message', __('Password reset successfully. The new password was send to {0}', $user->email));
         $this->viewBuilder()->setOption('serialize', ['message']);
