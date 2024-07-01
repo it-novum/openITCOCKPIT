@@ -494,6 +494,12 @@ class UsersController extends AppController {
                             'through_ldap' => true // This got assigned automatically via LDAP
                         ]
                     ];
+                    $userForChangelog['User']['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => true // This got assigned automatically via LDAP
+                        ]
+                    ];
                 }
 
                 foreach ($usercontainerroles as $usercontainerroleId) {
@@ -591,12 +597,32 @@ class UsersController extends AppController {
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
+            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+            $containerIds = Hash::extract($userForChangelog, 'containers.{n}.id');
+
+            //get container ids from usercontainerroles to show the changelog entry
+            if (isset($userForChangelog['usercontainerroles']['_ids'])) {
+                foreach ($userForChangelog['usercontainerroles']['_ids'] as $id) {
+                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
+                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+                }
+            } else {
+                foreach ($userForChangelog['usercontainerroles'] as $usercontainerrole) {
+                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
+                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+                }
+            }
+
             $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
                 'users',
                 $id,
                 OBJECT_USER,
-                Hash::extract($userForChangelog, 'containers.{n}.id'),
+                $containerIds,
                 $User->getId(),
                 $userForChangelog['firstname'] . ' ' . $userForChangelog['lastname'],
                 $userForChangelog
@@ -782,41 +808,24 @@ class UsersController extends AppController {
 
         $user->set('password', $newPassword);
 
-        $UsersTable->save($user);
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+        $data = [
+            'User' => $user->toArray()
+        ];
+
+        $user = $UsersTable->updateUser(
+            $user,
+            $data,
+            $userForChangelog,
+            $User->getId(),
+            true
+        );
         if ($user->hasErrors()) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $user->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
-        }
-
-        $user = $UsersTable->getUserById($id);
-
-        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
-
-        /** @var ChangelogsTable $ChangelogsTable */
-        $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-        $data = [
-            'User' => $user
-        ];
-
-        $changelog_data = $ChangelogsTable->parseDataForChangelog(
-            'edit',
-            'users',
-            $user['id'],
-            OBJECT_USER,
-            Hash::extract($user, 'containers.{n}.id'),
-            $User->getId(),
-            $user['firstname'] . ' ' . $user['lastname'],
-            array_merge($UsersTable->resolveDataForChangelog($data), $data),
-            array_merge($UsersTable->resolveDataForChangelog($userForChangelog), $userForChangelog)
-        );
-
-        if ($changelog_data) {
-            /** @var Changelog $changelogEntry */
-            $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-            $ChangelogsTable->save($changelogEntry);
         }
 
         $Mailer->deliver();

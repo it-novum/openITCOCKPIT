@@ -1636,9 +1636,9 @@ class UsersTable extends Table {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
         //container roles
-        if (array_key_exists('usercontainerroles', $dataToParse['User'])) {
+        if (isset($dataToParse['User']['usercontainerroles'])) {
 
-            if (array_key_exists('_ids', $dataToParse['User']['usercontainerroles'])) {
+            if (isset($dataToParse['User']['usercontainerroles']['_ids'])) {
                 foreach ($dataToParse['User']['usercontainerroles']['_ids'] as $id) {
                     $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleById($id);
                     if (!empty($usercontainerrole)) {
@@ -1648,18 +1648,13 @@ class UsersTable extends Table {
                         ];
                     }
                 }
-            } else if (empty(Hash::extract($dataToParse['User'], 'User.usercontainerroles.{n}._joinData.{n}.through_ldap'))) {
-                foreach ($dataToParse['User']['usercontainerroles'] as $usercontainerrole) {
-                    $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleById($usercontainerrole['id']);
-                    if (!empty($usercontainerrole)) {
-                        $extDataForChangelog['Usercontainerroles'][] = [
-                            'id'   => $usercontainerrole['id'],
-                            'name' => $usercontainerrole['name']
-                        ];
+            }
+
+            foreach ($dataToParse['User']['usercontainerroles'] as $usercontainerrole) {
+                if (isset($usercontainerrole['id'])) {
+                    if (!isset($usercontainerrole['name'])) {
+                        $usercontainerrole = $UsercontainerrolesTable->getUserContainerRoleById($usercontainerrole['id']);
                     }
-                }
-            } else {
-                foreach ($dataToParse['User']['usercontainerroles'] as $usercontainerrole) {
                     $extDataForChangelog['Usercontainerroles'][] = [
                         'id'   => $usercontainerrole['id'],
                         'name' => $usercontainerrole['name']
@@ -1670,17 +1665,9 @@ class UsersTable extends Table {
         }
 
         //containers
-        if (array_key_exists('containers', $dataToParse['User'])) {
+        if (isset($dataToParse['User']['containers'])) {
 
-            if (!empty($dataToParse['User']['containers']) && array_key_exists('name', $dataToParse['User']['containers'])) {
-                foreach ($dataToParse['User']['containers'] as $container) {
-                    $extDataForChangelog['Containers'][] = [
-                        'id'               => $container['id'],
-                        'name'             => $container['name'],
-                        'permission_level' => $container['_joinData']['permission_level'],
-                    ];
-                }
-            } else if (array_key_exists('_ids', $dataToParse['User']['containers']) && !empty($dataToParse['User']['ContainersUsersMemberships'])) {
+            if (isset($dataToParse['User']['containers']['_ids']) && !empty($dataToParse['User']['ContainersUsersMemberships'])) {
                 foreach ($dataToParse['User']['containers']['_ids'] as $id) {
                     $containerWithName = $ContainersTable->getContainerById($id);
                     if (!empty($containerWithName)) {
@@ -1693,21 +1680,22 @@ class UsersTable extends Table {
                 }
             } else {
                 foreach ($dataToParse['User']['containers'] as $container) {
-                    $containerWithName = $ContainersTable->getContainerById($container['id']);
-                    if (!empty($containerWithName)) {
-                        $extDataForChangelog['Containers'][] = [
-                            'id'               => $container['id'],
-                            'name'             => $containerWithName['name'],
-                            'permission_level' => $container['_joinData']['permission_level'],
-                        ];
+                    $containerWithName = [];
+                    if (!isset($dataToParse['User']['containers']['name'])) {
+                        $containerWithName = $ContainersTable->getContainerById($container['id']);
                     }
+                    $extDataForChangelog['Containers'][] = [
+                        'id'               => $container['id'],
+                        'name'             => (!empty($containerWithName)) ? $containerWithName['name'] : $container['name'],
+                        'permission_level' => $container['_joinData']['permission_level'],
+                    ];
                 }
             }
 
         }
 
         //usergroup
-        if (array_key_exists('usergroup_id', $dataToParse['User'])) {
+        if (isset($dataToParse['User']['usergroup_id'])) {
             $usergroup = $UsergroupsTable->getUsergroupById($dataToParse['User']['usergroup_id']);
             if (!empty($usergroup)) {
                 $extDataForChangelog['Usergroup'] = [
@@ -1806,9 +1794,17 @@ class UsersTable extends Table {
             return $entity;
         }
 
+        //get the hashed password
         if ($passwordHasChanged) {
-            $newUser['password'] = $entity->get('password');
-            $newUser['confirm_password'] = $entity->get('password');
+            $newUser['User']['password'] = $entity->get('password');
+            $newUser['User']['confirm_password'] = $entity->get('password');
+        }
+
+        //get the containers when password has been reset
+        if (!isset($newUser['User']['containers'])) {
+            $newUser = [
+                'User' => $this->getUserById($entity->get('id'))
+            ];
         }
 
         //No errors
@@ -1820,7 +1816,8 @@ class UsersTable extends Table {
 
         $containerIds = Hash::extract($newUser, 'User.containers.{n}.id');
 
-        if (array_key_exists('_ids', $newUser['User']['usercontainerroles'])) {
+        //get container ids from usercontainerroles to show the changelog entry
+        if (isset($newUser['User']['usercontainerroles']['_ids'])) {
             foreach ($newUser['User']['usercontainerroles']['_ids'] as $id) {
                 $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
                 $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
