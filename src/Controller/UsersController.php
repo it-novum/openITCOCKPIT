@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -29,6 +34,7 @@ namespace App\Controller;
 
 use App\Model\Entity\User;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\EventlogsTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
 use App\Model\Table\UsergroupsTable;
@@ -110,6 +116,9 @@ class UsersController extends AppController {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
         $hasValidSslCertificate = false;
         if (isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && isset($_SERVER['SSL_CERT'])) {
             $hasValidSslCertificate = $this->getUser() !== null;
@@ -144,6 +153,12 @@ class UsersController extends AppController {
             } else {
                 $loginData = $result->getData();
                 $UsersTable->saveLastLoginDate($loginData['email']);
+                $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
+                if (!empty($userFromDb)) {
+                    $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
+                    $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
+                }
             }
         }
 
@@ -177,6 +192,12 @@ class UsersController extends AppController {
                 $this->set('success', true);
                 $loginData = $this->request->getData();
                 $UsersTable->saveLastLoginDate($loginData['email']);
+                $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
+                if (!empty($userFromDb)) {
+                    $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
+                    $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
+                }
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
@@ -505,6 +526,12 @@ class UsersController extends AppController {
                 unset($data['confirm_password']);
             }
 
+            $Hasher = $UsersTable->getDefaultPasswordHasher();
+            $passwordHasChanged = false;
+            if (array_key_exists('password', $data) && !empty($data['password'])) {
+                $passwordHasChanged = $Hasher->check($data['password'], $user->get('password')) !== true;
+            }
+
             $user = $UsersTable->patchEntity($user, $data);
             $UsersTable->save($user);
             if ($user->hasErrors()) {
@@ -512,6 +539,15 @@ class UsersController extends AppController {
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
+            }
+
+            if ($passwordHasChanged) {
+                /** @var EventlogsTable $EventlogsTable */
+                $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
+                $eventlogData = $EventlogsTable->createDataJsonForUser($user->get('email'));
+                $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
+                $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, Hash::extract($data['containers'], '{n}.id'));
             }
 
             Cache::clear('permissions');
@@ -553,8 +589,19 @@ class UsersController extends AppController {
             return;
         }
 
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
         $user = $UsersTable->get($id);
+        $userFromDb = $UsersTable->getUserByEmailForLoginLog($user->get('email'));
         if ($UsersTable->delete($user)) {
+
+            if (!empty($userFromDb)) {
+                $eventlogData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
+                $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
+                $EventlogsTable->saveNewEntity('user_delete', 'User', $userFromDb->id, $fullName, $eventlogData, Hash::extract($userFromDb['containers'], '{n}.id'));
+            }
+
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
 

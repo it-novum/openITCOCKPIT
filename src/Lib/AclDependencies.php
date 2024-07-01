@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -322,6 +322,9 @@ class AclDependencies {
 
         $this
             ->dependency('Changelogs', 'index', 'Changelogs', 'entity');
+
+        $this->dependency('Eventlogs', 'index', 'Eventlogs', 'listToPdf')
+            ->dependency('Eventlogs', 'index', 'Eventlogs', 'listToCsv');
 
         $this
             ->dependency('Timeperiods', 'index', 'Timeperiods', 'view')
