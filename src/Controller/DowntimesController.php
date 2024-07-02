@@ -309,11 +309,7 @@ class DowntimesController extends AppController {
 
         switch ($this->request->getData('type')) {
             case 'host':
-                $includeServices = true;
-                if (!empty($this->request->getData('includeServices'))) {
-                    $includeServices = (bool)$this->request->getData('includeServices');
-                }
-
+                $includeServices = $this->request->getData('includeServices', false);
                 //Find current downtime
                 $downtime = $DowntimeHostsTable->getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
                 if (empty($downtime)) {
