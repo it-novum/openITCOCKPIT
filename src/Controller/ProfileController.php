@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -64,6 +69,10 @@ class ProfileController extends AppController {
         }
 
         $user = $UsersTable->getUserForEdit($User->getId());
+        // i need the password field to prevent change detection
+        $userForChangelog = [
+            'User' => $UsersTable->getUserById($User->getId())
+        ];
         $isLdapUser = !empty($user['User']['samaccountname']);
 
         unset($user['User']['usercontainerroles']);
@@ -108,7 +117,17 @@ class ProfileController extends AppController {
             }
 
             $user = $UsersTable->patchEntity($user, $data);
-            $UsersTable->save($user);
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->updateUser(
+                $user,
+                $data,
+                $userForChangelog,
+                $User->getId()
+            );
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
@@ -134,6 +153,9 @@ class ProfileController extends AppController {
         $Hasher = $UsersTable->getDefaultPasswordHasher();
 
         $user = $UsersTable->get($User->getId());
+        $userForChangelog = [
+            'User' => $UsersTable->getUserById($User->getId())
+        ];
 
         $data = $this->request->getData('Password');
 
@@ -149,7 +171,18 @@ class ProfileController extends AppController {
         }
 
         $user = $UsersTable->patchEntity($user, $data);
-        $UsersTable->save($user);
+
+        $data = [
+            'User' => $user->toArray()
+        ];
+
+        $user = $UsersTable->updateUser(
+            $user,
+            $data,
+            $userForChangelog,
+            $User->getId(),
+            true
+        );
         if ($user->hasErrors()) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $user->getErrors());
