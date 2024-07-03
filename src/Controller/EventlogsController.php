@@ -92,7 +92,7 @@ class EventlogsController extends AppController {
         $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
 
         $EventlogsFilter = new EventlogsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $EventlogsFilter->getPage());
+
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges === true) {
             $MY_RIGHTS = [];
@@ -141,7 +141,7 @@ class EventlogsController extends AppController {
         $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
 
         $EventlogsFilter = new EventlogsFilter($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $EventlogsFilter->getPage());
+        
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges === true) {
             $MY_RIGHTS = [];
