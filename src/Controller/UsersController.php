@@ -157,9 +157,15 @@ class UsersController extends AppController {
                 $UsersTable->saveLastLoginDate($loginData['email']);
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
                 if (!empty($userFromDb)) {
+
+                    $containerIds = Hash::extract($userFromDb, 'containers.{n}.id');
+
+                    $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles(['User' => $userFromDb]);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
                     $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
-                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, $containerIds);
                 }
             }
         }
@@ -196,9 +202,15 @@ class UsersController extends AppController {
                 $UsersTable->saveLastLoginDate($loginData['email']);
                 $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
                 if (!empty($userFromDb)) {
+
+                    $containerIds = Hash::extract($userFromDb, 'containers.{n}.id');
+
+                    $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles(['User' => $userFromDb]);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
                     $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
-                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, Hash::extract($userFromDb['containers'], '{n}.id'));
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, $containerIds);
                 }
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
@@ -571,9 +583,14 @@ class UsersController extends AppController {
                 /** @var EventlogsTable $EventlogsTable */
                 $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
 
+                $containerIds = Hash::extract($data, 'User.containers.{n}.id');
+
+                $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles($data);
+                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
                 $eventlogData = $EventlogsTable->createDataJsonForUser($user->get('email'));
                 $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
-                $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, Hash::extract($data['containers'], '{n}.id'));
+                $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, $containerIds);
             }
 
             Cache::clear('permissions');
@@ -605,7 +622,7 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForPermissionCheck($id);
-        $userForChangelog = $UsersTable->getUserById($id);
+        $userForLog = $UsersTable->getUserById($id);
         $containersToCheck = array_unique(array_merge(
             $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
             $user['containers']['_ids']) //Containers defined by the user itself
@@ -620,37 +637,20 @@ class UsersController extends AppController {
         $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
 
         $user = $UsersTable->get($id);
-        $userFromDb = $UsersTable->getUserByEmailForLoginLog($user->get('email'));
+
         if ($UsersTable->delete($user)) {
 
-            if (!empty($userFromDb)) {
-                $eventlogData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
-                $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
-                $EventlogsTable->saveNewEntity('user_delete', 'User', $userFromDb->id, $fullName, $eventlogData, Hash::extract($userFromDb['containers'], '{n}.id'));
-            }
+            $containerIds = Hash::extract($userForLog, 'containers.{n}.id');
+
+            $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles(['User' => $userForLog]);
+            $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+            $eventlogData = $EventlogsTable->createDataJsonForUser($userForLog['email']);
+            $fullName = $userForLog['firstname'] . ' ' . $userForLog['lastname'];
+            $EventlogsTable->saveNewEntity('user_delete', 'User', $userForLog['id'], $fullName, $eventlogData, $containerIds);
 
             /** @var  ChangelogsTable $ChangelogsTable */
             $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-            /** @var UsercontainerrolesTable $UsercontainerrolesTable */
-            $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-
-            $containerIds = Hash::extract($userForChangelog, 'containers.{n}.id');
-
-            //get container ids from usercontainerroles to show the changelog entry
-            if (isset($userForChangelog['usercontainerroles']['_ids'])) {
-                foreach ($userForChangelog['usercontainerroles']['_ids'] as $id) {
-                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
-                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-                }
-            } else {
-                foreach ($userForChangelog['usercontainerroles'] as $usercontainerrole) {
-                    $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
-                    $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-                }
-            }
 
             $changelog_data = $ChangelogsTable->parseDataForChangelog(
                 'delete',
@@ -659,8 +659,8 @@ class UsersController extends AppController {
                 OBJECT_USER,
                 $containerIds,
                 $User->getId(),
-                $userForChangelog['firstname'] . ' ' . $userForChangelog['lastname'],
-                $userForChangelog
+                $fullName,
+                $userForLog
             );
             if ($changelog_data) {
                 /** @var Changelog $changelogEntry */
@@ -812,7 +812,7 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->get($id);
-        $userForChangelog = [
+        $userForLog = [
             'User' => $UsersTable->getUserById($id)
         ];
         $newPassword = $UsersTable->generatePassword();
@@ -853,7 +853,7 @@ class UsersController extends AppController {
         $user = $UsersTable->updateUser(
             $user,
             $data,
-            $userForChangelog,
+            $userForLog,
             $User->getId(),
             true
         );
@@ -863,6 +863,18 @@ class UsersController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
+        $containerIds = Hash::extract($userForLog, 'User.containers.{n}.id');
+
+        $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles($userForLog);
+        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+        $eventlogData = $EventlogsTable->createDataJsonForUser($user->get('email'));
+        $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
+        $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, $containerIds);
 
         $Mailer->deliver();
         $this->set('message', __('Password reset successfully. The new password was send to {0}', $user->email));

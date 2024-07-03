@@ -34,6 +34,7 @@ namespace App\Controller;
 
 use App\Lib\QrCodeGenerator;
 use App\Model\Table\ApikeysTable;
+use App\Model\Table\EventlogsTable;
 use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
@@ -41,6 +42,7 @@ use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -153,7 +155,7 @@ class ProfileController extends AppController {
         $Hasher = $UsersTable->getDefaultPasswordHasher();
 
         $user = $UsersTable->get($User->getId());
-        $userForChangelog = [
+        $userForLog = [
             'User' => $UsersTable->getUserById($User->getId())
         ];
 
@@ -179,7 +181,7 @@ class ProfileController extends AppController {
         $user = $UsersTable->updateUser(
             $user,
             $data,
-            $userForChangelog,
+            $userForLog,
             $User->getId(),
             true
         );
@@ -189,6 +191,18 @@ class ProfileController extends AppController {
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
+        $containerIds = Hash::extract($userForLog, 'User.containers.{n}.id');
+
+        $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles($userForLog);
+        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+        $eventlogData = $EventlogsTable->createDataJsonForUser($user->get('email'));
+        $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
+        $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, $containerIds);
 
         $session = $this->request->getSession();
         $session->write('Auth', $UsersTable->get($User->getId()));
