@@ -32,6 +32,8 @@ angular.module('openITCOCKPIT')
         $scope.currentPage = 1;
 
         $scope.logTypes = [];
+        $scope.typeTranslations = [];
+        $scope.typeIconClasses = [];
 
         /*** Filter Settings ***/
         var defaultFilter = function() {
@@ -79,6 +81,8 @@ angular.module('openITCOCKPIT')
             }).then(function(result) {
                 $scope.events = result.data.all_events;
                 $scope.logTypes = result.data.logTypes;
+                $scope.typeTranslations = result.data.typeTranslations;
+                $scope.typeIconClasses = result.data.typeIconClasses;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;

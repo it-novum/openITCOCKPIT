@@ -104,6 +104,10 @@
                                                    ng-model="filter.user_email"
                                                    ng-model-options="{debounce: 500}">
                                         </div>
+                                        <div class="help-block text-info">
+                                            <i class="fa fa-info-circle"></i>
+                                            <?php echo __('E-mail filter does not search for deleted users!'); ?>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-md-6 margin-bottom-10">
@@ -184,9 +188,9 @@
                         <table class="table table-striped m-0 table-bordered table-hover table-sm">
                             <thead>
                             <tr>
-                                <th class="no-sort" ng-click="orderBy('Eventlogs.type')">
+                                <th colspan="2" class="no-sort" ng-click="orderBy('Eventlogs.type')">
                                     <i class="fa" ng-class="getSortClass('Eventlogs.type')"></i>
-                                    <?php echo __('Type'); ?>
+                                    <?php echo __('Event Type'); ?>
                                 </th>
                                 <th class="no-sort" ng-click="orderBy('name')">
                                     <i class="fa" ng-class="getSortClass('name')"></i>
@@ -205,7 +209,10 @@
                             </thead>
                             <tbody>
                             <tr ng-repeat="event in events">
-                                <td>{{event.type}}</td>
+                                <td>
+                                    <i class="{{typeIconClasses[event.type]}}" title="{{typeTranslations[event.type]}}">
+                                </td>
+                                <td>{{typeTranslations[event.type]}}</td>
                                 <td>
                                     <span ng-if="event.recordExists">
                                         {{event.name}}

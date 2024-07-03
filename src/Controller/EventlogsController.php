@@ -76,9 +76,14 @@ class EventlogsController extends AppController {
             }
         }
 
+        $typeTranslations = $this->getTypeTranslations();
+        $typeIconClasses = $this->getTypeIconClasses();
+
         $this->set('all_events', $all_events);
         $this->set('logTypes', $logTypes);
-        $this->viewBuilder()->setOption('serialize', ['all_events', 'logTypes']);
+        $this->set('typeTranslations', $typeTranslations);
+        $this->set('typeIconClasses', $typeIconClasses);
+        $this->viewBuilder()->setOption('serialize', ['all_events', 'logTypes', 'typeTranslations', 'typeIconClasses']);
     }
 
     public function listToPdf() {
@@ -97,7 +102,7 @@ class EventlogsController extends AppController {
 
         $all_events = [];
         if (!empty($logTypes)) {
-            $all_events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, $PaginateOMat, $MY_RIGHTS, false);
+            $all_events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, null, $MY_RIGHTS, false);
         }
 
         $User = new User($this->getUser());
@@ -113,8 +118,13 @@ class EventlogsController extends AppController {
             }
         }
 
+        $typeTranslations = $this->getTypeTranslations();
+        $typeIconClasses = $this->getTypeIconClasses();
+
         $this->set('all_events', $all_events);
         $this->set('logTypes', $logTypes);
+        $this->set('typeTranslations', $typeTranslations);
+        $this->set('typeIconClasses', $typeIconClasses);
 
         $this->viewBuilder()->setOption(
             'pdfConfig',
@@ -141,11 +151,13 @@ class EventlogsController extends AppController {
 
         $events = [];
         if (!empty($logTypes)) {
-            $events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, $PaginateOMat, $MY_RIGHTS, false);
+            $events = $EventlogsTable->getEventlogIndex($EventlogsFilter, $logTypes, null, $MY_RIGHTS, false);
         }
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
+
+        $typeTranslations = $this->getTypeTranslations();
 
         $all_events = [];
 
@@ -159,7 +171,7 @@ class EventlogsController extends AppController {
             }
 
             $all_events[$index] = [
-                $event['type'],
+                $typeTranslations[$event['type']],
                 $event['name']
             ];
 
@@ -197,6 +209,23 @@ class EventlogsController extends AppController {
                 'serialize' => 'data',
                 'header'    => $header,
             ]);
+    }
+
+    private function getTypeTranslations() {
+        return [
+            'login'                => __('User Login'),
+            'user_delete'          => __('User Delete'),
+            'user_password_change' => __('User Password Change'),
+        ];
+    }
+
+    private function getTypeIconClasses() {
+        return [
+            'login'                => 'fa fa-door-open text-success',
+            'user_delete'          => 'fa fa-trash text-danger',
+            'user_password_change' => 'fa fa-key text-primary',
+        ];
+
     }
 
 }

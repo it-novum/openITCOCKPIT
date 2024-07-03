@@ -34,6 +34,8 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
  * @var \App\View\AppView $this
  * @var array $all_events
  * @var array $logTypes
+ * @var array $typeTranslations
+ * @var array $typeIconClasses
  */
 
 $Logo = new Logo();
@@ -70,8 +72,8 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
     <table class="table table-striped m-0 table-bordered table-hover table-sm">
         <thead>
         <tr>
-            <th>
-                <?php echo __('Type'); ?>
+            <th colspan="2">
+                <?php echo __('Event Type'); ?>
             </th>
             <th>
                 <?php echo __('Name'); ?>
@@ -90,7 +92,11 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
         <?php foreach ($all_events as $event): ?>
             <tr>
                 <td>
-                    <?= h($event['type']); ?>
+                    <i class="<?= h($typeIconClasses[$event['type']]); ?>"
+                       title="<?= h($typeTranslations[$event['type']]); ?>">
+                </td>
+                <td>
+                    <?= h($typeTranslations[$event['type']]); ?>
                 </td>
                 <td>
                     <?php if ($event['recordExists']): ?>
