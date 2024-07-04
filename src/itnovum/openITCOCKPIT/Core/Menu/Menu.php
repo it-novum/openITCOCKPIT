@@ -198,7 +198,7 @@ class Menu {
                         'eventlogs',
                         'index',
                         '',
-                        'fa fa-file-text',
+                        ['fas', 'file-text'],
                         [],
                         4
                     ))
