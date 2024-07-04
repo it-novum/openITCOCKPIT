@@ -1014,7 +1014,7 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param string v
+     * @param string $email
      * @return array|EntityInterface|null
      */
     public function getUserByEmailForLogin(string $email) {
@@ -1029,7 +1029,7 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param string v
+     * @param string $apikey
      * @return array|EntityInterface|null
      */
     public function getUserByApikeyForLogin(string $apikey) {
@@ -1050,6 +1050,32 @@ class UsersTable extends Table {
                 'Apikeys.apikey'  => $apikey
             ]);
         return $query->first();
+    }
+
+    /**
+     * @param string $email
+     * @return array|EntityInterface|null
+     */
+    public function getUserByEmailForLoginLog(string $email) {
+        $query = $this->find()
+            ->contain([
+                'Containers',
+                'Usercontainerroles' => [
+                    'Containers'
+                ]
+            ]);
+        $where = [
+            'Users.is_active' => 1
+        ];
+
+        if (!str_contains($email, '@')) {
+            $where['Users.samaccountname'] = $email;
+        } else {
+            $where['email'] = $email;
+        }
+
+        return $query->where($where)->first();
+
     }
 
     /**
@@ -1729,9 +1755,6 @@ class UsersTable extends Table {
         /** @var ChangelogsTable $ChangelogsTable */
         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
-        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-
         //get the hashed password
         if (!empty($user['User']['password']) && !empty($user['User']['confirm_password'])) {
             $user['User']['password'] = $entity->get('password');
@@ -1741,20 +1764,8 @@ class UsersTable extends Table {
         $extDataForChangelog = $this->resolveDataForChangelog($user);
         $containerIds = Hash::extract($user, 'User.containers.{n}.id');
 
-        //get container ids from usercontainerroles to show the changelog entry
-        if (isset($user['User']['usercontainerroles']['_ids'])) {
-            foreach ($user['User']['usercontainerroles']['_ids'] as $id) {
-                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
-                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-            }
-        } else {
-            foreach ($user['User']['usercontainerroles'] as $usercontainerrole) {
-                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
-                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-            }
-        }
+        $containerRoleContainerIds = $this->getContainerIdsOfUserContainerRoles($user);
+        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
 
         $changelog_data = $ChangelogsTable->parseDataForChangelog(
             'add',
@@ -1811,25 +1822,10 @@ class UsersTable extends Table {
         /** @var ChangelogsTable $ChangelogsTable */
         $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
 
-        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
-        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
-
         $containerIds = Hash::extract($newUser, 'User.containers.{n}.id');
 
-        //get container ids from usercontainerroles to show the changelog entry
-        if (isset($newUser['User']['usercontainerroles']['_ids'])) {
-            foreach ($newUser['User']['usercontainerroles']['_ids'] as $id) {
-                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
-                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-            }
-        } else {
-            foreach ($newUser['User']['usercontainerroles'] as $usercontainerrole) {
-                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
-                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
-                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
-            }
-        }
+        $containerRoleContainerIds = $this->getContainerIdsOfUserContainerRoles($newUser);
+        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
 
         $changelog_data = $ChangelogsTable->parseDataForChangelog(
             'edit',
@@ -1850,6 +1846,38 @@ class UsersTable extends Table {
         }
 
         return $entity;
+    }
+
+    /**
+     * This method return the container ids of the user container roles for saving in user logs
+     *
+     * @param array $user The user as array ( [ User => [ name => Foo, type => 1 ... ] ] )
+     * @return array
+     */
+    public function getContainerIdsOfUserContainerRoles(array $user): array {
+
+        $containerIds = [];
+
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
+        //get container ids from usercontainerroles to show user log entry
+        if (isset($user['User']['usercontainerroles']['_ids'])) {
+            foreach ($user['User']['usercontainerroles']['_ids'] as $id) {
+                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($id);
+                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+            }
+        } else {
+            foreach ($user['User']['usercontainerroles'] as $usercontainerrole) {
+                $userContainerRoles = $UsercontainerrolesTable->getUserContainerRoleForEdit($usercontainerrole['id']);
+                $containerRoleContainerIds = array_keys($userContainerRoles['Usercontainerrole']['ContainersUsercontainerrolesMemberships']);
+                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+            }
+        }
+
+        return $containerIds;
+
     }
 
 }
