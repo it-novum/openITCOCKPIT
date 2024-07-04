@@ -325,6 +325,9 @@ class AclDependencies {
         $this
             ->dependency('Changelogs', 'index', 'Changelogs', 'entity');
 
+        $this->dependency('Eventlogs', 'index', 'Eventlogs', 'listToPdf')
+            ->dependency('Eventlogs', 'index', 'Eventlogs', 'listToCsv');
+
         $this
             ->dependency('Timeperiods', 'index', 'Timeperiods', 'view')
             ->dependency('Timeperiods', 'index', 'Timeperiods', 'loadTimeperiodsByContainerId');

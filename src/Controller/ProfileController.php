@@ -34,6 +34,7 @@ namespace App\Controller;
 
 use App\Lib\QrCodeGenerator;
 use App\Model\Table\ApikeysTable;
+use App\Model\Table\EventlogsTable;
 use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
 use Cake\Core\Configure;
@@ -41,6 +42,7 @@ use Cake\Http\Exception\BadRequestException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\Locales;
 use itnovum\openITCOCKPIT\Core\System\FileUploadSize;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
@@ -69,6 +71,10 @@ class ProfileController extends AppController {
         }
 
         $user = $UsersTable->getUserForEdit($User->getId());
+        // i need the password field to prevent change detection
+        $userForChangelog = [
+            'User' => $UsersTable->getUserById($User->getId())
+        ];
         $isLdapUser = !empty($user['User']['samaccountname']);
 
         unset($user['User']['usercontainerroles']);
@@ -113,7 +119,17 @@ class ProfileController extends AppController {
             }
 
             $user = $UsersTable->patchEntity($user, $data);
-            $UsersTable->save($user);
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->updateUser(
+                $user,
+                $data,
+                $userForChangelog,
+                $User->getId()
+            );
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
@@ -139,6 +155,9 @@ class ProfileController extends AppController {
         $Hasher = $UsersTable->getDefaultPasswordHasher();
 
         $user = $UsersTable->get($User->getId());
+        $userForLog = [
+            'User' => $UsersTable->getUserById($User->getId())
+        ];
 
         $data = $this->request->getData('Password');
 
@@ -154,13 +173,36 @@ class ProfileController extends AppController {
         }
 
         $user = $UsersTable->patchEntity($user, $data);
-        $UsersTable->save($user);
+
+        $data = [
+            'User' => $user->toArray()
+        ];
+
+        $user = $UsersTable->updateUser(
+            $user,
+            $data,
+            $userForLog,
+            $User->getId(),
+            true
+        );
         if ($user->hasErrors()) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $user->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
+        $containerIds = Hash::extract($userForLog, 'User.containers.{n}.id');
+
+        $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles($userForLog);
+        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+        $eventlogData = $EventlogsTable->createDataJsonForUser($user->get('email'));
+        $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
+        $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, $containerIds);
 
         $session = $this->request->getSession();
         $session->write('Auth', $UsersTable->get($User->getId()));

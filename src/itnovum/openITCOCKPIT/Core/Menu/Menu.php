@@ -192,6 +192,16 @@ class Menu {
                         true,
                         '/changelogs/index'
                     ))
+                    ->addLink(new MenuLink(
+                        __('Event Log'),
+                        'EventlogsIndex',
+                        'eventlogs',
+                        'index',
+                        '',
+                        'fa fa-file-text',
+                        [],
+                        4
+                    ))
             );
 
         $Monitoring = new MenuHeadline(self::MENU_MONITORING, __('Monitoring'), 2);

@@ -33,8 +33,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Lib\PluginManager;
+use App\Model\Entity\Changelog;
 use App\Model\Entity\User;
+use App\Model\Table\ChangelogsTable;
 use App\Model\Table\ContainersTable;
+use App\Model\Table\EventlogsTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
 use App\Model\Table\UsergroupsTable;
@@ -116,6 +119,9 @@ class UsersController extends AppController {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
         $hasValidSslCertificate = false;
         if (isset($_SERVER['SSL_VERIFIED']) && $_SERVER['SSL_VERIFIED'] === 'SUCCESS' && isset($_SERVER['SSL_CERT'])) {
             $hasValidSslCertificate = $this->getUser() !== null;
@@ -150,6 +156,18 @@ class UsersController extends AppController {
             } else {
                 $loginData = $result->getData();
                 $UsersTable->saveLastLoginDate($loginData['email']);
+                $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
+                if (!empty($userFromDb)) {
+
+                    $containerIds = Hash::extract($userFromDb, 'containers.{n}.id');
+
+                    $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles(['User' => $userFromDb]);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+                    $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
+                    $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, $containerIds);
+                }
             }
         }
 
@@ -183,6 +201,18 @@ class UsersController extends AppController {
                 $this->set('success', true);
                 $loginData = $this->request->getData();
                 $UsersTable->saveLastLoginDate($loginData['email']);
+                $userFromDb = $UsersTable->getUserByEmailForLoginLog($loginData['email']);
+                if (!empty($userFromDb)) {
+
+                    $containerIds = Hash::extract($userFromDb, 'containers.{n}.id');
+
+                    $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles(['User' => $userFromDb]);
+                    $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+                    $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
+                    $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
+                    $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, $containerIds);
+                }
                 $this->viewBuilder()->setOption('serialize', ['success']);
                 return;
             }
@@ -340,7 +370,13 @@ class UsersController extends AppController {
                 $UsersTable->getValidator()->remove('confirm_password');
             }
 
-            $UsersTable->save($user);
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->createUser($user, $data, $User->getId());
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
@@ -368,6 +404,7 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForEdit($id);
+        $userForChangelog = $user;
         $containersToCheck = array_unique(
             array_merge(
                 $user['User']['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
@@ -486,6 +523,12 @@ class UsersController extends AppController {
                             'through_ldap' => true // This got assigned automatically via LDAP
                         ]
                     ];
+                    $userForChangelog['User']['usercontainerroles'][$usercontainerroleId] = [
+                        'id'        => $usercontainerroleId,
+                        '_joinData' => [
+                            'through_ldap' => true // This got assigned automatically via LDAP
+                        ]
+                    ];
                 }
 
                 foreach ($usercontainerroles as $usercontainerroleId) {
@@ -511,13 +554,44 @@ class UsersController extends AppController {
                 unset($data['confirm_password']);
             }
 
+            $Hasher = $UsersTable->getDefaultPasswordHasher();
+            $passwordHasChanged = false;
+            if (array_key_exists('password', $data) && !empty($data['password'])) {
+                $passwordHasChanged = $Hasher->check($data['password'], $user->get('password')) !== true;
+            }
+
             $user = $UsersTable->patchEntity($user, $data);
-            $UsersTable->save($user);
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->updateUser(
+                $user,
+                $data,
+                $userForChangelog,
+                $User->getId(),
+                $passwordHasChanged
+            );
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
+            }
+
+            if ($passwordHasChanged) {
+                /** @var EventlogsTable $EventlogsTable */
+                $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
+                $containerIds = Hash::extract($data, 'User.containers.{n}.id');
+
+                $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles($data);
+                $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+                $eventlogData = $EventlogsTable->createDataJsonForUser($user->get('email'));
+                $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
+                $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, $containerIds);
             }
 
             Cache::clear('permissions');
@@ -549,6 +623,7 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->getUserForPermissionCheck($id);
+        $userForLog = $UsersTable->getUserById($id);
         $containersToCheck = array_unique(array_merge(
             $user['usercontainerroles_containerids']['_ids'], //Container Ids through Container Roles
             $user['containers']['_ids']) //Containers defined by the user itself
@@ -559,8 +634,42 @@ class UsersController extends AppController {
             return;
         }
 
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
         $user = $UsersTable->get($id);
+
         if ($UsersTable->delete($user)) {
+
+            $containerIds = Hash::extract($userForLog, 'containers.{n}.id');
+
+            $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles(['User' => $userForLog]);
+            $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+            $eventlogData = $EventlogsTable->createDataJsonForUser($userForLog['email']);
+            $fullName = $userForLog['firstname'] . ' ' . $userForLog['lastname'];
+            $EventlogsTable->saveNewEntity('user_delete', 'User', $userForLog['id'], $fullName, $eventlogData, $containerIds);
+
+            /** @var  ChangelogsTable $ChangelogsTable */
+            $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
+
+            $changelog_data = $ChangelogsTable->parseDataForChangelog(
+                'delete',
+                'users',
+                $id,
+                OBJECT_USER,
+                $containerIds,
+                $User->getId(),
+                $fullName,
+                $userForLog
+            );
+            if ($changelog_data) {
+                /** @var Changelog $changelogEntry */
+                $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
+                $ChangelogsTable->save($changelogEntry);
+
+            }
+
             $this->set('success', true);
             $this->viewBuilder()->setOption('serialize', ['success']);
 
@@ -653,13 +762,20 @@ class UsersController extends AppController {
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
-            $UsersTable->save($user);
+            $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+            $data = [
+                'User' => $data
+            ];
+
+            $user = $UsersTable->createUser($user, $data, $User->getId());
             if ($user->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $user->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
             }
+
 
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
@@ -697,6 +813,9 @@ class UsersController extends AppController {
         }
 
         $user = $UsersTable->get($id);
+        $userForLog = [
+            'User' => $UsersTable->getUserById($id)
+        ];
         $newPassword = $UsersTable->generatePassword();
 
         $user->set('password', $newPassword);
@@ -726,13 +845,38 @@ class UsersController extends AppController {
 
         $user->set('password', $newPassword);
 
-        $UsersTable->save($user);
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+        $data = [
+            'User' => $user->toArray()
+        ];
+
+        $user = $UsersTable->updateUser(
+            $user,
+            $data,
+            $userForLog,
+            $User->getId(),
+            true
+        );
         if ($user->hasErrors()) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $user->getErrors());
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
+
+        /** @var EventlogsTable $EventlogsTable */
+        $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
+
+        $containerIds = Hash::extract($userForLog, 'User.containers.{n}.id');
+
+        $containerRoleContainerIds = $UsersTable->getContainerIdsOfUserContainerRoles($userForLog);
+        $containerIds = array_merge($containerIds, $containerRoleContainerIds);
+
+        $eventlogData = $EventlogsTable->createDataJsonForUser($user->get('email'));
+        $fullName = $user->get('firstname') . ' ' . $user->get('lastname');
+        $EventlogsTable->saveNewEntity('user_password_change', 'User', $user->id, $fullName, $eventlogData, $containerIds);
+
         $Mailer->deliver();
         $this->set('message', __('Password reset successfully. The new password was send to {0}', $user->email));
         $this->viewBuilder()->setOption('serialize', ['message']);
