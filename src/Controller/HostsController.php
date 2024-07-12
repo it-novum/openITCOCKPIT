@@ -1109,7 +1109,7 @@ class HostsController extends AppController {
                     $mergedHost = $HostMergerForView->getDataForView();
 
                     foreach ($editDetailKeysToFields as $editDetailKey => $editDetailField) {
-                        if ($detailsToEdit[$editDetailKey] == 1) {
+                        if ($detailsToEdit[$editDetailKey]) {
                             if (!empty($detailsToEdit['Host'][$editDetailField]) && $detailsToEdit['Host'][$editDetailField] != $mergedHost['Host'][$editDetailField]) {
                                 $hostArray['Host'][$editDetailField] = $detailsToEdit['Host'][$editDetailField];
                                 $hasChanges = true;
@@ -1117,7 +1117,7 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($detailsToEdit['editSatellites'] == 1) {
+                    if ($detailsToEdit['editSatellites']) {
                         if ($hostArray['Host']['host_type'] !== EVK_HOST) {
                             if (is_numeric($detailsToEdit['Host']['satellite_id']) && $detailsToEdit['Host']['satellite_id'] != $hostArray['Host']['satellite_id']) {
                                 $hostArray['Host']['satellite_id'] = $detailsToEdit['Host']['satellite_id'];
@@ -1126,9 +1126,9 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($detailsToEdit['editSharedContainers'] == 1) {
+                    if ($detailsToEdit['editSharedContainers']) {
                         if (!empty($detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'])) {
-                            if ($detailsToEdit['keepSharedContainers'] == 1) {
+                            if ($detailsToEdit['keepSharedContainers']) {
                                 $containerIds = array_merge(
                                     $sharedContainers,
                                     $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
@@ -1148,7 +1148,7 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($detailsToEdit['editContacts'] == 1) {
+                    if ($detailsToEdit['editContacts']) {
                         $newContacts = $detailsToEdit['Host']['contacts']['_ids'];
                         $allContactsAreVisibleForUser = empty($mergedHost['Host']['contacts']) && empty($hosttemplate['Hosttemplate']['contacts']);
                         $contactsFromHost = [];
@@ -1232,7 +1232,7 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($detailsToEdit['editContactgroups'] == 1) {
+                    if ($detailsToEdit['editContactgroups']) {
                         $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
                         $allContactGroupsAreVisibleForUser = empty($mergedHost['Host']['contactgroups']) && empty($hosttemplate['Hosttemplate']['contactgroups']);
                         if (!empty($newContactgroups)) {
