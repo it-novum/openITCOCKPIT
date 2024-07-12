@@ -432,7 +432,9 @@ class Menu {
                     '',
                     ['fas', 'power-off'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/downtimes/service'
                 ))
                 ->addLink(new MenuLink(
                     __('Recurring Host Downtimes'),
