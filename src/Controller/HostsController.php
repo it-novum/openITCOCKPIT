@@ -320,7 +320,8 @@ class HostsController extends AppController {
         }
 
         $this->set('all_hosts', $all_hosts);
-        $this->viewBuilder()->setOption('serialize', ['all_hosts']);
+        $this->set('username', $User->getFullName());
+        $this->viewBuilder()->setOption('serialize', ['all_hosts', 'username']);
     }
 
     public function icon() {

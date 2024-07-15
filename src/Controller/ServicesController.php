@@ -531,7 +531,7 @@ class ServicesController extends AppController {
 
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState();
+        $HoststatusFields->currentState()->isHardstate();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
