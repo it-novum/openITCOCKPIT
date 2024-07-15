@@ -369,7 +369,9 @@ class Menu {
                     '',
                     ['fas', 'server'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/hostgroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Groups'),
