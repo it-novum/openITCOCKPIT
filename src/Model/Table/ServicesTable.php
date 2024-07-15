@@ -4183,15 +4183,16 @@ class ServicesTable extends Table {
             'title' => __('Generic service'),
             'color' => 'text-generic',
             'class' => 'border-generic',
-            'icon'  => 'fa fa-cog'
+            'icon'  => ['fas', 'cog'],
         ];
 
         if (Plugin::isLoaded('EventcorrelationModule')) {
             $types[EVK_SERVICE] = [
-                'title' => __('EVC service'),
-                'color' => 'text-evc',
-                'class' => 'border-evc',
-                'icon'  => 'fa fa-sitemap fa-rotate-90'
+                'title'  => __('EVC service'),
+                'color'  => 'text-evc',
+                'class'  => 'border-evc',
+                'icon'   => ['fas', 'sitemap'],
+                'rotate' => 90
             ];
         }
 
@@ -4200,7 +4201,7 @@ class ServicesTable extends Table {
                 'title' => __('Checkmk service'),
                 'color' => 'text-mk',
                 'class' => 'border-mk',
-                'icon'  => 'fas fa-search-plus'
+                'icon'  => ['fas', 'search-plus'],
             ];
         }
 
@@ -4209,7 +4210,7 @@ class ServicesTable extends Table {
                 'title' => __('Prometheus service'),
                 'color' => 'text-prometheus',
                 'class' => 'border-prometheus',
-                'icon'  => 'fas fa-burn'
+                'icon'  => ['fas', 'burn'],
             ];
         }
 
@@ -4217,7 +4218,7 @@ class ServicesTable extends Table {
             'title' => __('Agent service'),
             'color' => 'text-agent',
             'class' => 'border-agent',
-            'icon'  => 'fa fa-user-secret'
+            'icon'  => ['fas', 'user-secret'],
         ];
 
         if (Plugin::isLoaded('ImportModule')) {
@@ -4225,7 +4226,7 @@ class ServicesTable extends Table {
                 'title' => __('External service'),
                 'color' => 'text-external',
                 'class' => 'border-external',
-                'icon'  => 'fa-solid fa-tower-observation'
+                'icon'  => ['fas', 'tower-observation'],
             ];
         }
 
