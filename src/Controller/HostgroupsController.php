@@ -473,7 +473,8 @@ class HostgroupsController extends AppController {
 
 
         $this->set('hostgroup', $data);
-        $this->viewBuilder()->setOption('serialize', ['hostgroup']);
+        $this->set('username', $User->getFullName());
+        $this->viewBuilder()->setOption('serialize', ['hostgroup', 'username']);
     }
 
 
