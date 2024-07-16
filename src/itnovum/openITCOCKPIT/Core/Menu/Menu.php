@@ -444,9 +444,11 @@ class Menu {
                     'systemdowntimes',
                     'host',
                     '',
-                    ['fas', 'history'], // todo fa-flip-horizontal
+                    ['fas', 'repeat'], // todo fa-flip-horizontal
                     [],
-                    3
+                    3,
+                    true,
+                    '/systemdowntimes/host'
                 ))
                 ->addLink(new MenuLink(
                     __('Recurring Service Downtimes'),
@@ -454,9 +456,11 @@ class Menu {
                     'systemdowntimes',
                     'service',
                     '',
-                    ['fas', 'history'], // todo fa-flip-horizontal
+                    ['fas', 'repeat'], // todo fa-flip-horizontal
                     [],
-                    4
+                    4,
+                    true,
+                    '/systemdowntimes/service'
                 ))
                 ->addLink(new MenuLink(
                     __('System Failures'),
