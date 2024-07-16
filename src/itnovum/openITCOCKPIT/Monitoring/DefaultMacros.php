@@ -32,7 +32,7 @@ class DefaultMacros {
 
     /**
      * This list is NOT copy and paste from
-     * https://www.naemon.org/documentation/usersguide/macrolist.html
+     * https://www.naemon.io/documentation/usersguide/macrolist.html
      * or
      * https://assets.nagios.com/downloads/nagioscore/docs/nagioscore/3/en/macrolist.html
      *

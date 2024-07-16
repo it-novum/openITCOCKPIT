@@ -58,7 +58,9 @@ class Menu implements MenuInterface {
                     'NagiosModule',
                     ['fas', 'code'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/nagios_module/cmd/index'
                 ))
             );
 
