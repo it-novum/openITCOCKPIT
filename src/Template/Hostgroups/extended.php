@@ -181,6 +181,15 @@ use Cake\Core\Plugin;
                                 </div>
                             </div>
                         </div>
+                        <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('hostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
+                            <div class="col-lg-2 text-right" ng-if="hostgroup.hasSLAHosts">
+                                <a class="btn btn-outline-warning btn-sm btn-w-m waves-effect waves-themed"
+                                   ui-sref="SlasHostgroupHostsStatusOverview({id: post.Hostgroup.id})">
+                                    <i class="fa-solid fa-award"></i>
+                                    <?= __('SLA Hosts Status'); ?>
+                                </a>
+                            </div>
+                        <?php endif; ?>
                         <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('dependencyTree', 'ImportedHostgroups', 'ImportModule')): ?>
                             <div class="col-lg-2 text-right" ng-if="AdditionalInformationExists">
                                 <a class="btn btn-outline-primary btn-sm btn-w-m waves-effect waves-themed"

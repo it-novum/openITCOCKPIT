@@ -357,6 +357,7 @@ class HostgroupsController extends AppController {
         }
 
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
+        $hasSLAHosts = $HostgroupsTable->hasSLAHosts($id);
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -467,7 +468,8 @@ class HostgroupsController extends AppController {
         $data = [
             'Hostgroup'     => $hostgroup,
             'Hosts'         => $all_hosts,
-            'StatusSummary' => $hostgroupHoststatusOverview
+            'StatusSummary' => $hostgroupHoststatusOverview,
+            'hasSLAHosts'   => $hasSLAHosts
         ];
 
 

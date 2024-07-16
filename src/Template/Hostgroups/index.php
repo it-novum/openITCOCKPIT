@@ -151,10 +151,10 @@ use Cake\Core\Plugin;
                                     <?php endif; ?>
 
                                     <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('hostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
-                                        <span class="badge border border-danger"
+                                        <span class="badge border border-warning"
                                               ng-show="hostgroup.hasSLAHosts">
                                             <a ui-sref="SlasHostgroupHostsStatusOverview({id: hostgroup.id})"
-                                               class="text-danger">
+                                               class="text-warning">
                                                 <i class="fa-solid fa-award"></i> <?php echo __('SLA'); ?>
                                             </a>
                                         </span>
