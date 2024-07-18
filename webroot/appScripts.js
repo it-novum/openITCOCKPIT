@@ -1,3 +1,28 @@
+/*
+ * Copyright (C) <2015-present>  <it-novum GmbH>
+ *
+ * This file is dual licensed
+ *
+ * 1.
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, version 3 of the License.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * 2.
+ *     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+ *     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+ *     License agreement and license key will be shipped with the order
+ *     confirmation.
+ */
+
 require('./node_modules/jquery/dist/jquery.min.js');
 require('./node_modules/jquery-ui-dist/jquery-ui.min.js');
 require('./node_modules/bootstrap/dist/js/bootstrap.bundle.min.js');
@@ -25,7 +50,6 @@ require('./node_modules/flot/jquery.flot.resize.js');
 require('./node_modules/flot/jquery.flot.threshold.js');
 require('./node_modules/flot/jquery.flot.selection.js');
 
-import moment from 'moment/moment';
 require('./node_modules/vis-data/dist/umd.js');
 require('./node_modules/vis-network/dist/vis-network.js');
 require('./node_modules/vis-timeline/peer/umd/vis-timeline-graph2d.js');
@@ -52,6 +76,7 @@ require('./node_modules/@fullcalendar/list/main.js');
 require('./node_modules/@fullcalendar/bootstrap/main.js');
 require('./node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js');
 require('./node_modules/chart.js/dist/Chart.min.js');
+require('./node_modules/apexcharts/dist/apexcharts.min.js');
 require('./node_modules/jquery-sparkline/jquery.sparkline.min.js');
 require('./js/lib/raphael-charts-cust/raphael.js');
 require('./js/lib/raphael-charts-cust/raphael-charts-0.2.1.js');
