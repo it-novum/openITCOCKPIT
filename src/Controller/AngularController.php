@@ -684,8 +684,15 @@ class AngularController extends AppController {
             'downtimetype_id' => $downtimetypeId
         ];
 
+        $userData = [
+            'id'       => $User->getId(),
+            'fullname' => $User->getFullName()
+
+        ];
+
         $this->set('defaultValues', $defaultValues);
-        $this->viewBuilder()->setOption('serialize', ['defaultValues']);
+        $this->set('author', $userData);
+        $this->viewBuilder()->setOption('serialize', ['defaultValues', 'author']);
     }
 
     public function system_health() {
