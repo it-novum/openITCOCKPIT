@@ -1095,7 +1095,7 @@ class AngularController extends AppController {
         if ($includeHoststatus) {
             //Get meta data and push to front end
             $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()->isFlapping();
+            $HoststatusFields->currentState()->isFlapping()->isHardstate();
             $HosttatusTable = $this->DbBackend->getHoststatusTable();
             $hoststatus = $HosttatusTable->byUuid($host->get('uuid'), $HoststatusFields);
             if (!isset($hoststatus['Hoststatus'])) {
@@ -1132,6 +1132,7 @@ class AngularController extends AppController {
         }
 
         $serviceId = $this->request->getQuery('serviceId');
+        $includeHoststatus = $this->request->getQuery('includeHoststatus') === 'true';
         $includeServicestatus = $this->request->getQuery('includeServicestatus') === 'true';
 
         /** @var $ServicesTable ServicesTable */
@@ -1219,7 +1220,7 @@ class AngularController extends AppController {
         if ($includeServicestatus) {
             //Get meta data and push to front end
             $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()->isFlapping();
+            $ServicestatusFields->currentState()->isFlapping()->isHardstate();
             $ServicestatusTable = $this->DbBackend->getServicestatusTable();
             $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
             if (!isset($servicestatus['Servicestatus'])) {
@@ -1232,8 +1233,25 @@ class AngularController extends AppController {
             ]);
         }
 
+        if ($includeHoststatus) {
+            //Get meta data and push to front end
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()->isFlapping()->isHardstate();
+            $HoststatusTable = $this->DbBackend->getHoststatusTable();
+            $hoststatus = $HoststatusTable->byUuid($service->get('host')->get('uuid'), $HoststatusFields);
+            if (!isset($hoststatus['Hoststatus'])) {
+                $hoststatus['Hoststatus'] = [];
+            }
+            $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+        } else {
+            $Hoststatus = new Hoststatus([
+                'Hoststatus' => []
+            ]);
+        }
+
         $config = [
             'hostId'               => $service->get('host')->get('id'),
+            'serviceId'            => $service->get('id'),
             'serviceUuid'          => $service->get('uuid'),
             'hostName'             => $service->get('host')->get('name'),
             'serviceName'          => $serviceName,
@@ -1242,7 +1260,9 @@ class AngularController extends AppController {
             'serviceUrl'           => $serviceUrl,
             'allowEdit'            => $allowEdit,
             'includeServicestatus' => $includeServicestatus,
-            'Servicestatus'        => $Servicestatus->toArray()
+            'Servicestatus'        => $Servicestatus->toArray(),
+            'includeHoststatus'    => $includeHoststatus,
+            'Hoststatus'           => $Hoststatus->toArray()
         ];
         $this->set('config', $config);
         $this->viewBuilder()->setOption('serialize', ['config']);
