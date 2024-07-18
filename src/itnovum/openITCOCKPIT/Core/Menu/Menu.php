@@ -470,7 +470,9 @@ class Menu {
                     '',
                     ['fas', 'exclamation-circle'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/systemfailures/index'
                 ))
             )
             ->addCategory((new MenuCategory(
