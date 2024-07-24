@@ -150,7 +150,7 @@ use Cake\Core\Plugin;
                                         {{ hostgroup.container.name }}
                                     <?php endif; ?>
 
-                                    <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('hostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
+                                    <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
                                         <span class="badge border border-warning"
                                               ng-show="hostgroup.hasSLAHosts">
                                             <a ui-sref="SlasHostgroupHostsStatusOverview({id: hostgroup.id})"
@@ -204,7 +204,7 @@ use Cake\Core\Plugin;
                                                     <?php echo __('Extended view'); ?>
                                                 </a>
                                             <?php endif; ?>
-                                            <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('hostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
+                                            <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
                                                 <a ui-sref="SlasHostgroupHostsStatusOverview({id: hostgroup.id})"
                                                    class="dropdown-item" ng-show="hostgroup.hasSLAHosts">
                                                     <i class="fa-solid fa-award"></i>
