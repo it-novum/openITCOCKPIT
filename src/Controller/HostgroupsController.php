@@ -43,6 +43,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use ImportModule\Model\Table\ImportedHostgroupsTable;
+use ImportModule\Model\Table\ImportedHostsTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
@@ -94,6 +95,27 @@ class HostgroupsController extends AppController {
                 $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup->get('container')->get('parent_id'));
             }
             $hostgroup['hasSLAHosts'] = $HostgroupsTable->hasSLAHosts($hostgroup->get('id'));
+
+            // code for cmdb label
+            $hostgroupWithHosts = $HostgroupsTable->getHostsByHostgroupId($hostgroup->get('id'));
+            $hosts = $hostgroupWithHosts['hosts'];
+            $additionalInformationExists = false;
+            $existingImportedHostIdsByHostIds = [];
+            if (Plugin::isLoaded('ImportModule') && !empty($hosts)) {
+                /** @var ImportedHostsTable $ImportedHostsTable */
+                $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
+                $existingImportedHostIdsByHostIds = $ImportedHostsTable->existingImportedHostIdsByHostIds(
+                    Hash::extract($hosts, '{n}.id')
+                );
+                $existingImportedHostIdsByHostIds = Hash::combine($existingImportedHostIdsByHostIds, '{n}', '{n}');
+            }
+            foreach ($hosts as $host) {
+                if (!empty($existingImportedHostIdsByHostIds) && $additionalInformationExists === false) {
+                    $additionalInformationExists = isset($existingImportedHostIdsByHostIds[$host['Host']['id']]);
+                }
+            }
+
+            $hostgroup['additionalInformationExists'] = $additionalInformationExists;
             $all_hostgroups[] = $hostgroup;
         }
 

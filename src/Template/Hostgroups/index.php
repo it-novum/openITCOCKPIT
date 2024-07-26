@@ -153,9 +153,18 @@ use Cake\Core\Plugin;
                                     <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
                                         <span class="badge border border-warning"
                                               ng-show="hostgroup.hasSLAHosts">
-                                            <a ui-sref="SlasHostgroupHostsStatusOverview({id: hostgroup.id})"
+                                            <a ui-sref="HostgroupsExtended({id: hostgroup.id, selectedTab: 'tab2'})"
                                                class="text-warning">
                                                 <i class="fa-solid fa-award"></i> <?php echo __('SLA'); ?>
+                                            </a>
+                                        </span>
+                                    <?php endif; ?>
+                                    <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('dependencyTree', 'ImportedHostgroups', 'ImportModule')): ?>
+                                        <span class="badge border border-info"
+                                              ng-show="hostgroup.additionalInformationExists">
+                                            <a ui-sref="ImportedHostgroupsDependencyTree({id: hostgroup.id})"
+                                               class="text-info">
+                                                <i class="fas fa-database"></i> <?php echo __('CMDB'); ?>
                                             </a>
                                         </span>
                                     <?php endif; ?>
@@ -205,10 +214,18 @@ use Cake\Core\Plugin;
                                                 </a>
                                             <?php endif; ?>
                                             <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
-                                                <a ui-sref="SlasHostgroupHostsStatusOverview({id: hostgroup.id})"
+                                                <a ui-sref="HostgroupsExtended({id: hostgroup.id, selectedTab: 'tab2'})"
                                                    class="dropdown-item" ng-show="hostgroup.hasSLAHosts">
                                                     <i class="fa-solid fa-award"></i>
                                                     <?php echo __('SLA Status Overview'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('dependencyTree', 'ImportedHostgroups', 'ImportModule')): ?>
+                                                <a ui-sref="ImportedHostgroupsDependencyTree({id: hostgroup.id})"
+                                                   class="dropdown-item"
+                                                   ng-show="hostgroup.additionalInformationExists">
+                                                    <i class="fas fa-database"></i>
+                                                    <?php echo __('CMDB'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>

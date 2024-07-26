@@ -679,6 +679,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     id: {
                         value: null,
                         squash: true
+                    },
+                    selectedTab: {
+                        value: null,
+                        array: true
                     }
                 },
                 controller: "HostgroupsExtendedController"
