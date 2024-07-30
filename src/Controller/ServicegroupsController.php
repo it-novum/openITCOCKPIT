@@ -1031,7 +1031,8 @@ class ServicegroupsController extends AppController {
         ];
 
         $this->set('servicegroup', $servicegroup);
-        $this->viewBuilder()->setOption('serialize', ['servicegroup']);
+        $this->set('username', $User->getFullName());
+        $this->viewBuilder()->setOption('serialize', ['servicegroup', 'username']);
     }
 
     public function loadServicegroupsByContainerId() {
