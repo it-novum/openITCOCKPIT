@@ -824,7 +824,9 @@ class Menu {
                     '',
                     ['fas', 'heart-pulse'],
                     [],
-                    7
+                    7,
+                    true,
+                    '/metrics/info'
                 ))
             );
 
