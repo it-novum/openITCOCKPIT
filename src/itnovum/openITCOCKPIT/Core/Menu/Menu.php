@@ -631,7 +631,9 @@ class Menu {
                     '',
                     ['fas', 'cloud-arrow-down'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/packetmanager/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Debugging'),
