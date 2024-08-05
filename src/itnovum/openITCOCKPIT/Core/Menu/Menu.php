@@ -381,7 +381,9 @@ class Menu {
                     '',
                     ['fas', 'gears'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/servicegroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Contact Groups'),
