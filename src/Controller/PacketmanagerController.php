@@ -29,7 +29,6 @@ namespace App\Controller;
 
 use App\Model\Table\ProxiesTable;
 use App\Model\Table\RegistersTable;
-use Cake\Core\Configure;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\DnfRepositoryChecker;
 use itnovum\openITCOCKPIT\Core\Http;
@@ -123,10 +122,19 @@ class PacketmanagerController extends AppController {
                 }
             }
 
+            $LsbRelease = new LsbRelease();
+            $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
+            $this->set('systemname', $this->getSystemname());
+            $this->set('RepositoryChecker', new RepositoryChecker());
+            $this->set('DnfRepositoryChecker', new DnfRepositoryChecker());
+            $this->set('LsbRelease', $LsbRelease->getCodename());
+            $this->set('isDebianBased', $LsbRelease->isDebianBased());
+            $this->set('isRhelBased', $LsbRelease->isRhelBased());
+            $this->set('logoUrl', $Logo->getLogoForHtml());
             $this->set('result', $result);
             $this->set('installedModules', $installedModules);
             $this->set('OPENITCOCKPIT_VERSION', OPENITCOCKPIT_VERSION);
-            $this->viewBuilder()->setOption('serialize', ['result', 'installedModules', 'OPENITCOCKPIT_VERSION']);
+            $this->viewBuilder()->setOption('serialize', ['result', 'installedModules', 'OPENITCOCKPIT_VERSION', 'LsbRelease', 'isDebianBased', 'isRhelBased', 'systemname', 'logoUrl']);
         }
     }
 
