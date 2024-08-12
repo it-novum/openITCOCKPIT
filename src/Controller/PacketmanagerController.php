@@ -124,13 +124,13 @@ class PacketmanagerController extends AppController {
 
             $LsbRelease = new LsbRelease();
             $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
-            $this->set('systemname', $this->getSystemname());
-            $this->set('RepositoryChecker', new RepositoryChecker());
-            $this->set('DnfRepositoryChecker', new DnfRepositoryChecker());
-            $this->set('LsbRelease', $LsbRelease->getCodename());
-            $this->set('isDebianBased', $LsbRelease->isDebianBased());
-            $this->set('isRhelBased', $LsbRelease->isRhelBased());
-            $this->set('logoUrl', $Logo->getLogoForHtml());
+            $result['data']['systemname'] = $this->getSystemname();
+            $result['data']['RepositoryChecker'] = new RepositoryChecker();
+            $result['data']['DnfRepositoryChecker'] = new DnfRepositoryChecker();
+            $result['data']['LsbRelease'] = $LsbRelease->getCodename();
+            $result['data']['isDebianBased'] = $LsbRelease->isDebianBased();
+            $result['data']['isRhelBased'] = $LsbRelease->isRhelBased();
+            $result['data']['logoUrl'] = $Logo->getLogoForHtml();
             $this->set('result', $result);
             $this->set('installedModules', $installedModules);
             $this->set('OPENITCOCKPIT_VERSION', OPENITCOCKPIT_VERSION);
