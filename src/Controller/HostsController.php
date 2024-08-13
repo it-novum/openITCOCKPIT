@@ -2381,6 +2381,7 @@ class HostsController extends AppController {
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('objects', $objects);
         $this->set('satelliteId', $hostObj->getSatelliteId());
+        $this->set('username', $User->getFullName());
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
@@ -2400,7 +2401,8 @@ class HostsController extends AppController {
             'canSubmitExternalCommands',
             'objects',
             'satelliteId',
-            'mapModule'
+            'mapModule',
+            'username'
         ]);
     }
 
