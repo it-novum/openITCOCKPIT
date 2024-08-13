@@ -43,7 +43,6 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use ImportModule\Model\Table\ImportedHostgroupsTable;
-use ImportModule\Model\Table\ImportedHostsTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
@@ -97,22 +96,12 @@ class HostgroupsController extends AppController {
             $hostgroup['hasSLAHosts'] = $HostgroupsTable->hasSLAHosts($hostgroup->get('id'));
 
             // code for cmdb label
-            $hostgroupWithHosts = $HostgroupsTable->getHostsByHostgroupId($hostgroup->get('id'));
-            $hosts = $hostgroupWithHosts['hosts'];
             $additionalInformationExists = false;
-            $existingImportedHostIdsByHostIds = [];
-            if (Plugin::isLoaded('ImportModule') && !empty($hosts)) {
-                /** @var ImportedHostsTable $ImportedHostsTable */
-                $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
-                $existingImportedHostIdsByHostIds = $ImportedHostsTable->existingImportedHostIdsByHostIds(
-                    Hash::extract($hosts, '{n}.id')
-                );
-                $existingImportedHostIdsByHostIds = Hash::combine($existingImportedHostIdsByHostIds, '{n}', '{n}');
-            }
-            foreach ($hosts as $host) {
-                if (!empty($existingImportedHostIdsByHostIds) && $additionalInformationExists === false) {
-                    $additionalInformationExists = isset($existingImportedHostIdsByHostIds[$host['Host']['id']]);
-                }
+
+            if (Plugin::isLoaded('ImportModule')) {
+                /** @var ImportedHostgroupsTable $ImportedHostgroupsTable */
+                $ImportedHostgroupsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHostgroups');
+                $additionalInformationExists = $ImportedHostgroupsTable->existsImportedHostgroupByHostgroupId($hostgroup->get('id'));
             }
 
             $hostgroup['additionalInformationExists'] = $additionalInformationExists;
