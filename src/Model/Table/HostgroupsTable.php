@@ -1,4 +1,26 @@
 <?php
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\Model\Table;
 
@@ -409,6 +431,50 @@ class HostgroupsTable extends Table {
                 'Containers'
             ]
         ]);
+    }
+
+    /**
+     * @param int $id
+     * @return bool
+     */
+    public function hasSLAHosts($id): bool {
+
+        $count = 0;
+
+        $query = $this->find()
+            ->disableHydration()
+            ->where([
+                'Hostgroups.id' => $id
+            ])
+            ->contain([
+                'Hosts' => function (Query $q) {
+                    return $q->where([
+                        'Hosts.sla_id IS NOT NULL'
+                    ]);
+                }
+            ])->all();
+
+        $count = count($this->emptyArrayIfNull($query->toArray()));
+
+        if ($count === 0) {
+            $query = $this->find()
+                ->disableHydration()
+                ->where([
+                    'Hostgroups.id' => $id
+                ])
+                ->contain([
+                    'Hosttemplates' => function (Query $q) {
+                        return $q->where([
+                            'Hosttemplates.sla_id IS NOT NULL'
+                        ]);
+                    }
+                ])->all();
+
+            $count = count($this->emptyArrayIfNull($query->toArray()));
+        }
+
+        return $count > 0;
+
     }
 
     /**
@@ -1730,6 +1796,23 @@ class HostgroupsTable extends Table {
         }
 
         return $hostAndServiceUuids;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getHostsByHostgroupId($id) {
+
+        $query = $this->find()
+            ->disableHydration()
+            ->where(['Hostgroups.id' => $id])
+            ->contain([
+                'Hosts',
+                'Containers'
+            ])->first();
+
+        return $this->emptyArrayIfNull($query);
     }
 
     /**

@@ -61,7 +61,8 @@
         "vis-data": "^7.1.2",
         "vis-network": "^9.0.4",
         "vis-timeline": "^7.4.7",
-        "vis-util": "^5.0.2"
+        "vis-util": "^5.0.2",
+        "apexcharts": "^3.50.0"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
