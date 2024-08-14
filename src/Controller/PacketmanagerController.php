@@ -185,7 +185,7 @@ class PacketmanagerController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
-    private function checkDebianRepository($RepositoryChecker, &$result) {
+    private function checkDebianRepository($RepositoryChecker, &$result): void {
         try {
             $result['data']['repositoryCheckerExists'] = $RepositoryChecker->exists();
         } catch (\Exception $e) {
@@ -209,7 +209,7 @@ class PacketmanagerController extends AppController {
         }
     }
 
-    private function checkRhelRepository($DnfRepositoryChecker, &$result) {
+    private function checkRhelRepository($DnfRepositoryChecker, &$result): void {
         try {
             $result['data']['dnfRepositoryCheckerExists'] = $DnfRepositoryChecker->exists();
         } catch (\Exception $e) {
