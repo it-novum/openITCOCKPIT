@@ -36,6 +36,7 @@ use itnovum\openITCOCKPIT\Core\PackagemanagerRequestBuilder;
 use itnovum\openITCOCKPIT\Core\RepositoryChecker;
 use itnovum\openITCOCKPIT\Core\System\Health\LsbRelease;
 use itnovum\openITCOCKPIT\Core\ValueObjects\License;
+use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 class PacketmanagerController extends AppController {
 
@@ -123,7 +124,7 @@ class PacketmanagerController extends AppController {
             }
 
             $LsbRelease = new LsbRelease();
-            $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
+            $Logo = new Logo();
             $result['data']['systemname'] = $this->getSystemname();
             $result['data']['RepositoryChecker'] = new RepositoryChecker();
             $result['data']['DnfRepositoryChecker'] = new DnfRepositoryChecker();
@@ -142,22 +143,54 @@ class PacketmanagerController extends AppController {
         if (!$this->isApiRequest()) {
             return;
         }
-        $LsbRelease = new LsbRelease();
         $RepositoryChecker = new RepositoryChecker();
         $DnfRepositoryChecker = new DnfRepositoryChecker();
         $LsbRelease = new LsbRelease();
 
-        $result['data']['hasError'] = false;
+        $result = [
+            'data' => [
+                // MAIN
+                'hasError'                               => false,
 
-        // Debian
-        $result['data']['isDebianBased'] = $LsbRelease->isDebianBased();;
+                // DEBIAN
+                'isDebianBased'                          => $LsbRelease->isDebianBased(),
+                'repositoryCheckerExists'                => false,
+                'RepositoryCheckerExistsError'           => '',
+                'repositoryCheckerIsReadable'            => false,
+                'repositoryCheckerIsReadableError'       => '',
+                'RepositoryCheckerIsReadableSourcesList' => '',
+                'isOldRepositoryInUse'                   => false,
+                'isOldRepositoryInUseError'              => '',
 
+                // RHEL
+                'isRhelBased'                            => $LsbRelease->isRhelBased(),
+                'dnfRepositoryCheckerExists'             => false,
+                'dnfRepositoryCheckerExistsError'        => '',
+                'dnfRepositoryIsReadable'                => false,
+                'dnfRepositoryIsReadableError'           => '',
+                'dnfRepositoryRepoConfig'                => ''
+            ]
+        ];
+
+
+        if ($result['data']['isDebianBased']) {
+            $this->checkDebianRepository($RepositoryChecker, $result);
+        }
+
+        if ($result['data']['isRhelBased']) {
+            $this->checkRhelRepository($DnfRepositoryChecker, $result);
+        }
+
+        $this->set('result', $result);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
+
+    private function checkDebianRepository($RepositoryChecker, &$result) {
         try {
             $result['data']['repositoryCheckerExists'] = $RepositoryChecker->exists();
         } catch (\Exception $e) {
             $result['data']['hasError'] = true;
             $result['data']['RepositoryCheckerExistsError'] = $e->getMessage();
-            $result['data']['repositoryCheckerExists'] = false;
         }
 
         try {
@@ -165,7 +198,6 @@ class PacketmanagerController extends AppController {
         } catch (\Exception $e) {
             $result['data']['hasError'] = true;
             $result['data']['repositoryCheckerIsReadableError'] = $e->getMessage();
-            $result['data']['repositoryCheckerIsReadable'] = false;
             $result['data']['RepositoryCheckerIsReadableSourcesList'] = $RepositoryChecker->getSourcesList();
         }
 
@@ -173,19 +205,16 @@ class PacketmanagerController extends AppController {
             $result['data']['isOldRepositoryInUse'] = $RepositoryChecker->isOldRepositoryInUse();
         } catch (\Exception $e) {
             $result['data']['hasError'] = true;
-            $result['data']['isOldRepositoryInUseErrorMessage'] = $e->getMessage();
-            $result['data']['isOldRepositoryInUse'] = false;
+            $result['data']['isOldRepositoryInUseError'] = $e->getMessage();
         }
+    }
 
-        // RHEL
-        $result['data']['isRhelBased'] = $LsbRelease->isRhelBased();
-
+    private function checkRhelRepository($DnfRepositoryChecker, &$result) {
         try {
             $result['data']['dnfRepositoryCheckerExists'] = $DnfRepositoryChecker->exists();
         } catch (\Exception $e) {
             $result['data']['hasError'] = true;
             $result['data']['dnfRepositoryCheckerExistsError'] = $e->getMessage();
-            $result['data']['dnfRepositoryCheckerExists'] = false;
         }
 
         try {
@@ -193,12 +222,8 @@ class PacketmanagerController extends AppController {
         } catch (\Exception $e) {
             $result['data']['hasError'] = true;
             $result['data']['dnfRepositoryIsReadableError'] = $e->getMessage();
-            $result['data']['dnfRepositoryIsReadable'] = false;
             $result['data']['dnfRepositoryRepoConfig'] = $DnfRepositoryChecker->getRepoConfig();
         }
-
-        $this->set('result', $result);
-        $this->viewBuilder()->setOption('serialize', ['result']);
     }
 
     /**
