@@ -138,6 +138,69 @@ class PacketmanagerController extends AppController {
         }
     }
 
+    public function repositoryChecker(): void {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+        $LsbRelease = new LsbRelease();
+        $RepositoryChecker = new RepositoryChecker();
+        $DnfRepositoryChecker = new DnfRepositoryChecker();
+        $LsbRelease = new LsbRelease();
+
+        $result['data']['hasError'] = false;
+
+        // Debian
+        $result['data']['isDebianBased'] = $LsbRelease->isDebianBased();;
+
+        try {
+            $result['data']['repositoryCheckerExists'] = $RepositoryChecker->exists();
+        } catch (\Exception $e) {
+            $result['data']['hasError'] = true;
+            $result['data']['RepositoryCheckerExistsError'] = $e->getMessage();
+            $result['data']['repositoryCheckerExists'] = false;
+        }
+
+        try {
+            $result['data']['repositoryCheckerIsReadable'] = $RepositoryChecker->isReadable();
+        } catch (\Exception $e) {
+            $result['data']['hasError'] = true;
+            $result['data']['repositoryCheckerIsReadableError'] = $e->getMessage();
+            $result['data']['repositoryCheckerIsReadable'] = false;
+            $result['data']['RepositoryCheckerIsReadableSourcesList'] = $RepositoryChecker->getSourcesList();
+        }
+
+        try {
+            $result['data']['isOldRepositoryInUse'] = $RepositoryChecker->isOldRepositoryInUse();
+        } catch (\Exception $e) {
+            $result['data']['hasError'] = true;
+            $result['data']['isOldRepositoryInUseErrorMessage'] = $e->getMessage();
+            $result['data']['isOldRepositoryInUse'] = false;
+        }
+
+        // RHEL
+        $result['data']['isRhelBased'] = $LsbRelease->isRhelBased();
+
+        try {
+            $result['data']['dnfRepositoryCheckerExists'] = $DnfRepositoryChecker->exists();
+        } catch (\Exception $e) {
+            $result['data']['hasError'] = true;
+            $result['data']['dnfRepositoryCheckerExistsError'] = $e->getMessage();
+            $result['data']['dnfRepositoryCheckerExists'] = false;
+        }
+
+        try {
+            $result['data']['dnfRepositoryIsReadable'] = $DnfRepositoryChecker->isReadable();
+        } catch (\Exception $e) {
+            $result['data']['hasError'] = true;
+            $result['data']['dnfRepositoryIsReadableError'] = $e->getMessage();
+            $result['data']['dnfRepositoryIsReadable'] = false;
+            $result['data']['dnfRepositoryRepoConfig'] = $DnfRepositoryChecker->getRepoConfig();
+        }
+
+        $this->set('result', $result);
+        $this->viewBuilder()->setOption('serialize', ['result']);
+    }
+
     /**
      * @return array
      */
