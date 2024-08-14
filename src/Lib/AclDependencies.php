@@ -174,7 +174,8 @@ class AclDependencies {
             ->allow('Downtimes', 'icon');
 
         $this
-            ->allow('Packetmanager', 'getPackets');
+            ->allow('Packetmanager', 'getPackets')
+            ->allow('Packetmanager', 'repositoryChecker');
 
         $this
             ->allow('Profile', 'edit')
