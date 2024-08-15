@@ -497,8 +497,8 @@ use Cake\Core\Plugin;
                     <div ng-show="selectedTab == 'tab2'" class="tab-pane">
                         <div class="frame-wrap">
                             <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
-                                <sla-hostgroup-hosts-status-overview
-                                    hostgroup-id="{{post.Hostgroup.id}}"></sla-hostgroup-hosts-status-overview>
+                                <sla-hostgroup-hosts-status-overview ng-if="selectedTab == 'tab2'"
+                                                                     hostgroup-id="{{post.Hostgroup.id}}"></sla-hostgroup-hosts-status-overview>
                             <?php else: ?>
                                 <label class="text-danger">
                                     <?php echo __('No permissions'); ?>
