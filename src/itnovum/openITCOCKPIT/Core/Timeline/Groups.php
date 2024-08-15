@@ -1,26 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\Core\Timeline;
 
@@ -33,29 +33,29 @@ class Groups {
 
         //group->id gets rendered as order to the frontend
         $this->groups = [
-            'acknowledgements'     => [
+            'acknowledgements'    => [
                 'id'   => 2,
-                'icon' => '<i class=\'fa fa-commenting\'></i>',
+                'icon' => ' 💬',
                 'text' => __('Acknowledgements')
             ],
             'downtimes'           => [
                 'id'   => 3,
-                'icon' => '<i class=\'fa fa-power-off\'></i>',
+                'icon' => '🕒',
                 'text' => __('Downtimes')
             ],
             'notifications'       => [
                 'id'   => 1,
-                'icon' => '<i class=\'fa fa-envelope\'></i>',
+                'icon' => '✉️',
                 'text' => __('Notifications')
             ],
             'servicestatehistory' => [
                 'id'   => 4,
-                'icon' => '<i class=\'fa fa-cog\'></i>',
+                'icon' => '⚙️',
                 'text' => __('State history service')
             ],
             'hoststatehistory'    => [
                 'id'   => 5,
-                'icon' => '<i class=\'fa fa-desktop\'></i>',
+                'icon' => '🖥️',
                 'text' => __('State history host')
             ]
         ];
