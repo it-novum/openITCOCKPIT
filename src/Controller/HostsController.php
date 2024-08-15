@@ -2042,11 +2042,11 @@ class HostsController extends AppController {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
         $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
 
         if ($this->isHtmlRequest()) {
             //Only ship template
 
-            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
             $this->set('masterInstanceName', $masterInstanceName);
             $this->set('blurryCommandLine', $blurryCommandLine);
             $this->set('username', $User->getFullName());
@@ -2384,6 +2384,7 @@ class HostsController extends AppController {
         $this->set('satelliteId', $hostObj->getSatelliteId());
         $this->set('username', $User->getFullName());
         $this->set('blurryCommandLine', $blurryCommandLine);
+        $this->set('masterInstanceName', $masterInstanceName);
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
@@ -2405,7 +2406,8 @@ class HostsController extends AppController {
             'satelliteId',
             'mapModule',
             'username',
-            'blurryCommandLine'
+            'blurryCommandLine',
+            'masterInstanceName'
         ]);
     }
 
