@@ -2041,11 +2041,12 @@ class HostsController extends AppController {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
+        $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
+
         if ($this->isHtmlRequest()) {
             //Only ship template
 
             $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
-            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
             $this->set('masterInstanceName', $masterInstanceName);
             $this->set('blurryCommandLine', $blurryCommandLine);
             $this->set('username', $User->getFullName());
@@ -2301,7 +2302,7 @@ class HostsController extends AppController {
         //Load parent hosts and parent host status
         $parenthosts = $host['parenthosts'];
         $ParentHoststatusFields = new HoststatusFields($this->DbBackend);
-        $ParentHoststatusFields->currentState()->lastStateChange();
+        $ParentHoststatusFields->currentState()->lastStateChange()->isHardstate();
         $parentHostStatusRaw = $HoststatusTable->byUuid(
             Hash::extract($host['parenthosts'], '{n}.uuid'),
             $ParentHoststatusFields
@@ -2382,6 +2383,7 @@ class HostsController extends AppController {
         $this->set('objects', $objects);
         $this->set('satelliteId', $hostObj->getSatelliteId());
         $this->set('username', $User->getFullName());
+        $this->set('blurryCommandLine', $blurryCommandLine);
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
@@ -2402,7 +2404,8 @@ class HostsController extends AppController {
             'objects',
             'satelliteId',
             'mapModule',
-            'username'
+            'username',
+            'blurryCommandLine'
         ]);
     }
 
