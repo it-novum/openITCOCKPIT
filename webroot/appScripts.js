@@ -76,7 +76,6 @@ require('./node_modules/@fullcalendar/list/main.js');
 require('./node_modules/@fullcalendar/bootstrap/main.js');
 require('./node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js');
 require('./node_modules/chart.js/dist/Chart.min.js');
-require('./node_modules/apexcharts/dist/apexcharts.min.js');
 require('./node_modules/jquery-sparkline/jquery.sparkline.min.js');
 require('./js/lib/raphael-charts-cust/raphael.js');
 require('./js/lib/raphael-charts-cust/raphael-charts-0.2.1.js');
