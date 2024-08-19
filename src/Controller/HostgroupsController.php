@@ -93,7 +93,11 @@ class HostgroupsController extends AppController {
             if ($this->hasRootPrivileges === false && $hostgroup['allowEdit'] === true) {
                 $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup->get('container')->get('parent_id'));
             }
-            $hostgroup['hasSLAHosts'] = $HostgroupsTable->hasSLAHosts($hostgroup->get('id'));
+
+            $hostgroup['hasSLAHosts'] = false;
+            if (Plugin::isLoaded('SLAModule')) {
+                $hostgroup['hasSLAHosts'] = $HostgroupsTable->hasSLAHosts($hostgroup->get('id'));
+            }
 
             // code for cmdb label
             $additionalInformationExists = false;
@@ -368,7 +372,10 @@ class HostgroupsController extends AppController {
         }
 
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
-        $hasSLAHosts = $HostgroupsTable->hasSLAHosts($id);
+        $hasSLAHosts = false;
+        if (Plugin::isLoaded('SLAModule')) {
+            $hasSLAHosts = $HostgroupsTable->hasSLAHosts($id);
+        }
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
