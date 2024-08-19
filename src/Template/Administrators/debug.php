@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -94,6 +99,20 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
         </div>
     <?php endif; ?>
 
+    <?php if ($LsbRelease->getCodename() === 'focal'): ?>
+        <div class="alert alert-danger alert-block">
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-warning"></i>
+                <?php echo __('Ubuntu Focal 20.04 is end of life soon!'); ?>
+            </h4>
+            <?php echo __('Official end of life of Ubuntu Focal scheduled for April 2025.'); ?>
+            <?php echo __('Therefore openITCOCKPIT 4.8.x will be one of the last releases for Ubuntu Focal. Please update to Ubuntu Jammy to receive further updates.'); ?>
+            <br/>
+            <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="https://openitcockpit.io/contact/">https://openitcockpit.io/contact/</a>'); ?>
+        </div>
+    <?php endif; ?>
+
     <?php if ($LsbRelease->getCodename() === 'buster'): ?>
         <div class="alert alert-danger alert-block">
             <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
@@ -105,6 +124,20 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
             <?php echo __('Therefore openITCOCKPIT 4.5.5 will be one of the last releases for Debian Buster. Please update to Debian Bullseye to receive further updates.'); ?>
             <br/>
             <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="mailto:support@itsm.it-novum.com">support@itsm.it-novum.com</a>'); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($LsbRelease->getCodename() === 'bullseye'): ?>
+        <div class="alert alert-danger alert-block">
+            <a class="close" data-dismiss="alert" href="javascript:void(0);">×</a>
+            <h4 class="alert-heading">
+                <i class="fa fa-warning"></i>
+                <?php echo __('Debian Bullseye 11 end of life!'); ?>
+            </h4>
+            <?php echo __('Debian Bullseye is not supported by the Debian security team anymore!'); ?>
+            <?php echo __('Therefore openITCOCKPIT 4.8.x will be one of the last releases for Debian Bullseye. Please update to Debian Bookworm to receive further updates.'); ?>
+            <br/>
+            <?php echo __('Need help updating your system? Please don\'t hesitate to contact our enterprise support {0}.', '<a class="txt-color-darken" href="https://openitcockpit.io/contact/">https://openitcockpit.io/contact/</a>'); ?>
         </div>
     <?php endif; ?>
 <?php endif; ?>
@@ -212,8 +245,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     <tr>
                                         <td><?= __('Monitoring engine'); ?></td>
                                         <td>
-                                                <span class="badge border border-success text-success"
-                                                      ng-show="processInformation.backgroundProcesses.isNagiosRunning">
+                                            <span class="badge border border-success text-success"
+                                                  ng-show="processInformation.backgroundProcesses.isNagiosRunning">
                                                 <?= __('Running') ?>
                                             </span>
                                             <span class="badge border border-danger text-danger"
@@ -233,8 +266,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                     <tr>
                                         <td><?= __('Database connector'); ?></td>
                                         <td>
-                                                <span class="badge border border-success text-success"
-                                                      ng-show="processInformation.backgroundProcesses.isStatusengineRunning">
+                                            <span class="badge border border-success text-success"
+                                                  ng-show="processInformation.backgroundProcesses.isStatusengineRunning">
                                                 <?= __('Running') ?>
                                             </span>
                                             <span class="badge border border-danger text-danger"
@@ -606,8 +639,8 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
                                 <?php echo __('Total:'); ?> {{memory.swap.total}}
 
                                 <span class="txt-color-red"><?php echo __('Used:'); ?>
-                                {{memory.swap.used}}MB
-                            </span>
+                                    {{memory.swap.used}}MB
+                                </span>
 
 
                                 <div class="progress progress-lg" style="margin-bottom: 0px;">

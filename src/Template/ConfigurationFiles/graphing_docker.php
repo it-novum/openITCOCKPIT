@@ -1,26 +1,26 @@
 <?php
-// Copyright (C) <2018>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 use itnovum\openITCOCKPIT\ConfigGenerator\GraphingDocker;
 
@@ -68,14 +68,33 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
         </div>
     </div>
 
+    <div class="form-group required" ng-class="{'has-error': errors.Configfile.default_average_x_files_factor}">
+        <label class="control-label">
+            <?php echo __('Default average xFilesFactor'); ?>
+        </label>
+        <input
+            class="form-control"
+            type="number"
+            min="0"
+            max="1"
+            step="any"
+            ng-model="post.float.default_average_x_files_factor">
+        <div ng-repeat="error in errors.Configfile.default_average_x_files_factor">
+            <div class="help-block text-danger">{{ error }}</div>
+        </div>
+        <div class="help-block">
+            <?php echo h($GraphingDocker->getHelpText('default_average_x_files_factor')); ?>
+        </div>
+    </div>
+
     <div class="form-group required" ng-class="{'has-error': errors.Configfile.victoria_metrics_storage_path}">
         <label class="control-label">
             <?php echo __('VictoriaMetrics storage path'); ?>
         </label>
         <input
-                class="form-control"
-                type="text"
-                ng-model="post.string.victoria_metrics_storage_path">
+            class="form-control"
+            type="text"
+            ng-model="post.string.victoria_metrics_storage_path">
         <div ng-repeat="error in errors.Configfile.victoria_metrics_storage_path">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
@@ -139,11 +158,11 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             <?php echo __('VictoriaMetrics retention period'); ?>
         </label>
         <input
-                class="form-control"
-                type="number"
-                min="1"
-                max="120"
-                ng-model="post.int.victoria_metrics_retention_period">
+            class="form-control"
+            type="number"
+            min="1"
+            max="120"
+            ng-model="post.int.victoria_metrics_retention_period">
         <div ng-repeat="error in errors.Configfile.victoria_metrics_retention_period">
             <div class="help-block text-danger">{{ error }}</div>
         </div>
@@ -227,10 +246,10 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             <?php echo __('VictoriaMetrics retention period'); ?>
         </label>
         <input
-                class="form-control"
-                type="number"
-                min="1"
-                ng-model="post.int.local_victoria_metrics_http_port">
+            class="form-control"
+            type="number"
+            min="1"
+            ng-model="post.int.local_victoria_metrics_http_port">
         <div ng-repeat="error in errors.Configfile.local_victoria_metrics_http_port">
             <div class="help-block text-danger">{{ error }}</div>
         </div>

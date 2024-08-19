@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -3569,7 +3569,7 @@ class HostsController extends AppController {
                 }
             }
 
-            if ($currentlyAvailabilityHost) {
+            if ($currentlyAvailabilityHost !== null) {
                 $slaOverview = [
                     'evaluation_end'                  => $hostSlaStatusData['evaluation_end'],
                     'determined_availability_percent' => $currentlyAvailabilityHost,
