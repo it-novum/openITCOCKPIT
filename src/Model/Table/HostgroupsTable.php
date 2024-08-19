@@ -435,50 +435,6 @@ class HostgroupsTable extends Table {
 
     /**
      * @param int $id
-     * @return bool
-     */
-    public function hasSLAHosts($id): bool {
-
-        $count = 0;
-
-        $query = $this->find()
-            ->disableHydration()
-            ->where([
-                'Hostgroups.id' => $id
-            ])
-            ->contain([
-                'Hosts' => function (Query $q) {
-                    return $q->where([
-                        'Hosts.sla_id IS NOT NULL'
-                    ]);
-                }
-            ])->all();
-
-        $count = count($this->emptyArrayIfNull($query->toArray()));
-
-        if ($count === 0) {
-            $query = $this->find()
-                ->disableHydration()
-                ->where([
-                    'Hostgroups.id' => $id
-                ])
-                ->contain([
-                    'Hosttemplates' => function (Query $q) {
-                        return $q->where([
-                            'Hosttemplates.sla_id IS NOT NULL'
-                        ]);
-                    }
-                ])->all();
-
-            $count = count($this->emptyArrayIfNull($query->toArray()));
-        }
-
-        return $count > 0;
-
-    }
-
-    /**
-     * @param int $id
      * @param array $MY_RIGHTS
      * @return array
      */
@@ -1798,22 +1754,6 @@ class HostgroupsTable extends Table {
         return $hostAndServiceUuids;
     }
 
-    /**
-     * @param int $id
-     * @return array
-     */
-    public function getHostsByHostgroupId($id) {
-
-        $query = $this->find()
-            ->disableHydration()
-            ->where(['Hostgroups.id' => $id])
-            ->contain([
-                'Hosts',
-                'Containers'
-            ])->first();
-
-        return $this->emptyArrayIfNull($query);
-    }
 
     /**
      * @param $regEx

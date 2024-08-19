@@ -78,6 +78,10 @@ class HostgroupsController extends AppController {
 
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         $HostgroupFilter = new HostgroupFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostgroupFilter->getPage());
 
@@ -96,7 +100,10 @@ class HostgroupsController extends AppController {
 
             $hostgroup['hasSLAHosts'] = false;
             if (Plugin::isLoaded('SLAModule')) {
-                $hostgroup['hasSLAHosts'] = $HostgroupsTable->hasSLAHosts($hostgroup->get('id'));
+                $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'), $MY_RIGHTS);
+                if (!empty($hostIds)) {
+                    $hostgroup['hasSLAHosts'] = $HostsTable->hasSLAHosts($hostIds) > 0;
+                }
             }
 
             // code for cmdb label
@@ -111,7 +118,6 @@ class HostgroupsController extends AppController {
             $hostgroup['additionalInformationExists'] = $additionalInformationExists;
             $all_hostgroups[] = $hostgroup;
         }
-
         $this->set('all_hostgroups', $all_hostgroups);
         $this->viewBuilder()->setOption('serialize', ['all_hostgroups']);
     }
@@ -374,7 +380,9 @@ class HostgroupsController extends AppController {
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
         $hasSLAHosts = false;
         if (Plugin::isLoaded('SLAModule')) {
-            $hasSLAHosts = $HostgroupsTable->hasSLAHosts($id);
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            $hasSLAHosts = $HostsTable->hasSLAHosts($id);
         }
 
         $User = new User($this->getUser());
