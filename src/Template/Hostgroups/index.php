@@ -1,27 +1,29 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 // 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
+
+use Cake\Core\Plugin;
+
 ?>
 <ol class="breadcrumb page-breadcrumb">
     <li class="breadcrumb-item">
@@ -147,6 +149,26 @@
                                     <?php else: ?>
                                         {{ hostgroup.container.name }}
                                     <?php endif; ?>
+
+                                    <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
+                                        <span class="badge border border-warning"
+                                              ng-show="hostgroup.hasSLAHosts">
+                                            <a ui-sref="HostgroupsExtended({id: hostgroup.id, selectedTab: 'tab2'})"
+                                               class="text-warning">
+                                                <i class="fa-solid fa-award"></i> <?php echo __('SLA'); ?>
+                                            </a>
+                                        </span>
+                                    <?php endif; ?>
+                                    <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('dependencyTree', 'ImportedHostgroups', 'ImportModule')): ?>
+                                        <span class="badge border border-info"
+                                              ng-show="hostgroup.additionalInformationExists">
+                                            <a ui-sref="ImportedHostgroupsDependencyTree({id: hostgroup.id})"
+                                               class="text-info">
+                                                <i class="fas fa-database"></i> <?php echo __('CMDB'); ?>
+                                            </a>
+                                        </span>
+                                    <?php endif; ?>
+
                                 </td>
                                 <td>
                                     {{ hostgroup.description }}
@@ -189,6 +211,21 @@
                                                    class="dropdown-item">
                                                     <i class="fa fa-plus-square"></i>
                                                     <?php echo __('Extended view'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostgroupHostsStatusOverview', 'Slas', 'SLAModule')): ?>
+                                                <a ui-sref="HostgroupsExtended({id: hostgroup.id, selectedTab: 'tab2'})"
+                                                   class="dropdown-item" ng-show="hostgroup.hasSLAHosts">
+                                                    <i class="fa-solid fa-award"></i>
+                                                    <?php echo __('SLA Status Overview'); ?>
+                                                </a>
+                                            <?php endif; ?>
+                                            <?php if (Plugin::isLoaded('ImportModule') && $this->Acl->hasPermission('dependencyTree', 'ImportedHostgroups', 'ImportModule')): ?>
+                                                <a ui-sref="ImportedHostgroupsDependencyTree({id: hostgroup.id})"
+                                                   class="dropdown-item"
+                                                   ng-show="hostgroup.additionalInformationExists">
+                                                    <i class="fas fa-database"></i>
+                                                    <?php echo __('CMDB'); ?>
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('index', 'changelogs')): ?>
