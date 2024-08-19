@@ -77,6 +77,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
             type="number"
             min="0"
             max="1"
+            step="any"
             ng-model="post.float.default_average_x_files_factor">
         <div ng-repeat="error in errors.Configfile.default_average_x_files_factor">
             <div class="help-block text-danger">{{ error }}</div>
