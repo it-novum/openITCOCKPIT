@@ -687,7 +687,9 @@ class Menu {
                     '',
                     ['fas', 'user'],
                     [],
-                    8
+                    8,
+                    true,
+                    '/systemHealthUsers/index'
                 ))
             )
             ->addCategory((new MenuCategory(
