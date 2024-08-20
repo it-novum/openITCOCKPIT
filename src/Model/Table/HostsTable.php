@@ -5367,4 +5367,21 @@ class HostsTable extends Table {
         $result = $query->first();
         return isset($result['is_sla_host']) && $result['is_sla_host'];
     }
+
+    /**
+     * @param array $hostIds
+     */
+    public function hasSLAHosts($hostIds) {
+        if (!is_array($hostIds)) {
+            $hostIds = [$hostIds];
+        }
+        $query = $this->find();
+
+        return $query->select(['Hosts.id'])
+            ->contain(['Hosttemplates'])
+            ->where([
+                'Hosts.id IN' => $hostIds,
+                'IF(Hosts.sla_id IS NULL, Hosttemplates.sla_id, Hosts.sla_id) > 0'
+            ])->count();
+    }
 }

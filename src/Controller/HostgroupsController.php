@@ -22,12 +22,6 @@
 //     License agreement and license key will be shipped with the order
 //     confirmation.
 
-// 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
-
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -84,6 +78,10 @@ class HostgroupsController extends AppController {
 
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         $HostgroupFilter = new HostgroupFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostgroupFilter->getPage());
 
@@ -100,9 +98,26 @@ class HostgroupsController extends AppController {
                 $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup->get('container')->get('parent_id'));
             }
 
+            $hostgroup['hasSLAHosts'] = false;
+            if (Plugin::isLoaded('SLAModule')) {
+                $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'), $MY_RIGHTS);
+                if (!empty($hostIds)) {
+                    $hostgroup['hasSLAHosts'] = $HostsTable->hasSLAHosts($hostIds) > 0;
+                }
+            }
+
+            // code for cmdb label
+            $additionalInformationExists = false;
+
+            if (Plugin::isLoaded('ImportModule')) {
+                /** @var ImportedHostgroupsTable $ImportedHostgroupsTable */
+                $ImportedHostgroupsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHostgroups');
+                $additionalInformationExists = $ImportedHostgroupsTable->existsImportedHostgroupByHostgroupId($hostgroup->get('id'));
+            }
+
+            $hostgroup['additionalInformationExists'] = $additionalInformationExists;
             $all_hostgroups[] = $hostgroup;
         }
-
         $this->set('all_hostgroups', $all_hostgroups);
         $this->viewBuilder()->setOption('serialize', ['all_hostgroups']);
     }
@@ -363,6 +378,12 @@ class HostgroupsController extends AppController {
         }
 
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
+        $hasSLAHosts = false;
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            $hasSLAHosts = $HostsTable->hasSLAHosts($id);
+        }
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -473,7 +494,8 @@ class HostgroupsController extends AppController {
         $data = [
             'Hostgroup'     => $hostgroup,
             'Hosts'         => $all_hosts,
-            'StatusSummary' => $hostgroupHoststatusOverview
+            'StatusSummary' => $hostgroupHoststatusOverview,
+            'hasSLAHosts'   => $hasSLAHosts
         ];
 
 

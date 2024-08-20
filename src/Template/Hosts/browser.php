@@ -368,8 +368,8 @@ use Cake\Core\Plugin;
                                                                ng-show="acknowledgement.is_sticky"></i>
                                                             <?php echo __('State of host is acknowledged'); ?>
                                                             <span ng-show="acknowledgement.is_sticky">
-                                                        (<?php echo __('Sticky'); ?>)
-                                                    </span>
+                                                                (<?php echo __('Sticky'); ?>)
+                                                            </span>
                                                         </h4>
                                                     </div>
                                                     <div class="padding-top-5">
@@ -979,19 +979,21 @@ use Cake\Core\Plugin;
 
                                                         <a ng-if="objects.Instantreports.length > 0"
                                                            ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                           <span
-                                                               class="badge border margin-right-10 border-generic text-generic">
-                                                                <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?> ({{objects.Instantreports.length}})
-                                                           </span>
+                                                            <span
+                                                                class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fa fa-file-invoice"></i> <?php echo __('Instant reports'); ?>
+                                                                ({{objects.Instantreports.length}})
+                                                            </span>
                                                         </a>
 
                                                         <?php if (Plugin::isLoaded('AutoreportModule')): ?>
                                                             <a ng-if="objects.Autoreports.length > 0"
                                                                ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                               <span
-                                                                   class="badge border margin-right-10 border-generic text-generic">
-                                                                    <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?> ({{objects.Autoreports.length}})
-                                                               </span>
+                                                                <span
+                                                                    class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-file-invoice"></i> <?= __('Autoreports') ?>
+                                                                    ({{objects.Autoreports.length}})
+                                                                </span>
                                                             </a>
                                                         <?php endif; ?>
                                                         <?php if (Plugin::isLoaded('EventcorrelationModule')): ?>
@@ -999,7 +1001,8 @@ use Cake\Core\Plugin;
                                                                ui-sref="HostsUsedBy({id: mergedHost.id})">
                                                                 <span
                                                                     class="badge border margin-right-10 border-generic text-generic">
-                                                                    <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?> ({{objects.Eventcorrelations.length}})
+                                                                    <i class="fas fa-sitemap fa-rotate-90"></i> <?= __('Event Correlation') ?>
+                                                                    ({{objects.Eventcorrelations.length}})
                                                                 </span>
                                                             </a>
                                                         <?php endif; ?>
@@ -1007,19 +1010,21 @@ use Cake\Core\Plugin;
                                                         <?php if (Plugin::isLoaded('MapModule')): ?>
                                                             <a ng-if="objects.Maps.length > 0"
                                                                ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                               <span
-                                                                   class="badge border margin-right-10 border-generic text-generic">
-                                                                    <i class="fa fa-map-marker"></i> <?= __('Map') ?> ({{objects.Maps.length}})
-                                                               </span>
+                                                                <span
+                                                                    class="badge border margin-right-10 border-generic text-generic">
+                                                                    <i class="fa fa-map-marker"></i> <?= __('Map') ?>
+                                                                    ({{objects.Maps.length}})
+                                                                </span>
                                                             </a>
                                                         <?php endif; ?>
 
                                                         <a ng-if="objects.Hostgroups.length > 0"
                                                            ui-sref="HostsUsedBy({id: mergedHost.id})">
-                                                           <span
-                                                               class="badge border margin-right-10 border-generic text-generic">
-                                                                <i class="fas fa-server"></i> <?php echo __('Host Groups'); ?> ({{objects.Hostgroups.length}})
-                                                           </span>
+                                                            <span
+                                                                class="badge border margin-right-10 border-generic text-generic">
+                                                                <i class="fas fa-server"></i> <?php echo __('Host Groups'); ?>
+                                                                ({{objects.Hostgroups.length}})
+                                                            </span>
                                                         </a>
                                                     <?php endif; ?>
                                                 </td>
@@ -1044,7 +1049,7 @@ use Cake\Core\Plugin;
                                             </span>
                                             <span ng-show="failureDurationInPercent">
                                                 {{(failureDurationInPercent) ? failureDurationInPercent + ' %' :
-                                                    '<?= __('
+                                                '<?= __('
                                                 No
                                                 data
                                                 available
@@ -1140,7 +1145,7 @@ use Cake\Core\Plugin;
                     </div>
                     <!-- Servicenow Module end -->
                     <!-- Grafana Module start -->
-                    <div ng-show="GrafanaDashboardExists && selectedTab == 'tab5'">
+                    <div ng-if="GrafanaDashboardExists && selectedTab == 'tab5'">
                         <div class="widget-toolbar text-right padding-bottom-5">
                             <grafana-timepicker callback="grafanaTimepickerCallback"></grafana-timepicker>
                         </div>
@@ -1383,11 +1388,11 @@ use Cake\Core\Plugin;
                                                    ng-model-options="{debounce: 500}">
                                             <div class="input-group-append">
                                                 <span class="input-group-text pt-0 pb-0">
-                                                     <label>
-                                                            <?= __('Enable RegEx'); ?>
-                                                            <input type="checkbox"
-                                                                   ng-model="activeServiceFilter.Service.name_regex">
-                                                        </label>
+                                                    <label>
+                                                        <?= __('Enable RegEx'); ?>
+                                                        <input type="checkbox"
+                                                               ng-model="activeServiceFilter.Service.name_regex">
+                                                    </label>
                                                     <regex-helper-tooltip class="pl-1 pb-1"></regex-helper-tooltip>
                                                 </span>
                                             </div>

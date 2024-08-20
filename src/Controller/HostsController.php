@@ -3579,7 +3579,7 @@ class HostsController extends AppController {
                 }
             }
 
-            if ($currentlyAvailabilityHost) {
+            if ($currentlyAvailabilityHost !== null) {
                 $slaOverview = [
                     'evaluation_end'                  => $hostSlaStatusData['evaluation_end'],
                     'determined_availability_percent' => $currentlyAvailabilityHost,
