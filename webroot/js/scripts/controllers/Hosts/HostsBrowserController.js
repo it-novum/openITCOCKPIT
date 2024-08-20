@@ -173,6 +173,7 @@ angular.module('openITCOCKPIT')
                 $scope.loadGrafanaIframeUrl();
                 $scope.loadAdditionalInformation();
                 $scope.loadSlaInformation();
+                $scope.loadIsarFlowInformation();
 
 
                 if(typeof $scope.hostBrowserMenuConfig === "undefined"){
@@ -648,6 +649,17 @@ angular.module('openITCOCKPIT')
                 }
             }).then(function(result){
                 $scope.slaOverview = result.data.slaOverview;
+            });
+        };
+
+        $scope.loadIsarFlowInformation = function(){
+            $http.get("/hosts/loadIsarFlowInformation/.json", {
+                params: {
+                    'id': $scope.mergedHost.id,
+                    'angular': true
+                }
+            }).then(function(result){
+                $scope.isarFlowInformationExists = result.data.isarFlowInformationExists;
             });
         };
 
