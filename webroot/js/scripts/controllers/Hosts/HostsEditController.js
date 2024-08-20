@@ -21,6 +21,7 @@ angular.module('openITCOCKPIT')
         };
 
         $scope.init = true;
+        $scope.hostConfig = {};
 
         var setValuesFromHosttemplate = function(){
             var fields = [
@@ -235,7 +236,7 @@ angular.module('openITCOCKPIT')
                     'selected[]': $scope.post.Host.parenthosts._ids,
                     'containerId': containerId,
                     'hostId': $scope.id,
-                    'satellite_id': ($scope.post.Host.satellite_id > 0)?$scope.post.Host.satellite_id :null
+                    'satellite_id': ($scope.post.Host.satellite_id > 0) ? $scope.post.Host.satellite_id : null
                 }
             }).then(function(result){
                 $scope.parenthosts = result.data.hosts;
@@ -449,6 +450,23 @@ angular.module('openITCOCKPIT')
                 data
             ).then(function(result){
                 $scope.isHostnameInUse = result.data.isHostnameInUse;
+            });
+        };
+
+        $scope.showNagiosConfiguration = function(hostId){
+            $http.get("/hosts/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'hostId': hostId
+                }
+            }).then(function(result){
+                $scope.hostConfig = result.data.hostConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
             });
         };
 

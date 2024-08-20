@@ -1,10 +1,12 @@
 angular.module('openITCOCKPIT')
-    .controller('ServicegroupsIndexController', function($scope, $http, $stateParams, SortService, MassChangeService, QueryStringService){
+    .controller('ServicegroupsIndexController', function($scope, $http, $stateParams, SortService, MassChangeService, QueryStringService, NotyService){
 
         SortService.setSort('Containers.name');
         SortService.setDirection('asc');
         $scope.currentPage = 1;
         $scope.useScroll = true;
+
+        $scope.servicegroupConfig = {};
 
         /*** Filter Settings ***/
         var defaultFilter = function(){
@@ -119,6 +121,22 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
+        $scope.showNagiosConfiguration = function(servicegroupId){
+            $http.get("/servicegroups/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'servicegroupId': servicegroupId
+                }
+            }).then(function(result){
+                $scope.servicegroupConfig = result.data.servicegroupConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
+        };
 
         //Fire on page load
         defaultFilter();

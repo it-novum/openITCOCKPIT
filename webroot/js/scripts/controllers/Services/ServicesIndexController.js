@@ -39,6 +39,8 @@ angular.module('openITCOCKPIT')
 
         $scope.popoverTimer = null;
 
+        $scope.serviceConfig = {};
+
         /*** column vars ***/
         $scope.fields = [];
         $scope.columnsLength = 14;
@@ -405,6 +407,22 @@ angular.module('openITCOCKPIT')
             $scope.load();
         };
 
+        $scope.showNagiosConfiguration = function(serviceId){
+            $http.get("/services/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'serviceId': serviceId
+                }
+            }).then(function(result){
+                $scope.serviceConfig = result.data.serviceConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
+            });
+        };
 
         //Fire on page load
         defaultFilter();

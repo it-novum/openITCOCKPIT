@@ -50,7 +50,14 @@
                 </h2>
                 <div class="panel-toolbar">
                     <div class="text-muted cursor-default d-none d-sm-none d-md-none d-lg-block margin-right-10">
-                        UUID: {{post.Host.uuid}}
+                        <?php if ($this->Acl->hasPermission('nagiosConfiguration', 'hosts')): ?>
+                            <a href="javascript:void(0);"
+                               ng-click="showNagiosConfiguration(post.Host.id)">
+                                UUID: {{post.Host.uuid}}
+                            </a>
+                        <?php else: ?>
+                            UUID: {{post.Host.uuid}}
+                        <?php endif; ?>
                     </div>
 
                     <span class="badge border margin-right-10 {{hostType.class}} {{hostType.color}}">
@@ -1177,6 +1184,53 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show host config modal -->
+<div id="angularShowConfigurationModal" class="modal" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fa fa-file-code"></i>
+                    <?php echo __('Host Configuration'); ?>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="form-group">
+                    <label class="control-label">
+                        <?php echo __('File'); ?>
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="hostConfig.file">
+                </div>
+
+                <div class="form-group" ng-repeat="(label, value) in hostConfig.content">
+                    <label class="control-label">
+                        {{ label }}
+                    </label>
+                    <input
+                        class="form-control disabled"
+                        type="text"
+                        readonly
+                        ng-model="value">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">
+                        <?php echo __('Close'); ?>
+                    </button>
                 </div>
             </div>
         </div>

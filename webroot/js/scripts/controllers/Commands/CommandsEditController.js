@@ -2,6 +2,7 @@ angular.module('openITCOCKPIT')
     .controller('CommandsEditController', function($scope, $http, SudoService, QueryStringService, $stateParams, $state, $location, NotyService, RedirectService){
         $scope.post = {
             Command: {
+                id: '',
                 name: '',
                 command_type: '1',
                 command_line: '',
@@ -16,6 +17,7 @@ angular.module('openITCOCKPIT')
 
         $scope.args = [];
         $scope.macros = [];
+        $scope.commandConfig = {};
 
         $scope.load = function(){
             $http.get("/commands/edit/" + $scope.id + ".json", {
@@ -41,6 +43,7 @@ angular.module('openITCOCKPIT')
                         sensitivity: 'base'
                     });
                 });
+                $scope.post.Command.id = $scope.command.id;
                 $scope.post.Command.name = $scope.command.name;
                 $scope.post.Command.uuid = $scope.command.uuid;
                 $scope.post.Command.command_type = String($scope.command.command_type);
@@ -108,13 +111,13 @@ angular.module('openITCOCKPIT')
 
         $scope.checkForMisingArguments = function(){
             var commandLine = $scope.post.Command.command_line;
-            var usedCommandLineArgs = commandLine.match(/(\$ARG\d+\$)/g)??[];
+            var usedCommandLineArgs = commandLine.match(/(\$ARG\d+\$)/g) ?? [];
             var definedCommandArgumentsByName = _.map($scope.args, 'name');
             var usedCommandLineArgsFiltered = usedCommandLineArgs.filter(
                 (value, index) => usedCommandLineArgs.indexOf(value) === index
             );
 
-            $scope.usedCommandLineArgs =  usedCommandLineArgsFiltered.length;
+            $scope.usedCommandLineArgs = usedCommandLineArgsFiltered.length;
 
             $scope.usedCommandLineToDefinedCommandArguments = _.difference(
                 usedCommandLineArgsFiltered, definedCommandArgumentsByName
@@ -229,6 +232,23 @@ angular.module('openITCOCKPIT')
                 highlight: [
                     highlight
                 ]
+            });
+        };
+
+        $scope.showNagiosConfiguration = function(commandId){
+            $http.get("/commands/nagiosConfiguration.json", {
+                params: {
+                    'angular': true,
+                    'commandId': commandId
+                }
+            }).then(function(result){
+                $scope.commandConfig = result.data.commandConfig;
+                $('#angularShowConfigurationModal').modal('show');
+            }, function errorCallback(result){
+                if(result.data.hasOwnProperty('error')){
+                    $scope.errors = result.data.error;
+                    NotyService.genericError({message: result.data.error});
+                }
             });
         };
 

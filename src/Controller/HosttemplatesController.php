@@ -40,14 +40,17 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatecommandargumentvaluesTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Configure;
 use Cake\Core\Plugin;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\KeyValueStore;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\ContainerPermissions;
@@ -767,6 +770,59 @@ class HosttemplatesController extends AppController {
 
         $this->set('hosttemplates', $hosttemplates);
         $this->viewBuilder()->setOption('serialize', ['hosttemplates']);
+    }
+
+    public function nagiosConfiguration() {
+
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $hosttemplateId = $this->request->getQuery('hosttemplateId', null);
+
+        /** @var $HosttemplatesTable HosttemplatesTable */
+        $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+
+        if (!$HosttemplatesTable->existsById($hosttemplateId)) {
+            throw new NotFoundException(__('Host template not found'));
+        }
+
+        $hosttemplate = $HosttemplatesTable->getHosttemplateForEdit($hosttemplateId);
+
+        if (!$this->allowedByContainerId($hosttemplate['Hosttemplate']['container_id'], false)) {
+            $this->render403();
+            return;
+        }
+
+        if (!empty($hosttemplateId)) {
+
+            $TableName = "Hosttemplates";
+            $confName = "hosttemplates";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $hosttemplateNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$hosttemplateId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $hosttemplateNagiosConfig = "Host template Config Record not found.";
+        }
+
+        if (empty($hosttemplateId) || gettype($hosttemplateNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $hosttemplateNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("hosttemplateConfig", $hosttemplateNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['hosttemplateConfig']);
+
+
     }
 
 }

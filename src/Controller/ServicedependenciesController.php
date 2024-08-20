@@ -31,12 +31,15 @@ use App\Model\Table\ContainersTable;
 use App\Model\Table\ServicedependenciesTable;
 use App\Model\Table\ServicegroupsTable;
 use App\Model\Table\TimeperiodsTable;
+use Cake\Core\Configure;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\NagiosConfigParser;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\ServicedependenciesFilter;
@@ -285,5 +288,56 @@ class ServicedependenciesController extends AppController {
 
         $this->set('containers', Api::makeItJavaScriptAble($containers));
         $this->viewBuilder()->setOption('serialize', ['containers']);
+    }
+
+    public function nagiosConfiguration() {
+
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        $servicedependencyId = $this->request->getQuery('servicedependencyId', null);
+
+        /** @var ServicedependenciesTable $ServicedependenciesTable */
+        $ServicedependenciesTable = TableRegistry::getTableLocator()->get('Servicedependencies');
+        if (!$ServicedependenciesTable->existsById($servicedependencyId)) {
+            throw new NotFoundException('Service dependency not found');
+        }
+        $servicedependency = $ServicedependenciesTable->get($servicedependencyId);
+
+        if (!$this->allowedByContainerId($servicedependency->get('container_id'), false)) {
+            $this->render403();
+            return;
+        }
+
+        if (!empty($servicedependencyId)) {
+
+            $TableName = "Servicedependencies";
+            $confName = "servicedependencies";
+
+            Configure::load('nagios');
+            $exportConfig = Configure::read('nagios.export');
+
+            $configParser = new NagiosConfigParser();
+            $configParser->setup($exportConfig);
+
+            $servicedependencyNagiosConfig = $configParser->getConfig($TableName, $confName, (int)$servicedependencyId);
+
+        } else {
+            Log::error('NagiosConfigParser: record not found.');
+            $servicedependencyNagiosConfig = "Serivce Dependency Config Record not found.";
+        }
+
+        if (empty($servicedependencyId) || gettype($servicedependencyNagiosConfig) == "string") {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $servicedependencyNagiosConfig);
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        $this->set("servicedependencyConfig", $servicedependencyNagiosConfig);
+        $this->viewBuilder()->setOption('serialize', ['servicedependencyConfig']);
+
+
     }
 }
