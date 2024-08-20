@@ -203,7 +203,6 @@ angular.module('openITCOCKPIT')
             };
 
             // ITC-3349 Change load function to use POST
-            console.log($scope.filter);
             var data = {
                 filter: {
                     'Hosts.id': $scope.filter.Hosts.id,
@@ -334,8 +333,7 @@ angular.module('openITCOCKPIT')
             if($scope.filter.Servicestatus.passive) {
                 passive = !$scope.filter.Servicestatus.passive;
             }
-
-            console.log($scope.filter);
+            
             var params = {
                 'angular': true,
                 'sort': SortService.getSort(),
