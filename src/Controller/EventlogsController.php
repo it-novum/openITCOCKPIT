@@ -141,7 +141,7 @@ class EventlogsController extends AppController {
         $EventlogsTable = TableRegistry::getTableLocator()->get('Eventlogs');
 
         $EventlogsFilter = new EventlogsFilter($this->request);
-        
+
         $MY_RIGHTS = $this->MY_RIGHTS;
         if ($this->hasRootPrivileges === true) {
             $MY_RIGHTS = [];
@@ -221,9 +221,21 @@ class EventlogsController extends AppController {
 
     private function getTypeIconClasses() {
         return [
-            'login'                => 'fa fa-door-open text-success',
-            'user_delete'          => 'fa fa-trash text-danger',
-            'user_password_change' => 'fa fa-key text-primary',
+            'login'                => [
+                'icon'      => ['fas', 'door-open'],
+                'iconPdf'   => 'fa fa-door-open',
+                'className' => 'text-success'
+            ],
+            'user_delete'          => [
+                'icon'      => ['fas', 'trash'],
+                'iconPdf'   => 'fa fa-trash',
+                'className' => 'text-danger'
+            ],
+            'user_password_change' => [
+                'icon'      => ['fas', 'key'],
+                'iconPdf'   => 'fa fa-key',
+                'className' => 'text-primary'
+            ],
         ];
 
     }

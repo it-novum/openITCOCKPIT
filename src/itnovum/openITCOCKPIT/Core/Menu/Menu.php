@@ -200,7 +200,9 @@ class Menu {
                         '',
                         ['fas', 'file-text'],
                         [],
-                        4
+                        4,
+                        true,
+                        '/eventlogs/index'
                     ))
             );
 
