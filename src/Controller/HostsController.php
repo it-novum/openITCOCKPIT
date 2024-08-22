@@ -67,6 +67,7 @@ use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
 use EventcorrelationModule\Model\Table\EventcorrelationsTable;
 use ImportModule\Model\Table\ImportedHostsTable;
+use IsarFlowModule\Model\Table\IsarflowHostsTable;
 use itnovum\openITCOCKPIT\Cache\ObjectsCache;
 use itnovum\openITCOCKPIT\Core\AcknowledgedHostConditions;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
@@ -3663,5 +3664,21 @@ class HostsController extends AppController {
         $this->set('objects', $objects);
         $this->set('total', $total);
         $this->viewBuilder()->setOption('serialize', ['host', 'objects', 'total']);
+    }
+
+    public function loadIsarFlowInformation() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $id = $this->request->getQuery('id');
+        $isarFlowInformationExists = false;
+        if (Plugin::isLoaded('IsarFlowModule')) {
+            /** @var IsarflowHostsTable $IsarflowHostsTable */
+            $IsarflowHostsTable = TableRegistry::getTableLocator()->get('IsarFlowModule.IsarflowHosts');
+            $isarFlowInformationExists = $IsarflowHostsTable->existsByHostId($id);
+        }
+
+        $this->set('isarFlowInformationExists', $isarFlowInformationExists);
+        $this->viewBuilder()->setOption('serialize', ['isarFlowInformationExists']);
     }
 }

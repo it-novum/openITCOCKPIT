@@ -126,3 +126,4 @@ plugins/CustomalertModule
 plugins/SLAModule
 plugins/ChangecalendarModule
 plugins/MSTeamsModule
+plugins/IsarFlowModule

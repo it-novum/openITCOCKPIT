@@ -132,6 +132,16 @@ use Cake\Core\Plugin;
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if (Plugin::isLoaded('IsarFlowModule') && $this->Acl->hasPermission('isarFlowHostInformation', 'IsarflowHosts', 'IsarFlowModule')): ?>
+                            <li class="nav-item pointer" ng-show="isarFlowInformationExists">
+                                <a class="nav-link"
+                                   ng-class="{'active': selectedTab == 'tab8'}"
+                                   data-toggle="tab" ng-click="selectedTab = 'tab8'; hideTimeline()"
+                                   role="tab">
+                                    <i class="fa-solid fa-square-poll-horizontal">&nbsp;</i> <?php echo __('IsarFlow'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                 </div>
                 <?php if (Plugin::isLoaded('SLAModule')): ?>
@@ -1166,6 +1176,18 @@ use Cake\Core\Plugin;
                         <?php endif; ?>
                     </div>
                     <!-- Import Module end -->
+                    <!-- IsarFlow Module start -->
+                    <div ng-show="selectedTab == 'tab8'" ng-if="isarFlowInformationExists && selectedTab == 'tab8'">
+                        <?php if (Plugin::isLoaded('IsarFlowModule') && $this->Acl->hasPermission('isarFlowHostInformation', 'IsarflowHosts', 'IsarFlowModule')): ?>
+                            <isar-flow-host-information-element
+                                host-id="{{mergedHost.id}}"></isar-flow-host-information-element>
+                        <?php else: ?>
+                            <label class="text-danger">
+                                <?php echo __('No permissions'); ?>
+                            </label>
+                        <?php endif; ?>
+                    </div>
+                    <!-- IsarFlow Module end -->
                     <!-- SLA Module start -->
                     <div ng-show="selectedTab == 'tab7'" ng-if="slaOverview && selectedTab == 'tab7'">
                         <?php if (Plugin::isLoaded('SLAModule') && $this->Acl->hasPermission('slaHostInformation', 'Slas', 'SLAModule')): ?>
