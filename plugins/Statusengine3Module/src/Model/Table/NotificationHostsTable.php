@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -29,8 +34,6 @@ namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\NotificationHostsTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
@@ -133,8 +136,8 @@ class NotificationHostsTable extends Table implements NotificationHostsTableInte
                 ['HostsToContainers.host_id = Hosts.id']
             )
             ->where([
-                'NotificationHosts.start_time >'      => $HostNotificationConditions->getFrom(),
-                'NotificationHosts.start_time <'      => $HostNotificationConditions->getTo()
+                'NotificationHosts.start_time >' => $HostNotificationConditions->getFrom(),
+                'NotificationHosts.start_time <' => $HostNotificationConditions->getTo()
             ])
             ->order(
                 $HostNotificationConditions->getOrder()
@@ -180,5 +183,76 @@ class NotificationHostsTable extends Table implements NotificationHostsTableInte
         }
 
         return $result;
+    }
+
+    public function getTopNotifications(HostNotificationConditions $HostNotificationConditions, $PaginateOMat = null) {
+        // TODO: Implement getTopNotifications() method.
+        $query = $this->find()
+            ->select([
+                'NotificationHosts.hostname',
+                'NotificationHosts.start_time',
+                'NotificationHosts.state',
+                'NotificationHosts.output',
+
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+
+                'HostsToContainers.container_id',
+            ])
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Hosts.uuid = NotificationHosts.hostname']
+            )
+            ->leftJoin(
+                ['HostsToContainers' => 'hosts_to_containers'],
+                ['HostsToContainers.host_id = Hosts.id']
+            )
+            ->where([
+                'NotificationHosts.start_time >' => $HostNotificationConditions->getFrom(),
+                'NotificationHosts.start_time <' => $HostNotificationConditions->getTo()
+            ])
+            ->order(
+                $HostNotificationConditions->getOrder()
+            )
+            ->group([
+                'NotificationHosts.hostname',
+                'NotificationHosts.start_time',
+            ]);
+        if ($HostNotificationConditions->getHostUuid()) {
+            $query->andWhere([
+                'Hosts.uuid' => $HostNotificationConditions->getHostUuid()
+            ]);
+        }
+
+        if ($HostNotificationConditions->hasContainerIds()) {
+            $query->andWhere([
+                'HostsToContainers.container_id IN' => $HostNotificationConditions->getContainerIds()
+            ]);
+        }
+
+        if (!empty($HostNotificationConditions->getStates())) {
+            $query->andWhere([
+                'NotificationHosts.state IN' => $HostNotificationConditions->getStates()
+            ]);
+        }
+
+        if ($HostNotificationConditions->hasConditions()) {
+            $query->andWhere($HostNotificationConditions->getConditions());
+        }
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+
     }
 }

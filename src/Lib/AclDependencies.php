@@ -644,7 +644,9 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Notifications', 'index', 'Notifications', 'services');
+            ->dependency('Notifications', 'index', 'Notifications', 'services')
+            ->dependency('Notifications', 'index', 'Notifications', 'hostTopNotifications')
+            ->dependency('Notifications', 'index', 'Notifications', 'serviceTopNotifications');
 
 
         $this

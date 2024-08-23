@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -140,6 +145,104 @@ class NotificationsController extends AppController {
                 'Host'                => $Host->toArray(),
                 'Command'             => $Command->toArray(),
                 'Contact'             => $Contact->toArray()
+            ];
+        }
+
+        $this->set('all_notifications', $all_notifications);
+
+        $toJson = ['all_notifications', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_notifications', 'scroll'];
+        }
+        $this->viewBuilder()->setOption('serialize', $toJson);
+    }
+
+    public function hostTopNotifications() {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
+        $session = $this->request->getSession();
+        $session->close();
+
+        $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        //Process conditions
+        $Conditions = new HostNotificationConditions();
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        if ($this->request->getQuery('limit') !== null) {
+            $Conditions->setLimit($this->request->getQuery('limit'));
+        };
+        $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
+        $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationHosts.start_time', 'desc'));
+        $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getHostStates());
+        $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getHostFilters());
+
+        //Query notification records
+        $NotificationHostsTable = $this->DbBackend->getNotificationHostsTable();
+
+        $all_notifications = [];
+        foreach ($NotificationHostsTable->getTopNotifications($Conditions, $PaginateOMat) as $notification) {
+            $NotificationHost = new NotificationHost($notification, $UserTime);
+            $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
+            $all_notifications[] = [
+                'NotificationHost' => $NotificationHost->toArray(),
+                'Host'             => $Host->toArray(),
+            ];
+        }
+
+        $this->set('all_notifications', $all_notifications);
+
+        $toJson = ['all_notifications', 'paging'];
+        if ($this->isScrollRequest()) {
+            $toJson = ['all_notifications', 'scroll'];
+        }
+        $this->viewBuilder()->setOption('serialize', $toJson);
+    }
+
+    public function serviceTopNotifications() {
+        if (!$this->isApiRequest()) {
+            return;
+        }
+
+        $session = $this->request->getSession();
+        $session->close();
+
+        $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+
+        $User = new User($this->getUser());
+        $UserTime = $User->getUserTime();
+
+        //Process conditions
+        $Conditions = new ServiceNotificationConditions();
+        $Conditions->setContainerIds($this->MY_RIGHTS);
+        if ($this->request->getQuery('limit') !== null) {
+            $Conditions->setLimit($this->request->getQuery('limit'));
+        };
+        $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
+        $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationServices.start_time', 'desc'));
+        $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getServiceStates());
+        $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getServiceFilters());
+
+        //Query notification records
+        $NotificationServicesTable = $this->DbBackend->getNotificationServicesTable();
+
+        $all_notifications = [];
+        foreach ($NotificationServicesTable->getTopNotifications($Conditions, $PaginateOMat) as $notification) {
+            $NotificationService = new NotificationService($notification, $UserTime);
+            $Service = new Service($notification['Services'], $notification['servicename']);
+            $Host = new Host($notification['Hosts']);
+            $all_notifications[] = [
+                'NotificationService' => $NotificationService->toArray(),
+                'Service'             => $Service->toArray(),
+                'Host'                => $Host->toArray(),
             ];
         }
 

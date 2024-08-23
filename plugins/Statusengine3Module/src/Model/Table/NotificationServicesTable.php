@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -158,6 +163,109 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
                 'NotificationServices.service_description',
                 'NotificationServices.start_time',
                 'NotificationServices.start_time_usec'
+            ]);
+
+
+        if ($ServiceNotificationConditions->getServiceUuid()) {
+            $query->andWhere([
+                'Services.uuid' => $ServiceNotificationConditions->getServiceUuid()
+            ]);
+        }
+
+        if ($ServiceNotificationConditions->hasContainerIds()) {
+            $query->andWhere([
+                'HostsToContainers.container_id IN' => $ServiceNotificationConditions->getContainerIds()
+            ]);
+        }
+
+        if (!empty($ServiceNotificationConditions->getStates())) {
+            $query->andWhere([
+                'NotificationServices.state IN' => $ServiceNotificationConditions->getStates()
+            ]);
+        }
+
+        if ($ServiceNotificationConditions->hasConditions()) {
+
+            $where = $ServiceNotificationConditions->getConditions();
+            $having = null;
+            if (isset($where['servicename LIKE'])) {
+                $having = [
+                    'servicename LIKE' => $where['servicename LIKE']
+                ];
+                unset($where['servicename LIKE']);
+            }
+
+            if (!empty($where))
+                $query->andWhere($where);
+
+            if (!empty($having)) {
+                $query->having($having);
+            }
+        }
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
+    public function getTopNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null) {
+        $query = $this->find();
+        $query->select([
+            'NotificationServices.hostname',
+            'NotificationServices.service_description',
+            'NotificationServices.start_time',
+            'NotificationServices.state',
+            'NotificationServices.output',
+
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+
+            'Services.id',
+            'Services.uuid',
+            'Services.name',
+
+            'Servicetemplates.id',
+            'Servicetemplates.uuid',
+            'Servicetemplates.name',
+
+            'HostsToContainers.container_id',
+
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+        ])
+            ->innerJoin(
+                ['Services' => 'services'],
+                ['Services.uuid = NotificationServices.service_description']
+            )
+            ->innerJoin(
+                ['Servicetemplates' => 'servicetemplates'],
+                ['Servicetemplates.id = Services.servicetemplate_id']
+            )
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Hosts.uuid = NotificationServices.hostname']
+            )
+            ->leftJoin(
+                ['HostsToContainers' => 'hosts_to_containers'],
+                ['HostsToContainers.host_id = Hosts.id']
+            )
+            ->where([
+                'NotificationServices.start_time >' => $ServiceNotificationConditions->getFrom(),
+                'NotificationServices.start_time <' => $ServiceNotificationConditions->getTo()
+            ])
+            ->order($ServiceNotificationConditions->getOrder())
+            ->group([
+                'NotificationServices.service_description',
+                'NotificationServices.start_time',
             ]);
 
 
