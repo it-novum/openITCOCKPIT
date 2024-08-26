@@ -382,7 +382,14 @@ class HostgroupsController extends AppController {
         if (Plugin::isLoaded('SLAModule')) {
             /** @var $HostsTable HostsTable */
             $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            $hasSLAHosts = $HostsTable->hasSLAHosts($id);
+            $MY_RIGHTS = $this->MY_RIGHTS;
+            if ($this->hasRootPrivileges) {
+                $MY_RIGHTS = [];
+            }
+            $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'), $MY_RIGHTS);
+            if (!empty($hostIds)) {
+                $hasSLAHosts = $HostsTable->hasSLAHosts($hostIds) > 0;
+            }
         }
 
         $User = new User($this->getUser());
