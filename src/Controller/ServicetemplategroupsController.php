@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -88,7 +88,7 @@ class ServicetemplategroupsController extends AppController {
         foreach ($servicetemplategroups as $servicetemplategroup) {
             $servicetemplategroup['allow_edit'] = $this->hasPermission('edit', 'servicetemplategroups');
             if ($this->hasRootPrivileges === false) {
-                $servicetemplategroup['allow_edit'] = $this->isWritableContainer($servicetemplategroup['Servicetemplategroup']['container_id']);
+                $servicetemplategroup['allow_edit'] = $this->isWritableContainer($servicetemplategroup['container']['parent_id']);
             }
             $all_servicetemplategroups[] = $servicetemplategroup;
         }

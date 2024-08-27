@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2019>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -32,7 +37,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\UsercontainerrolesFilter;
@@ -520,7 +524,7 @@ class UsercontainerrolesTable extends Table {
      * @param array $MY_RIGHTS
      * @return array
      */
-    public function getContainerRoleByContainerIdExact( int $containerId, $type= 'all', $index = 'id', $MY_RIGHTS = []){
+    public function getContainerRoleByContainerIdExact(int $containerId, $type = 'all', $index = 'id', $MY_RIGHTS = []) {
         $query = $this->find()
             ->select([
                 'Usercontainerroles.id',
@@ -559,4 +563,18 @@ class UsercontainerrolesTable extends Table {
 
         return $list;
     }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    public function getUserContainerRoleById($id) {
+        return $this->find()
+            ->where([
+                'Usercontainerroles.id' => $id
+            ])
+            ->disableHydration()
+            ->first();
+    }
+
 }

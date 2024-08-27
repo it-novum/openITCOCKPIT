@@ -24,47 +24,28 @@
  */
 
 angular.module('openITCOCKPIT')
-    .controller('ChangelogsIndexController', function($scope, $http, SortService, QueryStringService, $stateParams) {
+    .controller('EventlogsIndexController', function($scope, $http, SortService, QueryStringService, $stateParams, $httpParamSerializer) {
 
-        SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Changelogs.id'));
+        SortService.setSort(QueryStringService.getStateValue($stateParams, 'sort', 'Eventlogs.id'));
         SortService.setDirection(QueryStringService.getStateValue($stateParams, 'direction', 'desc'));
         $scope.useScroll = true;
         $scope.currentPage = 1;
+
+        $scope.logTypes = [];
+        $scope.typeTranslations = [];
+        $scope.typeIconClasses = [];
 
         /*** Filter Settings ***/
         var defaultFilter = function() {
             var now = new Date();
 
             $scope.filter = {
-                Changelogs: {
-                    name: ''
-                },
-                Models: {
-                    Command: 1,
-                    Contact: 1,
-                    Contactgroup: 1,
-                    Host: 1,
-                    Hostgroup: 1,
-                    Hosttemplate: 1,
-                    Service: 1,
-                    Servicegroup: 1,
-                    Servicetemplate: 1,
-                    Servicetemplategroup: 1,
-                    Timeperiod: 1,
-                    Location: 1,
-                    Tenant: 1,
-                    Container: 1,
-                    Export: 1,
-                    User: 1
-                },
-                Actions: {
-                    add: 1,
-                    edit: 1,
-                    copy: 1,
-                    delete: 1,
-                    deactivate: 1,
-                    activate: 1,
-                    export: 1
+                name: '',
+                user_email: '',
+                Types: {
+                    login: 1,
+                    user_delete: 1,
+                    user_password_change: 1
                 },
                 from: date('d.m.Y H:i', now.getTime() / 1000 - ( 3600 * 24 * 30 * 4 )),
                 to: date('d.m.Y H:i', now.getTime() / 1000 + ( 3600 * 24 * 5 ))
@@ -80,50 +61,66 @@ angular.module('openITCOCKPIT')
         $scope.showFilter = false;
         $scope.init = true;
 
-        var getActionsFilter = function() {
-            var selectedActions = [];
-            for(var actionName in $scope.filter.Actions) {
-                if($scope.filter.Actions[actionName] === 1) {
-                    selectedActions.push(actionName);
-                }
-            }
-
-            return selectedActions;
-        };
-
-        var getModelsFilter = function() {
-            var selectedModels = [];
-            for(var modelName in $scope.filter.Models) {
-                if($scope.filter.Models[modelName] === 1) {
-                    selectedModels.push(modelName);
-                }
-            }
-
-            return selectedModels;
-        };
-
         $scope.load = function() {
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
                 'sort': SortService.getSort(),
                 'page': $scope.currentPage,
+                'types[]': getTypesFilter(),
                 'direction': SortService.getDirection(),
-                'filter[Changelogs.name]': $scope.filter.Changelogs.name,
-                'filter[Changelogs.action][]': getActionsFilter(),
-                'filter[Changelogs.model][]': getModelsFilter(),
+                'filter[Eventlogs.type][]': getTypesFilter(),
+                'filter[name]': $scope.filter.name,
+                'filter[user_email]': $scope.filter.user_email,
                 'filter[from]': $scope.filter.from,
                 'filter[to]': $scope.filter.to
             };
 
-            $http.get("/changelogs/index.json", {
+            $http.get("/eventlogs/index.json", {
                 params: params
             }).then(function(result) {
-                $scope.changes = result.data.all_changes;
+                $scope.events = result.data.all_events;
+                $scope.logTypes = result.data.logTypes;
+                $scope.typeTranslations = result.data.typeTranslations;
+                $scope.typeIconClasses = result.data.typeIconClasses;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
                 $scope.init = false;
+
             });
+        };
+
+        var getTypesFilter = function() {
+            var selectedTypes = [];
+            for(var typeName in $scope.filter.Types) {
+                if($scope.filter.Types[typeName] === 1) {
+                    selectedTypes.push(typeName);
+                }
+            }
+
+            return selectedTypes;
+        };
+
+        $scope.linkFor = function(format) {
+            var baseUrl = '/eventlogs/listToPdf.pdf?';
+            if(format === 'csv') {
+                baseUrl = '/eventlogs/listToCsv?';
+            }
+
+            var params = {
+                'angular': true,
+                'sort': SortService.getSort(),
+                'page': $scope.currentPage,
+                'direction': SortService.getDirection(),
+                'types[]': getTypesFilter(),
+                'filter[Eventlogs.type][]': getTypesFilter(),
+                'filter[name]': $scope.filter.name,
+                'filter[user_email]': $scope.filter.user_email,
+                'filter[from]': $scope.filter.from,
+                'filter[to]': $scope.filter.to
+            };
+
+            return baseUrl + $httpParamSerializer(params);
         };
 
         $scope.triggerFilter = function() {

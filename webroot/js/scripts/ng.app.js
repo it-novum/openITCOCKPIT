@@ -1,15 +1,40 @@
+/*
+ * Copyright (C) <2015-present>  <it-novum GmbH>
+ *
+ * This file is dual licensed
+ *
+ * 1.
+ *     This program is free software: you can redistribute it and/or modify
+ *     it under the terms of the GNU General Public License as published by
+ *     the Free Software Foundation, version 3 of the License.
+ *
+ *     This program is distributed in the hope that it will be useful,
+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *     GNU General Public License for more details.
+ *
+ *     You should have received a copy of the GNU General Public License
+ *     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * 2.
+ *     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+ *     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+ *     License agreement and license key will be shipped with the order
+ *     confirmation.
+ */
+
 var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'ng-nestable', 'ui.router.state.events'])
-    .factory("httpInterceptor", function($q, $rootScope, $timeout, LocalStorageService){
+    .factory("httpInterceptor", function($q, $rootScope, $timeout, LocalStorageService) {
         return {
-            response: function(result){
-                if(result.data.hasOwnProperty('_csrfToken')){
-                    if(result.data._csrfToken !== null){
+            response: function(result) {
+                if(result.data.hasOwnProperty('_csrfToken')) {
+                    if(result.data._csrfToken !== null) {
                         $rootScope._csrfToken = result.data._csrfToken;
                     }
                 }
 
                 var url = result.config.url;
-                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json') {
                     return result || $.then(result);
                 }
 
@@ -22,20 +47,20 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
                 $rootScope.runningAjaxCalls--;
 
-                if($rootScope.runningAjaxCalls === 0){
+                if($rootScope.runningAjaxCalls === 0) {
                     //No other ajax call is running, hide loader
                     $('#global_ajax_loader').fadeOut('slow');
                     $('#global-loading').fadeOut('slow');
                 }
                 return result || $.then(result);
             },
-            request: function(response){
-                if(response.method !== 'GET'){
+            request: function(response) {
+                if(response.method !== 'GET') {
                     response.headers['X-CSRF-Token'] = $rootScope._csrfToken;
                 }
 
                 var url = response.url;
-                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json') {
                     return response || $q.when(response);
                 }
 
@@ -51,33 +76,33 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
 
                 var onlyShowMenuLoader = false;
-                if(response.hasOwnProperty('params')){ //GET
-                    if(response.params.hasOwnProperty('disableGlobalLoader')){
+                if(response.hasOwnProperty('params')) { //GET
+                    if(response.params.hasOwnProperty('disableGlobalLoader')) {
                         onlyShowMenuLoader = true;
                     }
                 }
 
-                if(response.hasOwnProperty('data')){ //POST
-                    if(typeof response.data !== "undefined"){
-                        if(response.data.hasOwnProperty('disableGlobalLoader')){
+                if(response.hasOwnProperty('data')) { //POST
+                    if(typeof response.data !== "undefined") {
+                        if(response.data.hasOwnProperty('disableGlobalLoader')) {
                             onlyShowMenuLoader = true;
                         }
                     }
                 }
 
                 $('#global_ajax_loader').show();
-                if(onlyShowMenuLoader === false){
+                if(onlyShowMenuLoader === false) {
                     $('#global-loading').show();
                 }
                 return response || $q.when(response);
             },
-            responseError: function(rejection){
+            responseError: function(rejection) {
                 var url = rejection.config.url;
-                if(url === '/angular/system_health.json' || url === '/angular/menustats.json'){
+                if(url === '/angular/system_health.json' || url === '/angular/menustats.json') {
                     return $q.reject(rejection);
                 }
 
-                if(rejection.status === 401){
+                if(rejection.status === 401) {
                     LocalStorageService.setItem('lastPage', window.location);
                     window.location = '/users/login';
                     return;
@@ -91,7 +116,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 }*/
 
                 $rootScope.runningAjaxCalls--;
-                if($rootScope.runningAjaxCalls === 0){
+                if($rootScope.runningAjaxCalls === 0) {
                     //No other ajax call is running, hide loader
                     $('#global_ajax_loader').fadeOut('slow');
                     $('#global-loading').fadeOut('slow');
@@ -102,11 +127,11 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         };
     })
 
-    .config(function($httpProvider){
+    .config(function($httpProvider) {
         $httpProvider.interceptors.push("httpInterceptor");
 
         $httpProvider.defaults.cache = false;
-        if(!$httpProvider.defaults.headers.get){
+        if(!$httpProvider.defaults.headers.get) {
             $httpProvider.defaults.headers.get = {};
         }
         // disable IE ajax request caching
@@ -115,7 +140,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
     })
 
 
-    .config(function($urlRouterProvider, $stateProvider){
+    .config(function($urlRouterProvider, $stateProvider) {
         $urlRouterProvider.otherwise("/dashboards/index");
 
         $stateProvider
@@ -443,7 +468,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     },
                     filter: {
                         value: null
-                    },
+                    }
                 },
                 templateUrl: "/services/index.html",
                 controller: "ServicesIndexController"
@@ -654,6 +679,10 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     id: {
                         value: null,
                         squash: true
+                    },
+                    selectedTab: {
+                        value: null,
+                        array: false
                     }
                 },
                 controller: "HostgroupsExtendedController"
@@ -997,7 +1026,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         value: null,
                         squash: true
                     }
-                },
+                }
             })
 
             .state('ContactgroupsIndex', {
@@ -1270,7 +1299,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     },
                     not_keywords: {
                         value: null
-                    },
+                    }
                 },
                 controller: "HostsIndexController"
             })
@@ -1296,7 +1325,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                         value: null,
                         array: true
                     }
-                },
+                }
             })
 
             .state('HostsAdd', {
@@ -1426,7 +1455,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                     }
                 },
                 templateUrl: "/servicetemplategroups/add.html",
-                controller: "ServicetemplategroupsAddController",
+                controller: "ServicetemplategroupsAddController"
             })
 
             .state('ServicetemplategroupsAppend', {
@@ -1587,6 +1616,12 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 controller: "ChangelogsEntityController"
             })
 
+            .state('EventlogsIndex', {
+                url: '/eventlogs/index',
+                templateUrl: "/eventlogs/index.html",
+                controller: "EventlogsIndexController"
+            })
+
             .state('WizardsIndex', {
                 url: '/wizards/index',
                 templateUrl: "/wizards/index.html",
@@ -1705,13 +1740,13 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
     */
 
 
-    .filter('hostStatusName', function(){
-        return function(hoststatusId){
-            if(typeof hoststatusId === 'undefined'){
+    .filter('hostStatusName', function() {
+        return function(hoststatusId) {
+            if(typeof hoststatusId === 'undefined') {
                 return false;
             }
 
-            switch(hoststatusId){
+            switch(hoststatusId) {
                 case 0:
                 case '0':
                     return 'Up';
@@ -1728,13 +1763,13 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         }
     })
 
-    .filter('serviceStatusName', function(){
-        return function(servicestatusId){
-            if(typeof servicestatusId === 'undefined'){
+    .filter('serviceStatusName', function() {
+        return function(servicestatusId) {
+            if(typeof servicestatusId === 'undefined') {
                 return false;
             }
 
-            switch(servicestatusId){
+            switch(servicestatusId) {
                 case 0:
                 case '0':
                     return 'Ok';
@@ -1754,17 +1789,17 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         }
     })
 
-    .filter('encodeURI', function(){
-        return function(str){
+    .filter('encodeURI', function() {
+        return function(str) {
             return encodeURI(str);
         }
     })
 
-    .filter('highlight', function($sce){
-        return function(title, searchString){
+    .filter('highlight', function($sce) {
+        return function(title, searchString) {
             searchString = searchString.replace(/\s/g, "");
             var newSearchString = "";
-            for(var i = 0; i < searchString.length; i++){
+            for(var i = 0; i < searchString.length; i++) {
                 newSearchString += searchString.charAt(i) + "\\s*";
             }
             if(searchString) title = title.replace(new RegExp('(' + newSearchString + ')', 'gi'),
@@ -1774,56 +1809,56 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         }
     })
 
-    .filter('trustAsHtml', function($sce){
-        return function(text){
+    .filter('trustAsHtml', function($sce) {
+        return function(text) {
             return $sce.trustAsHtml(text);
         };
     })
 
-    .filter('underscoreless', function(){
-        return function(input){
+    .filter('underscoreless', function() {
+        return function(input) {
             return input.replace(/_/g, ' ');
         };
     })
 
-    .filter('capitalizeFirstLetter', function(){
-        return function(input){
+    .filter('capitalizeFirstLetter', function() {
+        return function(input) {
             return input.charAt(0).toUpperCase() + input.slice(1);
         };
     })
 
-    .filter('orderObjectBy', function(){
-        return function(items, field, reverse){
+    .filter('orderObjectBy', function() {
+        return function(items, field, reverse) {
             var filtered = [];
-            angular.forEach(items, function(item){
+            angular.forEach(items, function(item) {
                 filtered.push(item);
             });
-            filtered.sort(function(a, b){
-                return (a[field] > b[field] ? 1 : -1);
+            filtered.sort(function(a, b) {
+                return ( a[field] > b[field] ? 1 : -1 );
             });
             if(reverse) filtered.reverse();
             return filtered;
         };
     })
 
-    .filter('filterTagsinput', function(){
-        return function(values, search){
-            if(typeof search === "undefined"){
+    .filter('filterTagsinput', function() {
+        return function(values, search) {
+            if(typeof search === "undefined") {
                 // No search string given
                 return values;
             }
 
             var results = [];
             searchStrings = search.split(",");
-            searchStrings = searchStrings.map(function(v){
+            searchStrings = searchStrings.map(function(v) {
                 return new RegExp(v, 'i');
             })
 
-            for(var i in values){
+            for(var i in values) {
                 var value = values[i];
-                for(var k in searchStrings){
+                for(var k in searchStrings) {
                     var searchString = searchStrings[k];
-                    if(value.name.match(searchString)){
+                    if(value.name.match(searchString)) {
                         results.push(value);
                         // Avoid duplicates in result;
                         break;
@@ -1835,33 +1870,33 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
         }
     })
 
-    .run(function($rootScope, SortService, $state){
+    .run(function($rootScope, SortService, $state) {
 
-        $rootScope.$on('$stateChangeStart', function(event, to, toParams, from, fromParams){
+        $rootScope.$on('$stateChangeStart', function(event, to, toParams, from, fromParams) {
             from.params = fromParams;
             $state.previous = from;
         });
 
-        $rootScope.$on('$locationChangeStart', function(event, next, current){
+        $rootScope.$on('$locationChangeStart', function(event, next, current) {
             $state.previousUrl = current;
             $state.currentUrl = next;
         });
 
         $rootScope.runningAjaxCalls = 0;
 
-        $rootScope.currentStateForApi = function(current_state){
+        $rootScope.currentStateForApi = function(current_state) {
             var states = [];
-            for(var key in current_state){
-                if(current_state[key] === true || current_state[key] === 1){
+            for(var key in current_state) {
+                if(current_state[key] === true || current_state[key] === 1) {
                     states.push(key);
                 }
             }
             return states;
         };
 
-        $rootScope.getSortClass = function(field){
-            if(field === SortService.getSort()){
-                if(SortService.getDirection() === 'asc'){
+        $rootScope.getSortClass = function(field) {
+            if(field === SortService.getSort()) {
+                if(SortService.getDirection() === 'asc') {
                     return 'fa-sort-asc';
                 }
                 return 'fa-sort-desc';
@@ -1870,29 +1905,29 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             return 'fa-sort';
         };
 
-        $rootScope.orderBy = function(field){
-            if(field !== SortService.getSort()){
+        $rootScope.orderBy = function(field) {
+            if(field !== SortService.getSort()) {
                 SortService.setDirection('asc');
                 SortService.setSort(field);
                 SortService.triggerReload();
                 return;
             }
 
-            if(SortService.getDirection() === 'asc'){
+            if(SortService.getDirection() === 'asc') {
                 SortService.setDirection('desc');
-            }else{
+            } else {
                 SortService.setDirection('asc');
             }
             SortService.triggerReload();
         };
 
-        $rootScope.rootCopyToClipboard = function(str, $event){
+        $rootScope.rootCopyToClipboard = function(str, $event) {
             navigator.clipboard.writeText(str);
             event.preventDefault();
 
             let $target = $($event.target);
             // Find a possible nested <copy> button
-            if($target.find('span').length > 0){
+            if($target.find('span').length > 0) {
                 $target = $target.find('span.copy-action');
             }
             let copyText = $target.data('copy'),
@@ -1901,7 +1936,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
             //$target.addClass('fadeOut');
             $target.text(copiedText);
 
-            setTimeout(function(){
+            setTimeout(function() {
                 //$target.removeClass('fadeOut');
                 $target.text(copyText);
             }, 1000);
@@ -1909,7 +1944,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
         // You cannot use Bitwise or void operators in an Angular expression.
         // https://stackoverflow.com/a/39295072
-        $rootScope.hasFlag = function(value, flag){
+        $rootScope.hasFlag = function(value, flag) {
             return value & flag;
         }
 

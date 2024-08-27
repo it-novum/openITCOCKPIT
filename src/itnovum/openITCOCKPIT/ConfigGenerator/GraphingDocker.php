@@ -1,26 +1,26 @@
 <?php
-// Copyright (C) <2018>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
@@ -64,8 +64,11 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'victoria_metrics_retention_period' => 1,
             'local_victoria_metrics_http_port'  => 8428
         ],
+        'float'  => [
+            'default_average_x_files_factor' => 0.5,
+        ],
         'bool'   => [
-            'WHISPER_FALLOCATE_CREATE' => 1,
+            'WHISPER_FALLOCATE_CREATE'     => 1,
             'enable_docker_userland_proxy' => 0
         ],
     ];
@@ -163,8 +166,9 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
      * @return array|bool|true
      */
     public function customValidationRules($data) {
+        $error = [];
+
         if ($data['string']['USE_AUTO_NETWORKING'] == '0') {
-            $error = [];
 
             //Remove bip and fixed_cidr because restart issues of docker daemon
             //foreach (['bip', 'fixed_cidr', 'docker_compose_subnet'] as $field) {
@@ -201,6 +205,13 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             }
 
             return $error;
+        }
+
+        if (isset($data['float']['default_average_x_files_factor'])) {
+            if ($data['float']['default_average_x_files_factor'] < 0 || $data['float']['default_average_x_files_factor'] > 1) {
+                $error['Configfile']['default_average_x_files_factor'][] = __('Value needs to be between 0 and 1, e.g. 0.5');
+                return $error;
+            }
         }
 
         return true;
@@ -269,7 +280,8 @@ class GraphingDocker extends ConfigGenerator implements ConfigInterface {
             'victoria_metrics_storage_path'     => __('Path used by VictoriaMetrics to store data.'),
             'victoria_metrics_retention_period' => __('Period in month how long VictoriaMetrics will keep stored metrics.'),
             'local_victoria_metrics_http_port'  => __('Local HTTP port used by VictoriaMetrics.'),
-            'enable_docker_userland_proxy'      => __('Enable the Docker userland proxy. Warning: This could lead to very high CPU usage.')
+            'enable_docker_userland_proxy'      => __('Enable the Docker userland proxy. Warning: This could lead to very high CPU usage.'),
+            'default_average_x_files_factor'    => __('xFilesFactor should be a floating point number between 0 and 1, and specifies what fraction of the previous retention level\'s slots must have non-null values in order to aggregate to a non-null value. The default is 0.5.')
         ];
 
         if (isset($help[$key])) {

@@ -195,7 +195,8 @@ class AclDependencies {
             ->allow('Services', 'details')
             ->allow('Services', 'byUuid')
             ->allow('Services', 'loadServicesByStringCake4')
-            ->allow('Services', 'loadServicesByContainerIdCake4');
+            ->allow('Services', 'loadServicesByContainerIdCake4')
+            ->allow('Services', 'loadServicesByStringForOptionGroup');
 
         $this
             ->allow('Graphgenerators', 'getPerfdataByUuid');
@@ -323,6 +324,9 @@ class AclDependencies {
         $this
             ->dependency('Changelogs', 'index', 'Changelogs', 'entity');
 
+        $this->dependency('Eventlogs', 'index', 'Eventlogs', 'listToPdf')
+            ->dependency('Eventlogs', 'index', 'Eventlogs', 'listToCsv');
+
         $this
             ->dependency('Timeperiods', 'index', 'Timeperiods', 'view')
             ->dependency('Timeperiods', 'index', 'Timeperiods', 'loadTimeperiodsByContainerId');
@@ -425,6 +429,7 @@ class AclDependencies {
             ->dependency('Hosts', 'browser', 'Hosts', 'getGrafanaIframeUrlForDatepicker')
             ->dependency('Hosts', 'browser', 'Hosts', 'loadAdditionalInformation')
             ->dependency('Hosts', 'browser', 'Hosts', 'loadSlaInformation')
+            ->dependency('Hosts', 'browser', 'Hosts', 'loadIsarFlowInformation')
             ->dependency('Hosts', 'add', 'Hosts', 'loadContainers')
             ->dependency('Hosts', 'add', 'Hosts', 'loadCommands')
             ->dependency('Hosts', 'add', 'Hosts', 'loadElementsByContainerId')

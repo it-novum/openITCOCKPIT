@@ -1,27 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 // 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 declare(strict_types=1);
 
@@ -79,6 +78,10 @@ class HostgroupsController extends AppController {
 
         /** @var $HostgroupsTable HostgroupsTable */
         $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
         $HostgroupFilter = new HostgroupFilter($this->request);
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $HostgroupFilter->getPage());
 
@@ -95,9 +98,26 @@ class HostgroupsController extends AppController {
                 $hostgroup['allowEdit'] = $this->allowedByContainerId($hostgroup->get('container')->get('parent_id'));
             }
 
+            $hostgroup['hasSLAHosts'] = false;
+            if (Plugin::isLoaded('SLAModule')) {
+                $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'), $MY_RIGHTS);
+                if (!empty($hostIds)) {
+                    $hostgroup['hasSLAHosts'] = $HostsTable->hasSLAHosts($hostIds) > 0;
+                }
+            }
+
+            // code for cmdb label
+            $additionalInformationExists = false;
+
+            if (Plugin::isLoaded('ImportModule')) {
+                /** @var ImportedHostgroupsTable $ImportedHostgroupsTable */
+                $ImportedHostgroupsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHostgroups');
+                $additionalInformationExists = $ImportedHostgroupsTable->existsImportedHostgroupByHostgroupId($hostgroup->get('id'));
+            }
+
+            $hostgroup['additionalInformationExists'] = $additionalInformationExists;
             $all_hostgroups[] = $hostgroup;
         }
-
         $this->set('all_hostgroups', $all_hostgroups);
         $this->viewBuilder()->setOption('serialize', ['all_hostgroups']);
     }
@@ -358,6 +378,19 @@ class HostgroupsController extends AppController {
         }
 
         $hostgroup = $HostgroupsTable->getHostgroupById($id);
+        $hasSLAHosts = false;
+        if (Plugin::isLoaded('SLAModule')) {
+            /** @var $HostsTable HostsTable */
+            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+            $MY_RIGHTS = $this->MY_RIGHTS;
+            if ($this->hasRootPrivileges) {
+                $MY_RIGHTS = [];
+            }
+            $hostIds = $HostgroupsTable->getHostIdsByHostgroupId($hostgroup->get('id'), $MY_RIGHTS);
+            if (!empty($hostIds)) {
+                $hasSLAHosts = $HostsTable->hasSLAHosts($hostIds) > 0;
+            }
+        }
 
         $User = new User($this->getUser());
         $UserTime = UserTime::fromUser($User);
@@ -468,7 +501,8 @@ class HostgroupsController extends AppController {
         $data = [
             'Hostgroup'     => $hostgroup,
             'Hosts'         => $all_hosts,
-            'StatusSummary' => $hostgroupHoststatusOverview
+            'StatusSummary' => $hostgroupHoststatusOverview,
+            'hasSLAHosts'   => $hasSLAHosts
         ];
 
 
