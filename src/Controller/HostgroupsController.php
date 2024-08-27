@@ -44,6 +44,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use ImportModule\Model\Table\ImportedHostgroupsTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
+use itnovum\openITCOCKPIT\Core\Comparison\HostComparisonForSave;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\HostgroupConditions;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
@@ -183,6 +184,10 @@ class HostgroupsController extends AppController {
 
             $requestData = $this->request->getData();
 
+            // Store HostIDs for later, remove them from the $requestdata.
+            $hostIds = $requestData['Hostgroup']['hosts']['_ids'];
+            unset($requestData['Hostgroup']['hosts']);
+
             $hostgroup = $HostgroupsTable->createHostgroup($hostgroup, $requestData, $User->getId());
 
             if ($hostgroup->hasErrors()) {
@@ -190,15 +195,16 @@ class HostgroupsController extends AppController {
                 $this->set('error', $hostgroup->getErrors());
                 $this->viewBuilder()->setOption('serialize', ['error']);
                 return;
-            } else {
-                //No errors
+            }
+            $hostgroupArray = $HostgroupsTable->getHostgroupForEdit($hostgroup->id);
+            $this->appendHostsToGroup($hostgroupArray, $hostIds);
+            //No errors
 
-                Cache::clear('permissions');
+            Cache::clear('permissions');
 
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($hostgroup); // REST API ID serialization
-                    return;
-                }
+            if ($this->isJsonRequest()) {
+                $this->serializeCake4Id($hostgroup); // REST API ID serialization
+                return;
             }
             $this->set('hostgroup', $hostgroup);
             $this->viewBuilder()->setOption('serialize', ['hostgroup']);
@@ -742,114 +748,111 @@ class HostgroupsController extends AppController {
 
             /** @var $HostgroupsTable HostgroupsTable */
             $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-            /** @var $ContainersTable ContainersTable */
-            $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-            /** @var $HostsTable HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
             if (!$HostgroupsTable->existsById($id)) {
                 throw new NotFoundException(__('Invalid Hostgroup'));
             }
 
-            $ContainersTable->acquireLock();
-
+            // Find the Hostgroup
             $hostgroup = $HostgroupsTable->getHostgroupForEdit($id);
-            $hostgroupForChangelog = $hostgroup;
+            $hostgroupEntity = $HostgroupsTable->get($id);
+            $hostgroupEntity->setAccess('uuid', false);
+
+            // Allowed?
             if (!$this->allowedByContainerId($hostgroup['Hostgroup']['container']['parent_id'])) {
                 $this->render403();
                 return;
             }
 
-            //Merge new hosts with existing hosts from host group
-            $hostIds = array_unique(array_merge(
-                $hostgroup['Hostgroup']['hosts']['_ids'],
-                $hostIds
-            ));
+            $this->appendHostsToGroup($hostgroup, $hostIds);
 
-            $containerId = $hostgroup['Hostgroup']['container']['parent_id'];
-
-            if ($containerId == ROOT_CONTAINER) {
-                //Don't panic! Only root users can edit /root objects ;)
-                //So no loss of selected hosts/host templates
-                $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
-                    CT_GLOBAL,
-                    CT_TENANT,
-                    CT_NODE
-                ]);
-            } else {
-                $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
-                    CT_GLOBAL,
-                    CT_TENANT,
-                    CT_NODE
-                ]);
-            }
-
-            $hostIdsToSave = [];
-            foreach ($hostIds as $hostId) {
-                $host = $HostsTable->getHostSharing($hostId);
-                foreach ($host['Host']['hosts_to_containers_sharing']['_ids'] as $hostContainerId) {
-                    if (in_array($hostContainerId, $containerIds, true)) {
-                        $hostIdsToSave[] = $hostId;
-                        continue 2;
-                    }
-                }
-            }
-
-
-            $User = new User($this->getUser());
-            $hostgroupEntity = $HostgroupsTable->get($id);
-
-            $hostgroupEntity->setAccess('uuid', false);
-            $hostgroupEntity = $HostgroupsTable->patchEntity($hostgroupEntity, [
-                'hosts' => [
-                    '_ids' => $hostIdsToSave
-                ]
-            ]);
-            $hostgroupEntity->id = $id;
-            $HostgroupsTable->save($hostgroupEntity);
-            if ($hostgroupEntity->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $hostgroupEntity->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
+            if ($this->isJsonRequest()) {
+                $this->serializeCake4Id($hostgroupEntity); // REST API ID serialization
                 return;
-            } else {
-                $fakeRequest = [
-                    'Hostgroup' => [
-                        'hosts' => [
-                            '_ids' => $hostIdsToSave
-                        ]
-                    ]
-                ];
-
-                //No errors
-                /** @var  ChangelogsTable $ChangelogsTable */
-                $ChangelogsTable = TableRegistry::getTableLocator()->get('Changelogs');
-
-                $changelog_data = $ChangelogsTable->parseDataForChangelog(
-                    'edit',
-                    'hostgroups',
-                    $hostgroupEntity->id,
-                    OBJECT_HOSTGROUP,
-                    $hostgroup['Hostgroup']['container']['parent_id'],
-                    $User->getId(),
-                    $hostgroup['Hostgroup']['container']['name'],
-                    array_merge($HostgroupsTable->resolveDataForChangelog($fakeRequest), $fakeRequest),
-                    array_merge($HostgroupsTable->resolveDataForChangelog($hostgroupForChangelog), $hostgroupForChangelog)
-                );
-                if ($changelog_data) {
-                    /** @var Changelog $changelogEntry */
-                    $changelogEntry = $ChangelogsTable->newEntity($changelog_data);
-                    $ChangelogsTable->save($changelogEntry);
-                }
-
-                if ($this->isJsonRequest()) {
-                    $this->serializeCake4Id($hostgroupEntity); // REST API ID serialization
-                    return;
-                }
             }
+
             $this->set('hostgroup', $hostgroupEntity);
             $this->viewBuilder()->setOption('serialize', ['hostgroup']);
         }
+    }
+
+    private function appendHostsToGroup(array $hostgroup, array $hostIds): void {
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $HostsTable HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var $HostgroupsTable HostgroupsTable */
+        $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
+
+        $ContainersTable->acquireLock();
+
+        $hostgroupForChangelog = $hostgroup;
+        //Merge new hosts with existing hosts from host group
+        $hostIds = array_unique(array_merge(
+            $hostgroup['Hostgroup']['hosts']['_ids'],
+            $hostIds
+        ));
+
+        $containerId = $hostgroup['Hostgroup']['container']['parent_id'];
+
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        }
+
+        $hostIdsToSave = [];
+        $hostGroupId = $hostgroup['Hostgroup']['id'];
+        $User = new User($this->getUser());
+
+        /// Traverse the hostgroups we have
+        $hostgroupEntity = $HostgroupsTable->get($hostGroupId);
+        $hostgroupEntity->setAccess('uuid', false);
+
+        // Traverse the hosts we have.
+        foreach ($hostIds as $hostId) {
+            $hostIdsToSave[] = $hostId;
+            $host = $HostsTable->getHostSharing($hostId);
+            $hostTemplateId = (int)$host['Host']['hosttemplate_id'];
+
+            $currentHostGroups = $HostsTable->getHostgroupIds($host);
+
+            foreach ($host['Host']['hosts_to_containers_sharing']['_ids'] as $hostContainerId) {
+                if (in_array($hostContainerId, $containerIds, true)) {
+                    $currentHostGroups[] = $hostGroupId;
+                    break;
+                }
+            }
+
+            // Load the Hosttemplate for comparison.
+            /** @var $HosttemplatesTable HosttemplatesTable */
+            $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
+            $hosttemplate = $HosttemplatesTable->getHosttemplateForDiff($hostTemplateId);
+
+            // Compare the Hosttemplate and the Host for the correct value to store.
+            $host['Host']['hostgroups']['_ids'] = $currentHostGroups;
+            $HostComparisonForSave = new HostComparisonForSave($host, $hosttemplate, true);
+            $currentHostGroups = $HostComparisonForSave->getDataForHostgroups();
+
+            $hostEntity = $HostsTable->get($hostId);
+            $patch = [
+                'hostgroups' => $currentHostGroups
+            ];
+
+            $hostEntity = $HostsTable->patchEntity($hostEntity, $patch);
+            $HostsTable->save($hostEntity);
+        }
+
     }
 
     /**
