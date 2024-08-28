@@ -635,7 +635,7 @@ class UsersTable extends Table {
      * @param array $containerPermissions
      * @return array
      */
-    public function containerPermissionsForSave($containerPermissions = []) {
+    public function containerPermissionsForSave($containerPermissions, $rootUser = false, $MY_RIGHTS = []) {
         //ContainersUsersMemberships
 
         $dataForSave = [];
