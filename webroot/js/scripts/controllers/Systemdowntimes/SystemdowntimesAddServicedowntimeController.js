@@ -63,6 +63,7 @@ angular.module('openITCOCKPIT')
                     params: {
                         'angular': true,
                         'filter[servicename]': searchString,
+                        'filter[Services.disabled]': 0,
                         'selected[]': $scope.post.Systemdowntime.object_id
                     }
                 }).then(function(result){
