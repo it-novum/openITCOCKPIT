@@ -632,19 +632,30 @@ class UsersTable extends Table {
     }
 
     /**
-     * @param array $containerPermissions
+     * @param $containerPermissions
+     * @param bool $hasRootPrivileges
+     * @param array $MY_RIGHTS_LEVEL
      * @return array
      */
-    public function containerPermissionsForSave($containerPermissions, $rootUser = false, $MY_RIGHTS = []) {
+    public function containerPermissionsForSave($containerPermissions, bool $hasRootPrivileges = false, array $MY_RIGHTS_LEVEL = []) {
         //ContainersUsersMemberships
 
         $dataForSave = [];
         foreach ($containerPermissions as $containerId => $permissionLevel) {
+            if (!$hasRootPrivileges && !isset($MY_RIGHTS_LEVEL[$containerId])) {
+                //User has no rights to this container
+                continue;
+            }
             $containerId = (int)$containerId;
             $permissionLevel = (int)$permissionLevel;
             if ($permissionLevel !== READ_RIGHT && $permissionLevel !== WRITE_RIGHT) {
                 $permissionLevel = READ_RIGHT;
             }
+            if (!$hasRootPrivileges && $MY_RIGHTS_LEVEL[$containerId] < $containerPermissions[$containerId]) {
+                //avoid to set higher permission level than the user has
+                $permissionLevel = READ_RIGHT;
+            }
+
             if ($containerId === ROOT_CONTAINER) {
                 // ROOT_CONTAINER is always read/write
                 $permissionLevel = WRITE_RIGHT;
