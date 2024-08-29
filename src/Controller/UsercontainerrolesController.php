@@ -100,7 +100,7 @@ class UsercontainerrolesController extends AppController {
                     if (!empty($notPermittedContainer)) {
                         $usercontainerrole['users'][$userIndex]['allow_edit'] = false;
                     } else {
-                        $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
+                        $containerWithWritePermissionByUserContainerRoles = array_keys($containerWithWritePermissionByUserContainerRoles);
 
                         $container = Hash::extract(
                             $user['containers'],
