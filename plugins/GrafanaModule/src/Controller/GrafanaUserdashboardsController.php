@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -1205,51 +1210,5 @@ class GrafanaUserdashboardsController extends AppController {
             $str
         );
     }
-
-    public function grafanaTimepicker() {
-        if (!$this->isAngularJsRequest()) {
-            //Only ship HTML Template
-            return;
-        }
-
-        if ($this->isAngularJsRequest()) {
-            $timeranges = [
-                'quick'           => [
-                    'now-2d'  => __('Last 2 days'),
-                    'now-7d'  => __('Last 7 days'),
-                    'now-30d' => __('Last 30 days'),
-                    'now-90d' => __('Last 90 days'),
-                    'now-6M'  => __('Last 6 months'),
-                    'now-1y'  => __('Last year')
-                ],
-                'today'           => [
-                    'now%2Fd' => __('Today so far'),
-                    'now%2Fw' => __('This week so far'),
-                    'now%2FM' => __('This month so far')
-                ],
-                'last'            => [
-                    'now-5m'  => __('Last 5 minutes'),
-                    'now-15m' => __('Last 15 minutes'),
-                    'now-30m' => __('Last 30 minutes'),
-                    'now-1h'  => __('Last 1 hour'),
-                    'now-3h'  => __('Last 3 hours'),
-                    'now-6h'  => __('Last 6 hours'),
-                    'now-12h' => __('Last 12 hours'),
-                    'now-24h' => __('Last 24 hours'),
-                ],
-                'update_interval' => [
-                    //'0'   => __('Disabled'), //Does not work via URL because is still in dashboard json :/
-                    '5s'  => __('Refresh every 5s'),
-                    '10s' => __('Refresh every 10s'),
-                    '30s' => __('Refresh every 30s'),
-                    '1m'  => __('Refresh every 1m'),
-                    '5m'  => __('Refresh every 5m'),
-                    '15m' => __('Refresh every 15m')
-                ]
-            ];
-            $this->set('timeranges', $timeranges);
-            $this->viewBuilder()->setOption('serialize', ['timeranges']);
-        }
-
-    }
+    
 }
