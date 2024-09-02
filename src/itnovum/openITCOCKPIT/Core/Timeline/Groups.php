@@ -35,27 +35,27 @@ class Groups {
         $this->groups = [
             'acknowledgements'    => [
                 'id'   => 2,
-                'icon' => ' 💬',
+                'icon' => ' <i class=\'fas fa-commenting\'></i>',
                 'text' => __('Acknowledgements')
             ],
             'downtimes'           => [
                 'id'   => 3,
-                'icon' => '🕒',
+                'icon' => '<i class=\'fas fa-power-off\'></i>',
                 'text' => __('Downtimes')
             ],
             'notifications'       => [
                 'id'   => 1,
-                'icon' => '✉️',
+                'icon' => '<i class=\'fas fa-envelope\'></i>',
                 'text' => __('Notifications')
             ],
             'servicestatehistory' => [
                 'id'   => 4,
-                'icon' => '⚙️',
+                'icon' => '<i class=\'fas fa-cog\'></i>',
                 'text' => __('State history service')
             ],
             'hoststatehistory'    => [
                 'id'   => 5,
-                'icon' => '🖥️',
+                'icon' => '<i class=\'fas fa-desktop\'></i>',
                 'text' => __('State history host')
             ]
         ];
