@@ -333,9 +333,10 @@ class UsersController extends AppController {
             $all_users[] = $user;
         }
 
+        $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
         $this->set('all_users', $all_users);
         $this->set('myUserId', $User->getId());
-        $this->viewBuilder()->setOption('serialize', ['all_users', 'myUserId']);
+        $this->viewBuilder()->setOption('serialize', ['all_users', 'myUserId', 'isLdapAuth']);
     }
 
     public function add() {
