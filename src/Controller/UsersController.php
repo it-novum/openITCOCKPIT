@@ -975,7 +975,9 @@ class UsersController extends AppController {
         $this->set('dateformats', $dateformats);
         $this->set('defaultDateFormat', $defaultDateFormat);
         $this->set('timezones', $timezones);
-        $this->viewBuilder()->setOption('serialize', ['dateformats', 'defaultDateFormat', 'timezones']);
+        $this->set('serverTimeZone', date_default_timezone_get());
+        $this->set('serverTime', date('d.m.Y H:i:s'));
+        $this->viewBuilder()->setOption('serialize', ['dateformats', 'defaultDateFormat', 'timezones', 'serverTime', 'serverTimeZone']);
     }
 
     public function loadContainerRoles() {
