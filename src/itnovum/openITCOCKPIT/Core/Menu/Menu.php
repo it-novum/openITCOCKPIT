@@ -527,7 +527,9 @@ class Menu {
                     '',
                     ['fas', 'user'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/users/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Manage User Roles'),

@@ -333,9 +333,10 @@ class UsersController extends AppController {
             $all_users[] = $user;
         }
 
+        $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
         $this->set('all_users', $all_users);
         $this->set('myUserId', $User->getId());
-        $this->viewBuilder()->setOption('serialize', ['all_users', 'myUserId']);
+        $this->viewBuilder()->setOption('serialize', ['all_users', 'myUserId', 'isLdapAuth']);
     }
 
     public function add() {
@@ -975,7 +976,9 @@ class UsersController extends AppController {
         $this->set('dateformats', $dateformats);
         $this->set('defaultDateFormat', $defaultDateFormat);
         $this->set('timezones', $timezones);
-        $this->viewBuilder()->setOption('serialize', ['dateformats', 'defaultDateFormat', 'timezones']);
+        $this->set('serverTimeZone', date_default_timezone_get());
+        $this->set('serverTime', date('d.m.Y H:i:s'));
+        $this->viewBuilder()->setOption('serialize', ['dateformats', 'defaultDateFormat', 'timezones', 'serverTime', 'serverTimeZone']);
     }
 
     public function loadContainerRoles() {
