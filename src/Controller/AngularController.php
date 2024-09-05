@@ -1388,4 +1388,10 @@ class AngularController extends AppController {
         $this->set('satellites', $satellites);
         $this->viewBuilder()->setOption('serialize', ['satellites']);
     }
+
+    public function getSystemname() {
+        $systenmane = parent::getSystemname();
+        $this->set('systenmane', $systenmane);
+        $this->viewBuilder()->setOption('serialize', ['systenmane']);
+    }
 }
