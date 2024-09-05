@@ -516,10 +516,12 @@ class AngularController extends AppController {
                         return;
                     }
 
-                    $this->set('state', $TableName . 'Index');
+                    $this->set('state', $TableName . 'Index'); // AngularJS
+                    $this->set('url', ['/', strtolower($TableName), 'index']); // Angular
                     $this->set('id', $result->get('id'));
                     $this->viewBuilder()->setOption('serialize', [
                         'state',
+                        'url',
                         'id',
                         'hasPermission'
                     ]);
