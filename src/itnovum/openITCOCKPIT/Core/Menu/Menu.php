@@ -71,7 +71,9 @@ class Menu {
                 '',
                 ['fas', 'list'],
                 ['browser'],
-                3
+                3,
+                true,
+                '/browsers/index'
             ))
             ->addCategory(
                 (new MenuCategory(

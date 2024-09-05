@@ -292,9 +292,18 @@ class AngularController extends AppController {
         $session->close();
 
         $recursive = false;
-        if ($this->request->getQuery('recursive') === 'true') {
-            $recursive = true;
+        // ITC-3258 No recursive parameter, use the default from the user settings
+        if ($this->request->getQuery('recursive', null) === null) {
+            $User = new User($this->getUser());
+            $recursive = $User->isRecursiveBrowserEnabled();
+        } else {
+            // Parameter is set, use it
+            $recursive = false;
+            if ($this->request->getQuery('recursive', null) === 'true') {
+                $recursive = true;
+            }
         }
+
 
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
