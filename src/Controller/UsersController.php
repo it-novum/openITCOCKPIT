@@ -188,8 +188,12 @@ class UsersController extends AppController {
                 }
             }
 
+            // Add URL for (custom) logo
+            $Logo = new Logo();
+            $this->set('logoUrl', $Logo->getLoginLogoHtml());
+
             $this->set('errorMessages', $errorMessages);
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages']);
             return;
         }
 
