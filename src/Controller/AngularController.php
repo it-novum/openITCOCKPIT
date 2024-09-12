@@ -735,7 +735,7 @@ class AngularController extends AppController {
         $cache['gearman_reachable'] = $GearmanClient->ping();
 
 
-        exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
+        exec('ps -eaf |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
         $cache['gearman_worker_running'] = sizeof($output) > 0;
         if (!$cache['gearman_worker_running']) {
             $this->setHealthState('critical');
