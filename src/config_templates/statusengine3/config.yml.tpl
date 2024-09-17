@@ -101,7 +101,9 @@ use_crate: 0
 # It is recommended to you a load balancer in front of your CrateDB cluster!
 # So you will have a single ip address where Statusengine is going to connect to
 crate:
-nodes:
+  username: crate
+  password:
+  nodes:
   - 127.0.0.1:4200
 #    - 192.168.56.101:4200
 #    - 192.168.56.102:4200
@@ -297,6 +299,9 @@ age_host_acknowledgements: 0
 # How long should host notifications be stored
 age_host_notifications: 0
 
+# How long should host notifications log records be stored
+age_host_notifications_log: 0
+
 # How long should host state change records be stored
 age_host_statehistory: 0
 
@@ -312,6 +317,9 @@ age_service_acknowledgements: 0
 
 # How long should service notifications be stored
 age_service_notifications: 0
+
+# How long should service notifications log records be stored
+age_service_notifications_log: 0
 
 # How long should service state change records be stored
 age_service_statehistory: 0

@@ -38,7 +38,7 @@ WorkerOCSP = "statusngin_worker_ocsp"
 SystemCommandData = "statusngin_systemcommands"
 #CommentData = "statusngin_comments"
 #ExternalCommandData = "statusngin_externalcommands"
-#NotificationData = "statusngin_notifications"
+NotificationData = "statusngin_notifications"
 #ProgramStatusData = "statusngin_programmstatus"
 #ContactStatusData = "statusngin_contactstatus"
 #ContactNotificationData = "statusngin_contactnotificationdata"
@@ -109,7 +109,7 @@ FlushInterval = 1
 ## List of queue identifier which should be created as bulk message. This is a global option for all connections
 {% set OCHPBulk = sstatusengine_enable_ochp ? ', "OCHP"' : '' %}
 {% set OCSPBulk = statusengine_enable_ocsp ? ', "OCSP"' : '' %}
-Queues = ["HostStatus", "HostCheck", "ServiceStatus", "ServiceCheck", "ServicePerfData", "StateChange", "LogData"{{OCHPBulk|raw}}{{OCSPBulk|raw}}]
+Queues = ["HostStatus", "HostCheck", "ServiceStatus", "ServiceCheck", "ServicePerfData", "StateChange", "LogData", "NotificationData"{{OCHPBulk|raw}}{{OCSPBulk|raw}}]
 
 [Log]
 #Level = Warning
