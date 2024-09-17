@@ -24,6 +24,10 @@
 
 namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
+/**
+ * Class NotificationReasonTypes
+ * @link https://github.com/statusengine/worker/blob/2e6809639046197f1d495d629806fcc630950f92/src/ValueObjects/Notification.php#L217-L230
+ */
 class NotificationReasonTypes {
 
     public const NOTIFICATION_NORMAL = 0;
