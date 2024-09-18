@@ -356,7 +356,11 @@ class UsersController extends AppController {
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
             }
-            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave(
+                $data['ContainersUsersMemberships'],
+                $this->hasRootPrivileges,
+                $this->MY_RIGHTS_LEVEL
+            );
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
@@ -483,7 +487,11 @@ class UsersController extends AppController {
                     }
                 }
             }
-            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave(
+                $data['ContainersUsersMemberships'],
+                $this->hasRootPrivileges,
+                $this->MY_RIGHTS_LEVEL
+            );
             $user = $UsersTable->get($id);
             $user->setAccess('id', false);
 
@@ -713,7 +721,11 @@ class UsersController extends AppController {
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
             }
-            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave(
+                $data['ContainersUsersMemberships'],
+                $this->hasRootPrivileges,
+                $this->MY_RIGHTS_LEVEL
+            );
 
             // Get User Container Roles from LDAP groups
 
