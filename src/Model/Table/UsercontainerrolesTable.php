@@ -102,7 +102,6 @@ class UsercontainerrolesTable extends Table {
             'targetForeignKey' => 'ldapgroup_id',
             'saveStrategy'     => 'replace'
         ]);
-
     }
 
     /**
@@ -143,11 +142,11 @@ class UsercontainerrolesTable extends Table {
 
     /**
      * @param GenericFilter $GenericFilter
-     * @param $selected
-     * @param $MY_RIGHTS
+     * @param array $selected
+     * @param array $MY_RIGHTS
      * @return array
      */
-    public function getUsercontainerrolesAsList(GenericFilter $GenericFilter, $selected = [], $MY_RIGHTS = []) {
+    public function getUsercontainerrolesAsList(GenericFilter $GenericFilter, array $selected = [], array $MY_RIGHTS = []): array {
         if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
@@ -207,11 +206,8 @@ class UsercontainerrolesTable extends Table {
                     'Usercontainerroles.id'   => 'asc'
                 ])->disableHydration();
 
-            foreach ($query->toArray() as $record) {
-                $result[$record['id']] = $record['name'];
-            }
-        }
 
+        }
         return $result;
     }
 
@@ -548,4 +544,28 @@ class UsercontainerrolesTable extends Table {
             ->first();
     }
 
+    /*
+     * @param array $userRoleContainerIds
+     */
+    public function getUsercontanerRoleWithAllContainerIdsByIds($userRoleContainerIds = []) {
+        if (!is_array($userRoleContainerIds)) {
+            $userRoleContainerIds = [$userRoleContainerIds];
+        }
+        return $this->find('list', [
+            'keyField'   => 'id',
+            'valueField' => function ($row) {
+                return Hash::extract($row['containers'], '{n}.id');
+            }
+        ])->select([
+            'Usercontainerroles.id'
+        ])->contain([
+            'Containers' => function (\Cake\ORM\Query $q) {
+                return $q->select([
+                    'Containers.id'
+                ])->disableAutoFields();
+            }
+        ])->where(['Usercontainerroles.id IN' => $userRoleContainerIds])
+            ->all()
+            ->toArray();
+    }
 }
