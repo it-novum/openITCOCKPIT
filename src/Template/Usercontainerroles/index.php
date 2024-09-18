@@ -120,9 +120,12 @@
                             <tbody>
                             <tr ng-repeat="usercontainerrole in usercontainerroles">
                                 <td class="text-center width-15">
-                                    <input type="checkbox"
-                                           ng-model="massChange[usercontainerrole.id]"
-                                           ng-show="usercontainerrole.allow_edit">
+                                    <?php if ($this->Acl->hasPermission('copy', 'usercontainerroles') ||
+                                        $this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
+                                        <input type="checkbox"
+                                               ng-model="massChange[usercontainerrole.id]"
+                                               ng-show="usercontainerrole.allow_edit">
+                                    <?php endif; ?>
                                 </td>
 
                                 <td>{{usercontainerrole.name}}</td>
@@ -135,9 +138,9 @@
                                                    ng-show="user.allow_edit">
                                                     {{user.full_name}}
                                                 </a>
-                                            <span ng-hide="user.allow_edit">
-                                                {{user.full_name}}
-                                            </span>
+                                                <span ng-hide="user.allow_edit">
+                                                    {{user.full_name}}
+                                                </span>
                                             <?php else: ?>
                                                 {{user.full_name}}
                                             <?php endif; ?>
@@ -182,7 +185,8 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('copy', 'usercontainerroles')): ?>
-                                                <div class="dropdown-divider" ng-if="usercontainerrole.allow_edit"></div>
+                                                <div class="dropdown-divider"
+                                                     ng-if="usercontainerrole.allow_edit"></div>
                                                 <a ui-sref="UsercontainerrolesCopy({ids: usercontainerrole.id})"
                                                    ng-if="usercontainerrole.allow_edit"
                                                    class="dropdown-item">
@@ -191,7 +195,8 @@
                                                 </a>
                                             <?php endif; ?>
                                             <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
-                                                <div class="dropdown-divider" ng-if="usercontainerrole.allow_edit"></div>
+                                                <div class="dropdown-divider"
+                                                     ng-if="usercontainerrole.allow_edit"></div>
                                                 <a ng-if="usercontainerrole.allow_edit"
                                                    ng-click="confirmDelete(getObjectForDelete(usercontainerrole))"
                                                    href="javascript:void(0);"
@@ -211,37 +216,42 @@
                                 <?php echo __('No entries match the selection'); ?>
                             </div>
                         </div>
+
                         <div class="row margin-top-10 margin-bottom-10">
-                            <div class="col-xs-12 col-md-2 text-muted text-center">
-                                <span ng-show="selectedElements > 0">({{selectedElements}})</span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
-                                <span ng-click="selectAll()" class="pointer">
-                                    <i class="fas fa-lg fa-check-square"></i>
-                                    <?php echo __('Select all'); ?>
-                                </span>
-                            </div>
-                            <div class="col-xs-12 col-md-2">
-                                <span ng-click="undoSelection()" class="pointer">
-                                    <i class="fas fa-lg fa-square"></i>
-                                    <?php echo __('Undo selection'); ?>
-                                </span>
-                            </div>
-                            <?php if ($this->Acl->hasPermission('copy', 'usercontainerroles')): ?>
-                                <div class="col-xs-12 col-md-2">
-                                    <a ui-sref="UsercontainerrolesCopy({ids: linkForCopy()})" class="a-clean">
-                                        <i class="fas fa-lg fa-files-o"></i>
-                                        <?php echo __('Copy'); ?>
-                                    </a>
+                            <?php if ($this->Acl->hasPermission('copy', 'usercontainerroles') ||
+                                $this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
+
+                                <div class="col-xs-12 col-md-2 text-muted text-center">
+                                    <span ng-show="selectedElements > 0">({{selectedElements}})</span>
                                 </div>
-                            <?php endif; ?>
-                            <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
-                                <div class="col-xs-12 col-md-2 txt-color-red">
-                                    <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
-                                        <i class="fas fa-trash"></i>
-                                        <?php echo __('Delete selected'); ?>
+                                <div class="col-xs-12 col-md-2">
+                                    <span ng-click="selectAll()" class="pointer">
+                                        <i class="fas fa-lg fa-check-square"></i>
+                                        <?php echo __('Select all'); ?>
                                     </span>
                                 </div>
+                                <div class="col-xs-12 col-md-2">
+                                    <span ng-click="undoSelection()" class="pointer">
+                                        <i class="fas fa-lg fa-square"></i>
+                                        <?php echo __('Undo selection'); ?>
+                                    </span>
+                                </div>
+                                <?php if ($this->Acl->hasPermission('copy', 'usercontainerroles')): ?>
+                                    <div class="col-xs-12 col-md-2">
+                                        <a ui-sref="UsercontainerrolesCopy({ids: linkForCopy()})" class="a-clean">
+                                            <i class="fas fa-lg fa-files-o"></i>
+                                            <?php echo __('Copy'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($this->Acl->hasPermission('delete', 'usercontainerroles')): ?>
+                                    <div class="col-xs-12 col-md-2 txt-color-red">
+                                        <span ng-click="confirmDelete(getObjectsForDelete())" class="pointer">
+                                            <i class="fas fa-trash"></i>
+                                            <?php echo __('Delete selected'); ?>
+                                        </span>
+                                    </div>
+                                <?php endif; ?>
                             <?php endif; ?>
                         </div>
                         <scroll scroll="scroll" click-action="changepage" ng-if="scroll"></scroll>

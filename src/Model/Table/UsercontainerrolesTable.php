@@ -140,36 +140,6 @@ class UsercontainerrolesTable extends Table {
         return $this->exists(['Usercontainerroles.id' => $id]);
     }
 
-    /**
-     * @param array $containerPermissions
-     * @return array
-     */
-    public function containerPermissionsForSave($containerPermissions = []) {
-        //ContainersUsercontainerrolesMemberships
-
-        $dataForSave = [];
-        foreach ($containerPermissions as $containerId => $permissionLevel) {
-            $containerId = (int)$containerId;
-            $permissionLevel = (int)$permissionLevel;
-            if ($permissionLevel !== READ_RIGHT && $permissionLevel !== WRITE_RIGHT) {
-                $permissionLevel = READ_RIGHT;
-            }
-            if ($containerId === ROOT_CONTAINER) {
-                // ROOT_CONTAINER is always read/write
-                $permissionLevel = WRITE_RIGHT;
-            }
-
-            $dataForSave[] = [
-                'id'        => $containerId,
-                '_joinData' => [
-                    'permission_level' => $permissionLevel
-                ]
-            ];
-        }
-
-        return $dataForSave;
-    }
-
 
     /**
      * @param GenericFilter $GenericFilter
@@ -265,7 +235,8 @@ class UsercontainerrolesTable extends Table {
                     $q->contain([
                         'Usercontainerroles' => [
                             'Containers'
-                        ]
+                        ],
+                        'Containers'
                     ])
                         ->select([
                             'Users.id',
