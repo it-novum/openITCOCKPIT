@@ -5,6 +5,7 @@ namespace App\Model\Table;
 use Acl\Model\Table\AcosTable;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\ORM\Query;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -129,6 +130,14 @@ class UsergroupsTable extends Table {
      */
     public function getUsergroups($PaginateOMat, GenericFilter $GenericFilter) {
         $query = $this->find()
+            ->contain([
+                'Users' => function (Query $q) {
+                    return $q->select([
+                        'Users.id',
+                        'Users.usergroup_id'
+                    ]);
+                }
+            ])
             ->order($GenericFilter->getOrderForPaginator('Usergroups.name', 'asc'))
             ->disableHydration();
 

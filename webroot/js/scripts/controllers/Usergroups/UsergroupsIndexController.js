@@ -1,5 +1,5 @@
 angular.module('openITCOCKPIT')
-    .controller('UsergroupsIndexController', function($scope, $http, SortService, MassChangeService, QueryStringService){
+    .controller('UsergroupsIndexController', function($scope, $http, SortService, MassChangeService, QueryStringService) {
 
         SortService.setSort(QueryStringService.getValue('sort', 'Usergroups.name'));
         SortService.setDirection(QueryStringService.getValue('direction', 'asc'));
@@ -8,7 +8,7 @@ angular.module('openITCOCKPIT')
         $scope.deleteUrl = '/usergroups/delete/';
 
         /*** Filter Settings ***/
-        var defaultFilter = function(){
+        var defaultFilter = function() {
             $scope.filter = {
                 Usergroups: {
                     name: '',
@@ -18,7 +18,7 @@ angular.module('openITCOCKPIT')
         };
         /*** Filter end ***/
 
-        $scope.load = function(){
+        $scope.load = function() {
             var params = {
                 'angular': true,
                 'scroll': $scope.useScroll,
@@ -31,7 +31,7 @@ angular.module('openITCOCKPIT')
 
             $http.get("/usergroups/index.json", {
                 params: params
-            }).then(function(result){
+            }).then(function(result) {
                 $scope.Usergroups = result.data.allUsergroups;
                 $scope.paging = result.data.paging;
                 $scope.scroll = result.data.scroll;
@@ -39,19 +39,19 @@ angular.module('openITCOCKPIT')
             });
         };
 
-        $scope.triggerFilter = function(){
+        $scope.triggerFilter = function() {
             $scope.showFilter = !$scope.showFilter === true;
         };
 
-        $scope.resetFilter = function(){
+        $scope.resetFilter = function() {
             defaultFilter();
             $scope.undoSelection();
         };
 
-        $scope.selectAll = function(){
-            if($scope.Usergroups){
-                for(var key in $scope.Usergroups){
-                    if($scope.Usergroups.name !== 'Administrator'){
+        $scope.selectAll = function() {
+            if($scope.Usergroups) {
+                for(var key in $scope.Usergroups) {
+                    if($scope.Usergroups[key].name !== 'Administrator' && $scope.Usergroups[key].users.length === 0) {
                         var id = $scope.Usergroups[key].id;
                         $scope.massChange[id] = true;
                     }
@@ -59,24 +59,24 @@ angular.module('openITCOCKPIT')
             }
         };
 
-        $scope.undoSelection = function(){
+        $scope.undoSelection = function() {
             MassChangeService.clearSelection();
             $scope.massChange = MassChangeService.getSelected();
             $scope.selectedElements = MassChangeService.getCount();
         };
 
-        $scope.getObjectForDelete = function(usergroup){
+        $scope.getObjectForDelete = function(usergroup) {
             var object = {};
             object[usergroup.id] = usergroup.name;
             return object;
         };
 
-        $scope.getObjectsForDelete = function(){
+        $scope.getObjectsForDelete = function() {
             var objects = {};
             var selectedObjects = MassChangeService.getSelected();
-            for(var key in $scope.Usergroups){
-                for(var id in selectedObjects){
-                    if(id == $scope.Usergroups[key].id){
+            for(var key in $scope.Usergroups) {
+                for(var id in selectedObjects) {
+                    if(id == $scope.Usergroups[key].id) {
                         objects[id] = $scope.Usergroups[key].name;
                     }
                 }
@@ -85,21 +85,21 @@ angular.module('openITCOCKPIT')
         };
 
 
-        $scope.linkForCopy = function(){
+        $scope.linkForCopy = function() {
             var ids = Object.keys(MassChangeService.getSelected());
             return ids.join(',');
         };
 
 
-        $scope.changepage = function(page){
+        $scope.changepage = function(page) {
             $scope.undoSelection();
-            if(page !== $scope.currentPage){
+            if(page !== $scope.currentPage) {
                 $scope.currentPage = page;
                 $scope.load();
             }
         };
 
-        $scope.changeMode = function(val){
+        $scope.changeMode = function(val) {
             $scope.useScroll = val;
             $scope.load();
         };
@@ -108,17 +108,16 @@ angular.module('openITCOCKPIT')
         defaultFilter();
         SortService.setCallback($scope.load);
 
-        $scope.$watch('filter', function(){
+        $scope.$watch('filter', function() {
             $scope.currentPage = 1;
             $scope.undoSelection();
             $scope.load();
         }, true);
 
 
-        $scope.$watch('massChange', function(){
+        $scope.$watch('massChange', function() {
             MassChangeService.setSelected($scope.massChange);
             $scope.selectedElements = MassChangeService.getCount();
         }, true);
 
     });
-
