@@ -98,6 +98,12 @@ angular.module('openITCOCKPIT')
                 }
             }
 
+            if(selectedTypes.length === 0) {
+                for(var typeName in $scope.filter.Types) {
+                    selectedTypes.push(typeName);
+                }
+            }
+
             return selectedTypes;
         };
 
