@@ -22,9 +22,9 @@ use_gearman: 1
 # The Statusengine Broker Module exports all data as json encoded objects
 # to the a gearman-job-server
 gearman:
-  address: 127.0.0.1
-  port: 4730
-  timeout: 1000
+address: 127.0.0.1
+port: 4730
+timeout: 1000
 
 # Determine if your Statusengine Broker Model exports all data to
 # RabbitMQ or not.
@@ -39,14 +39,14 @@ use_rabbitmq: 0
 # which is in development at the moment.
 # See: https://github.com/statusengine/broker
 rabbitmq:
-  host: 127.0.0.1
-  port: 5672
-  user: statusengine
-  password: statusengine
-  vhost: /
-  exchange: statusengine
-  durable_exchange: 0
-  durable_queues: 0
+host: 127.0.0.1
+port: 5672
+user: statusengine
+password: statusengine
+vhost: /
+exchange: statusengine
+durable_exchange: 0
+durable_queues: 0
 
 
 ############
@@ -60,9 +60,9 @@ use_redis: 0
 
 # Configuration of your redis server
 redis:
-  address: 127.0.0.1
-  port: 6379
-  db: 0
+address: 127.0.0.1
+port: 6379
+db: 0
 
 ############
 # HISTORY DATA CONFIGURATION
@@ -78,12 +78,12 @@ use_mysql: 1
 
 # Configuration of your MySQL server
 mysql:
-  host: {{mysql_host}}
-  port: 3306
-  username: {{mysql_user}}
-  password: {{mysql_password}}
-  database: {{mysql_database}}
-  encoding: utf8mb4
+host: {{mysql_host}}
+port: 3306
+username: {{mysql_user}}
+password: {{mysql_password}}
+database: {{mysql_database}}
+encoding: utf8mb4
 
 # Dump MySQL Query Parameters on Error
 # Determines if Statusengine will call PDOStatement::debugDumpParams (https://www.php.net/manual/de/pdostatement.debugdumpparams.php)
@@ -101,10 +101,10 @@ use_crate: 0
 # It is recommended to you a load balancer in front of your CrateDB cluster!
 # So you will have a single ip address where Statusengine is going to connect to
 crate:
-  username: crate
-  password:
-  nodes:
-  - 127.0.0.1:4200
+username: crate
+password:
+nodes:
+- 127.0.0.1:4200
 #    - 192.168.56.101:4200
 #    - 192.168.56.102:4200
 
@@ -144,6 +144,10 @@ number_hostcheck_worker: {{number_hostcheck_worker}}
 # Target: MySQL|CrateDB
 number_servicecheck_worker: {{number_servicecheck_worker}}
 
+# Number of worker other queues like notifications
+# Target: MySQL|CrateDB
+number_notification_log_worker: 1
+
 # Number of worker other queues like notifications, downtimes and acknowledgements
 # Target: MySQL|CrateDB
 number_misc_worker: 1
@@ -164,7 +168,7 @@ number_perfdata_worker: {{number_perfdata_worker}}
 # Uncomment to enable
 # You can enable as much backends as you want
 perfdata_backend:
-  - graphite
+- graphite
 # - crate
 # - mysql
 # - elasticsearch
@@ -201,13 +205,13 @@ graphite_illegal_characters: /[^a-zA-Z^0-9\-\.]/
 # BEFORE THE FIRST start of Statusengine Worker,
 # or you need to delete/edit the old template manually via Elasticsearch API
 elasticsearch_template:
-  name: statusengine-metric
-  number_of_shards: 2
-  number_of_replicas: 0
-  refresh_interval: 15s
-  codec: best_compression
-  enable_all: 0
-  enable_source: 1
+name: statusengine-metric
+number_of_shards: 2
+number_of_replicas: 0
+refresh_interval: 15s
+codec: best_compression
+enable_all: 0
+enable_source: 1
 
 # Index that will be used to store data in Elasticsearch
 elasticsearch_index: statusengine-metric-
