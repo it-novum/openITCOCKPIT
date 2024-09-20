@@ -1413,12 +1413,13 @@ class ServicesController extends AppController {
 
         $canUserSeeCheckCommand = isset($this->PERMISSIONS['services']['checkcommand']);
 
-        if ($this->isHtmlRequest()) {
-            /** @var SystemsettingsTable $SystemsettingsTable */
-            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
-            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
+        $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+        if ($this->isHtmlRequest()) {
             //Only ship template
             $this->set('username', $User->getFullName());
             $this->set('blurryCommandLine', $blurryCommandLine);
@@ -1628,6 +1629,7 @@ class ServicesController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
+            ->isHardstate()
             ->problemHasBeenAcknowledged()
             ->scheduledDowntimeDepth()
             ->lastStateChange();
@@ -1857,6 +1859,9 @@ class ServicesController extends AppController {
         $this->set('sharedContainers', $sharedContainers);
         $this->set('objects', $objects);
         $this->set('usageFlag', $serviceObj->getUsageFlag());
+        $this->set('username', $User->getFullName());
+        $this->set('blurryCommandLine', $blurryCommandLine);
+        $this->set('masterInstanceName', $masterInstanceName);
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedService',
@@ -1880,7 +1885,10 @@ class ServicesController extends AppController {
             'sharedContainers',
             'objects',
             'usageFlag',
-            'mapModule'
+            'mapModule',
+            'username',
+            'blurryCommandLine',
+            'masterInstanceName'
         ]);
     }
 
