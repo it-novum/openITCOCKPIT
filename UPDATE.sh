@@ -1,4 +1,29 @@
 #!/bin/bash
+#
+# Copyright (C) <2015-present>  <it-novum GmbH>
+#
+# This file is dual licensed
+#
+# 1.
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, version 3 of the License.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# 2.
+#     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+#     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+#     License agreement and license key will be shipped with the order
+#     confirmation.
+#
+
 if [[ $1 == "--help" ]]; then
   echo "Supported parameters:"
   echo "--rights             Reset file permissions"
@@ -112,6 +137,7 @@ mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-p
   --ignore-table=$dbc_dbname.statusengine_host_acknowledgements \
   --ignore-table=$dbc_dbname.statusengine_host_downtimehistory \
   --ignore-table=$dbc_dbname.statusengine_host_notifications \
+  --ignore-table=$dbc_dbname.statusengine_host_notifications_log \
   --ignore-table=$dbc_dbname.statusengine_host_scheduleddowntimes \
   --ignore-table=$dbc_dbname.statusengine_host_statehistory \
   --ignore-table=$dbc_dbname.statusengine_hostchecks \
@@ -122,6 +148,7 @@ mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-p
   --ignore-table=$dbc_dbname.statusengine_service_acknowledgements \
   --ignore-table=$dbc_dbname.statusengine_service_downtimehistory \
   --ignore-table=$dbc_dbname.statusengine_service_notifications \
+  --ignore-table=$dbc_dbname.statusengine_service_notifications_log \
   --ignore-table=$dbc_dbname.statusengine_service_scheduleddowntimes \
   --ignore-table=$dbc_dbname.statusengine_service_statehistory \
   --ignore-table=$dbc_dbname.statusengine_servicechecks \
@@ -218,7 +245,6 @@ done
 
 echo "---------------------------------------------------------------"
 echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
-
 # Disabled - this takes ages!
 #mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
