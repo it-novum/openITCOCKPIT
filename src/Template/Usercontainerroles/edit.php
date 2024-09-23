@@ -115,7 +115,6 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                 <div class="help-block text-danger">{{ error }}</div>
                             </div>
                         </div>
-
                         <!-- User Container Roles permissions read/write -->
                         <div class="row" ng-repeat="container in selectedContainerWithPermission">
                             <div class="col col-md-2"></div>
@@ -127,7 +126,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        type="radio"
                                        value="1"
                                        ng-model="container.permission_level"
-                                       ng-disabled="container.container_id === 1"
+                                       ng-disabled="container.container_id === 1 || container.readonly"
                                        ng-checked="container.permission_level == 1">
                                 <label class="padding-10 font-sm"><?php echo __('read'); ?></label>
 
@@ -135,7 +134,7 @@ $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
                                        type="radio"
                                        value="2"
                                        ng-model="container.permission_level"
-                                       ng-disabled="container.container_id === 1"
+                                       ng-disabled="container.container_id === 1 || container.readonly"
                                        ng-checked="container.permission_level == 2">
                                 <label class="padding-10 font-sm"><?php echo __('read/write'); ?></label>
                             </div>

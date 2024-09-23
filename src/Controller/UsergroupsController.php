@@ -335,10 +335,16 @@ class UsergroupsController extends AppController {
         // For this reason we use the same lock to avoid broken nested set.
         $ContainersTable->acquireLock();
 
-        $usergroup = $UsergroupsTable->get($id);
-
+        $usergroup = $UsergroupsTable->get($id, [
+            'contain' => 'Users'
+        ]);
+        
         if ($usergroup->get('name') === 'Administrator') {
             throw new \RuntimeException('The "Administrator" can not be deleted!');
+        }
+
+        if (!empty($usergroup->get('users'))) {
+            throw new \RuntimeException('Issue while deleting user role. There are still users assigned to this user role.');
         }
 
         if ($UsergroupsTable->delete($usergroup)) {

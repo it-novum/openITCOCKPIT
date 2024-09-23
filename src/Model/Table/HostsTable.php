@@ -3420,6 +3420,7 @@ class HostsTable extends Table {
         }
 
         $query
+            ->group(['Hosts.id'])
             ->disableHydration()
             ->all();
 
