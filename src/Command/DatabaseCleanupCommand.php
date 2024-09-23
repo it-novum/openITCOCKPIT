@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -37,8 +42,6 @@ use Cake\Console\ConsoleOptionParser;
 use Cake\Log\Log;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
-use Cake\Utility\Inflector;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 
@@ -89,6 +92,7 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
 
         if ($this->DbBackend->isNdoUtils()) {
             // NdoUtils or Statusengine 2
+            // NDOUtils and Statusengine 2 is LEGACY and not used anymore. Do not update or change any NDO related code
             $tables = [
                 $this->DbBackend->getServicechecksTable(),
                 $this->DbBackend->getHostchecksTable(),
@@ -112,8 +116,14 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
                 $this->DbBackend->getStatehistoryServicesTable(),
                 $this->DbBackend->getLogentriesTable(),
                 $this->DbBackend->getNotificationHostsTable(),
+                $this->DbBackend->getNotificationHostsLogTable(),
                 $this->DbBackend->getNotificationServicesTable(),
+                $this->DbBackend->getNotificationServicesLogTable()
             ];
+
+            // Check for p_max partition in new tables
+            $this->checkAndCreateInitialPartition($this->DbBackend->getNotificationHostsLogTable(), 'start_time', $io);
+            $this->checkAndCreateInitialPartition($this->DbBackend->getNotificationServicesLogTable(), 'start_time', $io);
 
             $this->checkAndCreatePartitionsMySQLStatusengine3($tables, $io);
         }
@@ -134,6 +144,28 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
             $this->cleanupCrateDb($tables);
         }
 
+    }
+
+    /**
+     * @param Table $Table
+     * @param string $columnName Value of PARTITION BY column
+     * @param ConsoleIo $io
+     * @return void
+     */
+    public function checkAndCreateInitialPartition(Table $Table, string $columnName, ConsoleIo $io) {
+        /***********************************************/
+        /************ UNIX TIMESTAMP TABLES ************/
+        /***********************************************/
+
+        // Make sure that the initial partition exists
+        // This is for tables using a unix timestamp as partition by value
+        $partitions = $this->getPartitionsByTable($Table);
+        if (empty($partitions)) {
+            // This table has no partitions yet (fresh installation of the module)
+            // Execute "ALTER TABLE" to create the initial partition "p_max"
+            // This way we can still use cakephp/migrations to manage the schema
+            $this->alterTableAndCreateFirstPartitionByUnixtimestampUnsafe($Table, $columnName);
+        }
     }
 
     public function checkAndCreatePartitionsMySQL(array $tables, ConsoleIo $io) {
@@ -262,7 +294,9 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
                 $systemsettingsKey = 'LOGENTRIES';
                 break;
             case 'NotificationHosts':
+            case 'NotificationHostsLog': // SE3 only
             case 'NotificationServices':
+            case 'NotificationServicesLog': // SE3 only
             case 'Contactnotifications': // NDO only
             case 'Contactnotificationmethods': // NDO only
                 $systemsettingsKey = 'NOTIFICATIONS';
@@ -303,7 +337,11 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
         }
     }
 
-
+    /**
+     * @param array[Table] $tables
+     * @return void
+     * @deprecated CrateDB is not implemented anymore!
+     */
     public function cleanupCrateDb(array $tables) {
         $this->out('Checking age of partitions...');
 
@@ -323,6 +361,7 @@ class DatabaseCleanupCommand extends Command implements CronjobInterface {
     /**
      * @param Model $Model
      * @param string $systemsettingsKey
+     * @deprecated CrateDB is not implemented anymore!
      */
     public function deletePartitionsFromCrateDb(Model $Model, $systemsettingsKey) {
         $maxAgeInWeeks = $this->_systemsettings['ARCHIVE']['ARCHIVE.AGE.' . $systemsettingsKey];

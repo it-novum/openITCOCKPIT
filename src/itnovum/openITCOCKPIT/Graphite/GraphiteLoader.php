@@ -1,26 +1,26 @@
 <?php
-// Copyright (C) <2018>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\Graphite;
 
@@ -28,7 +28,6 @@ namespace itnovum\openITCOCKPIT\Graphite;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 
 class GraphiteLoader {
 
@@ -69,6 +68,11 @@ class GraphiteLoader {
      * @var bool
      */
     private $useJsTimestamp = false;
+
+    /**
+     * @var bool
+     */
+    private $useIsoTimestamp = false;
 
     /**
      * @var int
@@ -112,6 +116,14 @@ class GraphiteLoader {
     }
 
     /**
+     * @param $useIsoTimestamp
+     * @return bool
+     */
+    public function setUseIsoTimestamp($useIsoTimestamp) {
+        return $this->useIsoTimestamp = (bool)$useIsoTimestamp;
+    }
+
+    /**
      * @param int $from
      * Start value in seconds from now
      */
@@ -125,6 +137,13 @@ class GraphiteLoader {
      */
     public function isUseJsTimestamp() {
         return $this->useJsTimestamp;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isUseIsoTimestamp() {
+        return $this->useIsoTimestamp;
     }
 
     /**
@@ -330,11 +349,14 @@ class GraphiteLoader {
                         continue;
                     }
                     $timestamp = $datapoint[1];
-                    if($this->debug){
+                    if ($this->debug) {
                         $normalizedData[date('d.m.Y H:i:s', $timestamp)] = $datapoint[0];
-                    }else{
+                    } else {
                         if ($this->useJsTimestamp) {
                             $timestamp = $timestamp * 1000;
+                        }
+                        if ($this->useIsoTimestamp) {
+                            $timestamp = date('c', $timestamp);
                         }
                         $normalizedData[$timestamp] = $datapoint[0];
                     }
