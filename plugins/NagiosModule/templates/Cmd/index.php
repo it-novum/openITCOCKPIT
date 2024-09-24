@@ -70,6 +70,9 @@
                                 <?php echo __('This API can be used by third party application to send commands to the monitoring backend.'); ?>
                                 <br/>
                                 <?php echo __('This could be useful to transfer passive check results or to acknowledge host or service states.'); ?>
+                                <br/>
+                                <code>hostUuid</code> <?php echo __('and'); ?> <code>serviceUuid</code>
+                                <?php echo __('can also be passed by their name, e.g. "localhost" or "Ping". It is recommended to use the UUIDs when possible.'); ?>
                             </div>
                         </div>
                     </div>
