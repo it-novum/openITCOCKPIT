@@ -36,6 +36,4 @@ interface NotificationServicesTableInterface {
      * @return array
      */
     public function getNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null);
-
-    public function getTopNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null);
 }

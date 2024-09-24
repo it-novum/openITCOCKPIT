@@ -222,8 +222,4 @@ class NotificationHostsTable extends Table implements NotificationHostsTableInte
         return $result;
     }
 
-    public function getTopNotifications(HostNotificationConditions $HostNotificationConditions, $PaginateOMat = null) {
-        // TODO: Implement getTopNotifications() method.
-        return;
-    }
 }

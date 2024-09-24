@@ -256,7 +256,4 @@ class NotificationServicesTable extends Table implements NotificationServicesTab
         return $result;
     }
 
-    public function getTopNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null) {
-        return;
-    }
 }

@@ -179,15 +179,15 @@ class NotificationsController extends AppController {
         };
         $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
         $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
-        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationHosts.start_time', 'desc'));
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationHostsLog.start_time', 'desc'));
         $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getHostStates());
         $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getHostFilters());
 
         //Query notification records
-        $NotificationHostsTable = $this->DbBackend->getNotificationHostsTable();
+        $NotificationHostsTable = $this->DbBackend->getNotificationHostsLogTable();
 
         $all_notifications = [];
-        foreach ($NotificationHostsTable->getTopNotifications($Conditions, $PaginateOMat) as $notification) {
+        foreach ($NotificationHostsTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
             $NotificationHost = new NotificationHost($notification, $UserTime);
             $Host = new \itnovum\openITCOCKPIT\Core\Views\Host($notification['Hosts']);
             $all_notifications[] = [
@@ -227,15 +227,15 @@ class NotificationsController extends AppController {
         };
         $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
         $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
-        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationServices.start_time', 'desc'));
+        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationServicesLog.start_time', 'desc'));
         $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getServiceStates());
         $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getServiceFilters());
 
         //Query notification records
-        $NotificationServicesTable = $this->DbBackend->getNotificationServicesTable();
+        $NotificationServicesTable = $this->DbBackend->getNotificationServicesLogTable();
 
         $all_notifications = [];
-        foreach ($NotificationServicesTable->getTopNotifications($Conditions, $PaginateOMat) as $notification) {
+        foreach ($NotificationServicesTable->getNotifications($Conditions, $PaginateOMat) as $notification) {
             $NotificationService = new NotificationService($notification, $UserTime);
             $Service = new Service($notification['Services'], $notification['servicename']);
             $Host = new Host($notification['Hosts']);
