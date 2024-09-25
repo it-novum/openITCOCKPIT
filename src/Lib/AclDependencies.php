@@ -280,7 +280,8 @@ class AclDependencies {
             ->allow('Users', 'login')
             ->allow('Users', 'logout')
             ->allow('Users', 'getLocaleOptions')
-            ->allow('Users', 'getUserPermissions');
+            ->allow('Users', 'getUserPermissions')
+            ->allow('Users', 'loadDateformats');
 
 
         ///////////////////////////////
@@ -588,13 +589,11 @@ class AclDependencies {
             ->dependency('Users', 'add', 'Users', 'addFromLdap')
             ->dependency('Users', 'add', 'Users', 'loadLdapUserByString')
             ->dependency('Users', 'add', 'Users', 'loadLdapUserDetails')
-            ->dependency('Users', 'add', 'Users', 'loadDateformats')
             ->dependency('Users', 'add', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'loadContainerRoles')
             ->dependency('Users', 'add', 'Users', 'loadContainerPermissions')
             ->dependency('Users', 'add', 'Users', 'loadContainersForAngular')
             ->dependency('Users', 'edit', 'Users', 'resetPassword')
-            ->dependency('Users', 'edit', 'Users', 'loadDateformats')
             ->dependency('Users', 'edit', 'Users', 'loadUsergroups')
             ->dependency('Users', 'edit', 'Users', 'loadContainerRoles')
             ->dependency('Users', 'edit', 'Users', 'loadLdapUserDetails')

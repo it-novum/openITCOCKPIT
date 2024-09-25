@@ -608,7 +608,9 @@ class Menu {
                     '',
                     ['fas', 'location-arrow'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/locations/index'
                 ))
             )
             ->addCategory((new MenuCategory(
