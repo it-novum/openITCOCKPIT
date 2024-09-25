@@ -161,7 +161,7 @@ class NotificationServicesLogTable extends Table implements NotificationServices
             )
             ->where([
                 'NotificationServicesLog.start_time >' => $ServiceNotificationConditions->getFrom(),
-                'NotificationServicesLog.start_time <' => $ServiceNotificationConditions->getTo()
+                //'NotificationServicesLog.start_time <' => $ServiceNotificationConditions->getTo()
             ])
             ->order($ServiceNotificationConditions->getOrder())
             ->group([

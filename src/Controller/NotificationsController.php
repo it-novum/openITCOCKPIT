@@ -38,6 +38,7 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsLogRequest;
 use itnovum\openITCOCKPIT\Core\AngularJS\Request\NotificationsOverviewControllerRequest;
 use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
@@ -165,8 +166,8 @@ class NotificationsController extends AppController {
         $session = $this->request->getSession();
         $session->close();
 
-        $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+        $AngularNotificationsLogRequest = new NotificationsLogRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsLogRequest->getPage());
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
@@ -177,11 +178,11 @@ class NotificationsController extends AppController {
         if ($this->request->getQuery('limit') !== null) {
             $Conditions->setLimit($this->request->getQuery('limit'));
         };
-        $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
-        $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
-        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationHostsLog.start_time', 'desc'));
-        $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getHostStates());
-        $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getHostFilters());
+        $Conditions->setFrom($AngularNotificationsLogRequest->getPeriod());
+        // $Conditions->setTo($AngularNotificationsLogRequest->getTo());
+        $Conditions->setOrder($AngularNotificationsLogRequest->getOrderForPaginator('NotificationHostsLog.start_time', 'desc'));
+        $Conditions->setStates($AngularNotificationsLogRequest->getHostStates());
+        // $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getHostFilters());
 
         //Query notification records
         $NotificationHostsTable = $this->DbBackend->getNotificationHostsLogTable();
@@ -213,8 +214,8 @@ class NotificationsController extends AppController {
         $session = $this->request->getSession();
         $session->close();
 
-        $AngularNotificationsOverviewControllerRequest = new NotificationsOverviewControllerRequest($this->request);
-        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsOverviewControllerRequest->getPage());
+        $AngularNotificationsLogRequest = new NotificationsLogRequest($this->request);
+        $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $AngularNotificationsLogRequest->getPage());
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
@@ -225,11 +226,11 @@ class NotificationsController extends AppController {
         if ($this->request->getQuery('limit') !== null) {
             $Conditions->setLimit($this->request->getQuery('limit'));
         };
-        $Conditions->setFrom($AngularNotificationsOverviewControllerRequest->getFrom());
-        $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
-        $Conditions->setOrder($AngularNotificationsOverviewControllerRequest->getOrderForPaginator('NotificationServicesLog.start_time', 'desc'));
-        $Conditions->setStates($AngularNotificationsOverviewControllerRequest->getServiceStates());
-        $Conditions->setConditions($AngularNotificationsOverviewControllerRequest->getServiceFilters());
+        $Conditions->setFrom($AngularNotificationsLogRequest->getFrom());
+        // $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
+        $Conditions->setOrder($AngularNotificationsLogRequest->getOrderForPaginator('NotificationServicesLog.start_time', 'desc'));
+        $Conditions->setStates($AngularNotificationsLogRequest->getServiceStates());
+        //$Conditions->setConditions($AngularNotificationsLogRequest->getServiceFilters());
 
         //Query notification records
         $NotificationServicesTable = $this->DbBackend->getNotificationServicesLogTable();
