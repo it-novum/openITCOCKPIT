@@ -163,11 +163,14 @@ class NotificationServicesLogTable extends Table implements NotificationServices
                 'NotificationServicesLog.start_time >' => $ServiceNotificationConditions->getFrom(),
                 //'NotificationServicesLog.start_time <' => $ServiceNotificationConditions->getTo()
             ])
-            ->order($ServiceNotificationConditions->getOrder())
+            ->order(['count' => 'DESC', 'start_time' => 'DESC'])
             ->group([
                 'NotificationServicesLog.service_description',
-                'NotificationServicesLog.start_time',
             ]);
+        $query->select([
+            'count'      => $query->func()->count('NotificationServicesLog.hostname'),
+            'start_time' => $query->func()->max('NotificationServicesLog.start_time', ['integer'])
+        ]);
 
 
         if ($ServiceNotificationConditions->getServiceUuid()) {

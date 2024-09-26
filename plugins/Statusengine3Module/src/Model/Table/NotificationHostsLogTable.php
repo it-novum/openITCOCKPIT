@@ -124,14 +124,11 @@ class NotificationHostsLogTable extends Table implements NotificationHostsLogTab
         $query = $this->find()
             ->select([
                 'NotificationHostsLog.hostname',
-                'NotificationHostsLog.start_time',
                 'NotificationHostsLog.state',
                 'NotificationHostsLog.output',
-
                 'Hosts.id',
                 'Hosts.uuid',
                 'Hosts.name',
-
                 'HostsToContainers.container_id',
             ])
             ->innerJoin(
@@ -146,13 +143,17 @@ class NotificationHostsLogTable extends Table implements NotificationHostsLogTab
                 'NotificationHostsLog.start_time >' => $HostNotificationConditions->getFrom(),
                 // 'NotificationHostsLog.start_time <' => $HostNotificationConditions->getTo()
             ])
-            ->order(
-                $HostNotificationConditions->getOrder()
-            )
             ->group([
-                'NotificationHostsLog.hostname',
-                'NotificationHostsLog.start_time',
-            ]);
+                'NotificationHostsLog.hostname'
+            ])
+            ->order(
+                ['count' => 'DESC', 'start_time' => 'DESC']
+            );
+        $query->select([
+            'count'      => $query->func()->count('NotificationHostsLog.hostname'),
+            'start_time' => $query->func()->max('NotificationHostsLog.start_time', ['integer'])
+        ]);
+
         if ($HostNotificationConditions->getHostUuid()) {
             $query->andWhere([
                 'Hosts.uuid' => $HostNotificationConditions->getHostUuid()
@@ -174,7 +175,6 @@ class NotificationHostsLogTable extends Table implements NotificationHostsLogTab
         if ($HostNotificationConditions->hasConditions()) {
             $query->andWhere($HostNotificationConditions->getConditions());
         }
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->emptyArrayIfNull($query->toArray());

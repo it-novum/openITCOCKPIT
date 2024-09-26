@@ -24,10 +24,28 @@
 
 namespace itnovum\openITCOCKPIT\Core\AngularJS\Request;
 
+use itnovum\openITCOCKPIT\Filter\BaseFilter;
+
 class NotificationsLogRequest extends AngularRequest {
     protected $ServiceStateField = 'NotificationServices.state';
 
     protected $HostStateField = 'NotificationHosts.state';
+
+    protected $filters = [
+        'host'    => [
+            'like' => [
+                'NotificationHostsLog.output',
+                'Hosts.name',
+            ]
+        ],
+        'service' => [
+            'like' => [
+                'NotificationServicesLog.output',
+                'Hosts.name',
+                'servicename'
+            ]
+        ]
+    ];
 
 
     public function getPeriod() {
@@ -45,6 +63,16 @@ class NotificationsLogRequest extends AngularRequest {
             }
         }
         return time() - (3600 * 24 * 30);
+    }
+
+    public function getServiceFilters() {
+        $Filter = new BaseFilter($this->getRequest());
+        return $Filter->getConditionsByFilters($this->filters['service']);
+    }
+
+    public function getHostFilters() {
+        $Filter = new BaseFilter($this->getRequest());
+        return $Filter->getConditionsByFilters($this->filters['host']);
     }
 
 }
