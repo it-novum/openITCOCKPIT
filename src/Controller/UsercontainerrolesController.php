@@ -30,6 +30,7 @@ namespace App\Controller;
 use App\Model\Table\LdapgroupsTable;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsercontainerrolesTable;
+use App\Model\Table\UsersTable;
 use Cake\Cache\Cache;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
@@ -66,8 +67,8 @@ class UsercontainerrolesController extends AppController {
         }, ARRAY_FILTER_USE_BOTH);
         $containerWithWritePermissions = array_keys($containerWithWritePermissions);
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
-            $userRoleContainerIds = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
-            if (!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIds, $containerWithWritePermissions))) {
+            $userRoleContainerIdsWithWritePermission = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
+            if (!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIdsWithWritePermission, $containerWithWritePermissions))) {
                 unset($all_usercontainerroles[$index]);
                 continue; //insufficient user (container) rights
             }
@@ -81,33 +82,29 @@ class UsercontainerrolesController extends AppController {
                     $all_usercontainerroles[$index]['allow_edit'] = false;
                 }
             }
-
             foreach ($usercontainerrole['users'] as $userIndex => $user) {
-
                 $usercontainerrole['users'][$userIndex]['allow_edit'] = $this->hasRootPrivileges;
                 if ($this->hasRootPrivileges === false) {
                     //Check permissions for non ROOT Users
-                    $containerWithWritePermissionByUserContainerRoles = Hash::combine(
+                    $containerWithPermissionLevelByUserContainerRoles = Hash::combine(
                         $user['usercontainerroles'],
                         '{n}.containers.{n}._joinData.container_id',
                         '{n}.containers.{n}._joinData.permission_level'
                     );
-
-                    $notPermittedContainer = array_filter($containerWithWritePermissionByUserContainerRoles, function ($v, $k) {
+                    $notPermittedContainer = array_filter($containerWithPermissionLevelByUserContainerRoles, function ($v, $k) {
                         return (!isset($this->MY_RIGHTS_LEVEL[$k]) || (isset($this->MY_RIGHTS_LEVEL[$k]) && $this->MY_RIGHTS_LEVEL[$k] < $v));
 
                     }, ARRAY_FILTER_USE_BOTH);
+
                     if (!empty($notPermittedContainer)) {
                         $usercontainerrole['users'][$userIndex]['allow_edit'] = false;
                     } else {
-                        $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
-
+                        $containerWithWritePermissionByUserContainerRoles = array_keys($containerWithWritePermissionByUserContainerRoles);
                         $container = Hash::extract(
                             $user['containers'],
                             '{n}.id'
                         );
-
-                        $container = array_unique(array_merge($container, $containerWithWritePermissionByUserContainerRoles));
+                        $container = array_unique(array_merge($container, $containerWithPermissionLevelByUserContainerRoles));
                         foreach ($container as $containerId) {
                             if ($this->isWritableContainer($containerId)) {
                                 $usercontainerrole['users'][$userIndex]['allow_edit'] = true;
@@ -120,7 +117,6 @@ class UsercontainerrolesController extends AppController {
 
             $all_usercontainerroles[$index]['users'] = $usercontainerrole['users'];
         }
-
         $this->set('all_usercontainerroles', $all_usercontainerroles);
         $toJson = ['paging', 'all_usercontainerroles'];
         if ($this->isScrollRequest()) {
@@ -140,12 +136,18 @@ class UsercontainerrolesController extends AppController {
         $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
 
         if ($this->request->is('post') || $this->request->is('put')) {
+            /** @var UsersTable $UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
             $data = $this->request->getData('Usercontainerrole', []);
             if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
                 $data['ContainersUsercontainerrolesMemberships'] = [];
             }
-            $data['containers'] = $UsercontainerrolesTable->containerPermissionsForSave($data['ContainersUsercontainerrolesMemberships']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave(
+                $data['ContainersUsercontainerrolesMemberships'],
+                $this->hasRootPrivileges,
+                $this->MY_RIGHTS_LEVEL
+            );
 
             $usercontainerrole = $UsercontainerrolesTable->newEmptyEntity();
             $usercontainerrole = $UsercontainerrolesTable->patchEntity($usercontainerrole, $data);
@@ -194,12 +196,17 @@ class UsercontainerrolesController extends AppController {
         }
 
         if ($this->request->is('post') || $this->request->is('put')) {
-
+            /** @var UsersTable $UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
             $data = $this->request->getData('Usercontainerrole', []);
             if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
                 $data['ContainersUsercontainerrolesMemberships'] = [];
             }
-            $data['containers'] = $UsercontainerrolesTable->containerPermissionsForSave($data['ContainersUsercontainerrolesMemberships']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave(
+                $data['ContainersUsercontainerrolesMemberships'],
+                $this->hasRootPrivileges,
+                $this->MY_RIGHTS_LEVEL
+            );
             $usercontainerrole = $UsercontainerrolesTable->get($id);
             $usercontainerrole->setAccess('id', false);
 
@@ -281,7 +288,8 @@ class UsercontainerrolesController extends AppController {
 
         if ($this->request->is('post')) {
             $postData = $this->request->getData('data');
-
+            /** @var UsersTable $UsersTable */
+            $UsersTable = TableRegistry::getTableLocator()->get('Users');
             foreach ($postData as $index => $usercontainerroleData) {
                 if (!isset($usercontainerroleData['Usercontainerrole']['id'])) {
                     //Create/clone Usercontainerrole
@@ -291,7 +299,11 @@ class UsercontainerrolesController extends AppController {
 
                     $newUsercontainerroleData = [
                         'name'       => $usercontainerroleData['Usercontainerrole']['name'],
-                        'containers' => $UsercontainerrolesTable->containerPermissionsForSave($sourceUsercontainerrole['ContainersUsercontainerrolesMemberships']),
+                        'containers' => $UsersTable->containerPermissionsForSave(
+                            $sourceUsercontainerrole['ContainersUsercontainerrolesMemberships'],
+                            $this->hasRootPrivileges,
+                            $this->MY_RIGHTS_LEVEL
+                        ),
                         'ldapgroups' => [
                             '_ids' => $sourceUsercontainerrole['ldapgroups']['_ids']
                         ]

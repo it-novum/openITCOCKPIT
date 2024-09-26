@@ -1,6 +1,9 @@
 ############
 # Statusengine Worker Configuration
 ############
+#
+# @formatter:off
+#
 
 # Every node in the cluster needs a name
 # IT IS REQUIRED THAT THE NAME IS UNIQUE IN THE CLUSTER!
@@ -101,7 +104,9 @@ use_crate: 0
 # It is recommended to you a load balancer in front of your CrateDB cluster!
 # So you will have a single ip address where Statusengine is going to connect to
 crate:
-nodes:
+  username: crate
+  password:
+  nodes:
   - 127.0.0.1:4200
 #    - 192.168.56.101:4200
 #    - 192.168.56.102:4200
@@ -141,6 +146,10 @@ number_hostcheck_worker: {{number_hostcheck_worker}}
 # Number of worker processes for service check results
 # Target: MySQL|CrateDB
 number_servicecheck_worker: {{number_servicecheck_worker}}
+
+# Number of worker other queues like notifications
+# Target: MySQL|CrateDB
+number_notification_log_worker: 1
 
 # Number of worker other queues like notifications, downtimes and acknowledgements
 # Target: MySQL|CrateDB
@@ -297,6 +306,9 @@ age_host_acknowledgements: 0
 # How long should host notifications be stored
 age_host_notifications: 0
 
+# How long should host notifications log records be stored
+age_host_notifications_log: 0
+
 # How long should host state change records be stored
 age_host_statehistory: 0
 
@@ -312,6 +324,9 @@ age_service_acknowledgements: 0
 
 # How long should service notifications be stored
 age_service_notifications: 0
+
+# How long should service notifications log records be stored
+age_service_notifications_log: 0
 
 # How long should service state change records be stored
 age_service_statehistory: 0
@@ -347,3 +362,4 @@ age_perfdata: 0
 # Enable (1) this option to clear proxy environment variables (For Statusengine only)
 # Disable (0) and Statusengine will use the proxy out of your environment
 disable_http_proxy: 1
+
