@@ -600,7 +600,9 @@ class Menu {
                     '',
                     ['fas', 'link'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/containers/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Locations'),
