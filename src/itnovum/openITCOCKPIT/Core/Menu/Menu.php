@@ -588,7 +588,9 @@ class Menu {
                     '',
                     ['fas', 'home'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/tenants/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Containers'),
@@ -608,7 +610,9 @@ class Menu {
                     '',
                     ['fas', 'location-arrow'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/locations/index'
                 ))
             )
             ->addCategory((new MenuCategory(
