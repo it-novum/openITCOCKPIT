@@ -102,7 +102,9 @@ class Menu {
                         '',
                         ['fas', 'wand-magic-sparkles'],
                         ['automaps', 'auto', 'map'],
-                        2
+                        2,
+                        true,
+                        '/automaps/index'
                     ))
             )
             ->addCategory(
