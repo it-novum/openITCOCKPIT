@@ -88,9 +88,11 @@ class Menu {
                         'statusmaps',
                         'index',
                         '',
-                        ['fas', 'globe'],
+                        ['fas', 'globe-europe'],
                         ['statusmap', 'status', 'map'],
-                        1
+                        1,
+                        true,
+                        '/statusmaps/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Auto Map'),
