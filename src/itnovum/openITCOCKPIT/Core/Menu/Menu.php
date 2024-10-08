@@ -545,7 +545,9 @@ class Menu {
                     '',
                     ['fas', 'users'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/usergroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('User Container Roles'),
