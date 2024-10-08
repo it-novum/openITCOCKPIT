@@ -285,8 +285,7 @@ class UsersController extends AppController {
 
         $types = $UsersTable->getUserTypesWithStyles();
         $UserTime = $User->getUserTime();
-
-        foreach ($all_tmp_users as $index => $_user) {
+        foreach ($all_tmp_users as $_user) {
             /** @var User $_user */
             $user = $_user->toArray();
             if (!empty($user['last_login'])) {
@@ -318,7 +317,7 @@ class UsersController extends AppController {
                 if (!empty($notPermittedContainer)) {
                     $user['allow_edit'] = false;
                 } else {
-                    $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
+                    $containerWithWritePermissionByUserContainerRoles = array_keys($containerWithWritePermissionByUserContainerRoles);
 
                     $container = Hash::extract(
                         $user['containers'],
@@ -362,7 +361,11 @@ class UsersController extends AppController {
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
             }
-            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave(
+                $data['ContainersUsersMemberships'],
+                $this->hasRootPrivileges,
+                $this->MY_RIGHTS_LEVEL
+            );
 
             $user = $UsersTable->newEmptyEntity();
             $user = $UsersTable->patchEntity($user, $data);
@@ -489,7 +492,11 @@ class UsersController extends AppController {
                     }
                 }
             }
-            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave(
+                $data['ContainersUsersMemberships'],
+                $this->hasRootPrivileges,
+                $this->MY_RIGHTS_LEVEL
+            );
             $user = $UsersTable->get($id);
             $user->setAccess('id', false);
 
@@ -719,7 +726,11 @@ class UsersController extends AppController {
             if (!isset($data['ContainersUsersMemberships'])) {
                 $data['ContainersUsersMemberships'] = [];
             }
-            $data['containers'] = $UsersTable->containerPermissionsForSave($data['ContainersUsersMemberships']);
+            $data['containers'] = $UsersTable->containerPermissionsForSave(
+                $data['ContainersUsersMemberships'],
+                $this->hasRootPrivileges,
+                $this->MY_RIGHTS_LEVEL
+            );
 
             // Get User Container Roles from LDAP groups
 
@@ -1007,10 +1018,32 @@ class UsersController extends AppController {
             }, ARRAY_FILTER_USE_BOTH);
             $userContainerIds = array_keys($userContainerIds);
         }
-
         $ucr = Api::makeItJavaScriptAble(
-            $UsercontainerrolesTable->getUsercontainerrolesAsList($GenericFilter, $selected, $userContainerIds)
+            $UsercontainerrolesTable->getUsercontainerrolesAsList(
+                $GenericFilter,
+                $selected,
+                $userContainerIds
+            )
         );
+        $filteredUserContainerRoles = [];
+
+        if (!$this->hasRootPrivileges && !empty($ucr)) {
+            $usercontainerRoleIdsToCheck = Hash::extract($ucr, '{n}.key');
+            $userContainerRolesWithContainerIDs = $UsercontainerrolesTable->getUsercontanerRoleWithAllContainerIdsByIds(
+                $usercontainerRoleIdsToCheck
+            );
+            // clean up user container roles
+            foreach ($ucr as $userContainerRole) {
+                if (isset($userContainerRolesWithContainerIDs[$userContainerRole['key']])) {
+                    //Check if user has rights to see all containers in container user role
+                    if (empty(array_diff($userContainerRolesWithContainerIDs[$userContainerRole['key']], $userContainerIds))) {
+                        $filteredUserContainerRoles[] = $userContainerRole;
+                    }
+                }
+            }
+            $ucr = $filteredUserContainerRoles;
+        }
+
         $this->set('usercontainerroles', $ucr);
         $this->viewBuilder()->setOption('serialize', ['usercontainerroles']);
     }

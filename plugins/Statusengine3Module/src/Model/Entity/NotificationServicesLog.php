@@ -22,12 +22,6 @@
 //     License agreement and license key will be shipped with the order
 //     confirmation.
 
-// 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
-
 declare(strict_types=1);
 
 namespace Statusengine3Module\Model\Entity;
@@ -36,22 +30,22 @@ use Cake\ORM\Entity;
 use itnovum\openITCOCKPIT\Core\ValueObjects\NotificationReasonTypes;
 
 /**
- * NotificationHost Entity
+ * NotificationServicesLog Entity
  *
- * @property int $id
- * @property string|null $hostname
- * @property string|null $contact_name
- * @property string|null $command_name
- * @property string|null $command_args
- * @property int|null $state
+ * @property string $hostname
+ * @property string $service_description
  * @property int $start_time
+ * @property int $start_time_usec
  * @property int $end_time
+ * @property int|null $state
  * @property int|null|NotificationReasonTypes $reason_type
+ * @property bool $is_escalated
+ * @property int $contacts_notified_count
  * @property string|null $output
  * @property string|null $ack_author
  * @property string|null $ack_data
  */
-class NotificationHost extends Entity {
+class NotificationServicesLog extends Entity {
     /**
      * Fields that can be mass assigned using newEntity() or patchEntity().
      *
@@ -59,18 +53,16 @@ class NotificationHost extends Entity {
      * be mass assigned. For security purposes, it is advised to set '*' to false
      * (or remove it), and explicitly make individual fields accessible as needed.
      *
-     * @var array
+     * @var array<string, bool>
      */
     protected $_accessible = [
-        'hostname'     => true,
-        'contact_name' => true,
-        'command_name' => true,
-        'command_args' => true,
-        'state'        => true,
-        'end_time'     => true,
-        'reason_type'  => true,
-        'output'       => true,
-        'ack_author'   => true,
-        'ack_data'     => true,
+        'end_time'                => true,
+        'state'                   => true,
+        'reason_type'             => true,
+        'is_escalated'            => true,
+        'contacts_notified_count' => true,
+        'output'                  => true,
+        'ack_author'              => true,
+        'ack_data'                => true,
     ];
 }

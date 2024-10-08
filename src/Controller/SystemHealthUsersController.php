@@ -95,7 +95,7 @@ class SystemHealthUsersController extends AppController {
                 if (!empty($notPermittedContainer)) {
                     $user['allow_edit'] = false;
                 } else {
-                    $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
+                    $containerWithWritePermissionByUserContainerRoles = array_keys($containerWithWritePermissionByUserContainerRoles);
 
                     $container = Hash::extract(
                         $user['containers'],
@@ -334,7 +334,7 @@ class SystemHealthUsersController extends AppController {
                 if (!empty($notPermittedContainer)) {
                     continue;
                 } else {
-                    $containerWithWritePermissionByUserContainerRoles = array_unique($containerWithWritePermissionByUserContainerRoles);
+                    $containerWithWritePermissionByUserContainerRoles = array_keys($containerWithWritePermissionByUserContainerRoles);
 
                     $container = Hash::extract(
                         $user['containers'],

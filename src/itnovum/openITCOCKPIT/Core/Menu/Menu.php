@@ -71,7 +71,9 @@ class Menu {
                 '',
                 ['fas', 'list'],
                 ['browser'],
-                3
+                3,
+                true,
+                '/browsers/index'
             ))
             ->addCategory(
                 (new MenuCategory(
@@ -86,9 +88,11 @@ class Menu {
                         'statusmaps',
                         'index',
                         '',
-                        ['fas', 'globe'],
+                        ['fas', 'globe-europe'],
                         ['statusmap', 'status', 'map'],
-                        1
+                        1,
+                        true,
+                        '/statusmaps/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Auto Map'),
@@ -98,7 +102,9 @@ class Menu {
                         '',
                         ['fas', 'wand-magic-sparkles'],
                         ['automaps', 'auto', 'map'],
-                        2
+                        2,
+                        true,
+                        '/automaps/index'
                     ))
             )
             ->addCategory(
@@ -539,7 +545,9 @@ class Menu {
                     '',
                     ['fas', 'users'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/usergroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('User Container Roles'),
@@ -586,7 +594,9 @@ class Menu {
                     '',
                     ['fas', 'home'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/tenants/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Containers'),
@@ -596,7 +606,9 @@ class Menu {
                     '',
                     ['fas', 'link'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/containers/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Locations'),
@@ -606,7 +618,9 @@ class Menu {
                     '',
                     ['fas', 'location-arrow'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/locations/index'
                 ))
             )
             ->addCategory((new MenuCategory(

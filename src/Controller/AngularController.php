@@ -292,9 +292,18 @@ class AngularController extends AppController {
         $session->close();
 
         $recursive = false;
-        if ($this->request->getQuery('recursive') === 'true') {
-            $recursive = true;
+        // ITC-3258 No recursive parameter, use the default from the user settings
+        if ($this->request->getQuery('recursive', null) === null) {
+            $User = new User($this->getUser());
+            $recursive = $User->isRecursiveBrowserEnabled();
+        } else {
+            // Parameter is set, use it
+            $recursive = false;
+            if ($this->request->getQuery('recursive', null) === 'true') {
+                $recursive = true;
+            }
         }
+
 
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
@@ -516,10 +525,12 @@ class AngularController extends AppController {
                         return;
                     }
 
-                    $this->set('state', $TableName . 'Index');
+                    $this->set('state', $TableName . 'Index'); // AngularJS
+                    $this->set('url', ['/', strtolower($TableName), 'index']); // Angular
                     $this->set('id', $result->get('id'));
                     $this->viewBuilder()->setOption('serialize', [
                         'state',
+                        'url',
                         'id',
                         'hasPermission'
                     ]);
@@ -724,7 +735,7 @@ class AngularController extends AppController {
         $cache['gearman_reachable'] = $GearmanClient->ping();
 
 
-        exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
+        exec('ps -eaf |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
         $cache['gearman_worker_running'] = sizeof($output) > 0;
         if (!$cache['gearman_worker_running']) {
             $this->setHealthState('critical');
@@ -1385,5 +1396,11 @@ class AngularController extends AppController {
 
         $this->set('satellites', $satellites);
         $this->viewBuilder()->setOption('serialize', ['satellites']);
+    }
+
+    public function getSystemname() {
+        $systenmane = parent::getSystemname();
+        $this->set('systenmane', $systenmane);
+        $this->viewBuilder()->setOption('serialize', ['systenmane']);
     }
 }

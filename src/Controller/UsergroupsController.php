@@ -113,6 +113,7 @@ class UsergroupsController extends AppController {
                 ->all();
             $AclDependencies = new AclDependencies();
             $acos = $AclDependencies->filterAcosForFrontend($acos->toArray());
+
             $this->set('acos', $acos);
             $this->viewBuilder()->setOption('serialize', ['acos']);
             return;
@@ -240,7 +241,8 @@ class UsergroupsController extends AppController {
 
             $this->set('usergroup', $usergroup);
             $this->set('acos', $acos);
-            $this->viewBuilder()->setOption('serialize', ['usergroup', 'acos']);
+            $this->set('systemname', $this->getSystemname());
+            $this->viewBuilder()->setOption('serialize', ['usergroup', 'acos', 'systemname']);
             return;
         }
 
@@ -264,7 +266,8 @@ class UsergroupsController extends AppController {
             if ($usergroup->hasErrors()) {
                 $this->response = $this->response->withStatus(400);
                 $this->set('error', $usergroup->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
+                $this->set('success', false);
+                $this->viewBuilder()->setOption('serialize', ['error', 'success']);
                 return;
             }
 
@@ -305,7 +308,8 @@ class UsergroupsController extends AppController {
             $ArosAcosTable->saveMany($arosToAcos);
             Cache::clear('permissions');
             $this->set('usergroup', $usergroup);
-            $this->viewBuilder()->setOption('serialize', ['usergroup']);
+            $this->set('success', true);
+            $this->viewBuilder()->setOption('serialize', ['usergroup', 'success']);
         }
     }
 
@@ -335,10 +339,16 @@ class UsergroupsController extends AppController {
         // For this reason we use the same lock to avoid broken nested set.
         $ContainersTable->acquireLock();
 
-        $usergroup = $UsergroupsTable->get($id);
+        $usergroup = $UsergroupsTable->get($id, [
+            'contain' => 'Users'
+        ]);
 
         if ($usergroup->get('name') === 'Administrator') {
             throw new \RuntimeException('The "Administrator" can not be deleted!');
+        }
+
+        if (!empty($usergroup->get('users'))) {
+            throw new \RuntimeException('Issue while deleting user role. There are still users assigned to this user role.');
         }
 
         if ($UsergroupsTable->delete($usergroup)) {
