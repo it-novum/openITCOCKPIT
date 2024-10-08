@@ -142,7 +142,9 @@ class Menu {
                         '',
                         ['fas', 'file-invoice'],
                         [],
-                        3
+                        3,
+                        true,
+                        '/currentstatereports/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Status pages'),
