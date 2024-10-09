@@ -266,7 +266,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             //Response a 403 to .json requests and redirect .html requests to login page
             ->add(new AppAuthenticationMiddleware($this, [
                 //Only redirect .html requests if login is invalid - no json requests
-                'htmlUnauthenticatedRedirect' => '/users/login'
+                'htmlUnauthenticatedRedirect' => '/a/users/login'
             ]))
             ->add(new LdapUsergroupIdMiddleware()) // ITC-2693
             ->add(new AuthorizationMiddleware($this))
