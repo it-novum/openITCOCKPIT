@@ -230,7 +230,8 @@ class UsersController extends AppController {
 
             $this->set('success', false);
             $this->set('errors', $errors);
-            $this->viewBuilder()->setOption('serialize', ['success', 'errors']);
+            $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
+            $this->viewBuilder()->setOption('serialize', ['success', 'errors', '_csrfToken']);
         }
     }
 
