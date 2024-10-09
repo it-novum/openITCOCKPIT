@@ -122,7 +122,9 @@ class Menu {
                         '',
                         ['fas', 'file-invoice'],
                         ['instantreports'],
-                        1
+                        1,
+                        true,
+                        '/instantreports/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Downtime reports'),
