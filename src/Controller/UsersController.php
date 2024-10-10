@@ -188,8 +188,14 @@ class UsersController extends AppController {
                 }
             }
 
+            // Add URL for (custom) logo
+            $Logo = new Logo();
+            $this->set('logoUrl', $Logo->getLoginLogoHtml());
+            $this->set('isCustomLoginBackground', $Logo->isCustomLoginBackground());
+            $this->set('customLoginBackgroundHtml', $Logo->getCustomLoginBackgroundHtml());
+
             $this->set('errorMessages', $errorMessages);
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml']);
             return;
         }
 
@@ -224,7 +230,8 @@ class UsersController extends AppController {
 
             $this->set('success', false);
             $this->set('errors', $errors);
-            $this->viewBuilder()->setOption('serialize', ['success', 'errors']);
+            $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
+            $this->viewBuilder()->setOption('serialize', ['success', 'errors', '_csrfToken']);
         }
     }
 
