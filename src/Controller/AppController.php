@@ -105,7 +105,7 @@ class AppController extends Controller {
 
         // Docs: https://book.cakephp.org/authentication/1/en/index.html
         $this->loadComponent('Authentication.Authentication', [
-            'logoutRedirect' => '/users/login'  // Default is false
+            'logoutRedirect' => '/a/users/login'  // Default is false
         ]);
 
         if (isset($this->getUser()->i18n) && strlen($this->getUser()->i18n) >= 3) {

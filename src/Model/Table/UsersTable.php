@@ -1488,19 +1488,19 @@ class UsersTable extends Table {
         $types = [
             'LOCAL_USER' => [
                 'title' => __('Local user'),
-                'color' => 'text-generic',
+                'color' => 'info',
                 'class' => 'border-generic'
             ],
 
             'LDAP_USER' => [
                 'title' => __('LDAP user'),
-                'color' => 'text-prometheus',
+                'color' => 'warning',
                 'class' => 'border-prometheus'
             ],
 
             'OAUTH_USER' => [
                 'title' => __('OAuth user'),
-                'color' => 'text-evc',
+                'color' => 'primary',
                 'class' => 'border-evc'
             ]
 
