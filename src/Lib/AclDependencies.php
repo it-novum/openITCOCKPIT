@@ -469,7 +469,8 @@ class AclDependencies {
             ->dependency('Instantreports', 'add', 'Instantreports', 'loadContainers')
             ->dependency('Instantreports', 'generate', 'Instantreports', 'hostAvailabilityPieChart')
             ->dependency('Instantreports', 'generate', 'Instantreports', 'serviceAvailabilityPieChart')
-            ->dependency('Instantreports', 'generate', 'Instantreports', 'serviceAvailabilityBarChart');
+            ->dependency('Instantreports', 'generate', 'Instantreports', 'serviceAvailabilityBarChart')
+            ->dependency('Instantreports', 'generate', 'Instantreports', 'loadInstantreports');
 
 
         $this
