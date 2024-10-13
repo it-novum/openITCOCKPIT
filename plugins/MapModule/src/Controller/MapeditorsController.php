@@ -115,6 +115,10 @@ class MapeditorsController extends AppController {
 
         $MapForAngular = new MapForAngular($map);
         $map = $MapForAngular->toArray();
+        $config = $MapsTable->getMapeditorSettings($map['Map']['json_data']);
+        $map['Mapeditor'] = [
+            'background' => $config['Mapeditor']['background']
+        ];
 
         $acl = [
             'hosts'         => [
@@ -2032,6 +2036,10 @@ class MapeditorsController extends AppController {
 
         $MapForAngular = new MapForAngular($map);
         $map = $MapForAngular->toArray();
+        $config = $MapsTable->getMapeditorSettings($map['Map']['json_data']);
+        $map['Mapeditor'] = [
+            'background' => $config['Mapeditor']['background']
+        ];
 
         $this->set('map', $map);
         $this->viewBuilder()->setOption('serialize', ['map']);

@@ -47,10 +47,12 @@
         <div id="panel-1" class="panel">
             <div class="panel-hdr">
                 <h2>
-                    <?php echo __('Edit map:'); ?>
-                    <span class="fw-300"><i>{{map.Map.name}}</i></span>
+                    <?= __('Edit map:'); ?>
+                    <span class="fw-300" title="{{map.Map.name}}"><i>{{map.Map.name}}</i></span>
                 </h2>
-                <div class="panel-toolbar">
+            </div>
+            <div class="panel-hdr">
+                <div class="panel-toolbar w-100 justify-content-sm-end">
                     <div role="group">
                         <label class="checkbox small-checkbox-label margin-right-10 margin-top-2">
                             <input type="checkbox" name="checkbox" checked="checked"
@@ -113,9 +115,19 @@
                             <?php endforeach; ?>
                         </ul>
                     </div>
+                    <div role="group">
+                        <span class="italic ml-4">
+                            <?= __('Background options'); ?>:
+                        </span>
+                        <button class="btn btn-primary btn-xs mr-1 shadow-0 waves-effect"
+                                ng-click="resetBackgroundSizeSettings()"
+                                type="button" title="<?= __('Restore the background to its original size'); ?>">
+                            <i class="fa-solid fa-expand"></i> <?= __('Back to original size'); ?>
+                        </button>
+                    </div>
                     <?php if ($this->Acl->hasPermission('index', 'maps', 'mapmodule')): ?>
                         <a back-button href="javascript:void(0);" fallback-state='MapsIndex'
-                           class="btn btn-default btn-xs mr-1 shadow-0">
+                           class="btn btn-default btn-xs ml-5 mr-1 shadow-0">
                             <i class="fas fa-long-arrow-alt-left"></i> <?php echo __('Back'); ?>
                         </a>
                     <?php endif; ?>
@@ -136,8 +148,16 @@
                              id="mainMapContainer">
                             <div id="mapContent" ng-if="Mapeditor.helplines.enabled"
                                  ng-class="getHelplinesClass()"></div>
-                            <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
-                                 ng-if="map.Map.background"/>
+                            <div class="resizable resizable-background draggable"
+                                 ng-style="Mapeditor.background.width === null && {'width':'auto', 'height':'auto'}"
+                                 style="position:absolute; top: {{Mapeditor.background.position_y}}px; left: {{Mapeditor.background.position_x}}px; cursor: move;"
+                                 ng-if="map.Map.background"
+                                 id="backgroundMap" data-type="mapBackground">
+                                <img ng-src="/map_module/img/backgrounds/{{map.Map.background}}"
+                                     ng-style="Mapeditor.background.width !== null && {'width':Mapeditor.background.width+'px'}"
+                                     ng-if="map.Map.background"/>
+                            </div>
+
                             <div ng-repeat="item in map.Mapitems" class="draggable" ng-dblclick="editItem(item)"
                                  style="position:absolute; top: {{item.y}}px; left: {{item.x}}px;  z-index: {{item.z_index}}; cursor: move;"
                                  data-id="{{item.id}}" data-type="item" ng-show="item.display">
