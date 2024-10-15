@@ -1,5 +1,5 @@
 /*
- * Copyright (C) <2015-present>  <it-novum GmbH>
+ * Copyright (C) <2015>  <it-novum GmbH>
  *
  * This file is dual licensed
  *
@@ -958,12 +958,24 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
 
             .state('NotificationsHostNotification', {
                 url: '/notifications/hostNotification/:id',
+                params: {
+                    state: {
+                        value: null,
+                        array: false
+                    }
+                },
                 templateUrl: "/notifications/hostNotification.html",
                 controller: "NotificationsHostNotificationController"
             })
 
             .state('NotificationsServiceNotification', {
                 url: '/notifications/serviceNotification/:id',
+                params: {
+                    state: {
+                        value: null,
+                        array: true
+                    }
+                },
                 templateUrl: "/notifications/serviceNotification.html",
                 controller: "NotificationsServiceNotificationController"
             })

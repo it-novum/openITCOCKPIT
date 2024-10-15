@@ -49,9 +49,9 @@ class NotificationsLogRequest extends AngularRequest {
 
 
     public function getPeriod() {
-        if ($this->queryHasField('period')) {
+        if ($this->queryHasField('not_older_than')) {
             //period in minutes tlook in the past for notifications
-            $value = $this->getQueryFieldValue('period');
+            $value = $this->getQueryFieldValue('not_older_than');
             if ($value) {
                 return time() - ((int)$value * 60);
             }
@@ -64,6 +64,7 @@ class NotificationsLogRequest extends AngularRequest {
         }
         return time() - (3600 * 24 * 30);
     }
+
 
     public function getServiceFilters() {
         $Filter = new BaseFilter($this->getRequest());
