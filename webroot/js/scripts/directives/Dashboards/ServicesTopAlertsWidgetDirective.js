@@ -159,7 +159,7 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
             $scope.loadServiceNotificationDetails = function(serviceId) {
                 $state.go("NotificationsServiceNotification", {
                     id: serviceId,
-                    params: {state: $scope.filter.state}
+                    state: $scope.filter.state
                 });
             }
 

@@ -29,8 +29,7 @@ angular.module('openITCOCKPIT')
         SortService.setSort(QueryStringService.getValue('sort', 'NotificationServices.start_time'));
         SortService.setDirection(QueryStringService.getValue('direction', 'desc'));
         $scope.currentPage = 1;
-        let state = QueryStringService.getValue('state', null);
-        console.log($stateParams.state);
+
 
         $scope.id = $stateParams.id;
         $scope.useScroll = true;
@@ -115,6 +114,9 @@ angular.module('openITCOCKPIT')
 
         //Fire on page load
         defaultFilter();
+        if($stateParams.state) {
+            $scope.filter.NotificationServices.state[$stateParams.state] = true;
+        }
         SortService.setCallback($scope.load);
 
         $scope.$watch('filter', function() {

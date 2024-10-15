@@ -973,7 +973,7 @@ var openITCOCKPIT = angular.module('openITCOCKPIT', ['gridster', 'ui.router', 'n
                 params: {
                     state: {
                         value: null,
-                        array: true
+                        array: false
                     }
                 },
                 templateUrl: "/notifications/serviceNotification.html",

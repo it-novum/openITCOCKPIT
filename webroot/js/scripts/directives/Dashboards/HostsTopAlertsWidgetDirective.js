@@ -156,7 +156,7 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
             $scope.loadHostNotificationDetails = function(hostId) {
                 $state.go("NotificationsHostNotification", {
                     id: hostId,
-                    params: {'filter[NotificationHosts.state][]': [$scope.filter.state]}
+                    state: $scope.filter.state
                 });
             }
 
