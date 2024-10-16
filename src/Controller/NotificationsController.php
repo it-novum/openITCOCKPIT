@@ -178,7 +178,7 @@ class NotificationsController extends AppController {
         if ($this->request->getQuery('limit') !== null) {
             $Conditions->setLimit($this->request->getQuery('limit'));
         };
-        $Conditions->setFrom($AngularNotificationsLogRequest->getPeriod());
+        $Conditions->setFrom($AngularNotificationsLogRequest->getFromInterval());
         // $Conditions->setTo($AngularNotificationsLogRequest->getTo());
         $Conditions->setOrder($AngularNotificationsLogRequest->getOrderForPaginator('NotificationHostsLog.start_time', 'desc'));
         $Conditions->setStates($AngularNotificationsLogRequest->getHostStates());
@@ -227,7 +227,7 @@ class NotificationsController extends AppController {
         if ($this->request->getQuery('limit') !== null) {
             $Conditions->setLimit($this->request->getQuery('limit'));
         };
-        $Conditions->setFrom($AngularNotificationsLogRequest->getPeriod());
+        $Conditions->setFrom($AngularNotificationsLogRequest->getFromInterval());
         // $Conditions->setTo($AngularNotificationsOverviewControllerRequest->getTo());
         $Conditions->setOrder($AngularNotificationsLogRequest->getOrderForPaginator('NotificationServicesLog.start_time', 'desc'));
         $Conditions->setStates($AngularNotificationsLogRequest->getServiceStates());

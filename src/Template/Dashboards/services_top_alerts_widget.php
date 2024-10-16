@@ -73,14 +73,13 @@
                 <table class="table table-striped m-0 table-bordered table-hover table-sm">
                     <thead>
                     <tr class=" text-white" ng-class="bgClass">
-                        <th>
-                            <i class="fa" ng-class="getSortClass('NotificationHosts.state')"></i>
+                        <th class="text-center">
                             <?php echo __('State'); ?>
                         </th>
-                        <th>Host</th>
-                        <th>Service</th>
-                        <th>Last date</th>
-                        <th>Count</th>
+                        <th><?php echo __('Host'); ?></th>
+                        <th><?php echo __('Service'); ?></th>
+                        <th><?php echo __('Last date'); ?></th>
+                        <th><?php echo __('Count'); ?></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -232,6 +231,9 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="text-danger" ng-if="error">
+                    <?php echo __('Number greater 0 required'); ?>
                 </div>
                 <div class="row py-2">
                     <div class="col-lg-12">

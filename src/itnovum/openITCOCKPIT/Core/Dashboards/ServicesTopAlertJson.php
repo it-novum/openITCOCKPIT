@@ -29,8 +29,8 @@ use itnovum\openITCOCKPIT\Core\Dashboards\DashboardJsonStandardizer;
 class ServicesTopAlertJson extends DashboardJsonStandardizer {
     protected $fields = [
         'state'               => 'critical',
-        'not_older_than'      => 1440,
-        'not_older_than_unit' => 'MINUTE',
+        'not_older_than'      => 1,
+        'not_older_than_unit' => 'DAY',
         'scroll_interval'     => 30000,
         'useScroll'           => true
     ];

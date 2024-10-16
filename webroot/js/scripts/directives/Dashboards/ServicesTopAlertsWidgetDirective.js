@@ -32,6 +32,7 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
         },
 
         controller: function($scope) {
+            $scope.error = false;
             $scope.interval = null;
             $scope.init = true;
             $scope.useScroll = true;
@@ -89,7 +90,7 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
                     'page': $scope.currentPage,
                     'limit': $scope.limit,
                     'filter[NotificationServices.state][]': [$scope.filter.state],
-                    'filter[period]': $scope.getMinutes()
+                    'filter[not_older_than]': $scope.getMinutes()
                 };
 
                 $http.get("/notifications/serviceTopNotifications.json", {
@@ -261,10 +262,11 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
             }, true);
 
             $scope.saveServiceTopAlertWidget = function() {
-                /* if($scope.init) {
-                     return;
-                 } */
-                // console.log($scope.filter.state);
+                if(typeof ( $scope.filter.not_older_than ) === 'undefined') {
+                    $scope.error = true;
+                    return;
+                }
+                $scope.error = false;
                 $http.post("/dashboards/servicesTopAlertsWidget.json?angular=true",
                     {
                         Widget: {

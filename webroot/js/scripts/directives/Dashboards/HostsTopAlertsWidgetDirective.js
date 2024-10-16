@@ -32,6 +32,7 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
         },
 
         controller: function($scope) {
+            $scope.error = false;
             $scope.interval = null;
             $scope.init = true;
             $scope.useScroll = true;
@@ -89,7 +90,7 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
                     'page': $scope.currentPage,
                     'limit': $scope.limit,
                     'filter[NotificationHosts.state][]': [$scope.filter.state],
-                    'filter[period]': $scope.getMinutes()
+                    'filter[not_older_than]': $scope.getMinutes()
                 };
 
                 $http.get("/notifications/hostTopNotifications.json", {
@@ -258,10 +259,11 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
             }, true);
 
             $scope.saveHostTopAlertWidget = function() {
-                /* if($scope.init) {
-                     return;
-                 } */
-                // console.log($scope.filter.state);
+                if(typeof ( $scope.filter.not_older_than ) === 'undefined') {
+                    $scope.error = true;
+                    return;
+                }
+                $scope.error = false;
                 $http.post("/dashboards/hostsTopAlertsWidget.json?angular=true",
                     {
                         Widget: {
