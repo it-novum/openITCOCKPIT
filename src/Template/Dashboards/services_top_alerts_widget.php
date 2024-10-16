@@ -190,7 +190,7 @@
                                 </span>
                             </div>
                             <input ng-model="filter.not_older_than"
-                                   placeholder="<?= __('Leave empty for all'); ?>"
+                                   placeholder="<?= __('min value 1'); ?>"
                                    class="form-control" type="number" min="1">
                             <div class="input-group-append">
                                 <button class="btn btn-outline-primary dropdown-toggle"
