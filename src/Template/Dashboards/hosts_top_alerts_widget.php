@@ -90,7 +90,8 @@
                         <td>
                             <?php if ($this->Acl->hasPermission('index', 'notifications')): ?>
                                 <!--<a ui-sref="NotificationsHostNotification({id: notification.Host.id})">-->
-                                <a class="text-primary" ng-click="loadHostNotificationDetails(notification.Host.id)">
+                                <a class="text-primary pointer"
+                                   ng-click="loadHostNotificationDetails(notification.Host.id)">
                                     {{notification.Host.name}}
                                 </a>
                             <?php else: ?>
