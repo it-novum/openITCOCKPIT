@@ -571,7 +571,9 @@ class Menu {
                     '',
                     ['fas', 'bullhorn'],
                     [__('message'), __('news'), __('information')],
-                    4
+                    4,
+                    true,
+                    '/messagesOtd/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Dashboard Allocation'),
