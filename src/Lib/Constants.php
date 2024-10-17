@@ -153,8 +153,8 @@ class Constants {
             'OBJECT_SYNCHRONIZEWITHMONITORING' => 1 << 28,  // Changelog only ImportModule
             'OBJECT_AGENTCHECK'                => 1 << 29,  // Changelog only ImportModule
             'OBJECT_IMPORTEDHOSTGROUP'         => 1 << 30,  // Changelog only ImportModule
-            'OBJECT_RESOURCEGROUP'             => 1 << 31,  // ScmModule
-
+            'OBJECT_RESOURCE'                  => 1 << 31,  // ScmModule
+            'OBJECT_RESOURCEGROUP'             => 1 << 32,  // ScmModule
         ]);
     }
 
@@ -204,7 +204,8 @@ class Constants {
             'AUTOREPORT_MODULE'       => 1 << 0,
             'EVENTCORRELATION_MODULE' => 1 << 1,
             'IMPORT_MODULE'           => 1 << 2,
-            'SLA_MODULE'              => 1 << 3
+            'SLA_MODULE'              => 1 << 3,
+            'SCM_MODULE'              => 1 << 4
         ];
     }
 
@@ -243,7 +244,7 @@ class Constants {
                 'container_type' => CT_SERVICETEMPLATEGROUP,
             ],
             'RESOURCEGROUP_CONTAINER'        => [
-                'properties'     => OBJECT_USER,
+                'properties'     => OBJECT_USER ^ OBJECT_RESOURCE,
                 'container_type' => CT_RESOURCEGROUP,
             ],
         ];

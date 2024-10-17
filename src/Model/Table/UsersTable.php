@@ -1891,4 +1891,30 @@ class UsersTable extends Table {
 
     }
 
+    public function getUsersAsList($ids = []) {
+        if (empty($ids)) {
+            return [];
+        }
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->select([
+                'Users.id',
+                'Users.lastname',
+                'Users.firstname'
+            ]);
+        if (!empty($ids)) {
+            $query->where([
+                'Users.id IN' => $ids
+            ]);
+        }
+        $query->disableHydration()
+            ->all();
+
+        foreach ($query->toArray() as $user) {
+            $return[$user['id']] = $user['lastname'] . ', ' . $user['firstname'];
+        }
+        return $return;
+    }
 }
