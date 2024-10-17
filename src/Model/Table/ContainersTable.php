@@ -1,4 +1,26 @@
 <?php
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\Model\Table;
 
@@ -1479,5 +1501,80 @@ class ContainersTable extends Table {
 
 
         return $inUse;
+    }
+
+    /**
+     * This is a copy of the AppController::allowedByContainerId method, but it is intended to be used in Tables classes
+     * It requires more parameters than the original method.
+     *
+     * The first two parameters are the same to keep the API compatible with the original method.
+     *
+     * @param array|int $containerIds
+     * @param bool $useLevel
+     * @param array $MY_RIGHTS
+     * @param array $MY_RIGHTS_LEVEL
+     * @param bool $hasRootPrivileges
+     * @return bool
+     */
+    public function allowedByContainerId($containerIds, bool $useLevel = true, array $MY_RIGHTS = [], array $MY_RIGHTS_LEVEL = [], bool $hasRootPrivileges = false) {
+        if ($hasRootPrivileges === true) {
+            return true;
+        }
+
+        if ($useLevel === true) {
+            $MY_WRITE_RIGHTS = array_filter($MY_RIGHTS_LEVEL, function ($value) {
+                if ((int)$value === WRITE_RIGHT) {
+                    return true;
+                }
+
+                return false;
+            });
+            $MY_WRITE_RIGHTS = array_keys($MY_WRITE_RIGHTS);
+            if (!is_array($containerIds)) {
+                $containerIds = [$containerIds];
+            }
+            $result = array_intersect($containerIds, $MY_WRITE_RIGHTS);
+            if (!empty($result)) {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        $rights = $MY_RIGHTS;
+
+        if (is_array($containerIds)) {
+            $result = array_intersect($containerIds, $rights);
+            if (!empty($result)) {
+                return true;
+            }
+        } else {
+            if (in_array($containerIds, $rights)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     *  This is a copy of the AppController::getWriteContainers method, but it is intended to be used in Tables classes
+     *  It requires to pass $MY_RIGHTS_LEVEL as first parameter
+     *
+     * @param array $MY_RIGHTS_LEVEL
+     * @return int[]|string[]
+     */
+    public function getWriteContainers(array $MY_RIGHTS_LEVEL) {
+        $MY_WRITE_RIGHTS = array_filter($MY_RIGHTS_LEVEL, function ($value) {
+            if ((int)$value === WRITE_RIGHT) {
+                return true;
+            }
+
+            return false;
+        });
+        $MY_WRITE_RIGHTS = array_keys($MY_WRITE_RIGHTS);
+
+        return $MY_WRITE_RIGHTS;
     }
 }
