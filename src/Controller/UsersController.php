@@ -195,7 +195,7 @@ class UsersController extends AppController {
             $this->set('customLoginBackgroundHtml', $Logo->getCustomLoginBackgroundHtml());
 
             $this->set('errorMessages', $errorMessages);
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation']);
             return;
         }
 
