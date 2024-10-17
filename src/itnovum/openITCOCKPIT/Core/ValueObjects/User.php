@@ -39,32 +39,32 @@ class User {
     /**
      * @var bool
      */
-    private $recursiveBrowser;
+    protected $recursiveBrowser;
 
     /**
      * @var mixed|null
      */
-    private $fullName;
+    protected $fullName;
 
     /**
      * @var int
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $timezone;
+    protected $timezone;
 
     /**
      * @var string
      */
-    private $dateformat;
+    protected $dateformat;
 
     /**
      * @var int
      */
-    private $usergroupId;
+    protected $usergroupId;
 
 
     /**

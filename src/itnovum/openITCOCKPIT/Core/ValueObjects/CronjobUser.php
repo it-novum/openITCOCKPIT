@@ -29,37 +29,7 @@ namespace itnovum\openITCOCKPIT\Core\ValueObjects;
  * The User object is needed for the Changelog.
  */
 class CronjobUser extends User {
-
-    /**
-     * @var bool
-     */
-    private $recursiveBrowser;
-
-    /**
-     * @var mixed|null
-     */
-    private $fullName;
-
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $timezone;
-
-    /**
-     * @var string
-     */
-    private $dateformat;
-
-    /**
-     * @var int
-     */
-    private $usergroupId;
-
+    
     public function __construct() {
         $timezone = date_default_timezone_get();
         if (empty($timezone)) {
