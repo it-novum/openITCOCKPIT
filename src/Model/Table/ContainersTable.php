@@ -140,13 +140,6 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ])->setDependent(true);
 
-        if (Plugin::isLoaded('ScmModule')) {
-            $this->hasMany('Resourcegroups', [
-                'foreignKey'       => 'container_id',
-                'cascadeCallbacks' => true
-            ])->setDependent(true);
-        }
-
         //$this->belongsTo('ParentContainers', [
         //    'className' => 'Containers',
         //    'foreignKey' => 'parent_id'
@@ -1172,6 +1165,7 @@ class ContainersTable extends Table {
             case CT_HOSTGROUP:
             case CT_SERVICEGROUP:
             case CT_SERVICETEMPLATEGROUP:
+            case CT_RESOURCEGROUP:
                 return true;
         }
 
