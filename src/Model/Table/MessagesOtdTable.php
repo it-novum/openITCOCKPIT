@@ -133,7 +133,11 @@ class MessagesOtdTable extends Table {
             ->disableHydration();
         $where = $GenericFilter->genericFilters();
         if (!empty($where['MessagesOtd.date LIKE'])) {
-            $where['DATE_FORMAT(MessagesOtd.date, "%d.%m.%Y") LIKE'] = $where['MessagesOtd.date LIKE'];
+            if (strpos($where['MessagesOtd.date LIKE'], '-') !== false) {
+                $where['DATE_FORMAT(MessagesOtd.date, "%Y-%m-%d") LIKE'] = $where['MessagesOtd.date LIKE'];
+            } else {
+                $where['DATE_FORMAT(MessagesOtd.date, "%d.%m.%Y") LIKE'] = $where['MessagesOtd.date LIKE'];
+            }
             unset($where['MessagesOtd.date LIKE']);
         }
 
