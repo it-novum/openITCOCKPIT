@@ -167,6 +167,8 @@ class UsersController extends AppController {
                     $loginData = $EventlogsTable->createDataJsonForUser($userFromDb->get('email'));
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
                     $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, $containerIds);
+
+                    $this->redirect('/a');
                 }
             }
         }
