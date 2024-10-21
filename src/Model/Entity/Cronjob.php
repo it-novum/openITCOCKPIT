@@ -26,7 +26,7 @@ class Cronjob extends Entity {
      *
      * @var array
      */
-    protected $_accessible = [
+    protected array $_accessible = [
         'task'         => true,
         'plugin'       => true,
         'interval'     => true,

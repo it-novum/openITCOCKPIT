@@ -307,7 +307,7 @@ class HostescalationsTable extends Table {
                 'Hostescalations.escalate_on_down',
                 'Hostescalations.escalate_on_unreachable'
             ])
-            ->group('Hostescalations.id')
+            ->groupBy('Hostescalations.id')
             ->disableHydration();
 
         $indexFilter = $HostescalationsFilter->indexFilter();
@@ -379,7 +379,7 @@ class HostescalationsTable extends Table {
             unset($indexFilter['Hostescalations.notification_interval LIKE']);
         }
         $query->where($indexFilter);
-        $query->order($HostescalationsFilter->getOrderForPaginator('Hostescalations.id', 'asc'));
+        $query->orderBy($HostescalationsFilter->getOrderForPaginator('Hostescalations.id', 'asc'));
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $this->emptyArrayIfNull($query->toArray());
@@ -566,7 +566,7 @@ class HostescalationsTable extends Table {
             ->where([
                 'contact_id' => $contactId
             ])
-            ->group([
+            ->groupBy([
                 'hostescalation_id'
             ])
             ->disableHydration()
@@ -594,7 +594,7 @@ class HostescalationsTable extends Table {
         });
 
         $query->enableHydration($enableHydration);
-        $query->order([
+        $query->orderBy([
             'Containers.name' => 'asc'
         ]);
 

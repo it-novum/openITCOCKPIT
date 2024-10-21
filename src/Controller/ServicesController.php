@@ -1275,10 +1275,8 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $ServicesTable->get($id, [
-            'contain' => [
-                'Servicetemplates'
-            ]
+        $service = $ServicesTable->get($id, contain: [
+            'Servicetemplates'
         ]);
         $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
@@ -1342,10 +1340,8 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $ServicesTable->get($id, [
-            'contain' => [
-                'Servicetemplates'
-            ]
+        $service = $ServicesTable->get($id, contain: [
+            'Servicetemplates'
         ]);
         $host = $HostsTable->getHostForServiceEdit($service->get('host_id'));
         if (!$this->allowedByContainerId($host['Host']['hosts_to_containers_sharing']['_ids'])) {
@@ -3162,11 +3158,9 @@ class ServicesController extends AppController {
             throw new NotFoundException(__('Invalid service'));
         }
 
-        $service = $ServicesTable->get($id, [
-            'contain' => [
-                'Hosts',
-                'Servicetemplates'
-            ]
+        $service = $ServicesTable->get($id, contain: [
+            'Hosts',
+            'Servicetemplates'
         ]);
         if (!$HostsTable->existsById($service->get('host_id'))) {
             throw new NotFoundException(__('Invalid host'));

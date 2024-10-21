@@ -157,10 +157,10 @@ class GrafanaDashboardsTable extends Table {
                     ],
                 ]
             ])
-            ->group([
+            ->groupBy([
                 'Host.id'
             ])
-            ->order([
+            ->orderBy([
                 'Host.name' => 'asc',
                 'Host.id'   => 'asc'
             ]);

@@ -136,7 +136,7 @@ class GrafanaUserdashboardPanelsTable extends Table {
                 ->where([
                     'GrafanaUserdashboardPanels.userdashboard_id' => $dashboardId
                 ])
-                ->order([
+                ->orderBy([
                     'GrafanaUserdashboardPanels.row' => 'DESC'
                 ])
                 ->firstOrFail();

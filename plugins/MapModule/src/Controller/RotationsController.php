@@ -176,11 +176,9 @@ class RotationsController extends AppController {
             throw new NotFoundException(__('Invalid Map rotation'));
         }
 
-        $rotation = $RotationsTable->get($id, [
-            'contain' => [
-                'Maps',
-                'Containers'
-            ]
+        $rotation = $RotationsTable->get($id, contain: [
+            'Maps',
+            'Containers'
         ]);
 
         $this->viewBuilder()->setOption('serialize', ['rotation']);
@@ -229,11 +227,9 @@ class RotationsController extends AppController {
             throw new NotFoundException(__('Invalid Map rotation'));
         }
 
-        $rotation = $RotationsTable->get($id, [
-            'contain' => [
-                'Maps',
-                'Containers'
-            ]
+        $rotation = $RotationsTable->get($id, contain: [
+            'Maps',
+            'Containers'
         ]);
         $containerIdsToCheck = Hash::extract($rotation, 'containers.{n}.id');
         if (!$this->allowedByContainerId($containerIdsToCheck)) {

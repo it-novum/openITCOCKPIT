@@ -140,7 +140,7 @@ class MessagesOtdTable extends Table {
         $query->where($where);
 
 
-        $query->order($GenericFilter->getOrderForPaginator('MessagesOtd.date', 'asc'));
+        $query->orderBy($GenericFilter->getOrderForPaginator('MessagesOtd.date', 'asc'));
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -210,11 +210,11 @@ class MessagesOtdTable extends Table {
             ':today BETWEEN MessagesOtd.date AND IF(MessagesOtd.expiration_duration IS NULL, :today, DATE_ADD(MessagesOtd.date, INTERVAL MessagesOtd.expiration_duration DAY))'
         ])->bind(':today', $today, 'date')
             ->disableHydration()
-            ->group('MessagesOtd.date')
+            ->groupBy('MessagesOtd.date')
             ->having([
                 'FIND_IN_SET(:usergroup_id, IF(usergroup_ids IS NULL, :usergroup_id, usergroup_ids))'
             ])->bind(':usergroup_id', $usergroupId, 'integer')
-            ->order(['MessagesOtd.date' => 'DESC'])
+            ->orderBy(['MessagesOtd.date' => 'DESC'])
             ->first();
     }
 }

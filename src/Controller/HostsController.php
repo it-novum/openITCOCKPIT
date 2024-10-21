@@ -236,9 +236,7 @@ class HostsController extends AppController {
             $existingImportedHostIdsByHostIds = Hash::combine($existingImportedHostIdsByHostIds, '{n}', '{n}');
         }
         foreach ($hosts as $host) {
-            $serviceUuids = $ServiceTable->find('list', [
-                'valueField' => 'uuid'
-            ])
+            $serviceUuids = $ServiceTable->find('list', valueField: 'uuid')
                 ->where([
                     'Services.host_id' => $host['Host']['id']
                 ])
@@ -1166,9 +1164,7 @@ class HostsController extends AppController {
                                 if (!empty($contactsFromHost)) {
                                     foreach ($contactsFromHost as $contactId) {
                                         if (!$ContactCache->has($contactId)) {
-                                            $ContactCache->set($contactId, $ContactsTable->get($contactId, [
-                                                'contain' => 'Containers'
-                                            ])->toArray());
+                                            $ContactCache->set($contactId, $ContactsTable->get($contactId, contain: 'Containers')->toArray());
 
                                         }
                                         $contact = $ContactCache->get($contactId);
@@ -1248,9 +1244,7 @@ class HostsController extends AppController {
                                 if (!empty($contactgroupsFromHost)) {
                                     foreach ($contactgroupsFromHost as $contactgroupId) {
                                         if (!$ContactgroupCache->has($contactgroupId)) {
-                                            $ContactgroupCache->set($contactgroupId, $ContactgroupsTable->get($contactgroupId, [
-                                                'contain' => 'Containers'
-                                            ])->toArray());
+                                            $ContactgroupCache->set($contactgroupId, $ContactgroupsTable->get($contactgroupId, contain: 'Containers')->toArray());
 
                                         }
                                         $contactgroup = $ContactgroupCache->get($contactgroupId);

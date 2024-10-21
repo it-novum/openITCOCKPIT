@@ -92,7 +92,7 @@ class TenantsTable extends Table {
             ]);
         }
 
-        $query->order($TenantFilter->getOrderForPaginator('Containers.name', 'asc'));
+        $query->orderBy($TenantFilter->getOrderForPaginator('Containers.name', 'asc'));
 
         if ($PaginateOMat === null) {
             //Just execute query

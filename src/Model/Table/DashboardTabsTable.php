@@ -177,7 +177,7 @@ class DashboardTabsTable extends Table {
                 ->where([
                     'DashboardTabs.user_id' => $userId
                 ])
-                ->order([
+                ->orderBy([
                     'DashboardTabs.position' => 'DESC'
                 ])
                 ->firstOrFail();
@@ -255,7 +255,7 @@ class DashboardTabsTable extends Table {
 
         $result = $this->find()
             ->where($where)
-            ->order([
+            ->orderBy([
                 'DashboardTabs.position' => 'ASC',
             ]);
 
@@ -383,7 +383,7 @@ class DashboardTabsTable extends Table {
     public function getWidgetsForTabByUserIdAndTabId($userId, $tabId, int $loggedInUserId) {
         $query = $this->find()
             ->contain('Widgets', function (Query $query) {
-                $query->order([
+                $query->orderBy([
                     'Widgets.col' => 'ASC'
                 ]);
                 return $query;

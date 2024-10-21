@@ -213,12 +213,12 @@ class ChangelogsTable extends Table {
             ];
         }
 
-        $query->group(['Changelogs.id']);
+        $query->groupBy(['Changelogs.id']);
         $query->where([
             'Changelogs.module_flag' => $moduleFlag
         ]);
         $query->where($where);
-        $query->order(
+        $query->orderBy(
             array_merge(
                 $ChangelogsFilter->getOrderForPaginator('Changelogs.id', 'desc'),
                 ['Changelogs.id' => 'desc']

@@ -176,7 +176,7 @@ class GrafanaUserdashboardsTable extends Table {
             ]);
         }
 
-        $query->order($GrafanaUserDashboardFilter->getOrderForPaginator('GrafanaUserdashboards.name', 'asc'));
+        $query->orderBy($GrafanaUserDashboardFilter->getOrderForPaginator('GrafanaUserdashboards.name', 'asc'));
         $query->disableHydration();
 
 
@@ -270,7 +270,7 @@ class GrafanaUserdashboardsTable extends Table {
                             return $query;
                         }
                     ])
-                        ->order([
+                        ->orderBy([
                             'GrafanaUserdashboardPanels.row' => 'ASC'
                         ]);
                     return $query;
@@ -394,7 +394,7 @@ class GrafanaUserdashboardsTable extends Table {
                 'GrafanaUserdashboards.name'
             ])
             ->where(['GrafanaUserdashboards.id IN' => $ids])
-            ->order(['GrafanaUserdashboards.id' => 'asc']);
+            ->orderBy(['GrafanaUserdashboards.id' => 'asc']);
 
         if (!empty($MY_RIGHTS)) {
             $query->andWhere([

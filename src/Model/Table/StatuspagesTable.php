@@ -222,7 +222,7 @@ class StatuspagesTable extends Table {
             $query->where(['Statuspages.container_id IN' => $MY_RIGHTS]);
         }
 
-        $query->order($StatuspagesFilter->getOrderForPaginator('Statuspages.id', 'asc'))
+        $query->orderBy($StatuspagesFilter->getOrderForPaginator('Statuspages.id', 'asc'))
             ->disableHydration();
 
         if ($PaginateOMat === null) {
@@ -955,7 +955,7 @@ class StatuspagesTable extends Table {
                     ->where([
                         'Services.disabled' => 0
                     ])
-                    ->group(['Services.id']);
+                    ->groupBy(['Services.id']);
             })
             ->contain('Hostgroups', function (Query $q) use ($MY_RIGHTS) {
                 return $q

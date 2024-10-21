@@ -69,7 +69,7 @@ class UserTime {
     public function format($t_time) {
         if (gettype($t_time) === 'object') {
             if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
-                /** @var FrozenTime $t_time */
+                /** @var \Cake\I18n\DateTime $t_time */
                 $t_time = $t_time->timestamp;
             } else if (get_class($t_time) === 'DateTime') {
                 /** @var DateTime $t_time */
@@ -83,7 +83,7 @@ class UserTime {
         if (!is_numeric($t_time)) {
             $t_time = 0;
         }
-        $time = FrozenTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
+        $time = \Cake\I18n\DateTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
         return $time->format($this->format);
     }
 
@@ -96,7 +96,7 @@ class UserTime {
 
         if (gettype($t_time) === 'object') {
             if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
-                /** @var FrozenTime $t_time */
+                /** @var \Cake\I18n\DateTime $t_time */
                 $t_time = $t_time->timestamp;
             } else if (get_class($t_time) === 'DateTime') {
                 /** @var DateTime $t_time */
@@ -110,7 +110,7 @@ class UserTime {
         if (!is_numeric($t_time)) {
             $t_time = 0;
         }
-        $time = FrozenTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
+        $time = \Cake\I18n\DateTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
         return $time->format($format);
     }
 
@@ -200,7 +200,7 @@ class UserTime {
     public function timeAgoInWords($t_time, $options = []) {
         if (gettype($t_time) === 'object') {
             if (get_class($t_time) === 'Cake\I18n\FrozenTime') {
-                /** @var FrozenTime $t_time */
+                /** @var \Cake\I18n\DateTime $t_time */
                 $t_time = $t_time->timestamp;
             } else if (get_class($t_time) === 'DateTime') {
                 /** @var DateTime $t_time */
@@ -214,7 +214,7 @@ class UserTime {
         if (!is_numeric($t_time)) {
             $t_time = 0;
         }
-        $time = FrozenTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
+        $time = \Cake\I18n\DateTime::createFromTimestamp($t_time, new \DateTimeZone($this->timezone));
         return $time->timeAgoInWords($options);
     }
 
