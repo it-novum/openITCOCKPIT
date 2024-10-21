@@ -748,7 +748,9 @@ class Menu {
                     '',
                     ['fas', 'gears'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/agentchecks/index'
                 ))
             );
 
