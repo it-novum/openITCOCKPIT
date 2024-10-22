@@ -730,7 +730,9 @@ class Menu {
                     '',
                     ['fas', 'wand-magic-sparkles'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/agentconnector/wizard'
                 ))
                 ->addLink(new MenuLink(
                     __('Agents Overview'),
