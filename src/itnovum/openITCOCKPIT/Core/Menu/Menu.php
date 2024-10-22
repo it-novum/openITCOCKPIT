@@ -740,7 +740,9 @@ class Menu {
                     '',
                     ['fas', 'user-secret'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/agentconnector/pull'
                 ))
                 ->addLink(new MenuLink(
                     __('Agent Checks'),
