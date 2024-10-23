@@ -11,11 +11,9 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\I18n\FrozenDate;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\BBCodeParser;
 use itnovum\openITCOCKPIT\Core\Views\Logo;
-use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\GenericFilter;
 
@@ -136,10 +134,6 @@ class MessagesOtdController extends AppController {
         $messageOtd = $MessagesOtdTable->getMessageOtdByIdForEdit($id);
 
         if ($this->request->is('get')) {
-            if (!empty($messageOtd['date'])) {
-                $frozenDate = new FrozenDate($messageOtd['date']);
-                $messageOtd['date'] = $frozenDate->format('d.m.Y');
-            }
             $this->set('messageOtd', $messageOtd);
             $this->viewBuilder()->setOption('serialize', ['messageOtd']);
             return;

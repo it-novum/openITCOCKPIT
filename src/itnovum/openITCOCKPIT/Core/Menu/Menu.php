@@ -561,7 +561,9 @@ class Menu {
                     '',
                     ['fas', 'users'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/usercontainerroles/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Message of the day'),
@@ -571,7 +573,9 @@ class Menu {
                     '',
                     ['fas', 'bullhorn'],
                     [__('message'), __('news'), __('information')],
-                    4
+                    4,
+                    true,
+                    '/messagesOtd/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Dashboard Allocation'),
@@ -728,7 +732,9 @@ class Menu {
                     '',
                     ['fas', 'wand-magic-sparkles'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/agentconnector/wizard'
                 ))
                 ->addLink(new MenuLink(
                     __('Agents Overview'),
@@ -738,7 +744,9 @@ class Menu {
                     '',
                     ['fas', 'user-secret'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/agentconnector/pull'
                 ))
                 ->addLink(new MenuLink(
                     __('Agent Checks'),
@@ -748,7 +756,9 @@ class Menu {
                     '',
                     ['fas', 'gears'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/agentchecks/index'
                 ))
             );
 
