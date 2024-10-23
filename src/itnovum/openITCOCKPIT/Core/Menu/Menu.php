@@ -561,7 +561,9 @@ class Menu {
                     '',
                     ['fas', 'users'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/usercontainerroles/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Message of the day'),
