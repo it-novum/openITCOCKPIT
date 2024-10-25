@@ -32,6 +32,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
@@ -71,6 +72,7 @@ use itnovum\openITCOCKPIT\Filter\UsersFilter;
 class UsersTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Password validation regex.
