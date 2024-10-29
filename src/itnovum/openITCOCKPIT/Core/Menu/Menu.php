@@ -796,7 +796,9 @@ class Menu {
                     '',
                     ['fas', 'file-waveform'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/ConfigurationFiles/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Proxy Settings'),
