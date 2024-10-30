@@ -83,6 +83,13 @@ class ConfigGenerator {
     protected $commentChar = '#';
 
     /**
+     * null for core configurations
+     * string for module urls such as prometheus_module
+     * @var null
+     */
+    protected $moduleUrl = null;
+
+    /**
      * @return string
      */
     public function getTemplatePath() {
@@ -370,7 +377,8 @@ class ConfigGenerator {
             'linkedOutfile'    => $this->getLinkedOutfile(),
             'realOutfile'      => $this->getRealOutfile(),
             'dbKey'            => $this->getDbKey(),
-            'angularDirective' => $this->getAngularDirective()
+            'angularDirective' => $this->getAngularDirective(),
+            'moduleUrl'        => $this->moduleUrl
         ];
     }
 
