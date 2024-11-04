@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -156,7 +156,9 @@ class Menu {
                         '',
                         ['fas', 'info-circle'],
                         [],
-                        3
+                        3,
+                        true,
+                        '/statuspages/index'
                     ))
             )
             ->addCategory(
