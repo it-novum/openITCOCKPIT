@@ -680,17 +680,6 @@ class WidgetsTable extends Table {
             ];
         }
 
-        if (isset($ACL_PERMISSIONS['notifications']['index'])) {
-            $widgets[] = [
-                'type_id'   => 35,
-                'title'     => __('Hosts top alerts'),
-                'icon'      => 'fa-solid fa-bullhorn',
-                'directive' => 'hosts-top-alerts-widget',
-                'width'     => 12,
-                'height'    => 16
-            ];
-        }
-
         if (isset($ACL_PERMISSIONS['hosts']['index'])) {
             $widgets[] = [
                 'type_id'   => 9,

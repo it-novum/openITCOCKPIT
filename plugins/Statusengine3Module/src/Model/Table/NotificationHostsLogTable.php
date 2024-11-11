@@ -141,7 +141,6 @@ class NotificationHostsLogTable extends Table implements NotificationHostsLogTab
             )
             ->where([
                 'NotificationHostsLog.start_time >' => $HostNotificationConditions->getFrom(),
-                // 'NotificationHostsLog.start_time <' => $HostNotificationConditions->getTo()
             ])
             ->group([
                 'NotificationHostsLog.hostname'
