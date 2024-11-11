@@ -100,8 +100,8 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
                     $scope.scroll = result.data.scroll;
 
                     if(options.save === true) {
-                        console.log('save');
-                        $scope.saveHostTopAlertWidget();
+
+                        $scope.saveServiceTopAlertWidget();
                     }
                     if($scope.init === true && $scope.scroll.hasNextPage) {
                         if($scope.scroll_interval < 5000) {

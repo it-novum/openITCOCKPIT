@@ -159,7 +159,7 @@
                                    ng-value="'critical'"
                                    ng-model="filter.state"
                                    ng-model-options="{debounce: 500}">
-                            <label class="custom-control-label custom-control-label-crtical"
+                            <label class="custom-control-label custom-control-label-critical"
                                    for="widget-radio2-{{widget.id}}">
                                 <?php echo __('Critical'); ?>
                             </label>
