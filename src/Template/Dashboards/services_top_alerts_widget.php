@@ -47,11 +47,9 @@
                     </div>
                 </div>
                 <div class="col-lg-6"> <?php echo __('Top Alerts for state:'); ?>
-                    <badge class="text-white pl-2 pr-2 bold" ng-class="bgClass"> {{filter.state}}</badge>
+                    <badge class="text-white pl-2 pr-2 bold rounded" ng-class="bgClass"> {{filter.state}}</badge>
                 </div>
                 <div class="col-lg-6">
-
-                    <!--<span> {{filter.not_older_than}} </span> -->
                     <span class="pull-right" ng-show="filter.not_older_than"
                           ng-switch="filter.not_older_than_unit">
                         <?php echo __('Period: Last'); ?> {{filter.not_older_than}}
@@ -93,7 +91,6 @@
                         </td>
                         <td>
                             <?php if ($this->Acl->hasPermission('services', 'notifications')): ?>
-                                <!--<a ui-sref="NotificationsHostNotification({id: notification.Host.id})">-->
                                 <a class="text-primary pointer">
                                     <span ng-click="loadServiceNotificationDetails(notification.Service.id)">{{notification.Service.servicename}}</span>
                                 </a>
@@ -197,9 +194,6 @@
                                         ng-switch="filter.not_older_than_unit"
                                         type="button" data-toggle="dropdown"
                                         aria-haspopup="true" aria-expanded="false">
-                                    <!--<span ng-switch-when="SECOND">
-                                        <?= __('seconds'); ?>
-                                    </span>-->
                                     <span ng-switch-when="MINUTE">
                                         <?= __('minutes'); ?>
                                     </span>
@@ -211,10 +205,7 @@
                                     </span>
                                 </button>
                                 <div class="dropdown-menu">
-                                    <!-- <a class="dropdown-item" href="javascript:void(0);"
-                                       ng-click="filter.not_older_than_unit = 'SECOND'">
-                                        <?= __('seconds'); ?>
-                                    </a>-->
+
                                     <a class="dropdown-item" href="javascript:void(0);"
                                        ng-click="filter.not_older_than_unit = 'MINUTE'">
                                         <?= __('minutes'); ?>
