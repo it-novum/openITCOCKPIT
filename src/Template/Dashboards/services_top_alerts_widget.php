@@ -137,7 +137,7 @@
                                    ng-model-options="{debounce: 500}">
                             <label class="custom-control-label custom-control-label-ok"
                                    for="widget-radio0-{{widget.id}}">
-                                <?php echo __('Up'); ?>
+                                <?php echo __('Ok'); ?>
                             </label>
                         </div>
                         <div class="custom-control custom-radio custom-control-left margin-right-10">
