@@ -32,6 +32,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
@@ -71,6 +72,7 @@ use itnovum\openITCOCKPIT\Filter\UsersFilter;
 class UsersTable extends Table {
     use Cake2ResultTableTrait;
     use PaginationAndScrollIndexTrait;
+    use PluginManagerTableTrait;
 
     /**
      * Password validation regex.
@@ -1891,4 +1893,30 @@ class UsersTable extends Table {
 
     }
 
+    public function getUsersAsList($ids = []) {
+        if (empty($ids)) {
+            return [];
+        }
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+        $query = $this->find()
+            ->select([
+                'Users.id',
+                'Users.lastname',
+                'Users.firstname'
+            ]);
+        if (!empty($ids)) {
+            $query->where([
+                'Users.id IN' => $ids
+            ]);
+        }
+        $query->disableHydration()
+            ->all();
+
+        foreach ($query->toArray() as $user) {
+            $return[$user['id']] = $user['lastname'] . ', ' . $user['firstname'];
+        }
+        return $return;
+    }
 }

@@ -22,6 +22,8 @@
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use Cake\Core\Plugin;
+
 $timezones = \Cake\I18n\FrozenTime::listTimezones();
 ?>
 <ol class="breadcrumb page-breadcrumb">
@@ -58,11 +60,11 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 <?php echo __('Container'); ?>
                             </label>
                             <select
-                                    data-placeholder="<?php echo __('Please choose'); ?>"
-                                    class="form-control"
-                                    chosen="containers"
-                                    ng-model="selectedContainer.id"
-                                    ng-options="container.key as container.value for container in containers">
+                                data-placeholder="<?php echo __('Please choose'); ?>"
+                                class="form-control"
+                                chosen="containers"
+                                ng-model="selectedContainer.id"
+                                ng-options="container.key as container.value for container in containers">
                             </select>
                         </div>
                     </form>
@@ -99,13 +101,19 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 <?php echo __('Servicegroup'); ?>
                             </em>
                             <i class="fa fa-pencil-square-o"></i>
-                            <em>
+                            <em class="padding-right-20">
                                 <?php echo __('Servicetemplategroup'); ?>
                             </em>
+                            <?php if (Plugin::isLoaded('ScmModule')): ?>
+                                <i class="fas fa-user-group"></i>
+                                <em>
+                                    <?php echo __('Resourcegroup'); ?>
+                                </em>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                <div class="panel-content" ng-if="subcontainers">
+                <div class=" panel-content" ng-if="subcontainers">
                     <div class="row padding-top-15">
                         <div class="col col-sm-12 col-lg-12">
                             <header>
@@ -300,7 +308,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                             <?php endif; ?>
                                         </span>
 
-                                        <span class="ellipsis" ng-switch-when="<?php echo CT_SERVICETEMPLATEGROUP; ?>">
+                                        <span class="ellipsis"
+                                              ng-switch-when="<?php echo CT_SERVICETEMPLATEGROUP; ?>">
                                             <i class="fa fa-pencil-square-o"></i>
                                             <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
                                                 <a ui-sref="ServicetemplategroupsEdit({id: $Container.linkedId})"
@@ -314,6 +323,25 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                                 {{ $Container.name }}
                                             <?php endif; ?>
                                         </span>
+
+                                        <?php if (Plugin::isLoaded('ScmModule')): ?>
+                                            <span class="ellipsis"
+                                                  ng-switch-when="<?php echo CT_RESOURCEGROUP; ?>">
+                                                <i class="fas fa-user-group"></i>
+                                                <?php if ($this->Acl->hasPermission('edit', 'resourcegroups', 'ScmModule')): ?>
+                                                    <a ui-sref="ResourcegroupsEdit({id: $Container.linkedId})"
+                                                       ng-if="$Container.allowEdit">
+                                                        {{ $Container.name }}
+                                                    </a>
+                                                    <span ng-if="!$Container.allowEdit">
+                                                        {{ $Container.name }}
+                                                    </span>
+                                                <?php else: ?>
+                                                    {{ $Container.name }}
+                                                <?php endif; ?>
+                                            </span>
+                                        <?php endif; ?>
+
                                     </div>
 
                                     <span class="badge border border-primary text-primary pull-right"
@@ -326,25 +354,45 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                     <span class="pull-right"
                                           ng-if="$Container.containertype_id == <?php echo CT_CONTACTGROUP; ?>">
-                                        <i class="fa fa-user" title="<?= __('Contacts') ?>"></i> {{ $Container.contacts }}
+                                        <i class="fa fa-user" title="<?= __('Contacts') ?>"></i> {{
+                                        $Container.contacts }}
                                     </span>
 
                                     <span class="pull-right"
                                           ng-if="$Container.containertype_id == <?php echo CT_HOSTGROUP; ?>">
-                                        <i class="fa fa-desktop" title="<?= __('Hosts') ?>"></i> {{ $Container.hosts }}
-                                        <i class="fa fa-pencil-square-o" title="<?= __('Host templates') ?>"></i> {{ $Container.hosttemplates }}
+                                        <i class="fa fa-desktop" title="<?= __('Hosts') ?>"></i> {{
+                                        $Container.hosts }}
+                                        <i class="fa fa-pencil-square-o"
+                                           title="<?= __('Host templates') ?>"></i> {{ $Container.hosttemplates
+                                        }}
                                     </span>
 
                                     <span class="pull-right"
                                           ng-if="$Container.containertype_id == <?php echo CT_SERVICEGROUP; ?>">
-                                        <i class="fa fa-cog" title="<?= __('Services') ?>"></i> {{ $Container.services }}
-                                        <i class="fa fa-pencil-square-o" title="<?= __('Service templates') ?>"></i> {{ $Container.servicetemplates }}
+                                        <i class="fa fa-cog" title="<?= __('Services') ?>"></i> {{
+                                        $Container.services }}
+                                        <i class="fa fa-pencil-square-o"
+                                           title="<?= __('Service templates') ?>"></i> {{
+                                        $Container.servicetemplates }}
                                     </span>
 
                                     <span class="pull-right" title="<?= __('Service template groups') ?>"
                                           ng-if="$Container.containertype_id == <?php echo CT_SERVICETEMPLATEGROUP; ?>">
-                                        <i class="fa fa-pencil-square-o" title="<?= __('Service templates') ?>"></i> {{ $Container.servicetemplates }}
+                                        <i class="fa fa-pencil-square-o"
+                                           title="<?= __('Service templates') ?>"></i> {{
+                                        $Container.servicetemplates }}
                                     </span>
+                                    <?php if (Plugin::isLoaded('ScmModule')): ?>
+                                        <span class="pull-right" title="<?= __('resource groups') ?>"
+                                              ng-if="$Container.containertype_id == <?php echo CT_RESOURCEGROUP; ?>">
+                                            <i class="fa-solid fa-users"
+                                               title="<?= __('Users') ?>"></i> {{
+                                            $Container.users }}
+                                            <i class="fas fa-chalkboard-user"
+                                               title="<?= __('Resources') ?>"></i> {{
+                                            $Container.resources }}
+                                        </span>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -372,7 +420,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                 <label class="col-xs-12 control-label">
                                     <?php echo __('Select container type'); ?>
                                 </label>
-                                <div class="col-xs-12" ng-show="selectedContainerTypeId == <?php echo CT_GLOBAL; ?>">
+                                <div class="col-xs-12"
+                                     ng-show="selectedContainerTypeId == <?php echo CT_GLOBAL; ?>">
                                     <select class="form-control" ng-model="post.Container.containertype_id"
                                             chosen="{}">
                                         <?php if ($this->Acl->hasPermission('add', 'tenants')): ?>
@@ -382,7 +431,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                         <?php endif; ?>
                                     </select>
                                 </div>
-                                <div class="col-xs-12" ng-show="selectedContainerTypeId !== <?php echo CT_GLOBAL; ?>">
+                                <div class="col-xs-12"
+                                     ng-show="selectedContainerTypeId !== <?php echo CT_GLOBAL; ?>">
                                     <select class="form-control" ng-model="post.Container.containertype_id"
                                             chosen="{}">
 
@@ -551,7 +601,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                                 <optgroup label="<?php echo h($continent); ?>">
                                                     <?php foreach ($continentTimezons as $timezoneKey => $timezoneName): ?>
                                                         <option
-                                                                value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
+                                                            value="<?php echo h($timezoneKey); ?>"><?php echo h($timezoneName); ?></option>
                                                     <?php endforeach; ?>
                                                 </optgroup>
                                             <?php endforeach;; ?>
@@ -775,7 +825,8 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                     <div class="mr-auto">
                         <button type="button" class="btn btn-danger" ng-click="deleteNode()"
                                 ng-class="{'has-error': errors.id}">
-                            <i class="fa fa-refresh fa-spin" ng-if="isDeleting" ng-show="isDeleting" ng-hide="containerNotEmpty"></i>
+                            <i class="fa fa-refresh fa-spin" ng-if="isDeleting" ng-show="isDeleting"
+                               ng-hide="containerNotEmpty"></i>
                             <i class="fas fa-exclamation-triangle" ng-show="containerNotEmpty"></i>
                             <?php echo __('Delete'); ?>
                         </button>

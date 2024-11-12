@@ -24,6 +24,7 @@
 
 namespace App\Model\Table;
 
+use App\Lib\Traits\PluginManagerTableTrait;
 use AutoreportModule\Model\Table\AutoreportsTable;
 use Cake\Cache\Cache;
 use Cake\Core\Plugin;
@@ -92,6 +93,7 @@ use MapModule\Model\Table\MapsTable;
  * @mixin \Cake\ORM\Behavior\TreeBehavior
  */
 class ContainersTable extends Table {
+    use PluginManagerTableTrait;
 
     /**
      * @var null|array
@@ -1187,6 +1189,7 @@ class ContainersTable extends Table {
             case CT_HOSTGROUP:
             case CT_SERVICEGROUP:
             case CT_SERVICETEMPLATEGROUP:
+            case CT_RESOURCEGROUP:
                 return true;
         }
 
