@@ -208,11 +208,6 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
 
             var getLimit = function(height) {
                 height = height - 45 - 25 - 10 - 47; //Unit: px
-                //                ^ Widget play/pause div
-                //                     ^ Paginator
-                //                          ^ Margin between header and table
-                //                                ^ Table header
-
                 var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0) {
                     limit = 1;
@@ -279,8 +274,6 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
                         useScroll: $scope.useScroll
                     }
                 ).then(function(result) {
-                    // console.log(result.data);
-                    //Update status
                     $scope.filter = result.data.config;
                     $scope.currentPage = 1;
                     $scope.load();

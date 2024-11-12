@@ -64,7 +64,6 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
 
             $scope.loadWidgetConfig = function() {
                 $http.get("/dashboards/hostsTopAlertsWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result) {
-                    // console.log(result.data.config);
                     $scope.filter.state = result.data.config.state;
                     $scope.filter.not_older_than = result.data.config.not_older_than;
                     $scope.filter.not_older_than_unit = result.data.config.not_older_than_unit;
@@ -205,11 +204,6 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
 
             var getLimit = function(height) {
                 height = height - 45 - 25 - 10 - 47; //Unit: px
-                //                ^ Widget play/pause div
-                //                     ^ Paginator
-                //                          ^ Margin between header and table
-                //                                ^ Table header
-
                 var limit = Math.floor(height / 36); // 36px = table row height;
                 if(limit <= 0) {
                     limit = 1;
@@ -276,8 +270,6 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
                         useScroll: $scope.useScroll
                     }
                 ).then(function(result) {
-                    // console.log(result.data);
-                    //Update status
                     $scope.filter = result.data.config;
                     $scope.currentPage = 1;
                     $scope.load();
@@ -294,7 +286,6 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
             });
 
         },
-
 
         link: function($scope, element, attr) {
 
