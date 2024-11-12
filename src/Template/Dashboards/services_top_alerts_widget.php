@@ -46,7 +46,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6"> <?php echo __('Top Alerts for state:'); ?>
+                <div class="col-lg-6"> <?php echo __('Alert status'); ?>
                     <badge class="text-white pl-2 pr-2 bold rounded" ng-class="bgClass"> {{filter.state}}</badge>
                 </div>
                 <div class="col-lg-6">
