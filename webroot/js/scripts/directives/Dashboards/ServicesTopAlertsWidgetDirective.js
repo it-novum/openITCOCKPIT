@@ -64,13 +64,10 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
 
             $scope.loadWidgetConfig = function() {
                 $http.get("/dashboards/servicesTopAlertsWidget.json?angular=true&widgetId=" + $scope.widget.id, $scope.filter).then(function(result) {
-                    // console.log(result.data.config);
                     $scope.filter.state = result.data.config.state;
                     $scope.filter.not_older_than = result.data.config.not_older_than;
                     $scope.filter.not_older_than_unit = result.data.config.not_older_than_unit;
                     $scope.useScroll = result.data.config.useScroll;
-
-
                     let scrollInterval = parseInt(result.data.config.scroll_interval);
                     $scope.scroll_interval = scrollInterval;
 
@@ -100,7 +97,6 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
                     $scope.scroll = result.data.scroll;
 
                     if(options.save === true) {
-
                         $scope.saveServiceTopAlertWidget();
                     }
                     if($scope.init === true && $scope.scroll.hasNextPage) {
@@ -232,7 +228,6 @@ angular.module('openITCOCKPIT').directive('servicesTopAlertsWidget', function($h
             };
             $scope.showConfig = function() {
                 $scope.$broadcast('FLIP_EVENT_OUT');
-                // $scope.loadWidgetConfig();
             };
 
 

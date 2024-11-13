@@ -99,7 +99,6 @@ angular.module('openITCOCKPIT').directive('hostsTopAlertsWidget', function($http
                     $scope.scroll = result.data.scroll;
 
                     if(options.save === true) {
-                        console.log('save');
                         $scope.saveHostTopAlertWidget();
                     }
                     if($scope.init === true && $scope.scroll.hasNextPage) {

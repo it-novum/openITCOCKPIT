@@ -37,9 +37,8 @@
                                 </label>
 
                                 <div class="slidecontainer">
-                                    <input type="range" step="5000" min="0" max="300000" class="slider"
+                                    <input type="range" step="5000" min="0" max="300000" class="slider w-100"
                                            ng-disabled="readOnly"
-                                           style="width: 100%"
                                            ng-model="scroll_interval" ng-model-options="{debounce: 500}">
                                 </div>
                             </div>
@@ -87,7 +86,6 @@
 
                         <td>
                             <?php if ($this->Acl->hasPermission('index', 'notifications')): ?>
-                                <!--<a ui-sref="NotificationsHostNotification({id: notification.Host.id})">-->
                                 <a class="text-primary pointer"
                                    ng-click="loadHostNotificationDetails(notification.Host.id)">
                                     {{notification.Host.name}}
