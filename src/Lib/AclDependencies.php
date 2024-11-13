@@ -232,8 +232,10 @@ class AclDependencies {
             ->allow('Dashboards', 'servicesPiechart180Widget')
             ->allow('Dashboards', 'hostsStatusListWidget')
             ->allow('Dashboards', 'hostsStatusListExtendedWidget')
+            ->allow('Dashboards', 'hostsTopAlertsWidget')
             ->allow('Dashboards', 'servicesStatusListWidget')
             ->allow('Dashboards', 'servicesStatusListExtendedWidget')
+            ->allow('Dashboards', 'servicesTopAlertsWidget')
             ->allow('Dashboards', 'saveTabRotateInterval')
             ->allow('Dashboards', 'parentOutagesWidget')
             ->allow('Dashboards', 'hostsDowntimeWidget')
@@ -649,7 +651,9 @@ class AclDependencies {
 
 
         $this
-            ->dependency('Notifications', 'index', 'Notifications', 'services');
+            ->dependency('Notifications', 'index', 'Notifications', 'services')
+            ->dependency('Notifications', 'index', 'Notifications', 'hostTopNotifications')
+            ->dependency('Notifications', 'index', 'Notifications', 'serviceTopNotifications');
 
 
         $this

@@ -22,18 +22,17 @@
 //     License agreement and license key will be shipped with the order
 //     confirmation.
 
-namespace App\Lib\Interfaces;
+namespace App\itnovum\openITCOCKPIT\Core\Dashboards;
 
+use itnovum\openITCOCKPIT\Core\Dashboards\DashboardJsonStandardizer;
 
-use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
+class HostsTopAlertJson extends DashboardJsonStandardizer {
+    protected $fields = [
+        'state'               => 'down',
+        'not_older_than'      => 1,
+        'not_older_than_unit' => 'DAY',
+        'scroll_interval'     => 30000,
+        'useScroll'           => true
+    ];
 
-interface NotificationHostsTableInterface {
-
-    /**
-     * @param HostNotificationConditions $HostNotificationConditions
-     * @param PaginateOMat|null $PaginateOMat
-     * @return array
-     */
-    public function getNotifications(HostNotificationConditions $HostNotificationConditions, $PaginateOMat = null);
 }

@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -55,6 +55,7 @@ class NotificationHostsLog extends Entity {
      * @var array<string, bool>
      */
     protected $_accessible = [
+        'hostname'                => true,
         'end_time'                => true,
         'state'                   => true,
         'reason_type'             => true,

@@ -179,7 +179,6 @@ class ChangelogsTable extends Table {
         if (!empty($MY_RIGHTS)) {
             $where['Containers.id IN'] = $MY_RIGHTS;
         }
-
         $where['Changelogs.created >='] = date('Y-m-d H:i:s', $ChangelogsFilter->getFrom());
         $where['Changelogs.created <='] = date('Y-m-d H:i:s', $ChangelogsFilter->getTo());
 
@@ -217,6 +216,7 @@ class ChangelogsTable extends Table {
         $query->where([
             'Changelogs.module_flag' => $moduleFlag
         ]);
+
         $query->where($where);
         $query->order(
             array_merge(

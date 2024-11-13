@@ -109,6 +109,7 @@ class Constants {
             'CT_HOSTGROUP'            => 7,
             'CT_SERVICEGROUP'         => 8,
             'CT_SERVICETEMPLATEGROUP' => 9,
+            'CT_RESOURCEGROUP'        => 10
         ]);
     }
 
@@ -142,17 +143,18 @@ class Constants {
             'OBJECT_SERVICEESCALATION'         => 1 << 18,
             'OBJECT_HOSTDEPENDENCY'            => 1 << 19,
             'OBJECT_SERVICEDEPENDENCY'         => 1 << 20,
-            'OBJECT_EXPORT'                    => 1 << 21,  // Changelog only
-            'OBJECT_HOSTDEFAULT'               => 1 << 22,  // Changelog only
-            'OBJECT_IMPORTER'                  => 1 << 23,  // Changelog only
-            'OBJECT_IMPORTEDHOST'              => 1 << 24,  // Changelog only
-            'OBJECT_EXTERNALSYSTEM'            => 1 << 25,  // Changelog only
-            'OBJECT_EXTERNALMONITORING'        => 1 << 26,  // Changelog only
-            'OBJECT_STARTIMPORTDATA'           => 1 << 27,  // Changelog only
-            'OBJECT_SYNCHRONIZEWITHMONITORING' => 1 << 28,  // Changelog only
-            'OBJECT_AGENTCHECK'                => 1 << 29,  // Changelog only
-            'OBJECT_IMPORTEDHOSTGROUP'         => 1 << 30   // Changelog only
-
+            'OBJECT_EXPORT'                    => 1 << 21,  // Changelog only  ImportModule
+            'OBJECT_HOSTDEFAULT'               => 1 << 22,  // Changelog only ImportModule
+            'OBJECT_IMPORTER'                  => 1 << 23,  // Changelog only ImportModule
+            'OBJECT_IMPORTEDHOST'              => 1 << 24,  // Changelog only ImportModule
+            'OBJECT_EXTERNALSYSTEM'            => 1 << 25,  // Changelog only ImportModule
+            'OBJECT_EXTERNALMONITORING'        => 1 << 26,  // Changelog only ImportModule
+            'OBJECT_STARTIMPORTDATA'           => 1 << 27,  // Changelog only ImportModule
+            'OBJECT_SYNCHRONIZEWITHMONITORING' => 1 << 28,  // Changelog only ImportModule
+            'OBJECT_AGENTCHECK'                => 1 << 29,  // Changelog only ImportModule
+            'OBJECT_IMPORTEDHOSTGROUP'         => 1 << 30,  // Changelog only ImportModule
+            'OBJECT_RESOURCE'                  => 1 << 31,  // ScmModule
+            'OBJECT_RESOURCEGROUP'             => 1 << 32,  // ScmModule
         ]);
     }
 
@@ -202,26 +204,27 @@ class Constants {
             'AUTOREPORT_MODULE'       => 1 << 0,
             'EVENTCORRELATION_MODULE' => 1 << 1,
             'IMPORT_MODULE'           => 1 << 2,
-            'SLA_MODULE'              => 1 << 3
+            'SLA_MODULE'              => 1 << 3,
+            'SCM_MODULE'              => 1 << 4
         ];
     }
 
     private function attachContainerpropertiesToContainers() {
         $this->containersWithProperties = [
             "GLOBAL_CONTAINER"               => [
-                'properties'     => OBJECT_TENANT ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
+                'properties'     => OBJECT_TENANT ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY ^ OBJECT_RESOURCEGROUP,
                 'container_type' => CT_GLOBAL,
             ],
             "TENANT_CONTAINER"               => [
-                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY,
+                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTTEMPLATE ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_HOSTESCALATION ^ OBJECT_SERVICEESCALATION ^ OBJECT_HOSTDEPENDENCY ^ OBJECT_SERVICEDEPENDENCY ^ OBJECT_RESOURCEGROUP,
                 'container_type' => CT_TENANT,
             ],
             "LOCATION_CONTAINER"             => [
-                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP,
+                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_RESOURCEGROUP,
                 'container_type' => CT_LOCATION,
             ],
             "NODE_CONTAINER"                 => [
-                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP,
+                'properties'     => OBJECT_LOCATION ^ OBJECT_NODE ^ OBJECT_USER ^ OBJECT_CONTACT ^ OBJECT_CONTACTGROUP ^ OBJECT_TIMEPERIOD ^ OBJECT_HOST ^ OBJECT_HOSTGROUP ^ OBJECT_SERVICEGROUP ^ OBJECT_SATELLITE ^ OBJECT_HOSTTEMPLATE ^ OBJECT_SERVICETEMPLATE ^ OBJECT_SERVICETEMPLATEGROUP ^ OBJECT_RESOURCEGROUP,
                 'container_type' => CT_NODE,
             ],
             'CONTACTGROUP_CONTAINER'         => [
@@ -239,6 +242,10 @@ class Constants {
             'SERVICETEMPLATEGROUP_CONTAINER' => [
                 'properties'     => OBJECT_SERVICETEMPLATE,
                 'container_type' => CT_SERVICETEMPLATEGROUP,
+            ],
+            'RESOURCEGROUP_CONTAINER'        => [
+                'properties'     => OBJECT_USER ^ OBJECT_RESOURCE,
+                'container_type' => CT_RESOURCEGROUP,
             ],
         ];
     }

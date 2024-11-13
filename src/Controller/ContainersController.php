@@ -52,6 +52,7 @@ use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
+use ScmModule\Model\Table\ResourcegroupsTable;
 
 
 /**
@@ -240,6 +241,11 @@ class ContainersController extends AppController {
         /** @var  $ServicetemplategroupsTable ServicetemplategroupsTable */
         $ServicetemplategroupsTable = TableRegistry::getTableLocator()->get('Servicetemplategroups');
 
+        if (Plugin::isLoaded('ScmModule')) {
+            /** @var  $ResourcegroupsTable ResourcegroupsTable */
+            $ResourcegroupsTable = TableRegistry::getTableLocator()->get('ScmModule.Resourcegroups');
+        }
+
         if (!$ContainersTable->existsById($id)) {
             throw new NotFoundException(__('Container not found'));
         }
@@ -315,6 +321,17 @@ class ContainersController extends AppController {
                             if (!empty($serviceTemplateGroup)) {
                                 $containers[$key]['linkedId'] = $serviceTemplateGroup['id'];
                                 $containers[$key]['servicetemplates'] = sizeof($serviceTemplateGroup['servicetemplates']);
+                            }
+                            break;
+                        //ScmModule
+                        case CT_RESOURCEGROUP:
+                            if (Plugin::isLoaded('ScmModule')) {
+                                $resourceGroup = $ResourcegroupsTable->getResourcegroupByContainerId($container['id']);
+                                if (!empty($resourceGroup)) {
+                                    $containers[$key]['linkedId'] = $resourceGroup['id'];
+                                    $containers[$key]['resources'] = sizeof($resourceGroup['resources']);
+                                    $containers[$key]['users'] = sizeof($resourceGroup['users']);
+                                }
                             }
                             break;
                     }
