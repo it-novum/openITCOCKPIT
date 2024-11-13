@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -27,8 +27,10 @@ declare(strict_types=1);
 namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\NotificationHostsLogTableInterface;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
 
 /**
  * NotificationHostsLog Model
@@ -52,12 +54,15 @@ use Cake\Validation\Validator;
  */
 class NotificationHostsLogTable extends Table implements NotificationHostsLogTableInterface {
 
+    use PaginationAndScrollIndexTrait;
+
     /*****************************************************/
     /*                         !!!                       */
     /*           If you add a method to this table       */
     /*   define it in the implemented interface first!   */
     /*                         !!!                       */
     /*****************************************************/
+
 
     /**
      * Initialize method
@@ -113,5 +118,74 @@ class NotificationHostsLogTable extends Table implements NotificationHostsLogTab
             ->allowEmptyString('ack_data');
 
         return $validator;
+    }
+
+    public function getNotifications(HostNotificationConditions $HostNotificationConditions, $PaginateOMat = null) {
+        $query = $this->find()
+            ->select([
+                'NotificationHostsLog.hostname',
+                'NotificationHostsLog.state',
+                'NotificationHostsLog.output',
+                'Hosts.id',
+                'Hosts.uuid',
+                'Hosts.name',
+                'HostsToContainers.container_id',
+            ])
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Hosts.uuid = NotificationHostsLog.hostname']
+            )
+            ->leftJoin(
+                ['HostsToContainers' => 'hosts_to_containers'],
+                ['HostsToContainers.host_id = Hosts.id']
+            )
+            ->where([
+                'NotificationHostsLog.start_time >' => $HostNotificationConditions->getFrom(),
+            ])
+            ->group([
+                'NotificationHostsLog.hostname'
+            ])
+            ->order(
+                ['count' => 'DESC', 'start_time' => 'DESC']
+            );
+        $query->select([
+            'count'      => $query->func()->count('NotificationHostsLog.hostname'),
+            'start_time' => $query->func()->max('NotificationHostsLog.start_time', ['integer'])
+        ]);
+
+        if ($HostNotificationConditions->getHostUuid()) {
+            $query->andWhere([
+                'Hosts.uuid' => $HostNotificationConditions->getHostUuid()
+            ]);
+        }
+
+        if ($HostNotificationConditions->hasContainerIds()) {
+            $query->andWhere([
+                'HostsToContainers.container_id IN' => $HostNotificationConditions->getContainerIds()
+            ]);
+        }
+
+        if (!empty($HostNotificationConditions->getStates())) {
+            $query->andWhere([
+                'NotificationHostsLog.state IN' => $HostNotificationConditions->getStates()
+            ]);
+        }
+
+        if ($HostNotificationConditions->hasConditions()) {
+            $query->andWhere($HostNotificationConditions->getConditions());
+        }
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+
     }
 }

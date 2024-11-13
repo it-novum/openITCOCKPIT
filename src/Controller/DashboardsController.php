@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -28,10 +33,11 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\itnovum\openITCOCKPIT\Core\Dashboards\HostStatusOverviewExtendedJson;
+use App\itnovum\openITCOCKPIT\Core\Dashboards\HostsTopAlertJson;
 use App\itnovum\openITCOCKPIT\Core\Dashboards\ServiceStatusOverviewExtendedJson;
+use App\itnovum\openITCOCKPIT\Core\Dashboards\ServicesTopAlertJson;
 use App\itnovum\openITCOCKPIT\Perfdata\NagiosAdapter;
 use App\Lib\Exceptions\MissingDbBackendException;
-use App\Model\Entity\DashboardTab;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\DashboardTabAllocationsTable;
 use App\Model\Table\DashboardTabsTable;
@@ -70,9 +76,6 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
-use itnovum\openITCOCKPIT\Perfdata\PerfdataLoader;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
-use itnovum\openITCOCKPIT\Filter\DashboardTabsFilter;
 use ParsedownExtra;
 use PrometheusModule\Lib\PrometheusAdapter;
 use RuntimeException;
@@ -184,16 +187,16 @@ class DashboardsController extends AppController {
 
     public function dynamicDirective() {
         $directiveName = $this->request->getQuery('directive');
-        $readOnly =   filter_var($this->request->getQuery('readonly'), FILTER_VALIDATE_BOOLEAN);
+        $readOnly = filter_var($this->request->getQuery('readonly'), FILTER_VALIDATE_BOOLEAN);
 
         /** @var WidgetsTable $WidgetsTable */
         $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
-        if($readOnly) {
+        if ($readOnly) {
             $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
         } else {
             $widgets = $WidgetsTable->getAvailableWidgets($this->PERMISSIONS);
         }
-       // $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
+        // $widgets = $WidgetsTable->getAvailableForViewWidgets($this->PERMISSIONS);
         $isValidDirective = false;
         foreach ($widgets as $widget) {
             if ($widget['directive'] === $directiveName) {
@@ -1064,6 +1067,65 @@ class DashboardsController extends AppController {
         return;
     }
 
+    public function hostsTopAlertsWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $HostsTopAlertJson = new HostsTopAlertJson();
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            $widget = $WidgetsTable->get($widgetId);
+            $data = [];
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
+            }
+            $config = $HostsTopAlertJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $HostsTopAlertJson->standardizedData($this->request->getData());
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
     // This gets also used by the hostsStatusListExtendedWidget to load and save the filters
     public function hostsStatusListWidget() {
         if (!$this->isAngularJsRequest()) {
@@ -1810,6 +1872,65 @@ class DashboardsController extends AppController {
                 throw new RuntimeException('Invalid widget id');
             }
             $widget = $WidgetsTable->get($widgetId);
+            $widget = $WidgetsTable->patchEntity($widget, [
+                'json_data' => json_encode($config)
+            ]);
+
+            $WidgetsTable->save($widget);
+
+            if ($widget->hasErrors()) {
+                return $this->serializeCake4ErrorMessage($widget);
+            }
+
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
+
+        throw new MethodNotAllowedException();
+    }
+
+    public function servicesTopAlertsWidget() {
+        if (!$this->isApiRequest()) {
+            //Only ship HTML template
+            return;
+        }
+        $ServicesTopAlertJson = new ServicesTopAlertJson();
+
+        /** @var WidgetsTable $WidgetsTable */
+        $WidgetsTable = TableRegistry::getTableLocator()->get('Widgets');
+
+        if ($this->request->is('get')) {
+            $widgetId = (int)$this->request->getQuery('widgetId');
+            $widget = $WidgetsTable->get($widgetId);
+            $data = [];
+            if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
+                $data = json_decode($widget->get('json_data'), true);
+            }
+            $config = $ServicesTopAlertJson->standardizedData($data);
+            $this->set('config', $config);
+            $this->viewBuilder()->setOption('serialize', ['config']);
+            return;
+        }
+
+        if ($this->request->is('post')) {
+            $config = $ServicesTopAlertJson->standardizedData($this->request->getData());
+            $widgetId = (int)$this->request->getData('Widget.id', 0);
+
+            if (!$WidgetsTable->existsById($widgetId)) {
+                throw new RuntimeException('Invalid widget id');
+            }
+            $widget = $WidgetsTable->get($widgetId);
+
+            /** @var DashboardTabsTable $DashboardTabsTable */
+            $DashboardTabsTable = TableRegistry::getTableLocator()->get('DashboardTabs');
+
+            $User = new User($this->getUser());
+
+            if (!$DashboardTabsTable->isOwnedByUser($widget->dashboard_tab_id, $User->getId())) {
+                throw new ForbiddenException();
+            }
+
             $widget = $WidgetsTable->patchEntity($widget, [
                 'json_data' => json_encode($config)
             ]);
