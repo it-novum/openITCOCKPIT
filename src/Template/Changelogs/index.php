@@ -76,6 +76,13 @@ use Cake\Core\Plugin;
                                 </a>
                             </li>
                         <?php endif; ?>
+                        <?php if (Plugin::isLoaded('ScmModule') && $this->Acl->hasPermission('index', 'scmchangelogs', 'ScmModule')): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" ui-sref="ScmChangelogsIndex" role="tab">
+                                    <i class="fas fa-people-roof">&nbsp;</i> <?php echo __('Scm Module Changes'); ?>
+                                </a>
+                            </li>
+                        <?php endif; ?>
                     </ul>
                     <button class="btn btn-xs btn-default mr-1 shadow-0" ng-click="load()">
                         <i class="fas fa-sync"></i> <?php echo __('Refresh'); ?>
