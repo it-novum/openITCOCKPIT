@@ -1923,7 +1923,7 @@ class NagiosConfigGenerator {
                     //consider hosts from host template too
                     $hostIdsOverHosttemplate = Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id');
                     //ignore empty hostgroups
-                    if (empty($hostgroup->get('hosts')) && empty($hostsOverHosttemplate)) {
+                    if (empty($hostgroup->get('hosts')) && empty($hostIdsOverHosttemplate)) {
                         continue;
                     }
                     if ($hostgroup->get('_joinData')->get('excluded') === 0) {
