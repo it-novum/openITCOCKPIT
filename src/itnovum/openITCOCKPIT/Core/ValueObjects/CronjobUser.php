@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -22,18 +22,34 @@
 //     License agreement and license key will be shipped with the order
 //     confirmation.
 
-namespace App\Lib\Interfaces;
+namespace itnovum\openITCOCKPIT\Core\ValueObjects;
 
+/**
+ * This class is build to have a User object when commands run as Cronjob.
+ * The User object is needed for the Changelog.
+ */
+class CronjobUser extends User {
+    
+    public function __construct() {
+        $timezone = date_default_timezone_get();
+        if (empty($timezone)) {
+            $timezone = 'UTC';
+        }
 
-use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
-use itnovum\openITCOCKPIT\Database\PaginateOMat;
+        $this->recursiveBrowser = false;
+        $this->fullName = 'Cronjob';
+        $this->id = 0;
+        $this->timezone = $timezone;
+        $this->dateformat = 'H:i:s - d.m.Y';
+        $this->usergroupId = 0;
+    }
 
-interface NotificationHostsTableInterface {
+    public function getUsergroupId(): int {
+        return 0;
+    }
 
-    /**
-     * @param HostNotificationConditions $HostNotificationConditions
-     * @param PaginateOMat|null $PaginateOMat
-     * @return array
-     */
-    public function getNotifications(HostNotificationConditions $HostNotificationConditions, $PaginateOMat = null);
+    public function getUserAvatar() {
+        return WWW_ROOT . 'img' . DS . 'logos' . DS . 'openitcockpit-logo-url.png';
+    }
+
 }

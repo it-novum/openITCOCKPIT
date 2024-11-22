@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -27,8 +27,10 @@ declare(strict_types=1);
 namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\NotificationServicesLogTableInterface;
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
 
 /**
  * NotificationServicesLog Model
@@ -51,6 +53,7 @@ use Cake\Validation\Validator;
  * @method \Statusengine3Module\Model\Entity\NotificationServicesLog[]|\Cake\Datasource\ResultSetInterface deleteManyOrFail(iterable $entities, $options = [])
  */
 class NotificationServicesLogTable extends Table implements NotificationServicesLogTableInterface {
+    use PaginationAndScrollIndexTrait;
 
     /*****************************************************/
     /*                         !!!                       */
@@ -114,4 +117,110 @@ class NotificationServicesLogTable extends Table implements NotificationServices
 
         return $validator;
     }
+
+    public function getNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null) {
+        $query = $this->find();
+        $query->select([
+            'NotificationServicesLog.hostname',
+            'NotificationServicesLog.service_description',
+            'NotificationServicesLog.start_time',
+            'NotificationServicesLog.state',
+            'NotificationServicesLog.output',
+
+            'Hosts.id',
+            'Hosts.uuid',
+            'Hosts.name',
+
+            'Services.id',
+            'Services.uuid',
+            'Services.name',
+
+            'Servicetemplates.id',
+            'Servicetemplates.uuid',
+            'Servicetemplates.name',
+
+            'HostsToContainers.container_id',
+
+            'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+        ])
+            ->innerJoin(
+                ['Services' => 'services'],
+                ['Services.uuid = NotificationServicesLog.service_description']
+            )
+            ->innerJoin(
+                ['Servicetemplates' => 'servicetemplates'],
+                ['Servicetemplates.id = Services.servicetemplate_id']
+            )
+            ->innerJoin(
+                ['Hosts' => 'hosts'],
+                ['Hosts.uuid = NotificationServicesLog.hostname']
+            )
+            ->leftJoin(
+                ['HostsToContainers' => 'hosts_to_containers'],
+                ['HostsToContainers.host_id = Hosts.id']
+            )
+            ->where([
+                'NotificationServicesLog.start_time >' => $ServiceNotificationConditions->getFrom(),
+            ])
+            ->order(['count' => 'DESC', 'start_time' => 'DESC'])
+            ->group([
+                'NotificationServicesLog.service_description',
+            ]);
+        $query->select([
+            'count'      => $query->func()->count('NotificationServicesLog.hostname'),
+            'start_time' => $query->func()->max('NotificationServicesLog.start_time', ['integer'])
+        ]);
+
+
+        if ($ServiceNotificationConditions->getServiceUuid()) {
+            $query->andWhere([
+                'Services.uuid' => $ServiceNotificationConditions->getServiceUuid()
+            ]);
+        }
+
+        if ($ServiceNotificationConditions->hasContainerIds()) {
+            $query->andWhere([
+                'HostsToContainers.container_id IN' => $ServiceNotificationConditions->getContainerIds()
+            ]);
+        }
+
+        if (!empty($ServiceNotificationConditions->getStates())) {
+            $query->andWhere([
+                'NotificationServicesLog.state IN' => $ServiceNotificationConditions->getStates()
+            ]);
+        }
+
+        if ($ServiceNotificationConditions->hasConditions()) {
+
+            $where = $ServiceNotificationConditions->getConditions();
+            $having = null;
+            if (isset($where['servicename LIKE'])) {
+                $having = [
+                    'servicename LIKE' => $where['servicename LIKE']
+                ];
+                unset($where['servicename LIKE']);
+            }
+
+            if (!empty($where))
+                $query->andWhere($where);
+
+            if (!empty($having)) {
+                $query->having($having);
+            }
+        }
+
+        if ($PaginateOMat === null) {
+            //Just execute query
+            $result = $this->emptyArrayIfNull($query->toArray());
+        } else {
+            if ($PaginateOMat->useScroll()) {
+                $result = $this->scrollCake4($query, $PaginateOMat->getHandler());
+            } else {
+                $result = $this->paginateCake4($query, $PaginateOMat->getHandler());
+            }
+        }
+
+        return $result;
+    }
+
 }

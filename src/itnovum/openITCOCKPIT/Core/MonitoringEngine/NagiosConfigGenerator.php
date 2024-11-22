@@ -1920,8 +1920,10 @@ class NagiosConfigGenerator {
 
             if (!is_null($hostgroups)) {
                 foreach ($hostgroups as $hostgroup) {
+                    //consider hosts from host template too
+                    $hostIdsOverHosttemplate = Hash::extract($hostgroup, 'hosttemplates.{n}.hosts.{n}.id');
                     //ignore empty hostgroups
-                    if (empty($hostgroup->get('hosts'))) {
+                    if (empty($hostgroup->get('hosts')) && empty($hostIdsOverHosttemplate)) {
                         continue;
                     }
                     if ($hostgroup->get('_joinData')->get('excluded') === 0) {
@@ -1929,11 +1931,13 @@ class NagiosConfigGenerator {
                         foreach ($hostgroup->get('hosts') as $hostgroupHost) {
                             $includedHostgroupHostIds[] = $hostgroupHost->get('id');
                         }
+                        $includedHostgroupHostIds = array_merge($includedHostgroupHostIds, $hostIdsOverHosttemplate);
                     } else {
                         $escalationHostgroups['excluded'][] = $hostgroup->get('uuid');
                         foreach ($hostgroup->get('hosts') as $hostgroupHost) {
                             $excludedHostgroupHostIds[] = $hostgroupHost->get('id');
                         }
+                        $excludedHostgroupHostIds = array_merge($excludedHostgroupHostIds, $hostIdsOverHosttemplate);
                     }
                 }
             }
@@ -2097,8 +2101,10 @@ class NagiosConfigGenerator {
 
             if (!is_null($servicegroups)) {
                 foreach ($servicegroups as $servicegroup) {
+                    //consider services from service template too
+                    $serviceIdsOverServicetemplate = Hash::extract($servicegroup, 'servicetemplates.{n}.services.{n}.id');
                     //ignore empty servicegroups
-                    if (empty($servicegroup->get('services'))) {
+                    if (empty($servicegroup->get('services')) && empty($serviceIdsOverServicetemplate)) {
                         continue;
                     }
                     if ($servicegroup->get('_joinData')->get('excluded') === 0) {
@@ -2106,11 +2112,13 @@ class NagiosConfigGenerator {
                         foreach ($servicegroup->get('services') as $servicegroupService) {
                             $includedServicegroupServiceIds[] = $servicegroupService->get('id');
                         }
+                        $includedServicegroupServiceIds = array_merge($includedServicegroupServiceIds, $serviceIdsOverServicetemplate);
                     } else {
                         $escalationServicegroups['excluded'][] = $servicegroup->get('uuid');
                         foreach ($servicegroup->get('services') as $servicegroupService) {
                             $excludedServicegroupServiceIds[] = $servicegroupService->get('id');
                         }
+                        $excludedServicegroupServiceIds = array_merge($excludedServicegroupServiceIds, $serviceIdsOverServicetemplate);
                     }
                 }
             }

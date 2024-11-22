@@ -466,11 +466,31 @@ class HostescalationsTable extends Table {
                             ->select(['uuid', 'id'])
                             ->contain(
                                 [
-                                    'Hosts' => function (Query $q) {
+                                    'Hosts'         => function (Query $q) {
                                         return $q->enableAutoFields(false)
                                             ->select([
                                                 'Hosts.id'
                                             ])->where(['Hosts.disabled' => 0]);
+                                    },
+                                    'Hosttemplates' => function (Query $q) {
+                                        return $q->enableAutoFields(false)
+                                            ->select([
+                                                'Hosttemplates.id'
+                                            ])
+                                            ->contain([
+                                                'Hosts' => function (Query $query) {
+                                                    $query
+                                                        ->enableAutoFields(false)
+                                                        ->select([
+                                                            'Hosts.id',
+                                                            'Hosts.hosttemplate_id'
+                                                        ])->where(['Hosts.disabled' => 0]);
+                                                    $query
+                                                        ->leftJoinWith('Hostgroups')
+                                                        ->whereNull('Hostgroups.id');
+                                                    return $query;
+                                                }
+                                            ]);
                                     }
                                 ]
                             );

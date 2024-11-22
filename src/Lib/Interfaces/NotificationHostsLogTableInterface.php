@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -24,8 +24,12 @@
 
 namespace App\Lib\Interfaces;
 
+use itnovum\openITCOCKPIT\Core\HostNotificationConditions;
+
 
 interface NotificationHostsLogTableInterface {
+
+    public function getNotifications(HostNotificationConditions $HostNotificationConditions, $PaginateOMat = null);
 
 
 }

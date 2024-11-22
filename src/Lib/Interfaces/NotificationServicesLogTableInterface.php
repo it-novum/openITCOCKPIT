@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -25,7 +25,16 @@
 namespace App\Lib\Interfaces;
 
 
+use itnovum\openITCOCKPIT\Core\ServiceNotificationConditions;
+use itnovum\openITCOCKPIT\Database\PaginateOMat;
+
 interface NotificationServicesLogTableInterface {
 
+    /**
+     * @param ServiceNotificationConditions $ServiceNotificationConditions
+     * @param PaginateOMat|null $PaginateOMat
+     * @return array
+     */
+    public function getNotifications(ServiceNotificationConditions $ServiceNotificationConditions, $PaginateOMat = null);
 
 }

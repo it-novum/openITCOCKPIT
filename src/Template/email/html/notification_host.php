@@ -150,7 +150,7 @@ echo $this->element('emails/style');
                                 <?php if ($HoststatusIcon->getState() !== 0): ?>
                                     <tr>
                                         <td>
-                                            <a href="<?php printf('https://%s/#!/hosts/browser/%s%s', $systemAddress, $Host->getUuid(), $acknowledge); ?>"
+                                            <a href="<?php printf('https://%s/#!/hosts/browser/%s%s', $systemAddress, $Host->getUuid(), '#acknowledge'); ?>"
                                                style="text-decoration:none"
                                                class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
                                                 <?php echo __('Acknowledge'); ?>
