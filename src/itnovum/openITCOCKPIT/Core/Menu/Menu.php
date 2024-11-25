@@ -369,7 +369,7 @@ class Menu {
                     'servicetemplategroups',
                     'index',
                     '',
-                    'fa fa-pencil-square-o',
+                    'fa-solid fa-pen-to-square',
                     [],
                     4
                 ))
@@ -435,7 +435,7 @@ class Menu {
                 'templates_category',
                 __('Templates'),
                 6,
-                'fa fa-pencil-square-o'
+                'fa-solid fa-pen-to-square'
             ))
                 ->addLink(new MenuLink(
                     __('Host Templates'),
@@ -443,7 +443,7 @@ class Menu {
                     'hosttemplates',
                     'index',
                     '',
-                    'fa fa-pencil-square-o',
+                    'fa-solid fa-pen-to-square',
                     [],
                     1
                 ))
@@ -453,7 +453,7 @@ class Menu {
                     'servicetemplates',
                     'index',
                     '',
-                    'fa fa-pencil-square-o',
+                    'fa-solid fa-pen-to-square',
                     [],
                     2
                 ))

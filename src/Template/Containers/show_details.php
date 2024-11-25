@@ -39,7 +39,7 @@ $objectDetails = [
     ],
     'hosttemplates'         => [
         'label'   => __('Host templates'),
-        'icon'    => 'fa fa-pencil-square-o',
+        'icon'    => 'fa-solid fa-pen-to-square',
         'rights'  => [
             'action'     => 'edit',
             'controller' => 'hosttemplates',
@@ -59,7 +59,7 @@ $objectDetails = [
     ],
     'servicetemplates'      => [
         'label'   => __('Service templates'),
-        'icon'    => 'fa fa-pencil-square-o',
+        'icon'    => 'fa-solid fa-pen-to-square',
         'rights'  => [
             'action'     => 'edit',
             'controller' => 'servicetemplates',
@@ -69,7 +69,7 @@ $objectDetails = [
     ],
     'servicetemplategroups' => [
         'label'   => __('Service template groups'),
-        'icon'    => 'fa fa-pencil-square-o',
+        'icon'    => 'fa-solid fa-pen-to-square',
         'rights'  => [
             'action'     => 'edit',
             'controller' => 'servicetemplategroups',

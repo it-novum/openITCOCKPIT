@@ -52,7 +52,7 @@
                         <li class="nav-item">
                             <a class="nav-link active" data-toggle="tab" ng-class="{'active': tabName=='reportConfig'}"
                                ng-click="tabName='reportConfig'" role="tab">
-                                <i class="fa fa-pencil-square-o"></i>
+                                <i class="fa-solid fa-pen-to-square"></i>
                             </a>
                         </li>
                         <li class="nav-item">

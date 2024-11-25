@@ -89,7 +89,7 @@
                                         <a href="javascript:void(0);" class="dropdown-item"
                                            ng-click="triggerRenameTabModal(tab.name)"
                                            ng-class="{'text-muted':dashboardIsLocked}">
-                                            <i class="fa fa-pencil-square-o"></i>
+                                            <i class="fa-solid fa-pen-to-square"></i>
                                             <?php echo __('Rename'); ?>
                                         </a>
                                     </li>
