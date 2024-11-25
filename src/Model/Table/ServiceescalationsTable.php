@@ -479,12 +479,33 @@ class ServiceescalationsTable extends Table {
                             ->select(['uuid', 'id'])
                             ->contain(
                                 [
-                                    'Services' => function (Query $q) {
+                                    'Services'         => function (Query $q) {
                                         return $q->enableAutoFields(false)
                                             ->select([
                                                 'Services.id'
                                             ])->where(['Services.disabled' => 0]);
+                                    },
+                                    'Servicetemplates' => function (Query $q) {
+                                        return $q->enableAutoFields(false)
+                                            ->select([
+                                                'Servicetemplates.id'
+                                            ])
+                                            ->contain([
+                                                'Services' => function (Query $query) {
+                                                    $query
+                                                        ->enableAutoFields(false)
+                                                        ->select([
+                                                            'Services.id',
+                                                            'Services.servicetemplate_id'
+                                                        ])->where(['Services.disabled' => 0]);
+                                                    $query
+                                                        ->leftJoinWith('Servicegroups')
+                                                        ->whereNull('Servicegroups.id');
+                                                    return $query;
+                                                }
+                                            ]);
                                     }
+
                                 ]
                             );
                     },
