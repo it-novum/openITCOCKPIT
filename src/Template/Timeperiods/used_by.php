@@ -140,7 +140,7 @@
 
                             <tr ng-if="objects.Hosttemplates.length > 0">
                                 <th class="bg-color-lightGray">
-                                    <i class="fa fa-pencil-square-o"></i>
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                     <?php echo __('Host templates'); ?> ({{objects.Hosttemplates.length}})
                                 </th>
                             </tr>
@@ -225,7 +225,7 @@
                             </tr>
                             <tr ng-if="objects.Servicetemplates.length > 0">
                                 <th class="bg-color-lightGray">
-                                    <i class="fa fa-pencil-square-o"></i>
+                                    <i class="fa-solid fa-pen-to-square"></i>
                                     <?php echo __('Service templates'); ?> ({{objects.Servicetemplates.length}})
                                 </th>
                             </tr>

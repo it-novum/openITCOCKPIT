@@ -20,7 +20,7 @@
         </div>
         <div class="row padding-bottom-3">
             <div class="col-lg-12 no-padding font-sm ellipsis">
-                <i class="fa fa-pencil-square-o"> </i>
+                <i class="fa-solid fa-pen-to-square"> </i>
                 {{data.Servicetemplate.template_name}}
             </div>
         </div>

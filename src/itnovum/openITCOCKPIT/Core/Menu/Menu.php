@@ -166,7 +166,7 @@ class Menu {
                     'logs_category',
                     __('Logs'),
                     5,
-                    ['fas', 'file-lines'],
+                    ['fas', 'file-lines']
                 ))
                     ->addLink(new MenuLink(
                         __('Notifications'),
@@ -258,7 +258,7 @@ class Menu {
                 'objects_category',
                 __('Objects'),
                 3,
-                ['fas', 'cubes'],
+                ['fas', 'cubes']
             ))
                 ->addLink(new MenuLink(
                     __('Contacts'),
@@ -373,7 +373,7 @@ class Menu {
                 'groups_category',
                 __('Groups'),
                 4,
-                ['fas', 'object-group'],
+                ['fas', 'object-group']
             ))
                 ->addLink(new MenuLink(
                     __('Host Groups'),
@@ -428,7 +428,7 @@ class Menu {
                 'downtimes_category',
                 __('Downtimes'),
                 5,
-                ['fas', 'power-off'],
+                ['fas', 'power-off']
             ))
                 ->addLink(new MenuLink(
                     __('Host Downtimes'),
@@ -495,7 +495,9 @@ class Menu {
                 'templates_category',
                 __('Templates'),
                 6,
-                ['fas', 'pen-to-square'],
+
+                ['fas', 'pen-to-square']
+
             ))
                 ->addLink(new MenuLink(
                     __('Host Templates'),
@@ -529,7 +531,7 @@ class Menu {
                 'user_mgmt_category',
                 __('User management'),
                 1,
-                ['fas', 'users'],
+                ['fas', 'users']
             ))
                 ->addLink(new MenuLink(
                     __('Manage Users'),
@@ -594,7 +596,7 @@ class Menu {
                 'container_mgmt_category',
                 __('Container management'),
                 2,
-                ['fas', 'link'],
+                ['fas', 'link']
             ))
                 ->addLink(new MenuLink(
                     __('Tenants'),
@@ -637,7 +639,7 @@ class Menu {
                 'system_tools_category',
                 __('System tools'),
                 3,
-                ['fas', 'link'],
+                ['fas', 'link']
             ))
                 ->addLink(new MenuLink(
                     __('Cron Jobs'),
@@ -724,7 +726,7 @@ class Menu {
                 'agent_category',
                 __('openITCOCKPIT Agent'),
                 4,
-                ['fas', 'user-secret'],
+                ['fas', 'user-secret']
             ))
                 ->addLink(new MenuLink(
                     __('Agent Wizard'),
@@ -770,13 +772,13 @@ class Menu {
                 'api_settings',
                 __('APIs'),
                 1,
-                ['fas', 'code'],
+                ['fas', 'code']
             ))
             ->addCategory((new MenuCategory(
                 'settings_category',
                 __('System'),
                 3,
-                ['fas', 'gears'],
+                ['fas', 'gears']
             ))
                 ->addLink(new MenuLink(
                     __('System Settings'),

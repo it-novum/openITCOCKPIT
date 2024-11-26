@@ -31,7 +31,7 @@
     </li>
     <li class="breadcrumb-item">
         <a ui-sref="ServicetemplatesIndex">
-            <i class="fa fa-pencil-square-o"></i> <?php echo __('Service templates'); ?>
+            <i class="fa-solid fa-pen-to-square"></i> <?php echo __('Service templates'); ?>
         </a>
     </li>
     <li class="breadcrumb-item">
