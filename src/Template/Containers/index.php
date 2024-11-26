@@ -100,7 +100,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                             <em class="padding-right-20">
                                 <?php echo __('Servicegroup'); ?>
                             </em>
-                            <i class="fa fa-pencil-square-o"></i>
+                            <i class="fa-solid fa-pen-to-square"></i>
                             <em class="padding-right-20">
                                 <?php echo __('Servicetemplategroup'); ?>
                             </em>
@@ -310,7 +310,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
 
                                         <span class="ellipsis"
                                               ng-switch-when="<?php echo CT_SERVICETEMPLATEGROUP; ?>">
-                                            <i class="fa fa-pencil-square-o"></i>
+                                            <i class="fa-solid fa-pen-to-square"></i>
                                             <?php if ($this->Acl->hasPermission('edit', 'servicetemplategroups')): ?>
                                                 <a ui-sref="ServicetemplategroupsEdit({id: $Container.linkedId})"
                                                    ng-if="$Container.allowEdit">
@@ -362,7 +362,7 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                           ng-if="$Container.containertype_id == <?php echo CT_HOSTGROUP; ?>">
                                         <i class="fa fa-desktop" title="<?= __('Hosts') ?>"></i> {{
                                         $Container.hosts }}
-                                        <i class="fa fa-pencil-square-o"
+                                        <i class="fa-solid fa-pen-to-square"
                                            title="<?= __('Host templates') ?>"></i> {{ $Container.hosttemplates
                                         }}
                                     </span>
@@ -371,14 +371,14 @@ $timezones = \Cake\I18n\FrozenTime::listTimezones();
                                           ng-if="$Container.containertype_id == <?php echo CT_SERVICEGROUP; ?>">
                                         <i class="fa fa-cog" title="<?= __('Services') ?>"></i> {{
                                         $Container.services }}
-                                        <i class="fa fa-pencil-square-o"
+                                        <i class="fa-solid fa-pen-to-square"
                                            title="<?= __('Service templates') ?>"></i> {{
                                         $Container.servicetemplates }}
                                     </span>
 
                                     <span class="pull-right" title="<?= __('Service template groups') ?>"
                                           ng-if="$Container.containertype_id == <?php echo CT_SERVICETEMPLATEGROUP; ?>">
-                                        <i class="fa fa-pencil-square-o"
+                                        <i class="fa-solid fa-pen-to-square"
                                            title="<?= __('Service templates') ?>"></i> {{
                                         $Container.servicetemplates }}
                                     </span>

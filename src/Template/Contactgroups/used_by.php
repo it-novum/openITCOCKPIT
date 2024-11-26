@@ -66,7 +66,7 @@
                         <tbody>
                         <tr ng-if="contactgroupWithRelations.hosttemplates.length > 0">
                             <th class="bg-color-lightGray">
-                                <i class="fa fa-pencil-square-o"></i>
+                                <i class="fa-solid fa-pen-to-square"></i>
                                 <?php echo __('Host template'); ?>
                                 ({{contactgroupWithRelations.hosttemplates.length}})
                             </th>
@@ -101,7 +101,7 @@
                         </tr>
                         <tr ng-if="contactgroupWithRelations.servicetemplates.length > 0">
                             <th class="bg-color-lightGray">
-                                <i class="fa fa-pencil-square-o"></i>
+                                <i class="fa-solid fa-pen-to-square"></i>
                                 <?php echo __('Service template'); ?>
                                 ({{contactgroupWithRelations.servicetemplates.length}})
                             </th>
