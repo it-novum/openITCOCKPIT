@@ -3091,15 +3091,19 @@ class HostsController extends AppController {
     /**
      * @param $containerId
      * @param int $hostId
+     * @param int $isEvCHost // Add only
      * @throws \Exception
      */
-    public function loadElementsByContainerId($containerId, $hostId = 0) {
+    public function loadElementsByContainerId($containerId, $hostId = 0, $isEvCHost = 0) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
         $hostId = (int)$hostId;
         $hosttemplateType = GENERIC_HOST;
+        if ($isEvCHost) {
+            $hosttemplateType = EVK_HOSTTEMPLATE;
+        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
