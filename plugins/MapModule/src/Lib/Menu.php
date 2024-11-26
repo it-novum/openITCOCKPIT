@@ -50,7 +50,9 @@ class Menu implements MenuInterface {
                     'MapModule',
                     ['fas', 'location-pin'],
                     [],
-                    3
+                    3,
+                    true,
+                    'map_module/maps/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Rotations'),
