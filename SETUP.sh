@@ -1,5 +1,30 @@
 #!/bin/bash
 
+#
+# Copyright (C) <2015-present>  <it-novum GmbH>
+#
+# This file is dual licensed
+#
+# 1.
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, version 3 of the License.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# 2.
+#     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+#     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+#     License agreement and license key will be shipped with the order
+#     confirmation.
+#
+
 if ! [ $(id -u) = 0 ]; then
     echo "You need to run this script as root user or via sudo!"
     exit 1
@@ -310,81 +335,10 @@ echo "---------------------------------------------------------------"
 echo "Configure Grafana"
 systemctl restart openitcockpit-graphing.service
 
-ADMIN_PASSWORD=$(cat /opt/openitc/etc/grafana/admin_password)
-
-if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
-    echo "Create new Grafana API Key for openITCOCKPIT"
-    COUNTER=0
-
-    set +e
-    while [ "$COUNTER" -lt 30 ]; do
-        echo "Try to connect to Grafana API..."
-        #Is Grafana Server Online?
-        STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
-
-        if [ "$STATUSCODE" == "200" ]; then
-            API_KEY=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/auth/keys' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{"role":"Editor","name":"openITCOCKPIT"}' | jq -r '.key')
-            echo "$API_KEY" >/opt/openitc/etc/grafana/api_key
-            break
-        fi
-        COUNTER=$((COUNTER + 1))
-        sleep 1
-    done
-
-    if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
-        echo "ERROR!"
-        echo "Could not create API key for Grafana"
-    fi
-    set -e
+if [[ -d /opt/openitc/frontend/plugins/GrafanaModule ]]; then
+    oitc GrafanaModule.service_account
 fi
 
-echo "Check if Graphite Datasource exists in Grafana"
-DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Graphite' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
-if [ "$DS_STATUSCODE" == "404" ]; then
-    echo "Create Graphite as default Datasource for Grafana"
-    RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
-      "name":"Graphite",
-      "type":"graphite",
-      "url":"http://graphite-web:8080",
-      "access":"proxy",
-      "basicAuth":false,
-      "isDefault": true,
-      "jsonData": {
-        "graphiteVersion": 1.1
-      }
-    }')
-    echo $RESPONSE | jq .
-fi
-echo "Ok: Graphite datasource exists."
-
-echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
-DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
-if [ "$DS_STATUSCODE" == "404" ]; then
-    echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
-    RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
-      "name":"Prometheus",
-      "type":"prometheus",
-      "url":"http://victoriametrics:8428",
-      "access":"proxy",
-      "basicAuth":false,
-      "isDefault": false,
-      "jsonData": {}
-    }')
-    echo $RESPONSE | jq .
-fi
-echo "Ok: Prometheus/VictoriaMetrics datasource exists."
-
-if [ -f /opt/openitc/etc/grafana/api_key ]; then
-    echo "Check for Grafana Configuration in openITCOCKPIT database"
-    API_KEY=$(cat /opt/openitc/etc/grafana/api_key)
-    set +e
-    COUNT=$(mysql "--defaults-extra-file=$INIFILE" -e "SELECT COUNT(*) FROM grafana_configurations;" -B -s 2>/dev/null)
-    if [ "$?" == 0 ] && [ "$COUNT" == 0 ]; then
-        echo "Create missing default configuration."
-        mysql --defaults-extra-file=${INIFILE} -e "INSERT INTO grafana_configurations (api_url, api_key, graphite_prefix, use_https, use_proxy, ignore_ssl_certificate, dashboard_style, created, modified) VALUES('grafana.docker', '${API_KEY}', 'openitcockpit', 1, 0, 1, 'light', '2018-12-05 08:42:55', '2018-12-05 08:42:55');"
-    fi
-    set -e
-fi
 
 if [ ! -f /opt/openitc/etc/mod_gearman/secret.file ]; then
     echo "Generate new shared secret for Mod-Gearman"

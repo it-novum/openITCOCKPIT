@@ -1,4 +1,29 @@
 #!/bin/bash
+#
+# Copyright (C) <2015-present>  <it-novum GmbH>
+#
+# This file is dual licensed
+#
+# 1.
+#     This program is free software: you can redistribute it and/or modify
+#     it under the terms of the GNU General Public License as published by
+#     the Free Software Foundation, version 3 of the License.
+#
+#     This program is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#     GNU General Public License for more details.
+#
+#     You should have received a copy of the GNU General Public License
+#     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# 2.
+#     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+#     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+#     License agreement and license key will be shipped with the order
+#     confirmation.
+#
+
 if [[ $1 == "--help" ]]; then
   echo "Supported parameters:"
   echo "--rights             Reset file permissions"
@@ -324,46 +349,8 @@ fi
 
 echo $OITC_GRAFANA_ADMIN_PASSWORD > /opt/openitc/etc/grafana/admin_password
 
-if [ -f /opt/openitc/etc/grafana/api_key ]; then
-    echo "Check if Grafana is reachable"
-    COUNTER=0
-
-    set +e
-    while [ "$COUNTER" -lt 30 ]; do
-        echo "Try to connect to Grafana API..."
-        #Is Grafana Server Online?
-        STATUSCODE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/admin/stats" -XGET -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
-
-        if [ "$STATUSCODE" == "200" ]; then
-          echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
-          DS_STATUSCODE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/datasources/name/Prometheus" -XGET -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
-
-          if [ "$DS_STATUSCODE" == "404" ]; then
-            echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
-            RESPONSE=$(curl --noproxy "$OITC_GRAFANA_HOSTNAME" "$OITC_GRAFANA_URL/api/datasources" -XPOST -uadmin:$OITC_GRAFANA_ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
-              "name":"Prometheus",
-              "type":"prometheus",
-              "url":"http://'$VICTORIA_METRICS_HOST':'$VICTORIA_METRICS_PORT'",
-              "access":"proxy",
-              "basicAuth":false,
-              "isDefault": false,
-              "jsonData": {}
-            }')
-            echo $RESPONSE | jq .
-          fi
-          echo "Ok: Prometheus/VictoriaMetrics datasource exists."
-          COUNTER=9999 # break while loop bc bash where break does not brake
-          break
-        fi
-        COUNTER=$((COUNTER + 1))
-        sleep 1
-    done
-
-    if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
-        echo "ERROR!"
-        echo "Could not connect to Grafana"
-    fi
-    set -e
+if [[ -d /opt/openitc/frontend/plugins/GrafanaModule ]]; then
+    oitc GrafanaModule.service_account --grafana-hostname "$OITC_GRAFANA_HOSTNAME" --grafana-url "$OITC_GRAFANA_URL" --graphite-web-host "$OITC_GRAPHITE_WEB_ADDRESS" --graphite-web-port "$OITC_GRAPHITE_WEB_PORT" --victoria-metrics-host "$VICTORIA_METRICS_HOST" --victoria-metrics-port "$VICTORIA_METRICS_PORT"
 fi
 
 echo "Restart monitoring engine"
