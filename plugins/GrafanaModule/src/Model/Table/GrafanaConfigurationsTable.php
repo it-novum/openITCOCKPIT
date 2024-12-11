@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -30,8 +35,6 @@ namespace GrafanaModule\Model\Table;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Behavior\TimestampBehavior;
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use GrafanaModule\Model\Entity\GrafanaConfiguration;
@@ -259,5 +262,31 @@ class GrafanaConfigurationsTable extends Table {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Called by UPDATE.sh and SETUP.sh of openITCOCKPIT
+     *
+     * @param string $apiUrl
+     * @param string $apiToken
+     * @return array|true
+     */
+    public function saveGrafanaConfigurationForSetupAndUpdate(string $apiUrl, string $apiToken) {
+        $enity = $this->getGrafanaConfigurationEntity();
+        $enity->set('id', $this->getConfigurationId());
+        $enity->set('api_url', $apiUrl);
+        $enity->set('api_key', $apiToken);
+        $enity->set('graphite_prefix', 'openitcockpit');
+        $enity->set('use_https', 1);
+        $enity->set('use_proxy', 0);
+        $enity->set('ignore_ssl_certificate', 1);
+        $enity->set('dashboard_style', 'light');
+
+        $this->save($enity);
+        if ($enity->hasErrors()) {
+            return $enity->getErrors();
+        }
+
+        return true;
     }
 }

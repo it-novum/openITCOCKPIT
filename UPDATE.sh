@@ -457,47 +457,8 @@ if [[ -d "/opt/openitc/nagios/rollout" ]]; then
     fi
 fi
 
-ADMIN_PASSWORD=$(cat /opt/openitc/etc/grafana/admin_password)
-if [ -f /opt/openitc/etc/grafana/api_key ]; then
-    echo "Check if Grafana is reachable"
-    COUNTER=0
-
-    set +e
-    while [ "$COUNTER" -lt 30 ]; do
-        echo "Try to connect to Grafana API..."
-        #Is Grafana Server Online?
-        STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/admin/stats' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
-
-        if [ "$STATUSCODE" == "200" ]; then
-          echo "Check if Prometheus/VictoriaMetrics Datasource exists in Grafana"
-          DS_STATUSCODE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources/name/Prometheus' -XGET -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -I 2>/dev/null | head -n 1 | cut -d$' ' -f2)
-
-          if [ "$DS_STATUSCODE" == "404" ]; then
-            echo "Create Prometheus/VictoriaMetrics Datasource for Grafana"
-            RESPONSE=$(curl --noproxy '127.0.0.1' 'http://127.0.0.1:3033/api/datasources' -XPOST -uadmin:$ADMIN_PASSWORD -H 'Content-Type: application/json' -d '{
-              "name":"Prometheus",
-              "type":"prometheus",
-              "url":"http://victoriametrics:8428",
-              "access":"proxy",
-              "basicAuth":false,
-              "isDefault": false,
-              "jsonData": {}
-            }')
-            echo $RESPONSE | jq .
-          fi
-          echo "Ok: Prometheus/VictoriaMetrics datasource exists."
-          COUNTER=9999 # break while loop bc bash where break does not brake
-          break
-        fi
-        COUNTER=$((COUNTER + 1))
-        sleep 1
-    done
-
-    if [ ! -f /opt/openitc/etc/grafana/api_key ]; then
-        echo "ERROR!"
-        echo "Could not connect to Grafana"
-    fi
-    set -e
+if [[ -d /opt/openitc/frontend/plugins/GrafanaModule ]]; then
+    oitc GrafanaModule.service_account
 fi
 
 if [ ! -f /opt/openitc/etc/mod_gearman/secret.file ]; then
