@@ -1,7 +1,7 @@
 <?php
 
 if (!defined('OPENITCOCKPIT_VERSION')) {
-    define('OPENITCOCKPIT_VERSION', '4.8.3');
+    define('OPENITCOCKPIT_VERSION', '4.8.4');
 }
 
 return [];
