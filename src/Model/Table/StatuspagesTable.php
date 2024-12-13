@@ -165,6 +165,11 @@ class StatuspagesTable extends Table {
             ->allowEmptyString('show_acknowledgement_comments');
 
         $validator
+            ->integer('refresh')
+            ->allowEmptyString('refresh', null, null)
+            ->greaterThanOrEqual('refresh', 0);
+
+        $validator
             ->add('selected_hosts', 'custom', [
                 'rule'    => [$this, 'atLeastOneConfigurationItem'],
                 'message' => __('You must select at least one configuration item for status page.')
@@ -839,6 +844,7 @@ class StatuspagesTable extends Table {
                     'showDowntimeComments'        => $statuspage['show_downtime_comments'],
                     'showAcknowledgements'        => $statuspage['show_acknowledgements'],
                     'showAcknowledgementComments' => $statuspage['show_acknowledgement_comments'],
+                    'refresh'                     => $statuspage['refresh'],
                     'cumulatedColorId'            => -1,
                     'cumulatedColor'              => 'primary',
                     'cumulatedHumanStatus'        => __('Not in Monitoring'),
@@ -859,6 +865,7 @@ class StatuspagesTable extends Table {
                 'showDowntimeComments'        => $statuspage['show_downtime_comments'],
                 'showAcknowledgements'        => $statuspage['show_acknowledgements'],
                 'showAcknowledgementComments' => $statuspage['show_acknowledgement_comments'],
+                'refresh'                     => $statuspage['refresh'],
                 'cumulatedColorId'            => $items[0]['cumulatedColorId'] ?? -1,
                 'cumulatedColor'              => $items[0]['cumulatedColor'],
                 'cumulatedHumanStatus'        => $items[0]['cumulatedStateName'],
