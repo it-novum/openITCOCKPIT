@@ -51,5 +51,6 @@ class Statuspage extends Entity {
         'servicegroups'                 => true,
         'created'                       => true,
         'modified'                      => true,
+        'refresh'                       => true,
     ];
 }
