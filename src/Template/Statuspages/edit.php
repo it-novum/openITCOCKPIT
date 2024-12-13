@@ -105,6 +105,22 @@
                             </div>
                         </div>
 
+                        <div class="form-group" ng-class="{'has-error': errors.refresh}">
+                            <label class="control-label">
+                                <?php echo __('Refresh'); ?>
+                            </label>
+                            <input
+                                    class="form-control"
+                                    type="text"
+                                    ng-model="post.Statuspage.refresh">
+                            <div ng-repeat="error in errors.refresh">
+                                <div class="help-block text-danger">{{ error }}</div>
+                            </div>
+                            <div class="help-block mt-0">
+                                <?= __('If provided, the status page will refresh after the given amount of seconds.'); ?>
+                            </div>
+                        </div>
+
                         <fieldset class="pb-1">
                             <legend class="fs-md fieldset-legend-border-bottom"
                                     ng-class="{'fieldset-legend-border-bottom-danger': noItemsSelected}">
