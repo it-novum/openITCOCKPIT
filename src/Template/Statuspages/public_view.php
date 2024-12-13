@@ -196,3 +196,11 @@
         </div>
     </div>
 </div>
+
+<?php if ($statuspage['statuspage']['refresh']): ?>
+    <script>
+        window.setTimeout(function(){
+            window.location.reload();
+        }, <?= h(max(10, $statuspage['statuspage']['refresh']) * 1000); ?>);
+    </script>
+<?php endif; ?>
