@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -145,7 +145,9 @@ class AclDependencies {
             ->allow('Angular', 'columns_config_import')
             ->allow('Angular', 'columns_config_export')
             ->allow('Angular', 'autoRefresher')
-            ->allow('Angular', 'changeLogEntry');
+            ->allow('Angular', 'changeLogEntry')
+            ->allow('Angular', 'getSatellites')
+            ->allow('Angular', 'getSystemname');
 
         $this
             ->allow('Agentconnector', 'register_agent')
@@ -173,7 +175,8 @@ class AclDependencies {
             ->allow('Downtimes', 'icon');
 
         $this
-            ->allow('Packetmanager', 'getPackets');
+            ->allow('Packetmanager', 'getPackets')
+            ->allow('Packetmanager', 'repositoryChecker');
 
         $this
             ->allow('Profile', 'edit')
@@ -279,7 +282,8 @@ class AclDependencies {
             ->allow('Users', 'login')
             ->allow('Users', 'logout')
             ->allow('Users', 'getLocaleOptions')
-            ->allow('Users', 'getUserPermissions');
+            ->allow('Users', 'getUserPermissions')
+            ->allow('Users', 'loadDateformats');
 
 
         ///////////////////////////////
@@ -467,7 +471,8 @@ class AclDependencies {
             ->dependency('Instantreports', 'add', 'Instantreports', 'loadContainers')
             ->dependency('Instantreports', 'generate', 'Instantreports', 'hostAvailabilityPieChart')
             ->dependency('Instantreports', 'generate', 'Instantreports', 'serviceAvailabilityPieChart')
-            ->dependency('Instantreports', 'generate', 'Instantreports', 'serviceAvailabilityBarChart');
+            ->dependency('Instantreports', 'generate', 'Instantreports', 'serviceAvailabilityBarChart')
+            ->dependency('Instantreports', 'generate', 'Instantreports', 'loadInstantreports');
 
 
         $this
@@ -495,10 +500,12 @@ class AclDependencies {
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadElementsByContainerId')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
             ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds')
+            ->dependency('Serviceescalations', 'add', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIdsForOptionGroup')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadContainers')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadElementsByContainerId')
             ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicegroupsByContainerIdAndServiceIds')
-            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds');
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIds')
+            ->dependency('Serviceescalations', 'edit', 'Serviceescalations', 'loadExcludedServicesByContainerIdAndServicegroupIdsForOptionGroup');
 
 
         $this
@@ -585,13 +592,11 @@ class AclDependencies {
             ->dependency('Users', 'add', 'Users', 'addFromLdap')
             ->dependency('Users', 'add', 'Users', 'loadLdapUserByString')
             ->dependency('Users', 'add', 'Users', 'loadLdapUserDetails')
-            ->dependency('Users', 'add', 'Users', 'loadDateformats')
             ->dependency('Users', 'add', 'Users', 'loadUsergroups')
             ->dependency('Users', 'add', 'Users', 'loadContainerRoles')
             ->dependency('Users', 'add', 'Users', 'loadContainerPermissions')
             ->dependency('Users', 'add', 'Users', 'loadContainersForAngular')
             ->dependency('Users', 'edit', 'Users', 'resetPassword')
-            ->dependency('Users', 'edit', 'Users', 'loadDateformats')
             ->dependency('Users', 'edit', 'Users', 'loadUsergroups')
             ->dependency('Users', 'edit', 'Users', 'loadContainerRoles')
             ->dependency('Users', 'edit', 'Users', 'loadLdapUserDetails')

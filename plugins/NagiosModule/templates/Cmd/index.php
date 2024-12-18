@@ -237,7 +237,7 @@
 
                                         <?php if ($key !== 'ACKNOWLEDGE_OTRS_HOST_SVC_PROBLEM'): ?>
                                             <div class="col-lg-12 help-block">
-                                                <a href="https://www.naemon.org/documentation/developer/externalcommands/<?= strtolower($key) ?>.html"
+                                                <a href="https://www.naemon.io/documentation/developer/externalcommands/<?= strtolower($key) ?>.html"
                                                    target="_blank">
                                                     <?= __('External documentation') ?>
                                                 </a>

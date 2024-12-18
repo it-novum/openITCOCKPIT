@@ -69,9 +69,9 @@ class ContactsController extends AppController {
         /** @var $SystemsettingsTable SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
+        $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
         if (!$this->isAngularJsRequest()) {
             //Only ship HTML Template
-            $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
             return;
         }
 
@@ -106,9 +106,9 @@ class ContactsController extends AppController {
         }
 
         $this->set('all_contacts', $contacts);
-        $toJson = ['all_contacts', 'paging'];
+        $toJson = ['all_contacts', 'paging', 'isLdapAuth'];
         if ($this->isScrollRequest()) {
-            $toJson = ['all_contacts', 'scroll'];
+            $toJson = ['all_contacts', 'scroll', 'isLdapAuth'];
         }
         $this->viewBuilder()->setOption('serialize', $toJson);
     }

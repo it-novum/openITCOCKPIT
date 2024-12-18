@@ -1,26 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 declare(strict_types=1);
 
@@ -47,6 +47,7 @@ use Cake\Utility\Hash;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\CustomMacroReplacer;
 use itnovum\openITCOCKPIT\Core\HostMacroReplacer;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
@@ -291,9 +292,18 @@ class AngularController extends AppController {
         $session->close();
 
         $recursive = false;
-        if ($this->request->getQuery('recursive') === 'true') {
-            $recursive = true;
+        // ITC-3258 No recursive parameter, use the default from the user settings
+        if ($this->request->getQuery('recursive', null) === null) {
+            $User = new User($this->getUser());
+            $recursive = $User->isRecursiveBrowserEnabled();
+        } else {
+            // Parameter is set, use it
+            $recursive = false;
+            if ($this->request->getQuery('recursive', null) === 'true') {
+                $recursive = true;
+            }
         }
+
 
         $MY_RIGHTS = [];
         if ($this->hasRootPrivileges === false) {
@@ -515,10 +525,12 @@ class AngularController extends AppController {
                         return;
                     }
 
-                    $this->set('state', $TableName . 'Index');
+                    $this->set('state', $TableName . 'Index'); // AngularJS
+                    $this->set('url', ['/', strtolower($TableName), 'index']); // Angular
                     $this->set('id', $result->get('id'));
                     $this->viewBuilder()->setOption('serialize', [
                         'state',
+                        'url',
                         'id',
                         'hasPermission'
                     ]);
@@ -683,8 +695,15 @@ class AngularController extends AppController {
             'downtimetype_id' => $downtimetypeId
         ];
 
+        $userData = [
+            'id'       => $User->getId(),
+            'fullname' => $User->getFullName()
+
+        ];
+
         $this->set('defaultValues', $defaultValues);
-        $this->viewBuilder()->setOption('serialize', ['defaultValues']);
+        $this->set('author', $userData);
+        $this->viewBuilder()->setOption('serialize', ['defaultValues', 'author']);
     }
 
     public function system_health() {
@@ -716,7 +735,7 @@ class AngularController extends AppController {
         $cache['gearman_reachable'] = $GearmanClient->ping();
 
 
-        exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
+        exec('ps -eaf |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
         $cache['gearman_worker_running'] = sizeof($output) > 0;
         if (!$cache['gearman_worker_running']) {
             $this->setHealthState('critical');
@@ -1094,7 +1113,7 @@ class AngularController extends AppController {
         if ($includeHoststatus) {
             //Get meta data and push to front end
             $HoststatusFields = new HoststatusFields($this->DbBackend);
-            $HoststatusFields->currentState()->isFlapping();
+            $HoststatusFields->currentState()->isFlapping()->isHardstate();
             $HosttatusTable = $this->DbBackend->getHoststatusTable();
             $hoststatus = $HosttatusTable->byUuid($host->get('uuid'), $HoststatusFields);
             if (!isset($hoststatus['Hoststatus'])) {
@@ -1131,6 +1150,7 @@ class AngularController extends AppController {
         }
 
         $serviceId = $this->request->getQuery('serviceId');
+        $includeHoststatus = $this->request->getQuery('includeHoststatus') === 'true';
         $includeServicestatus = $this->request->getQuery('includeServicestatus') === 'true';
 
         /** @var $ServicesTable ServicesTable */
@@ -1218,7 +1238,7 @@ class AngularController extends AppController {
         if ($includeServicestatus) {
             //Get meta data and push to front end
             $ServicestatusFields = new ServicestatusFields($this->DbBackend);
-            $ServicestatusFields->currentState()->isFlapping();
+            $ServicestatusFields->currentState()->isFlapping()->isHardstate();
             $ServicestatusTable = $this->DbBackend->getServicestatusTable();
             $servicestatus = $ServicestatusTable->byUuid($service->get('uuid'), $ServicestatusFields);
             if (!isset($servicestatus['Servicestatus'])) {
@@ -1231,8 +1251,25 @@ class AngularController extends AppController {
             ]);
         }
 
+        if ($includeHoststatus) {
+            //Get meta data and push to front end
+            $HoststatusFields = new HoststatusFields($this->DbBackend);
+            $HoststatusFields->currentState()->isFlapping()->isHardstate();
+            $HoststatusTable = $this->DbBackend->getHoststatusTable();
+            $hoststatus = $HoststatusTable->byUuid($service->get('host')->get('uuid'), $HoststatusFields);
+            if (!isset($hoststatus['Hoststatus'])) {
+                $hoststatus['Hoststatus'] = [];
+            }
+            $Hoststatus = new Hoststatus($hoststatus['Hoststatus']);
+        } else {
+            $Hoststatus = new Hoststatus([
+                'Hoststatus' => []
+            ]);
+        }
+
         $config = [
             'hostId'               => $service->get('host')->get('id'),
+            'serviceId'            => $service->get('id'),
             'serviceUuid'          => $service->get('uuid'),
             'hostName'             => $service->get('host')->get('name'),
             'serviceName'          => $serviceName,
@@ -1241,7 +1278,9 @@ class AngularController extends AppController {
             'serviceUrl'           => $serviceUrl,
             'allowEdit'            => $allowEdit,
             'includeServicestatus' => $includeServicestatus,
-            'Servicestatus'        => $Servicestatus->toArray()
+            'Servicestatus'        => $Servicestatus->toArray(),
+            'includeHoststatus'    => $includeHoststatus,
+            'Hoststatus'           => $Hoststatus->toArray()
         ];
         $this->set('config', $config);
         $this->viewBuilder()->setOption('serialize', ['config']);
@@ -1336,5 +1375,32 @@ class AngularController extends AppController {
     public function changeLogEntry() {
         //Return HTML Template for ChangeLogEntries
         return;
+    }
+
+    public function getSatellites() {
+        $satellites = [];
+
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+            /** @var \DistributeModule\Model\Table\SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
+            $satellites[0] = $masterInstanceName;
+        }
+
+        $satellites = Api::makeItJavaScriptAble($satellites);
+
+        $this->set('satellites', $satellites);
+        $this->viewBuilder()->setOption('serialize', ['satellites']);
+    }
+
+    public function getSystemname() {
+        $systenmane = parent::getSystemname();
+        $this->set('systenmane', $systenmane);
+        $this->viewBuilder()->setOption('serialize', ['systenmane']);
     }
 }

@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -4377,18 +4377,20 @@ class HostsTable extends Table {
      */
     public function getHostTypesWithStyles() {
         $types[GENERIC_HOST] = [
-            'title' => __('Generic host'),
-            'color' => 'text-generic',
-            'class' => 'border-generic',
-            'icon'  => 'fa fa-cog'
+            'title'  => __('Generic host'),
+            'color'  => 'text-generic',
+            'class'  => 'border-generic',
+            'icon'   => ['fas', 'cog'],
+            'rotate' => 0
         ];
 
         if (Plugin::isLoaded('EventcorrelationModule')) {
             $types[EVK_HOST] = [
-                'title' => __('EVC host'),
-                'color' => 'text-evc',
-                'class' => 'border-evc',
-                'icon'  => 'fa fa-sitemap fa-rotate-90'
+                'title'  => __('EVC host'),
+                'color'  => 'text-evc',
+                'class'  => 'border-evc',
+                'icon'   => ['fas', 'sitemap'],
+                'rotate' => 90
             ];
         }
         return $types;

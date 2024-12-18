@@ -106,6 +106,7 @@ class WizardAssignmentsTable extends Table {
                 'directive'               => 'linux-server', //AngularJS directive
                 'category'                => ['linux'],
                 'state'                   => 'AgentconnectorsConfig',
+                'second_url'              => '/agentconnector/config/:hostId',
                 'selected_os'             => 'linux',
                 'necessity_of_assignment' => false
 
@@ -145,6 +146,7 @@ class WizardAssignmentsTable extends Table {
                 'directive'               => 'windows', //AngularJS directive
                 'category'                => ['windows'],
                 'state'                   => 'AgentconnectorsConfig',
+                'second_url'              => '/agentconnector/config/:hostId',
                 'selected_os'             => 'windows',
                 'necessity_of_assignment' => false
             ],
@@ -183,6 +185,7 @@ class WizardAssignmentsTable extends Table {
                 'directive'               => 'macos', //AngularJS directive
                 'category'                => ['macos'],
                 'state'                   => 'AgentconnectorsConfig',
+                'second_url'              => '/agentconnector/config/:hostId',
                 'selected_os'             => 'macos',
                 'necessity_of_assignment' => false
             ],
@@ -194,6 +197,7 @@ class WizardAssignmentsTable extends Table {
                 'image'                   => 'MySQL_logo.svg',
                 'directive'               => 'mysql', //AngularJS directive
                 'state'                   => 'WizardsMysqlServer',
+                'second_url'              => '/wizards/mysqlserver/:hostId',
                 'category'                => ['linux', 'mysql', 'database'],
                 'necessity_of_assignment' => true
             ]

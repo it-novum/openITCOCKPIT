@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -42,6 +47,7 @@ use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
+use itnovum\openITCOCKPIT\Filter\GenericFilter;
 use itnovum\openITCOCKPIT\Filter\ServiceescalationsFilter;
 
 /**
@@ -309,6 +315,89 @@ class ServiceescalationsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['containers']);
     }
 
+    public function loadExcludedServicesByContainerIdAndServicegroupIdsForOptionGroup() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+        $containerId = $this->request->getQuery('containerId');
+        $servicegroupIds = $this->request->getQuery('servicegroupIds');
+
+        $GenericFilter = new GenericFilter($this->request);
+        $GenericFilter->setFilters([
+            'like' => [
+                'servicename'
+            ]
+        ]);
+
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+
+        if (!$ContainersTable->existsById($containerId)) {
+            throw new NotFoundException(__('Invalid container'));
+        }
+
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_NODE
+            ]);
+        }
+
+
+        $excludedServices = $ServicesTable->getServicesByContainerIdAndServicegroupIds(
+            $containerIds,
+            $servicegroupIds,
+            'list',
+            'id',
+            $GenericFilter->genericFilters()
+        );
+
+        $reorderServicesArray = [];
+        foreach ($excludedServices as $service) {
+            if (!isset($reorderServicesArray[$service['_matchingData']['Hosts']['name']])) {
+                $reorderServicesArray[$service['_matchingData']['Hosts']['name']] = [
+                    'label' => $service['_matchingData']['Hosts']['name'],
+                    'value' => $service['_matchingData']['Hosts']['id'],
+                    'items' => []
+                ];
+            }
+            $serviceName = $service['servicename'];
+            if ($service['disabled'] == 1) {
+                $serviceName .= '🔌';
+            }
+            $reorderServicesArray[$service['_matchingData']['Hosts']['name']]['items'][] = [
+                'label'    => $serviceName,
+                'value'    => $service['id'],
+                'disabled' => ($service['disabled'] == 1) // if needed can be configured by parameter
+            ];
+        }
+
+
+        $reorderServicesArray = Hash::sort($reorderServicesArray, '{s}', 'asc', 'natural');
+        $excludedServices = array_values($reorderServicesArray);
+
+        $this->set(compact(['excludedServices']));
+        $this->viewBuilder()->setOption('serialize', ['excludedServices']);
+    }
+
+
+    /**
+     * @return void
+     * @deprecated
+     */
     public function loadExcludedServicesByContainerIdAndServicegroupIds() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

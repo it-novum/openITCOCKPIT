@@ -67,6 +67,11 @@ class MetricsController extends AppController {
 
         $this->set('metrics', $metrics);
         $this->set('systemname', $this->getSystemname());
+
+        if ($this->isApiRequest()) {
+            $this->set('serverAddress', $_SERVER['SERVER_ADDR']);
+            $this->viewBuilder()->setOption('serialize', ['metrics', 'systemname', 'serverAddress']);
+        }
     }
 
 }

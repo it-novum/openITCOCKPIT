@@ -1,34 +1,29 @@
 <?php
-// Copyright (C) <2018>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
-
-use App\itnovum\openITCOCKPIT\Monitoring\Naemon\IllegalCharacters;
-use itnovum\openITCOCKPIT\Core\System\Health\MonitoringEngine;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
 class ModGearmanModule extends ConfigGenerator implements ConfigInterface {
 
@@ -72,10 +67,10 @@ class ModGearmanModule extends ConfigGenerator implements ConfigInterface {
         ],
 
         'string' => [
-            'debug_level'                => '0',   // We use a string because of the selectbox
-            'orphaned_checks_returncode' => '2',   // We use a string because of the selectbox
-            'localhostgroups'            => '',
-            'localservicegroups'         => ''
+            'debug_level'                => '0',     // We use a string because of the selectbox
+            'orphaned_checks_returncode' => '2',     // We use a string because of the selectbox
+            'localhostgroups'            => 'empty', // This is a workaround as the config generator does currently not support empty values
+            'localservicegroups'         => 'empty'  // This is a workaround as the config generator does currently not support empty values
         ],
     ];
 

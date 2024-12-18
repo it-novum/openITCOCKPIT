@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -37,6 +42,7 @@ use Cake\Http\Exception\NotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Table\SatellitesTable;
+use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Core\Hoststatus;
 use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
@@ -62,33 +68,35 @@ class StatusmapsController extends AppController {
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $this->loadComponent('StatusMap');
 
-        if (!$this->isAngularJsRequest()) {
-            /** @var SystemsettingsTable $Systemsettings */
-            $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
-            $masterInstanceName = $Systemsettings->getMasterInstanceName();
-            $satellites = [];
-            if (Plugin::isLoaded('DistributeModule')) {
-                /** @var SatellitesTable $SatellitesTable */
-                $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+        /** @var SystemsettingsTable $Systemsettings */
+        $Systemsettings = TableRegistry::getTableLocator()->get('Systemsettings');
+        $masterInstanceName = $Systemsettings->getMasterInstanceName();
+        $satellites = [];
+        if (Plugin::isLoaded('DistributeModule')) {
+            /** @var SatellitesTable $SatellitesTable */
+            $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-                $MY_RIGHTS = $this->MY_RIGHTS;
-                if (!is_array($MY_RIGHTS)) {
-                    $MY_RIGHTS = [$MY_RIGHTS];
-                }
-                $satellites = $SatellitesTable->find('list')
-                    ->where([
-                        'Satellites.container_id IN' => $MY_RIGHTS,
-                    ])
-                    ->select([
-                        'Satellites.id',
-                        'Satellites.name'
-                    ])
-                    ->order([
-                        'Satellites.name' => 'asc'
-                    ])
-                    ->toArray();
+            $MY_RIGHTS = $this->MY_RIGHTS;
+            if (!is_array($MY_RIGHTS)) {
+                $MY_RIGHTS = [$MY_RIGHTS];
             }
-            $satellites[0] = $masterInstanceName;
+            $satellites = $SatellitesTable->find('list')
+                ->where([
+                    'Satellites.container_id IN' => $MY_RIGHTS,
+                ])
+                ->select([
+                    'Satellites.id',
+                    'Satellites.name'
+                ])
+                ->order([
+                    'Satellites.name' => 'asc'
+                ])
+                ->toArray();
+        }
+        $satellites[0] = $masterInstanceName;
+
+
+        if (!$this->isAngularJsRequest()) {
             $this->set('satellites', $satellites);
             return;
         }
@@ -184,9 +192,11 @@ class StatusmapsController extends AppController {
             'edges' => $edges
         ];
 
+        $this->set('satellites', Api::makeItJavaScriptAble($satellites));
+
         $this->set('statusMap', $statusMap);
         $this->set('hasBrowserRight', $hasBrowserRight);
-        $this->viewBuilder()->setOption('serialize', ['statusMap', 'hasBrowserRight']);
+        $this->viewBuilder()->setOption('serialize', ['statusMap', 'hasBrowserRight', 'satellites']);
     }
 
     /**
