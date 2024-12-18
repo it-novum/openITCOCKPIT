@@ -858,7 +858,9 @@ class Menu {
                     '',
                     ['fas', 'wand-magic-sparkles'],
                     [],
-                    6
+                    6,
+                    true,
+                    '/wizards/assignments'
                 ))
                 ->addLink(new MenuLink(
                     __('Prometheus Metrics'),
