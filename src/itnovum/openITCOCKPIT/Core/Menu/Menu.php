@@ -252,7 +252,9 @@ class Menu {
                 '',
                 ['fas', 'wand-magic-sparkles'],
                 [],
-                3
+                3,
+                true,
+                '/wizards/index'
             ))
             ->addCategory((new MenuCategory(
                 'objects_category',
@@ -858,7 +860,9 @@ class Menu {
                     '',
                     ['fas', 'wand-magic-sparkles'],
                     [],
-                    6
+                    6,
+                    true,
+                    '/wizards/assignments'
                 ))
                 ->addLink(new MenuLink(
                     __('Prometheus Metrics'),
