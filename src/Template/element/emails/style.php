@@ -697,4 +697,8 @@
         color: white;
     }
 
+    .not-underlined {
+        text-decoration: none;
+    }
+
 </style>
