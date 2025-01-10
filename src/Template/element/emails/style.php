@@ -502,8 +502,8 @@
     .disabledEvcSummary:before {
         content: "🔌";
         position: absolute;
-        right:2px;
-        top:-2px;
+        right: 2px;
+        top: -2px;
         font-size: 12px;
     }
 
@@ -654,4 +654,51 @@
         font-style: italic;
         color: #5e5d5d;
     }
+
+    .resource-table {
+        border-collapse: separate;
+        border-spacing: 0 10px;
+    }
+
+    .resource-card {
+        border: 1px solid transparent;
+        border-radius: 5px;
+        padding: 5px 0 5px 5px;
+        margin: 5px;
+        color: #ffffff;
+    }
+
+    .resource-card > h3 {
+        font-size: 32px;
+        color: #ffffff;
+        font-weight: bold;
+        line-height: 1.0;
+        margin-bottom: 5px;
+    }
+
+    .resource-card > h4 {
+        font-size: 18px;
+        color: #ffffff;
+        font-weight: bold;
+        line-height: 0.8;
+        margin-bottom: 2px;
+    }
+
+    .resource-status-icon {
+        font-size: 10px;
+    }
+
+    .resource-list-item {
+        padding: 0 5px;
+        border-spacing: 0;
+    }
+
+    .text-white {
+        color: white;
+    }
+
+    .not-underlined {
+        text-decoration: none;
+    }
+
 </style>
