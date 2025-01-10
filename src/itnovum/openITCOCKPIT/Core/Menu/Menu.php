@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -697,7 +697,9 @@ class Menu {
                     '',
                     ['fas', 'database'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/backups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Anonymous statistics'),
