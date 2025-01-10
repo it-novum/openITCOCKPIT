@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -85,8 +90,13 @@ class MultipleBarChart {
         ];
 
         $diff_scale = $this->height / 4;
-        imagefilledpolygon($this->img, $pointsFor3d, sizeof($pointsFor3d) / 2, $colorGray);
-        imagepolygon($this->img, $pointsFor3d, sizeof($pointsFor3d) / 2, $colorDarkGray);
+        if (version_compare(PHP_VERSION, '8.1.0') >= 0) {
+            imagefilledpolygon($this->img, $pointsFor3d, $colorGray);
+            imagepolygon($this->img, $pointsFor3d, $colorDarkGray);
+        } else {
+            imagefilledpolygon($this->img, $pointsFor3d, sizeof($pointsFor3d) / 2, $colorGray);
+            imagepolygon($this->img, $pointsFor3d, sizeof($pointsFor3d) / 2, $colorDarkGray);
+        }
 
         imagefilledrectangle($this->img, $this->x + $this->scale, $this->y - $this->scale, $this->x + $this->width + $this->scale, $this->y + $this->height - $this->scale, $colorLightGray);
         imagerectangle($this->img, $this->x + $this->scale, $this->y - $this->scale, $this->x + $this->width + $this->scale, $this->y + $this->height - $this->scale, $colorDarkGray);
@@ -146,14 +156,22 @@ class MultipleBarChart {
                         $tmpX + $gapX + $this->scale, $tmpY2 - $this->scale,
                         $tmpX + $this->scale, $tmpY2 - $this->scale,
                     ];
-                    imagefilledpolygon($this->img, $pointsFor3dTop, sizeof($pointsFor3dTop) / 2, $colors[$index]['top3d']);
+                    if (version_compare(PHP_VERSION, '8.1.0') >= 0) {
+                        imagefilledpolygon($this->img, $pointsFor3dTop, $colors[$index]['top3d']);
+                    } else {
+                        imagefilledpolygon($this->img, $pointsFor3dTop, sizeof($pointsFor3dTop) / 2, $colors[$index]['top3d']);
+                    }
                     $pointsFor3dLeft = [
                         $tmpX + $gapX, $y1,
                         $tmpX + $gapX + $this->scale, $y1 - $this->scale,
                         $tmpX + $gapX + $this->scale, $tmpY2 - $this->scale,
                         $tmpX + $gapX, $tmpY2,
                     ];
-                    imagefilledpolygon($this->img, $pointsFor3dLeft, sizeof($pointsFor3dTop) / 2, $colors[$index]['left3d']);
+                    if (version_compare(PHP_VERSION, '8.1.0') >= 0) {
+                        imagefilledpolygon($this->img, $pointsFor3dLeft, $colors[$index]['left3d']);
+                    } else {
+                        imagefilledpolygon($this->img, $pointsFor3dLeft, sizeof($pointsFor3dTop) / 2, $colors[$index]['left3d']);
+                    }
                 }
                 $y1 = $tmpY2;
             }
