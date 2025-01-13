@@ -1,26 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\Core\Views;
 
@@ -89,7 +89,7 @@ class BarChart {
         $this->chartDepth3d = 10;
         $this->x = 0;
         $this->y = 5;
-        $this->image = imagecreatetruecolor($this->width + $this->padding*2, $this->height + $this->padding);
+        $this->image = imagecreatetruecolor($this->width + $this->padding * 2, $this->height + $this->padding);
         $this->setImageLayout(); //set transparence, colors, fonts, ...
         $this->create($chart_data);
     }
@@ -160,19 +160,38 @@ class BarChart {
         foreach ($chartDataArray as $key => $dataArr) {
             $background = imagecolorallocatealpha($this->image, $dataArr['color'][0] * 0.75, $dataArr['color'][1] * 0.75, $dataArr['color'][2] * 0.75, $dataArr['color'][3]);
             //top 3d
-            imagefilledpolygon($this->image, [
-                $dataArr['start'], $this->y,
-                $dataArr['start'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
-                $dataArr['end'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
-                $dataArr['end'], $this->y,
-            ], 4, $background);
+            if (version_compare(PHP_VERSION, '8.1.0') >= 0) {
+                imagefilledpolygon($this->image, [
+                    $dataArr['start'], $this->y,
+                    $dataArr['start'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
+                    $dataArr['end'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
+                    $dataArr['end'], $this->y,
+                ], $background);
+            } else {
+                imagefilledpolygon($this->image, [
+                    $dataArr['start'], $this->y,
+                    $dataArr['start'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
+                    $dataArr['end'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
+                    $dataArr['end'], $this->y,
+                ], 4, $background);
+            }
+
             //left 3d
-            imagefilledpolygon($this->image, [
-                $dataArr['end'], $this->y + $this->height,
-                $dataArr['end'], $this->y,
-                $dataArr['end'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
-                $dataArr['end'] + $this->chartDepth3d, $this->y + $this->height - $this->chartDepth3d,
-            ], 4, $background);
+            if (version_compare(PHP_VERSION, '8.1.0') >= 0) {
+                imagefilledpolygon($this->image, [
+                    $dataArr['end'], $this->y + $this->height,
+                    $dataArr['end'], $this->y,
+                    $dataArr['end'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
+                    $dataArr['end'] + $this->chartDepth3d, $this->y + $this->height - $this->chartDepth3d,
+                ], $background);
+            } else {
+                imagefilledpolygon($this->image, [
+                    $dataArr['end'], $this->y + $this->height,
+                    $dataArr['end'], $this->y,
+                    $dataArr['end'] + $this->chartDepth3d, $this->y - $this->chartDepth3d,
+                    $dataArr['end'] + $this->chartDepth3d, $this->y + $this->height - $this->chartDepth3d,
+                ], 4, $background);
+            }
         }
     }
 
