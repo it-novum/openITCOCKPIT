@@ -244,16 +244,18 @@ class WizardsController extends AppController {
                 );
             }
             $servicesNamesForExistCheck = $ServicesTable->getServiceNamesByHostIdForWizard($hostId);
-
             $this->set('servicetemplates', $servicetemplates);
             $this->set('servicesNamesForExistCheck', $servicesNamesForExistCheck);
+            $this->set('serverAddr', $_SERVER['SERVER_ADDR']);
 
             $this->viewBuilder()->setOption('serialize', [
                 'servicetemplates',
                 'servicesNamesForExistCheck',
                 'username',
-                'password'
+                'password',
+                'serverAddr'
             ]);
+
             return;
         }
         if ($this->request->is('post') && $this->isAngularJsRequest()) {
