@@ -67,7 +67,7 @@ class SystemdowntimesController extends AppController {
         $Conditions = new SystemdowntimesConditions();
 
         //Process conditions
-        if ($this->hasRootPrivileges) {
+        if (!$this->hasRootPrivileges) {
             $Conditions->setContainerIds($this->MY_RIGHTS);
         }
         $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
