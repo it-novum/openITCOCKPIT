@@ -67,7 +67,7 @@ class SystemdowntimesController extends AppController {
         $Conditions = new SystemdowntimesConditions();
 
         //Process conditions
-        if ($this->hasRootPrivileges) {
+        if (!$this->hasRootPrivileges) {
             $Conditions->setContainerIds($this->MY_RIGHTS);
         }
         $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
@@ -189,7 +189,7 @@ class SystemdowntimesController extends AppController {
         $Conditions = new SystemdowntimesConditions();
 
         //Process conditions
-        if ($this->hasRootPrivileges) {
+        if (!$this->hasRootPrivileges) {
             $Conditions->setContainerIds($this->MY_RIGHTS);
         }
         $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
@@ -250,7 +250,7 @@ class SystemdowntimesController extends AppController {
         $Conditions = new SystemdowntimesConditions();
 
         //Process conditions
-        if ($this->hasRootPrivileges) {
+        if (!$this->hasRootPrivileges) {
             $Conditions->setContainerIds($this->MY_RIGHTS);
         }
         $Conditions->setOrder($AngularRequest->getOrderForPaginator('Systemdowntimes.from_time', 'desc'));
@@ -260,7 +260,6 @@ class SystemdowntimesController extends AppController {
         $SystemdowntimesTable = TableRegistry::getTableLocator()->get('Systemdowntimes');
 
         $recurringNodeDowntimes = $SystemdowntimesTable->getRecurringNodeDowntimes($Conditions, $PaginateOMat);
-
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
 
@@ -274,7 +273,7 @@ class SystemdowntimesController extends AppController {
             if ($this->hasRootPrivileges) {
                 $allowEdit = true;
             } else {
-                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, [$recurringNodeDowntime['hostgroup']['container_id']]);
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, [$recurringNodeDowntime['id']]);
                 $allowEdit = $ContainerPermissions->hasPermission();
             }
 
