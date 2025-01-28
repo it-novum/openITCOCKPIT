@@ -49,7 +49,9 @@ class Menu implements MenuInterface {
                     'GrafanaModule',
                     ['fas', 'area-chart'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/grafana_module/grafana_userdashboards/index'
                 ))
             );
 
