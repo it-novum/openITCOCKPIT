@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -30,7 +35,6 @@ namespace GrafanaModule\Model\Table;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Association\BelongsTo;
-use Cake\ORM\Query;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -151,7 +155,7 @@ class GrafanaUserdashboardPanelsTable extends Table {
      * @param int $dashboardId
      * @return \Cake\Datasource\ResultSetInterface
      */
-    public function getPanelsByUserdashboardIdForCopy(int $dashboardId){
+    public function getPanelsByUserdashboardIdForCopy(int $dashboardId) {
         $result = $this->find()
             ->where([
                 'GrafanaUserdashboardPanels.userdashboard_id' => $dashboardId
@@ -159,6 +163,61 @@ class GrafanaUserdashboardPanelsTable extends Table {
             ->all();
 
         return $result;
+    }
+
+    /**
+     * Use this method to delete rows of a user defined grafana dashboard.
+     * This function has to recalculate the "row index" therefore it is important that this function will not run in parallel.
+     *
+     *  ▼ ▼ ▼ READ THIS ▼ ▼ ▼
+     *  VERY IMPORTANT! Call $ContainersTable->acquireLock(); BEFORE calling this method !
+     *   ▲ ▲ ▲ READ THIS ▲ ▲ ▲
+     *
+     * @param int $userdashboardId
+     * @param int $rowIndex
+     * @return bool
+     */
+    public function deleteRowByUserdashboardIdAndRowIndex(int $userdashboardId, int $rowIndex): bool {
+        // "Rows" do not exist in the openITCOCKPIT database, they are a virtual construct of panels.
+        // When we have 4 rows [0,1,2,3] and we want to remove row "1", we have to update the row index of all panels
+        // on rows > 1. (decrement by 1)
+        // So row 0 stays row 0, row 2 becomes row 1, row 3 becomes row 2.
+
+        // Find all panels we want to delete
+        $panels = $this->find()
+            ->where([
+                'GrafanaUserdashboardPanels.userdashboard_id' => $userdashboardId,
+                'GrafanaUserdashboardPanels.row'              => $rowIndex
+            ])
+            ->all();
+
+        // Delete all panels
+        $success = $this->deleteMany($panels);
+        if (!$success) {
+            return $success;
+        }
+
+        // Select all panels with a row index > $rowIndex
+        // To decrement the row index by 1
+        $panels = $this->find()
+            ->where([
+                'GrafanaUserdashboardPanels.userdashboard_id' => $userdashboardId,
+                'GrafanaUserdashboardPanels.row >'            => $rowIndex
+            ])
+            ->order([
+                'GrafanaUserdashboardPanels.row' => 'ASC'
+            ])
+            ->all();
+
+        /** @var GrafanaUserdashboardPanel $panel */
+        foreach ($panels as $panel) {
+            if ($panel->row > 0) {
+                $panel->set('row', $panel->get('row') - 1);
+                $this->save($panel);
+            }
+        }
+
+        return true;
     }
 
 }
