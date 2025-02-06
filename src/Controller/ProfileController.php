@@ -92,7 +92,8 @@ class ProfileController extends AppController {
             $this->set('maxUploadLimit', $FileUploadSize->toArray());
             $this->set('newDesktopApi', true);
             $this->set('oitcVersion', OPENITCOCKPIT_VERSION);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'maxUploadLimit', 'newDesktopApi', 'oitcVersion']);
+            $this->set('hasRootPrivileges', $this->hasRootPrivileges);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'maxUploadLimit', 'newDesktopApi', 'oitcVersion', 'hasRootPrivileges']);
             return;
         }
 
