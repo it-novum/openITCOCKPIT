@@ -399,12 +399,14 @@ class ServicegroupsController extends AppController {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
                     CT_GLOBAL,
                     CT_TENANT,
+                    CT_LOCATION,
                     CT_NODE
                 ]);
             } else {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
                     CT_GLOBAL,
                     CT_TENANT,
+                    CT_LOCATION,
                     CT_NODE
                 ]);
             }
@@ -855,6 +857,55 @@ class ServicegroupsController extends AppController {
 
         $this->set('containers', $containers);
         $this->viewBuilder()->setOption('serialize', ['containers']);
+    }
+
+    public function loadServices() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->request->is('post')) {
+            // ITC-2124
+            $containerId = $this->request->getData('containerId');
+            $selected = $this->request->getData('selected');
+        } else {
+            // Keep the API stable for GET
+            $selected = $this->request->getQuery('selected');
+            $containerId = $this->request->getQuery('containerId');
+        }
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_LOCATION,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_LOCATION,
+                CT_NODE
+            ]);
+        }
+
+        $ServiceCondition = new ServiceConditions($ServiceFilter->ajaxFilter());
+        $ServiceCondition->setContainerIds($containerIds);
+        $services = Api::makeItJavaScriptAble(
+            $ServicesTable->getServicesForAngular($ServiceCondition, $selected)
+        );
+        $this->set('services', $services);
+        $this->viewBuilder()->setOption('serialize', ['services']);
     }
 
     /**
