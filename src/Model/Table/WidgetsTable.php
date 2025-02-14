@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -169,6 +169,12 @@ class WidgetsTable extends Table {
     }
 
     /**
+     * If you add a new Widget, please also add it to the widgets.enum.ts in the Angular Frontend.
+     * Use a CamelCase name for the directive and the type_id as value like
+     * WelcomeWidget = 1
+     *
+     * The directive is not used by the Angular Frontend anymore
+     *
      * @param array $ACL_PERMISSIONS
      * @return array
      */

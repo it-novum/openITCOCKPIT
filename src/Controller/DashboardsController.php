@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -832,7 +832,7 @@ class DashboardsController extends AppController {
         }
 
         $widget = $WidgetsTable->patchEntity($widget, [
-            'name' => $name
+            'title' => $name
         ]);
 
         $WidgetsTable->save($widget);
