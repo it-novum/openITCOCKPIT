@@ -2254,7 +2254,7 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('get')) {
             $data = [];
-            $url = 'https://openitcockpit.io';
+            $url = 'https://itsm.love'; // https://openitcockpit.io is forbidden to be loaded in an iframe
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
                 if (!empty($data['url'])) {
