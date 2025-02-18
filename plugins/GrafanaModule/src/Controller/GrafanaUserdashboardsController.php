@@ -180,7 +180,14 @@ class GrafanaUserdashboardsController extends AppController {
         }
 
         $dashboard = $GrafanaUserdashboardsTable->getGrafanaUserDashboardEdit($userdashboardId);
-        $dashboard['rows'] = $GrafanaUserdashboardsTable->extractRowsWithPanelsAndMetricsFromFindResult($dashboard);
+
+        $rows = array_values($GrafanaUserdashboardsTable->extractRowsWithPanelsAndMetricsFromFindResult($dashboard));
+        // Ensure we return arrays [] instead of objects {} for Angular
+        foreach ($rows as $i => $row) {
+            $rows[$i] = array_values($row);
+        }
+
+        $dashboard['rows'] = $rows;
 
         $GrafanaUnits = new GrafanaTargetUnits();
         $this->set('userdashboardData', $dashboard);
@@ -764,6 +771,7 @@ class GrafanaUserdashboardsController extends AppController {
             'row'                => $panel->get('row'),
             'userdashboard_id'   => $panel->get('userdashboard_id'),
             'unit'               => '',
+            'title'              => '',
             'visualization_type' => $panel->get('visualization_type'),
             'stacking_mode'      => $panel->get('stacking_mode'),
             'metrics'            => []
@@ -826,24 +834,24 @@ class GrafanaUserdashboardsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['success']);
     }
 
+
     public function removeRow() {
         if (!$this->request->is('post') || !$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
-        $success = false;
-        $ids = $this->request->getData('ids', []);
-        if (!empty($ids) && is_array($ids)) {
-            /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
-            $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
-            $success = true;
-            foreach ($ids as $id) {
-                $panel = $GrafanaUserdashboardPanelsTable->get($id);
-                if (!$GrafanaUserdashboardPanelsTable->delete($panel)) {
-                    $success = false;
-                }
-            }
-        }
+        $userdashboardId = $this->request->getData('userdashboard_id', 0);
+        $rowIndex = $this->request->getData('rowIndex', 0);
+
+        /** @var ContainersTable $ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+
+        /** @var GrafanaUserdashboardPanelsTable $GrafanaUserdashboardPanelsTable */
+        $GrafanaUserdashboardPanelsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboardPanels');
+
+        $ContainersTable->acquireLock();
+        $success = $GrafanaUserdashboardPanelsTable->deleteRowByUserdashboardIdAndRowIndex($userdashboardId, $rowIndex);
+        $ContainersTable->releaseLock();
 
         $this->set('success', $success);
         $this->viewBuilder()->setOption('serialize', ['success']);
@@ -1210,5 +1218,5 @@ class GrafanaUserdashboardsController extends AppController {
             $str
         );
     }
-    
+
 }

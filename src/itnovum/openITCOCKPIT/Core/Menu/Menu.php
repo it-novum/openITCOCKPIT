@@ -61,7 +61,9 @@ class Menu {
                 '',
                 ['fas', 'gauge-high'],
                 ['dashboard'],
-                1
+                1,
+                true,
+                '/dashboards/index'
             ))
             ->addLink(new MenuLink(
                 __('Browser'),

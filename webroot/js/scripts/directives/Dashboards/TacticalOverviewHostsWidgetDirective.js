@@ -42,7 +42,7 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewHostsWidget', functio
                     }
                 }).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
-                    $scope.filter.Hostgroup._ids = result.data.config.Hostgroup._ids.split(',').map(Number);
+                    $scope.filter.Hostgroup._ids = result.data.config.Hostgroup._ids;
 
                     $('#HostsKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.keywords);
                     $('#HostsNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Host.not_keywords);
