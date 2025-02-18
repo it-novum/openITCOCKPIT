@@ -2407,6 +2407,21 @@ class DashboardsController extends AppController {
 
             }
 
+            $hostgroupIds = [];
+            $servicegroupIds = [];
+            if (!empty($config['Hostgroup']['_ids'])) {
+                foreach (explode(',', $config['Hostgroup']['_ids']) as $hostgroupId) {
+                    $hostgroupIds[] = (int)$hostgroupId;
+                }
+            }
+            if (!empty($config['Servicegroup']['_ids'])) {
+                foreach (explode(',', $config['Servicegroup']['_ids']) as $servicegroupId) {
+                    $servicegroupIds[] = (int)$servicegroupId;
+                }
+            }
+            $config['Hostgroup']['_ids'] = $hostgroupIds;
+            $config['Servicegroup']['_ids'] = $servicegroupIds;
+
 
             $this->set('config', $config);
             $this->set('hoststatusSummary', $hoststatusSummary);
