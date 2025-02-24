@@ -401,7 +401,7 @@ class WidgetsTable extends Table {
             $widgets[] = [
                 'type_id'   => 11,
                 'title'     => __('Traffic light'),
-                'icon'      => 'fas fa-road',
+                'icon'      => 'fa-solid fa-traffic-light',
                 'directive' => 'trafficlight-widget',
                 'width'     => 3,
                 'height'    => 14
@@ -557,7 +557,7 @@ class WidgetsTable extends Table {
             [
                 'type_id'   => 11,
                 'title'     => __('Traffic light'),
-                'icon'      => 'fas fa-road',
+                'icon'      => 'fa-solid fa-traffic-light',
                 'directive' => 'trafficlight-widget',
                 'width'     => 3,
                 'height'    => 14
