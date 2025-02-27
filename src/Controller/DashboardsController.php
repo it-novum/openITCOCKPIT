@@ -1723,6 +1723,7 @@ class DashboardsController extends AppController {
 
     /**
      * @return array
+     * @deprecated Remove with openITCOCKPIT 5 as this is not required for the Angular Frontend anymore !!
      */
     private function getAcls() {
         $acl = [
