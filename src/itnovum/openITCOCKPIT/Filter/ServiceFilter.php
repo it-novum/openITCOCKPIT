@@ -114,4 +114,21 @@ class ServiceFilter extends Filter {
         return $this->getConditionsByFilters($filters);
     }
 
+    /**
+     * @return array
+     */
+    public function ajaxFilter() {
+        $filters = [
+            'like'   => [
+                'servicename',
+            ],
+            'equals' => [
+                'Services.uuid',
+                'Services.disabled'
+            ]
+        ];
+
+        return $this->getConditionsByFilters($filters);
+    }
+
 }
