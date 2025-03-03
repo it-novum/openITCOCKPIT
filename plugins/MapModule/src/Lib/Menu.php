@@ -62,7 +62,9 @@ class Menu implements MenuInterface {
                     'MapModule',
                     ['fas', 'retweet'],
                     [],
-                    4
+                    4,
+                    true,
+                    'map_module/rotations/index'
                 ))
             );
 
