@@ -24,8 +24,13 @@ angular.module('openITCOCKPIT')
                 enabled: true,
                 size: 15
             },
-            synchronizeGridAndHelplinesSize: true
-
+            synchronizeGridAndHelplinesSize: true,
+            background: {
+                position_x: 0,
+                position_y: 0,
+                width: null,
+                height: null
+            }
         };
 
         $scope.helplines = {
@@ -1451,6 +1456,11 @@ angular.module('openITCOCKPIT')
             }
         };
 
+        $scope.resetBackgroundSizeSettings = function(){
+            $scope.Mapeditor.background.width = null;
+            $scope.Mapeditor.background.height = null;
+        };
+
         var makeDraggable = function(){
             var options = {
                 grid: false,
@@ -1561,6 +1571,11 @@ angular.module('openITCOCKPIT')
                             $scope.saveSummaryItem('dragstop');
                             break;
 
+                        case 'mapBackground':
+                            $scope.Mapeditor.background.position_x = x;
+                            $scope.Mapeditor.background.position_y = y;
+                            break;
+
                         default:
                             console.log('Unknown map object type');
                             genericError();
@@ -1623,6 +1638,11 @@ angular.module('openITCOCKPIT')
                             $scope.saveSummaryItem('resizestop');
                             break;
 
+                        case 'mapBackground':
+                            $scope.Mapeditor.background.width = newWidth;
+                            $scope.Mapeditor.background.height = newHeight;
+                            break;
+
                         default:
                             console.log('Unknown map object type');
                             genericError();
@@ -1657,6 +1677,11 @@ angular.module('openITCOCKPIT')
                                 size_y: newHeight
                             };
                             $scope.saveGadget('resizestop');
+                            break;
+
+                        case 'mapBackground':
+                            $scope.Mapeditor.background.width = newWidth;
+                            $scope.Mapeditor.background.height = newHeight;
                             break;
 
                         default:
