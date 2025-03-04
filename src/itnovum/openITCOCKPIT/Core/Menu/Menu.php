@@ -134,7 +134,9 @@ class Menu {
                         '',
                         ['fas', 'file-invoice'],
                         [],
-                        2
+                        2,
+                        true,
+                        '/downtimereports/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Current State reports'),
