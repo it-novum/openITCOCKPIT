@@ -130,7 +130,7 @@
                                 multiple
                                 chosen="services"
                                 callback="loadServices"
-                                ng-options="service.key as service.value.servicename group by service.value._matchingData.Hosts.name disable when service.disabled for service in services"
+                                ng-options="service.key as service.value.Host.name + '/' +service.value.Service.servicename group by service.value.Host.name disable when service.value.Service.disabled for service in services"
                                 ng-model="post.Servicegroup.services._ids">
                             </select>
                             <div ng-repeat="error in errors.services">
@@ -166,7 +166,8 @@
                                     <button class="btn btn-primary" type="submit">
                                         <?php echo __('Create service group'); ?>
                                     </button>
-                                    <a back-button href="javascript:void(0);" fallback-state='ServicegroupsIndex' class="btn btn-default">
+                                    <a back-button href="javascript:void(0);" fallback-state='ServicegroupsIndex'
+                                       class="btn btn-default">
                                         <?php echo __('Cancel'); ?>
                                     </a>
                                 </div>

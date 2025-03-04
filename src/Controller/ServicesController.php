@@ -3083,9 +3083,7 @@ class ServicesController extends AppController {
         }
 
         $ServiceFilter = new ServiceFilter($this->request);
-        /** @var $ContainersTable ContainersTable */
-        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
+        
         $containerIds = [ROOT_CONTAINER, $containerId];
 
         /** @var $ContainersTable ContainersTable */

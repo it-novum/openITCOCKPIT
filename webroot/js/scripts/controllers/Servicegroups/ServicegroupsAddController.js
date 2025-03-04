@@ -64,7 +64,7 @@ angular.module('openITCOCKPIT')
                 },
                 'selected': $scope.post.Servicegroup.services._ids
             };
-            $http.post("/services/loadServicesByContainerIdCake4.json?angular=true",
+            $http.post("/servicegroups/loadServices.json?angular=true",
                 $scope.params
             ).then(function(result){
                 $scope.services = result.data.services;
