@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -56,7 +56,9 @@ class Menu implements MenuInterface {
                     'MattermostModule',
                     ['fas', 'code'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/mattermost_module/MattermostSettings/index'
                 ))
             );
 
