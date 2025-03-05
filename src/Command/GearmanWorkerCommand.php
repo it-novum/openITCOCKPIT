@@ -130,7 +130,10 @@ class GearmanWorkerCommand extends Command {
             $pid = trim(file_get_contents($gearmanConfig['pidfile']));
             if (is_numeric($pid)) {
                 //We got a pid. Is this a gearman_worker or is this a pid from an died process?
-                exec('ps -eaf | grep ' . escapeshellarg($pid) . '| grep gearman_worker |grep -v grep', $output);
+                // replacement of ps -eaf because it takes ps too long to display the username in an LDAP based setup
+                // https://www.ibm.com/support/pages/apar/IJ08995
+                // we have no need for the username, so we can use the faster ps -eo pid,command
+                exec('ps -eo pid,command | grep ' . escapeshellarg($pid) . '| grep gearman_worker |grep -v grep', $output);
 
                 if (!empty($output)) {
                     Log::error(sprintf('GearmanWorker: Pidfile "%s" allready exists.', $pidfile));
