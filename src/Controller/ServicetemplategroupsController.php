@@ -296,12 +296,14 @@ class ServicetemplategroupsController extends AppController {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
                     CT_GLOBAL,
                     CT_TENANT,
+                    CT_LOCATION,
                     CT_NODE
                 ]);
             } else {
                 $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
                     CT_GLOBAL,
                     CT_TENANT,
+                    CT_LOCATION,
                     CT_NODE
                 ]);
             }
