@@ -68,6 +68,8 @@ class AdministratorsController extends AppController {
             return;
         }
 
+        $isoTimestamp = (bool)$this->request->getQuery('isoTimestamp', 0);
+
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsetting = $SystemsettingsTable->findAsArray();
@@ -108,7 +110,10 @@ class AdministratorsController extends AppController {
         $gearmanReachable = $GearmanClient->ping();
 
         $isGearmanWorkerRunning = false;
-        exec('ps -eaf |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
+        // replacement of ps -eaf because it takes ps too long to display the username in an LDAP based setup
+        // https://www.ibm.com/support/pages/apar/IJ08995
+        // we have no need for the username, so we can use the faster ps -eo command
+        exec('ps -eo command |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
         if (sizeof($output) > 0) {
             $isGearmanWorkerRunning = true;
         }
@@ -195,9 +200,19 @@ class AdministratorsController extends AppController {
                 $renderGraph = true;
                 foreach ($load as $line) {
                     $line = explode(' ', $line);
-                    $cpuLoadHistoryInformation[1][($line[0] * 1000)] = $line[1];
-                    $cpuLoadHistoryInformation[5][($line[0] * 1000)] = $line[2];
-                    $cpuLoadHistoryInformation[15][($line[0] * 1000)] = $line[3];
+
+                    if ($isoTimestamp) {
+                        // V5 iso timestamps for eCharts + float values
+                        $timestamp = intval($line[0]);
+                        $cpuLoadHistoryInformation[1][date('c', $timestamp)] = floatval($line[1]);
+                        $cpuLoadHistoryInformation[5][date('c', $timestamp)] = floatval($line[2]);
+                        $cpuLoadHistoryInformation[15][date('c', $timestamp)] = floatval($line[3]);
+                    } else {
+                        // V4 legacy jsTimestamps and string values
+                        $cpuLoadHistoryInformation[1][($line[0] * 1000)] = $line[1];
+                        $cpuLoadHistoryInformation[5][($line[0] * 1000)] = $line[2];
+                        $cpuLoadHistoryInformation[15][($line[0] * 1000)] = $line[3];
+                    }
                 }
             }
         }
@@ -255,6 +270,7 @@ class AdministratorsController extends AppController {
         else if (strstr($agent, "NT 6.2")) $os = "Windows 8";
         else if (strstr($agent, "NT 6.3")) $os = "Windows 8.1";
         else if (strstr($agent, "NT 6.4")) $os = "Windows 10";
+        else if (strstr($agent, "NT 10.0")) $os = "Windows 11";
         else if (strstr($agent, "Win")) $os = "Windows";
         //Firefox
         else if (strstr($agent, "Mac OS X 10.5")) $os = "Mac OS X - Leopard";

@@ -677,7 +677,9 @@ class Menu {
                     '',
                     ['fas', 'bug'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/administrators/debug'
                 ))
                 ->addLink(new MenuLink(
                     __('Performance Info'),

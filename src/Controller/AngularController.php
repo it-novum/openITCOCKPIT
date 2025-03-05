@@ -734,8 +734,10 @@ class AngularController extends AppController {
         $GearmanClient->setTimeout(5000);
         $cache['gearman_reachable'] = $GearmanClient->ping();
 
-
-        exec('ps -eaf |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
+        // replacement of ps -eaf because it takes ps too long to display the username in an LDAP based setup
+        // https://www.ibm.com/support/pages/apar/IJ08995
+        // we have no need for the username, so we can use the faster ps -eo command
+        exec('ps -eo command |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
         $cache['gearman_worker_running'] = sizeof($output) > 0;
         if (!$cache['gearman_worker_running']) {
             $this->setHealthState('critical');

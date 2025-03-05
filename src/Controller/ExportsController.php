@@ -103,7 +103,10 @@ class ExportsController extends AppController {
         }
 
         $isGearmanWorkerRunning = false;
-        exec('ps -eaf |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
+        // replacement of ps -eaf because it takes ps too long to display the username in an LDAP based setup
+        // https://www.ibm.com/support/pages/apar/IJ08995
+        // we have no need for the username, so we can use the faster ps -eo command
+        exec('ps -eo command |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
         if (sizeof($output) > 0) {
             $isGearmanWorkerRunning = true;
         }
