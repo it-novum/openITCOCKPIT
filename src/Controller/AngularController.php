@@ -61,6 +61,7 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\HostAndServiceSummaryIcon;
+use itnovum\openITCOCKPIT\Core\Views\Logo;
 use itnovum\openITCOCKPIT\Core\Views\PieChart;
 use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
@@ -456,8 +457,11 @@ class AngularController extends AppController {
 
         $menu = Cache::read($cacheKey, 'permissions');
 
+        $Logo = new Logo();
+
         $this->set('menu', $menu);
-        $this->viewBuilder()->setOption('serialize', ['menu']);
+        $this->set('headerLogoForHtml', $Logo->getHeaderLogoForHtml());
+        $this->viewBuilder()->setOption('serialize', ['menu', 'headerLogoForHtml']);
     }
 
     public function menuControl() {
