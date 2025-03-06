@@ -595,7 +595,9 @@ class Menu {
                     '',
                     ['fas', 'table'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/DashboardAllocations/index'
                 ))
             )
             ->addCategory((new MenuCategory(

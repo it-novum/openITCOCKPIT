@@ -908,6 +908,81 @@ class ServicegroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
 
+    public function loadServicesByStringForOptionGroup($onlyHostsWithWritePermission = false) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->request->is('post')) {
+            // ITC-2124
+            $containerId = $this->request->getData('containerId');
+            $selected = $this->request->getData('selected');
+        } else {
+            // Keep the API stable for GET
+            $selected = $this->request->getQuery('selected');
+            $containerId = $this->request->getQuery('containerId');
+        }
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_LOCATION,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_LOCATION,
+                CT_NODE
+            ]);
+        }
+
+        $ServiceConditions = new ServiceConditions($ServiceFilter->indexFilter());
+        $ServiceConditions->setContainerIds($containerIds);
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = $ServicesTable->getServicesForAngularCake4($ServiceConditions, $selected, true);
+        $reorderServicesArray = [];
+        foreach ($services as $service) {
+            if (!isset($reorderServicesArray[$service['_matchingData']['Hosts']['name']])) {
+                $reorderServicesArray[$service['_matchingData']['Hosts']['name']] = [
+                    'label' => $service['_matchingData']['Hosts']['name'],
+                    'value' => $service['_matchingData']['Hosts']['id'],
+                    'items' => []
+                ];
+            }
+            $serviceName = $service['servicename'];
+            if ($service['disabled'] == 1) {
+                $serviceName .= '🔌';
+            }
+            $reorderServicesArray[$service['_matchingData']['Hosts']['name']]['items'][] = [
+                'label'    => $serviceName,
+                'value'    => $service['id'],
+                'disabled' => ($service['disabled'] == 1)  // if needed can be configured by parameter
+            ];
+        }
+
+
+        $reorderServicesArray = Hash::sort($reorderServicesArray, '{s}', 'asc', 'natural');
+        $services = array_values($reorderServicesArray);
+
+        $this->set('services', $services);
+        $this->viewBuilder()->setOption('serialize', ['services']);
+    }
+
     /**
      * @param int|null $containerId
      */
