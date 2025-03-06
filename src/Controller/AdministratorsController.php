@@ -22,12 +22,6 @@
 //     License agreement and license key will be shipped with the order
 //     confirmation.
 
-// 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
-
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -179,7 +173,12 @@ class AdministratorsController extends AppController {
             'php_memory_limit'       => str_replace('M', '', get_cfg_var('memory_limit')) . 'MB',
             'php_max_execution_time' => ini_get('max_execution_time'),
             'php_extensions'         => get_loaded_extensions(),
-            'containerized'          => (IS_CONTAINER) ? __('Yes') : __('No')
+            'containerized'          => (IS_CONTAINER) ? __('Yes') : __('No'),
+            'isContainer'            => IS_CONTAINER,
+            'LsbRelease'             => $LsbRelease->getCodename(),
+            'isDebianBased'          => $LsbRelease->isDebianBased(),
+            'isRhelBased'            => $LsbRelease->isRhelBased(),
+
         ];
 
         //Collect CPU load history
