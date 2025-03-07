@@ -416,4 +416,13 @@ class AdministratorsController extends AppController {
     public function querylog() {
         //Only ship HTML template
     }
+
+    /**
+     * USED BY THE NEW ANGULAR FRONTEND !!
+     * @return void
+     */
+    public function php_info() {
+        $this->layout = 'blank';
+        //Only ship HTML template
+    }
 }
