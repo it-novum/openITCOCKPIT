@@ -338,6 +338,9 @@ class AdministratorsController extends AppController {
         }
 
 
+        $Logo = new Logo();
+        $this->set('logoHtmlPath', $Logo->getLogoForHtml());
+
         $this->set('interfaceInformation', $interfaceInformation);
         $this->set('processInformation', $processInformation);
         $this->set('renderGraph', $renderGraph);
@@ -361,7 +364,8 @@ class AdministratorsController extends AppController {
             'diskUsage',
             'gearmanStatus',
             'emailInformation',
-            'userInformation'
+            'userInformation',
+            'logoHtmlPath'
         ]);
     }
 
