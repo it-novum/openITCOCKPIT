@@ -134,7 +134,7 @@ class ServicestatusConditions {
             }
         }
 
-        if ($dbValue === 0 && $greaterOrEqThan === true) {
+        if ($dbValue === 1 && $greaterOrEqThan === true) {
             $this->conditions['Servicestatus.scheduled_downtime_depth >'] = $dbValue;
         } else {
             $this->conditions['Servicestatus.scheduled_downtime_depth'] = $dbValue;
