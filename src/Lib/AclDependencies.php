@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -147,7 +147,8 @@ class AclDependencies {
             ->allow('Angular', 'autoRefresher')
             ->allow('Angular', 'changeLogEntry')
             ->allow('Angular', 'getSatellites')
-            ->allow('Angular', 'getSystemname');
+            ->allow('Angular', 'getSystemname')
+            ->allow('Angular', 'getAppHeaderInfo');
 
         $this
             ->allow('Agentconnector', 'register_agent')

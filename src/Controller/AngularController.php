@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -34,6 +34,7 @@ use App\Model\Table\DocumentationsTable;
 use App\Model\Table\HostsTable;
 use App\Model\Table\HosttemplatesTable;
 use App\Model\Table\MessagesOtdTable;
+use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\ServicetemplatesTable;
 use App\Model\Table\SystemsettingsTable;
@@ -1408,5 +1409,38 @@ class AngularController extends AppController {
         $systenmane = parent::getSystemname();
         $this->set('systenmane', $systenmane);
         $this->viewBuilder()->setOption('serialize', ['systenmane']);
+    }
+
+    public function getAppHeaderInfo() {
+        if ($this->isApiRequest()) {
+            /** @var RegistersTable $RegistersTable */
+            $RegistersTable = TableRegistry::getTableLocator()->get('Registers');
+
+
+            $license = $RegistersTable->getLicense();
+            $isCommunityEdition = false;
+            $hasSubscription = $license !== null;
+            if (isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()) {
+                $isCommunityEdition = true;
+            }
+
+            /** @var SystemsettingsTable $SystemsettingsTable */
+            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+            $systemsettingsArray = $SystemsettingsTable->findAsArray();
+
+            $exportRunningHeaderInfo = false;
+            if (isset($systemsettingsArray['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'])) {
+                if ($systemsettingsArray['FRONTEND']['FRONTEND.SHOW_EXPORT_RUNNING'] === 'yes') {
+                    $exportRunningHeaderInfo = true;
+                }
+            }
+            
+            $this->set('isCommunityEdition', $isCommunityEdition);
+            $this->set('hasSubscription', $hasSubscription);
+            $this->set('exportRunningHeaderInfo', $exportRunningHeaderInfo);
+
+            $this->viewBuilder()->setOption('serialize', ['isCommunityEdition', 'hasSubscription', 'exportRunningHeaderInfo']);
+        }
+
     }
 }
