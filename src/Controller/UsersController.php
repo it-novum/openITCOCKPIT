@@ -787,6 +787,7 @@ class UsersController extends AppController {
             }
 
 
+            Cache::clear('permissions');
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
         }
