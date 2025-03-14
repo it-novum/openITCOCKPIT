@@ -1413,6 +1413,17 @@ class AngularController extends AppController {
 
     public function getAppHeaderInfo() {
         if ($this->isApiRequest()) {
+
+            $path = APP . 'Lib' . DS . 'openITCOCKPIT_AvailableVersion.php';
+            $availableVersion = '???';
+            if (file_exists($path)) {
+                $availableVersion = openITCOCKPIT_AvailableVersion::get();
+            }
+            $newVersionAvailable = false;
+            if (version_compare($availableVersion, OPENITCOCKPIT_VERSION) > 0 && $this->hasRootPrivileges) {
+                $newVersionAvailable = true;
+            }
+
             /** @var RegistersTable $RegistersTable */
             $RegistersTable = TableRegistry::getTableLocator()->get('Registers');
 
@@ -1434,12 +1445,12 @@ class AngularController extends AppController {
                     $exportRunningHeaderInfo = true;
                 }
             }
-            
+
             $this->set('isCommunityEdition', $isCommunityEdition);
             $this->set('hasSubscription', $hasSubscription);
             $this->set('exportRunningHeaderInfo', $exportRunningHeaderInfo);
-
-            $this->viewBuilder()->setOption('serialize', ['isCommunityEdition', 'hasSubscription', 'exportRunningHeaderInfo']);
+            $this->set('newVersionAvailable', $newVersionAvailable);
+            $this->viewBuilder()->setOption('serialize', ['isCommunityEdition', 'hasSubscription', 'exportRunningHeaderInfo', 'newVersionAvailable']);
         }
 
     }
