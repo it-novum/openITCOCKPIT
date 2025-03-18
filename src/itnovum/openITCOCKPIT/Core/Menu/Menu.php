@@ -860,7 +860,9 @@ class Menu {
                     '',
                     ['fas', 'book'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/documentations/wiki'
                 ))
                 ->addLink(new MenuLink(
                     __('Wizard assignments'),
