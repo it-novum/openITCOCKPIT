@@ -943,4 +943,31 @@ class ChangelogsTable extends Table {
         $dataUnserialized = Hash::insert($dataUnserialized, '{n}.{s}.data.{n}[password=1].value', '🤫');
         return $dataUnserialized;
     }
+
+    /**
+     * @param string $action
+     * @return string[]
+     */
+    public function getFaIconByAction(string $action) {
+        switch ($action) {
+            case 'add':
+                return ['fas', 'plus'];
+            case 'delete':
+                return ['fas', 'trash'];
+            case 'activate':
+                return ['fas', 'asterisk'];
+            case 'deactivate':
+                return ['fas', 'plug'];
+            case 'copy':
+                return ['fas', 'copy'];
+            case 'export':
+            case 'synchronization':
+                return ['fas', 'retweet'];
+            case 'import':
+                return ['fas', 'file-import'];
+            default:
+                return ['fas', 'edit'];
+        }
+    }
+
 }

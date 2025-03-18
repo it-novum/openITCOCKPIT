@@ -141,6 +141,7 @@ class User {
 
     /**
      * @return string|null
+     * @deprecated Moved into Angular Frontend
      */
     public function getUserAvatar() {
 

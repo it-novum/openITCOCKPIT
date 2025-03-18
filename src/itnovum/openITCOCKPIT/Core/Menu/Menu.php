@@ -59,9 +59,11 @@ class Menu {
                 'dashboards',
                 'index',
                 '',
-                'fas fa-tachometer-alt',
+                ['fas', 'gauge-high'],
                 ['dashboard'],
-                1
+                1,
+                true,
+                '/dashboards/index'
             ))
             ->addLink(new MenuLink(
                 __('Browser'),
@@ -69,16 +71,18 @@ class Menu {
                 'browsers',
                 'index',
                 '',
-                'fa fa-list',
+                ['fas', 'list'],
                 ['browser'],
-                3
+                3,
+                true,
+                '/browsers/index'
             ))
             ->addCategory(
                 (new MenuCategory(
                     'maps_category',
                     __('Maps'),
                     3,
-                    'fa fa-map-marker'
+                    ['fas', 'location-dot']
                 ))
                     ->addLink(new MenuLink(
                         __('Status Map'),
@@ -86,9 +90,11 @@ class Menu {
                         'statusmaps',
                         'index',
                         '',
-                        'fa fa-globe',
+                        ['fas', 'globe-europe'],
                         ['statusmap', 'status', 'map'],
-                        1
+                        1,
+                        true,
+                        '/statusmaps/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Auto Map'),
@@ -96,9 +102,11 @@ class Menu {
                         'automaps',
                         'index',
                         '',
-                        'fa-solid fa-wand-magic-sparkles',
+                        ['fas', 'wand-magic-sparkles'],
                         ['automaps', 'auto', 'map'],
-                        2
+                        2,
+                        true,
+                        '/automaps/index'
                     ))
             )
             ->addCategory(
@@ -106,7 +114,7 @@ class Menu {
                     'reports_category',
                     __('Reports'),
                     4,
-                    'fa fa-file-invoice'
+                    ['fas', 'file-invoice']
                 ))
                     ->addLink(new MenuLink(
                         __('Instant reports'),
@@ -114,9 +122,11 @@ class Menu {
                         'instantreports',
                         'index',
                         '',
-                        'fa fa-file-invoice',
+                        ['fas', 'file-invoice'],
                         ['instantreports'],
-                        1
+                        1,
+                        true,
+                        '/instantreports/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Downtime reports'),
@@ -124,9 +134,11 @@ class Menu {
                         'downtimereports',
                         'index',
                         '',
-                        'fa fa-file-invoice',
+                        ['fas', 'file-invoice'],
                         [],
-                        2
+                        2,
+                        true,
+                        '/downtimereports/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Current State reports'),
@@ -134,9 +146,11 @@ class Menu {
                         'currentstatereports',
                         'index',
                         '',
-                        'fa fa-file-invoice',
+                        ['fas', 'file-invoice'],
                         [],
-                        3
+                        3,
+                        true,
+                        '/currentstatereports/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Status pages'),
@@ -144,9 +158,11 @@ class Menu {
                         'statuspages',
                         'index',
                         '',
-                        'fas fa-info-circle',
+                        ['fas', 'info-circle'],
                         [],
-                        3
+                        3,
+                        true,
+                        '/statuspages/index'
                     ))
             )
             ->addCategory(
@@ -154,7 +170,7 @@ class Menu {
                     'logs_category',
                     __('Logs'),
                     5,
-                    'fa fa-file-text '
+                    ['fas', 'file-lines']
                 ))
                     ->addLink(new MenuLink(
                         __('Notifications'),
@@ -162,9 +178,11 @@ class Menu {
                         'notifications',
                         'index',
                         '',
-                        'fa fa-envelope',
+                        ['fas', 'envelope'],
                         [],
-                        1
+                        1,
+                        true,
+                        '/notifications/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Log entries'),
@@ -172,9 +190,11 @@ class Menu {
                         'logentries',
                         'index',
                         '',
-                        'fa fa-file-text',
+                        ['fas', 'file-lines'],
                         [],
-                        2
+                        2,
+                        true,
+                        '/logentries/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Change Log'),
@@ -182,9 +202,11 @@ class Menu {
                         'changelogs',
                         'index',
                         '',
-                        'fa fa-code-fork',
+                        ['fas', 'code-fork'],
                         [],
-                        3
+                        3,
+                        true,
+                        '/changelogs/index'
                     ))
                     ->addLink(new MenuLink(
                         __('Event Log'),
@@ -192,9 +214,11 @@ class Menu {
                         'eventlogs',
                         'index',
                         '',
-                        'fa fa-file-text',
+                        ['fas', 'file-text'],
                         [],
-                        4
+                        4,
+                        true,
+                        '/eventlogs/index'
                     ))
             );
 
@@ -206,9 +230,11 @@ class Menu {
                 'hosts',
                 'index',
                 '',
-                'fa fa-desktop',
+                ['fas', 'desktop'],
                 ['hosts'],
-                1
+                1,
+                true,
+                '/hosts/index'
             ))
             ->addLink(new MenuLink(
                 __('Services'),
@@ -216,9 +242,11 @@ class Menu {
                 'services',
                 'index',
                 '',
-                'fa fa-cogs',
+                ['fas', 'gears'],
                 ['hosts'],
-                2
+                2,
+                true,
+                '/services/index'
             ))
             ->addLink(new MenuLink(
                 __('Wizard'),
@@ -226,15 +254,17 @@ class Menu {
                 'wizards',
                 'index',
                 '',
-                'fa-solid fa-wand-magic-sparkles',
+                ['fas', 'wand-magic-sparkles'],
                 [],
-                3
+                3,
+                true,
+                '/wizards/index'
             ))
             ->addCategory((new MenuCategory(
                 'objects_category',
                 __('Objects'),
                 3,
-                'fa fa-cubes'
+                ['fas', 'cubes']
             ))
                 ->addLink(new MenuLink(
                     __('Contacts'),
@@ -242,9 +272,11 @@ class Menu {
                     'contacts',
                     'index',
                     '',
-                    'fa fa-user',
+                    ['fas', 'user'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/contacts/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Commands'),
@@ -252,9 +284,11 @@ class Menu {
                     'commands',
                     'index',
                     '',
-                    'fa fa-terminal',
+                    ['fas', 'terminal'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/commands/index'
                 ))
                 ->addLink(new MenuLink(
                     __('User Defined Macros'),
@@ -262,9 +296,11 @@ class Menu {
                     'macros',
                     'index',
                     '',
-                    'fa fa-usd',
+                    ['fas', 'dollar-sign'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/macros/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Time Periods'),
@@ -272,9 +308,11 @@ class Menu {
                     'timeperiods',
                     'index',
                     '',
-                    'fa fa-clock-o',
+                    ['fas', 'clock'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/timeperiods/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Calendar'),
@@ -282,9 +320,11 @@ class Menu {
                     'calendars',
                     'index',
                     '',
-                    'fa fa-calendar',
+                    ['fas', 'calendar'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/calendars/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Host Escalations'),
@@ -292,9 +332,11 @@ class Menu {
                     'hostescalations',
                     'index',
                     '',
-                    'fa fa-bomb',
+                    ['fas', 'bomb'],
                     [],
-                    6
+                    6,
+                    true,
+                    '/hostescalations/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Escalations'),
@@ -302,9 +344,11 @@ class Menu {
                     'serviceescalations',
                     'index',
                     '',
-                    'fa fa-bomb',
+                    ['fas', 'bomb'],
                     [],
-                    7
+                    7,
+                    true,
+                    '/serviceescalations/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Host Dependencies'),
@@ -312,9 +356,11 @@ class Menu {
                     'hostdependencies',
                     'index',
                     '',
-                    'fa fa-sitemap',
+                    ['fas', 'sitemap'],
                     [],
-                    8
+                    8,
+                    true,
+                    '/hostdependencies/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Dependencies'),
@@ -322,16 +368,18 @@ class Menu {
                     'servicedependencies',
                     'index',
                     '',
-                    'fa fa-sitemap',
+                    ['fas', 'sitemap'],
                     [],
-                    9
+                    9,
+                    true,
+                    '/servicedependencies/index'
                 ))
             )
             ->addCategory((new MenuCategory(
                 'groups_category',
                 __('Groups'),
                 4,
-                'fa fa-object-group'
+                ['fas', 'object-group']
             ))
                 ->addLink(new MenuLink(
                     __('Host Groups'),
@@ -339,9 +387,11 @@ class Menu {
                     'hostgroups',
                     'index',
                     '',
-                    'fas fa-server',
+                    ['fas', 'server'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/hostgroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Groups'),
@@ -349,9 +399,11 @@ class Menu {
                     'servicegroups',
                     'index',
                     '',
-                    'fa fa-cogs',
+                    ['fas', 'gears'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/servicegroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Contact Groups'),
@@ -359,9 +411,11 @@ class Menu {
                     'contactgroups',
                     'index',
                     '',
-                    'fa fa-users',
+                    ['fas', 'users'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/contactgroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Template Grps.'),
@@ -369,16 +423,18 @@ class Menu {
                     'servicetemplategroups',
                     'index',
                     '',
-                    'fa-solid fa-pen-to-square',
+                    ['fas', 'pen-to-square'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/servicetemplategroups/index'
                 ))
             )
             ->addCategory((new MenuCategory(
                 'downtimes_category',
                 __('Downtimes'),
                 5,
-                'fa fa-power-off'
+                ['fas', 'power-off']
             ))
                 ->addLink(new MenuLink(
                     __('Host Downtimes'),
@@ -386,9 +442,11 @@ class Menu {
                     'downtimes',
                     'host',
                     '',
-                    'fa fa-power-off',
+                    ['fas', 'power-off'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/downtimes/host'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Downtimes'),
@@ -396,9 +454,11 @@ class Menu {
                     'downtimes',
                     'service',
                     '',
-                    'fa fa-power-off',
+                    ['fas', 'power-off'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/downtimes/service'
                 ))
                 ->addLink(new MenuLink(
                     __('Recurring Host Downtimes'),
@@ -406,9 +466,11 @@ class Menu {
                     'systemdowntimes',
                     'host',
                     '',
-                    'fa fa-history fa-flip-horizontal',
+                    ['fas', 'repeat'], // todo fa-flip-horizontal
                     [],
-                    3
+                    3,
+                    true,
+                    '/systemdowntimes/host'
                 ))
                 ->addLink(new MenuLink(
                     __('Recurring Service Downtimes'),
@@ -416,9 +478,11 @@ class Menu {
                     'systemdowntimes',
                     'service',
                     '',
-                    'fa fa-history fa-flip-horizontal',
+                    ['fas', 'repeat'], // todo fa-flip-horizontal
                     [],
-                    4
+                    4,
+                    true,
+                    '/systemdowntimes/service'
                 ))
                 ->addLink(new MenuLink(
                     __('System Failures'),
@@ -426,16 +490,20 @@ class Menu {
                     'systemfailures',
                     'index',
                     '',
-                    'fa fa-exclamation-circle',
+                    ['fas', 'exclamation-circle'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/systemfailures/index'
                 ))
             )
             ->addCategory((new MenuCategory(
                 'templates_category',
                 __('Templates'),
                 6,
-                'fa-solid fa-pen-to-square'
+
+                ['fas', 'pen-to-square']
+
             ))
                 ->addLink(new MenuLink(
                     __('Host Templates'),
@@ -443,9 +511,11 @@ class Menu {
                     'hosttemplates',
                     'index',
                     '',
-                    'fa-solid fa-pen-to-square',
+                    ['fas', 'pen-to-square'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/hosttemplates/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Service Templates'),
@@ -453,9 +523,11 @@ class Menu {
                     'servicetemplates',
                     'index',
                     '',
-                    'fa-solid fa-pen-to-square',
+                    ['fas', 'pen-to-square'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/servicetemplates/index'
                 ))
             );
 
@@ -465,7 +537,7 @@ class Menu {
                 'user_mgmt_category',
                 __('User management'),
                 1,
-                'fa fa-users'
+                ['fas', 'users']
             ))
                 ->addLink(new MenuLink(
                     __('Manage Users'),
@@ -473,9 +545,11 @@ class Menu {
                     'users',
                     'index',
                     '',
-                    'fa fa-user',
+                    ['fas', 'user'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/users/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Manage User Roles'),
@@ -483,9 +557,11 @@ class Menu {
                     'usergroups',
                     'index',
                     '',
-                    'fa fa-users',
+                    ['fas', 'users'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/usergroups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('User Container Roles'),
@@ -493,9 +569,11 @@ class Menu {
                     'usercontainerroles',
                     'index',
                     '',
-                    'fa fa-users',
+                    ['fas', 'users'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/usercontainerroles/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Message of the day'),
@@ -503,9 +581,11 @@ class Menu {
                     'messagesOtd',
                     'index',
                     '',
-                    'fas fa-bullhorn',
+                    ['fas', 'bullhorn'],
                     [__('message'), __('news'), __('information')],
-                    4
+                    4,
+                    true,
+                    '/messagesOtd/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Dashboard Allocation'),
@@ -513,16 +593,18 @@ class Menu {
                     'DashboardAllocations',
                     'index',
                     '',
-                    'fa fa-table',
+                    ['fas', 'table'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/DashboardAllocations/index'
                 ))
             )
             ->addCategory((new MenuCategory(
                 'container_mgmt_category',
                 __('Container management'),
                 2,
-                'fa fa-link'
+                ['fas', 'link']
             ))
                 ->addLink(new MenuLink(
                     __('Tenants'),
@@ -530,9 +612,11 @@ class Menu {
                     'tenants',
                     'index',
                     '',
-                    'fa fa-home',
+                    ['fas', 'home'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/tenants/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Containers'),
@@ -540,9 +624,11 @@ class Menu {
                     'containers',
                     'index',
                     '',
-                    'fa fa-link',
+                    ['fas', 'link'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/containers/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Locations'),
@@ -550,16 +636,18 @@ class Menu {
                     'locations',
                     'index',
                     '',
-                    'fa fa-location-arrow',
+                    ['fas', 'location-arrow'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/locations/index'
                 ))
             )
             ->addCategory((new MenuCategory(
                 'system_tools_category',
                 __('System tools'),
                 3,
-                'fa fa-link'
+                ['fas', 'link']
             ))
                 ->addLink(new MenuLink(
                     __('Cron Jobs'),
@@ -567,9 +655,11 @@ class Menu {
                     'cronjobs',
                     'index',
                     '',
-                    'fa fa-clock-o',
+                    ['far', 'clock'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/cronjobs/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Package Manager'),
@@ -577,9 +667,11 @@ class Menu {
                     'packetmanager',
                     'index',
                     '',
-                    'fa fa-cloud-download-alt',
+                    ['fas', 'cloud-arrow-down'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/packetmanager/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Debugging'),
@@ -587,9 +679,11 @@ class Menu {
                     'Administrators',
                     'debug',
                     '',
-                    'fa fa-bug',
+                    ['fas', 'bug'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/administrators/debug'
                 ))
                 ->addLink(new MenuLink(
                     __('Performance Info'),
@@ -597,9 +691,11 @@ class Menu {
                     'nagiostats',
                     'index',
                     '',
-                    'fa fa-fighter-jet',
+                    ['fas', 'jet-fighter'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/nagiostats/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Backup / Restore'),
@@ -607,9 +703,11 @@ class Menu {
                     'backups',
                     'index',
                     '',
-                    'fa fa-database',
+                    ['fas', 'database'],
                     [],
-                    5
+                    5,
+                    true,
+                    '/backups/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Anonymous statistics'),
@@ -617,26 +715,30 @@ class Menu {
                     'statistics',
                     'index',
                     '',
-                    'fa fa-line-chart',
+                    ['fas', 'chart-line'],
                     [],
-                    7
+                    7,
+                    true,
+                    '/statistics/index'
                 ))
                 ->addLink(new MenuLink(
-                    __('System health notification list'),
+                    __('System health notifications'),
                     'SystemHealthUsersIndex',
                     'systemHealthUsers',
                     'index',
                     '',
-                    'fa fa-user',
+                    ['fas', 'user'],
                     [],
-                    8
+                    8,
+                    true,
+                    '/systemHealthUsers/index'
                 ))
             )
             ->addCategory((new MenuCategory(
                 'agent_category',
                 __('openITCOCKPIT Agent'),
                 4,
-                'fa fa-user-secret'
+                ['fas', 'user-secret']
             ))
                 ->addLink(new MenuLink(
                     __('Agent Wizard'),
@@ -644,9 +746,11 @@ class Menu {
                     'agentconnector',
                     'wizard',
                     '',
-                    'fa-solid fa-wand-magic-sparkles',
+                    ['fas', 'wand-magic-sparkles'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/agentconnector/wizard'
                 ))
                 ->addLink(new MenuLink(
                     __('Agents Overview'),
@@ -654,9 +758,11 @@ class Menu {
                     'agentconnector',
                     'overview',
                     '',
-                    'fa fa-user-secret',
+                    ['fas', 'user-secret'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/agentconnector/pull'
                 ))
                 ->addLink(new MenuLink(
                     __('Agent Checks'),
@@ -664,9 +770,11 @@ class Menu {
                     'agentchecks',
                     'index',
                     '',
-                    'fa fa-cogs',
+                    ['fas', 'gears'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/agentchecks/index'
                 ))
             );
 
@@ -676,13 +784,13 @@ class Menu {
                 'api_settings',
                 __('APIs'),
                 1,
-                'fa fa-code'
+                ['fas', 'code']
             ))
             ->addCategory((new MenuCategory(
                 'settings_category',
                 __('System'),
                 3,
-                'fa fa-cogs'
+                ['fas', 'gears']
             ))
                 ->addLink(new MenuLink(
                     __('System Settings'),
@@ -690,9 +798,11 @@ class Menu {
                     'systemsettings',
                     'index',
                     '',
-                    'fa fa-wrench',
+                    ['fas', 'wrench'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/systemsettings/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Config file editor'),
@@ -700,9 +810,11 @@ class Menu {
                     'ConfigurationFiles',
                     'index',
                     '',
-                    'fa fa-file-text',
+                    ['fas', 'file-waveform'],
                     [],
-                    1
+                    1,
+                    true,
+                    '/ConfigurationFiles/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Proxy Settings'),
@@ -710,9 +822,11 @@ class Menu {
                     'proxy',
                     'index',
                     '',
-                    'fas fa-globe',
+                    ['fas', 'globe'],
                     [],
-                    2
+                    2,
+                    true,
+                    '/proxy/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Registration'),
@@ -720,9 +834,11 @@ class Menu {
                     'registers',
                     'index',
                     '',
-                    'fa fa-check-square',
+                    ['fas', 'square-check'],
                     [],
-                    3
+                    3,
+                    true,
+                    '/registers/index'
                 ))
                 ->addLink(new MenuLink(
                     __('Support'),
@@ -730,9 +846,11 @@ class Menu {
                     'supports',
                     'issue',
                     '',
-                    'fa fa-life-ring',
+                    ['fas', 'life-ring'],
                     [],
-                    4
+                    4,
+                    true,
+                    '/supports/issue'
                 ))
                 ->addLink(new MenuLink(
                     __('Documentation'),
@@ -740,7 +858,7 @@ class Menu {
                     'documentations',
                     'wiki',
                     '',
-                    'fa fa-book',
+                    ['fas', 'book'],
                     [],
                     5
                 ))
@@ -750,9 +868,11 @@ class Menu {
                     'wizards',
                     'assignments',
                     '',
-                    'fa-solid fa-wand-magic-sparkles',
+                    ['fas', 'wand-magic-sparkles'],
                     [],
-                    6
+                    6,
+                    true,
+                    '/wizards/assignments'
                 ))
                 ->addLink(new MenuLink(
                     __('Prometheus Metrics'),
@@ -760,9 +880,11 @@ class Menu {
                     'metrics',
                     'index',
                     '',
-                    'fa-solid fa-heart-pulse',
+                    ['fas', 'heart-pulse'],
                     [],
-                    7
+                    7,
+                    true,
+                    '/metrics/info'
                 ))
             );
 

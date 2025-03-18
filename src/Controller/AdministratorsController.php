@@ -1,27 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 // 2.
-//	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//	License agreement and license key will be shipped with the order
-//	confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 declare(strict_types=1);
 
@@ -63,6 +62,8 @@ class AdministratorsController extends AppController {
             return;
         }
 
+        $isoTimestamp = (bool)$this->request->getQuery('isoTimestamp', 0);
+
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
         $systemsetting = $SystemsettingsTable->findAsArray();
@@ -103,7 +104,10 @@ class AdministratorsController extends AppController {
         $gearmanReachable = $GearmanClient->ping();
 
         $isGearmanWorkerRunning = false;
-        exec('ps -eaf |grep gearman_worker |grep -v \'grep\'', $output);
+        // replacement of ps -eaf because it takes ps too long to display the username in an LDAP based setup
+        // https://www.ibm.com/support/pages/apar/IJ08995
+        // we have no need for the username, so we can use the faster ps -eo command
+        exec('ps -eo command |grep gearman_worker |grep -v \'mod_gearman_worker\' |grep -v \'grep\'', $output);
         if (sizeof($output) > 0) {
             $isGearmanWorkerRunning = true;
         }
@@ -169,7 +173,12 @@ class AdministratorsController extends AppController {
             'php_memory_limit'       => str_replace('M', '', get_cfg_var('memory_limit')) . 'MB',
             'php_max_execution_time' => ini_get('max_execution_time'),
             'php_extensions'         => get_loaded_extensions(),
-            'containerized'          => (IS_CONTAINER) ? __('Yes') : __('No')
+            'containerized'          => (IS_CONTAINER) ? __('Yes') : __('No'),
+            'isContainer'            => IS_CONTAINER,
+            'LsbRelease'             => $LsbRelease->getCodename(),
+            'isDebianBased'          => $LsbRelease->isDebianBased(),
+            'isRhelBased'            => $LsbRelease->isRhelBased(),
+
         ];
 
         //Collect CPU load history
@@ -190,9 +199,19 @@ class AdministratorsController extends AppController {
                 $renderGraph = true;
                 foreach ($load as $line) {
                     $line = explode(' ', $line);
-                    $cpuLoadHistoryInformation[1][($line[0] * 1000)] = $line[1];
-                    $cpuLoadHistoryInformation[5][($line[0] * 1000)] = $line[2];
-                    $cpuLoadHistoryInformation[15][($line[0] * 1000)] = $line[3];
+
+                    if ($isoTimestamp) {
+                        // V5 iso timestamps for eCharts + float values
+                        $timestamp = intval($line[0]);
+                        $cpuLoadHistoryInformation[1][date('c', $timestamp)] = floatval($line[1]);
+                        $cpuLoadHistoryInformation[5][date('c', $timestamp)] = floatval($line[2]);
+                        $cpuLoadHistoryInformation[15][date('c', $timestamp)] = floatval($line[3]);
+                    } else {
+                        // V4 legacy jsTimestamps and string values
+                        $cpuLoadHistoryInformation[1][($line[0] * 1000)] = $line[1];
+                        $cpuLoadHistoryInformation[5][($line[0] * 1000)] = $line[2];
+                        $cpuLoadHistoryInformation[15][($line[0] * 1000)] = $line[3];
+                    }
                 }
             }
         }
@@ -250,6 +269,7 @@ class AdministratorsController extends AppController {
         else if (strstr($agent, "NT 6.2")) $os = "Windows 8";
         else if (strstr($agent, "NT 6.3")) $os = "Windows 8.1";
         else if (strstr($agent, "NT 6.4")) $os = "Windows 10";
+        else if (strstr($agent, "NT 10.0")) $os = "Windows 11";
         else if (strstr($agent, "Win")) $os = "Windows";
         //Firefox
         else if (strstr($agent, "Mac OS X 10.5")) $os = "Mac OS X - Leopard";
@@ -318,6 +338,9 @@ class AdministratorsController extends AppController {
         }
 
 
+        $Logo = new Logo();
+        $this->set('logoHtmlPath', $Logo->getLogoForHtml());
+
         $this->set('interfaceInformation', $interfaceInformation);
         $this->set('processInformation', $processInformation);
         $this->set('renderGraph', $renderGraph);
@@ -341,7 +364,8 @@ class AdministratorsController extends AppController {
             'diskUsage',
             'gearmanStatus',
             'emailInformation',
-            'userInformation'
+            'userInformation',
+            'logoHtmlPath'
         ]);
     }
 
@@ -390,6 +414,15 @@ class AdministratorsController extends AppController {
     }
 
     public function querylog() {
+        //Only ship HTML template
+    }
+
+    /**
+     * USED BY THE NEW ANGULAR FRONTEND !!
+     * @return void
+     */
+    public function php_info() {
+        $this->layout = 'blank';
         //Only ship HTML template
     }
 }

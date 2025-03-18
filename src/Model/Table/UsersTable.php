@@ -1298,6 +1298,10 @@ class UsersTable extends Table {
             $newImageFull = $path . $newImage;
 
             $imgsize = getimagesize($tmpImageFull);
+            if (!isset($imgsize[0])) {
+                // Not an image at all?
+                return false;
+            }
             $width = $imgsize[0];
             $height = $imgsize[1];
             $imgtype = $imgsize[2];
@@ -1486,19 +1490,19 @@ class UsersTable extends Table {
         $types = [
             'LOCAL_USER' => [
                 'title' => __('Local user'),
-                'color' => 'text-generic',
+                'color' => 'info',
                 'class' => 'border-generic'
             ],
 
             'LDAP_USER' => [
                 'title' => __('LDAP user'),
-                'color' => 'text-prometheus',
+                'color' => 'warning',
                 'class' => 'border-prometheus'
             ],
 
             'OAUTH_USER' => [
                 'title' => __('OAuth user'),
-                'color' => 'text-evc',
+                'color' => 'primary',
                 'class' => 'border-evc'
             ]
 

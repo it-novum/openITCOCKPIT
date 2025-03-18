@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -262,6 +267,8 @@ class DowntimesController extends AppController {
 
         $start = strtotime($start);
         $end = strtotime($end);
+        $js_start = $start - $offset;
+        $js_end = $end - $offset;
 
         $start = date('d.m.Y H:i', $start - $offset);
         $end = date('d.m.Y H:i', $end - $offset);
@@ -270,7 +277,10 @@ class DowntimesController extends AppController {
         $this->set('error', $error);
         $this->set('start', $start);
         $this->set('end', $end);
-        $this->viewBuilder()->setOption('serialize', ['error', 'success', 'start', 'end']);
+        $this->set('js_start', $js_start);
+        $this->set('js_end', $js_end);
+
+        $this->viewBuilder()->setOption('serialize', ['error', 'success', 'start', 'end', 'js_start', 'js_end']);
     }
 
     /**
@@ -299,11 +309,7 @@ class DowntimesController extends AppController {
 
         switch ($this->request->getData('type')) {
             case 'host':
-                $includeServices = true;
-                if (!empty($this->request->getData('includeServices'))) {
-                    $includeServices = (bool)$this->request->getData('includeServices');
-                }
-
+                $includeServices = $this->request->getData('includeServices', false);
                 //Find current downtime
                 $downtime = $DowntimeHostsTable->getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId);
                 if (empty($downtime)) {

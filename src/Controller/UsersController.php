@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\PluginManager;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\User;
 use App\Model\Table\ChangelogsTable;
@@ -187,8 +188,14 @@ class UsersController extends AppController {
                 }
             }
 
+            // Add URL for (custom) logo
+            $Logo = new Logo();
+            $this->set('logoUrl', $Logo->getLoginLogoHtml());
+            $this->set('isCustomLoginBackground', $Logo->isCustomLoginBackground());
+            $this->set('customLoginBackgroundHtml', $Logo->getCustomLoginBackgroundHtml());
+
             $this->set('errorMessages', $errorMessages);
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation']);
             return;
         }
 
@@ -223,7 +230,8 @@ class UsersController extends AppController {
 
             $this->set('success', false);
             $this->set('errors', $errors);
-            $this->viewBuilder()->setOption('serialize', ['success', 'errors']);
+            $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
+            $this->viewBuilder()->setOption('serialize', ['success', 'errors', '_csrfToken']);
         }
     }
 
@@ -331,9 +339,10 @@ class UsersController extends AppController {
             $all_users[] = $user;
         }
 
+        $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
         $this->set('all_users', $all_users);
         $this->set('myUserId', $User->getId());
-        $this->viewBuilder()->setOption('serialize', ['all_users', 'myUserId']);
+        $this->viewBuilder()->setOption('serialize', ['all_users', 'myUserId', 'isLdapAuth']);
     }
 
     public function add() {
@@ -981,9 +990,14 @@ class UsersController extends AppController {
         $dateformats = Api::makeItJavaScriptAble($options);
         $defaultDateFormat = 'H:i:s - d.m.Y'; // key 10
 
+        $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
+
         $this->set('dateformats', $dateformats);
         $this->set('defaultDateFormat', $defaultDateFormat);
-        $this->viewBuilder()->setOption('serialize', ['dateformats', 'defaultDateFormat']);
+        $this->set('timezones', $timezones);
+        $this->set('serverTimeZone', date_default_timezone_get());
+        $this->set('serverTime', date('d.m.Y H:i:s'));
+        $this->viewBuilder()->setOption('serialize', ['dateformats', 'defaultDateFormat', 'timezones', 'serverTime', 'serverTimeZone']);
     }
 
     public function loadContainerRoles() {
@@ -1189,7 +1203,12 @@ class UsersController extends AppController {
             //Only ship HTML template
             return;
         }
+
+        $modules = PluginManager::getAvailablePlugins();
+
+
         $this->set('permissions', $this->PERMISSIONS);
-        $this->viewBuilder()->setOption('serialize', ['permissions']);
+        $this->set('modules', $modules);
+        $this->viewBuilder()->setOption('serialize', ['permissions', 'modules']);
     }
 }

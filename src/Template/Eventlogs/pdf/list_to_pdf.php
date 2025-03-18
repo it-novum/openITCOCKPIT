@@ -92,7 +92,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
         <?php foreach ($all_events as $event): ?>
             <tr>
                 <td>
-                    <i class="<?= h($typeIconClasses[$event['type']]); ?>"
+                    <i class="<?= h($typeIconClasses[$event['type']]['iconPdf']); ?> <?= h($typeIconClasses[$event['type']]['className']); ?>"
                        title="<?= h($typeTranslations[$event['type']]); ?>">
                 </td>
                 <td>

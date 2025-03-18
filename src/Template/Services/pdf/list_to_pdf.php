@@ -136,7 +136,7 @@ $UserTime = $User->getUserTime();
                     <?php endif; ?>
                 </td>
                 <!-- name -->
-                <td>
+                <td class="word-break">
                     <?php echo h($service['Service']['servicename']); ?>
                 </td>
                 <!-- Status Since -->

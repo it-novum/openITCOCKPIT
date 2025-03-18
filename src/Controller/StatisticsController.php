@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -43,17 +48,14 @@ use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
 class StatisticsController extends AppController {
 
     public function index() {
-        if (!$this->isAngularJsRequest()) {
-            /** @var HostsTable $HostsTable */
-            $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
-            /** @var ServicesTable $ServicesTable */
-            $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-            $StatisticsCollector = new StatisticsCollector($HostsTable, $ServicesTable);
-            $statisticsAsJson = json_encode($StatisticsCollector->getData(), JSON_PRETTY_PRINT);
-            $this->set('statisticsAsJson', $statisticsAsJson);
-            return;
-        }
+        $StatisticsCollector = new StatisticsCollector($HostsTable, $ServicesTable);
+        $statisticsAsJson = json_encode($StatisticsCollector->getData(), JSON_PRETTY_PRINT);
+        $this->set('statisticsAsJson', $statisticsAsJson);
 
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
@@ -61,7 +63,9 @@ class StatisticsController extends AppController {
         $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
 
         $this->set('settings', $record);
-        $this->viewBuilder()->setOption('serialize', ['settings']);
+        $this->set('statistics', $StatisticsCollector->getData());
+        $this->set('IS_CONTAINER', IS_CONTAINER);
+        $this->viewBuilder()->setOption('serialize', ['settings', 'statistics', 'IS_CONTAINER']);
     }
 
     public function ask_anonymous_statistics() {
