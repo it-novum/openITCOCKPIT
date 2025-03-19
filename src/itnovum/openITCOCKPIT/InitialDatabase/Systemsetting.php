@@ -1,26 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\InitialDatabase;
 
@@ -861,7 +861,7 @@ class Systemsetting extends Importer {
                 'created'  => '2023-03-16 13:45:00',
                 'modified' => '2023-03-16 13:45:00'
             ],
-            (int)101  => [
+            (int)101 => [
                 'key'      => 'INIT.EVENT_COLLECTD_RESTART',
                 'value'    => 'systemctl restart event-collectd',
                 'info'     => 'Command to restart the Event-Collectd daemon of openITCOCKPIT',
@@ -869,7 +869,7 @@ class Systemsetting extends Importer {
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
             ],
-            (int)102  => [
+            (int)102 => [
                 'key'      => 'INIT.EVENT_COLLECTD_RELOAD',
                 'value'    => 'systemctl reload event-collectd',
                 'info'     => 'Command to reload the the Event-Collectd daemon of openITCOCKPIT',
@@ -877,7 +877,7 @@ class Systemsetting extends Importer {
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
             ],
-            (int)103  => [
+            (int)103 => [
                 'key'      => 'INIT.EVENT_COLLECTD_STATUS',
                 'value'    => 'systemctl status event-collectd',
                 'info'     => 'Command to get the current status of the Event-Collectd daemon of openITCOCKPIT',
@@ -885,13 +885,21 @@ class Systemsetting extends Importer {
                 'created'  => '2020-01-29 09:28:17',
                 'modified' => '2020-01-29 09:28:17'
             ],
-            (int)104  => [
+            (int)104 => [
                 'key'      => 'FRONTEND.LDAP.OPENLDAP_GROUP_SCHEMA',
                 'value'    => 'memberUid',
                 'info'     => 'Specifying Group Memberships by Using the memberUid or uniqueMember (RFC 4519 2.40) attribute for OpenLDAP servers',
                 'section'  => 'FRONTEND',
                 'created'  => '2022-01-06 08:52:17',
                 'modified' => '2022-01-06 08:52:17'
+            ],
+            (int)105 => [
+                'key'      => 'FRONTEND.DISABLE_LOGIN_SOCIAL_BUTTONS',
+                'value'    => '0',
+                'info'     => 'Remove the social links from the login screen.',
+                'section'  => 'FRONTEND',
+                'created'  => '2025-03-19 15:17:17',
+                'modified' => '2025-03-19 15:17:17'
             ],
         ];
 
