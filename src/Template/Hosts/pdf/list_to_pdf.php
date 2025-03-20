@@ -138,13 +138,14 @@ $UserTime = $User->getUserTime();
                     <?php endif; ?>
                 </tr>
             <?php endforeach; ?>
-
-            <?php if (empty($all_hosts)): ?>
-                <div class="w-100 text-center text-danger italic">
-                    <?php echo __('No entries match the selection'); ?>
-                </div>
-            <?php endif; ?>
             </tbody>
         </table>
+
+        <?php if (empty($all_hosts)): ?>
+            <div class="w-100 text-center text-danger italic pt-1">
+                <?php echo __('No entries match the selection'); ?>
+            </div>
+        <?php endif; ?>
+
     </div>
 </body>
