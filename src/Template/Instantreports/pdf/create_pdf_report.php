@@ -115,7 +115,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                                     $reportData[2]
                                 ]);
                                 ?>
-                                <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>" width="300"/>
+                                <img src="<?= WWW_ROOT; ?>img/charts/<?= $overview_chart; ?>" width="200"/>
                             </div>
                             <div class="col-8 pt-1">
                                 <?php
@@ -152,7 +152,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
                                     ) > 0
                                 ):?>
                                     <div class="col-12">
-                                        <div>
+                                        <div class="wrap w-100">
                                             <i class="fas fa-cog"></i>
                                             <?php echo h($serviceData['Service']['name']); ?>
                                         </div>
