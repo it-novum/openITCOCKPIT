@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -80,11 +85,11 @@ $Logo = new Logo();
             <section id="widget-grid" class="">
                 <div class="row">
                     <article
-                            class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable font-md txt-color-blueDark">
+                        class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable font-md txt-color-blueDark">
                         <div class="jarviswidget jarviswidget-sortable" role="widget">
                             <header role="heading">
                                 <h2 class="txt-color-blueDark" style="width:97%"><i
-                                            class="fa fa-desktop txt-color-blueDark"></i> <?php echo h($hostData['Host']['name']); ?>
+                                        class="fa fa-desktop txt-color-blueDark"></i> <?php echo h($hostData['Host']['name']); ?>
                                 </h2>
 
                             </header>
@@ -97,7 +102,8 @@ $Logo = new Logo();
                                             <?php
                                             $overview_chart = $this->PieChart->createPieChart([$hostData[0], $hostData[1], $hostData[2]]);
                                             ?>
-                                            <img src="<?php echo WWW_ROOT; ?>img/charts/<?php echo $overview_chart; ?>"/>
+                                            <img
+                                                src="<?php echo WWW_ROOT; ?>img/charts/<?php echo $overview_chart; ?>"/>
                                         </div>
                                         <div class="col-md-12 text-left font-md">
                                             <?php
@@ -139,7 +145,8 @@ $Logo = new Logo();
                                                     <?php
                                                     $overview_chart = $this->BarChart->createBarChart([$serviceData[0], $serviceData[1], $serviceData[2], $serviceData[3]]);
                                                     ?>
-                                                    <img src="<?php echo WWW_ROOT; ?>img/charts/<?php echo $overview_chart; ?>"/>
+                                                    <img
+                                                        src="<?php echo WWW_ROOT; ?>img/charts/<?php echo $overview_chart; ?>"/>
                                                     <?php
                                                     for ($i = 0; $i <= 3; $i++):?>
                                                         <i class="fa fa-square no-padding <?php echo $this->Status->ServiceStatusTextColor($i); ?> "></i>
@@ -191,7 +198,7 @@ $Logo = new Logo();
         <section id="widget-grid" class="">
             <div class="row">
                 <article
-                        class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable font-md txt-color-blueDark">
+                    class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable font-md txt-color-blueDark">
                     <div class="jarviswidget jarviswidget-sortable" role="widget">
                         <header role="heading">
                             <h2 class="txt-color-blueDark" style="width:97%">
@@ -239,7 +246,7 @@ $Logo = new Logo();
         <section id="widget-grid" class="">
             <div class="row">
                 <article
-                        class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable font-md txt-color-blueDark">
+                    class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable font-md txt-color-blueDark">
                     <div class="jarviswidget jarviswidget-sortable" role="widget">
                         <header role="heading">
                             <h2 class="txt-color-blueDark" style="width:97%">
@@ -295,7 +302,7 @@ $Logo = new Logo();
         <section id="widget-grid" class="">
             <div class="row">
                 <article
-                        class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable font-md txt-color-blueDark">
+                    class="col-xs-12 col-sm-12 col-md-12 col-lg-12 sortable-grid ui-sortable font-md txt-color-blueDark">
                     <div class="jarviswidget jarviswidget-sortable" role="widget">
                         <header role="heading">
                             <h2 class="txt-color-blueDark" style="width:97%">
