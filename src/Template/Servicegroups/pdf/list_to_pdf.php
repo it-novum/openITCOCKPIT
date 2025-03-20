@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -44,66 +49,71 @@ $UserTime = $User->getUserTime();
 
 ?>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <?php
     foreach ($css as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
     <?php endforeach; ?>
-
 </head>
 <body>
-<div class="row">
-    <div class="col-6 padding-left-15 font-lg">
-        <i class="fa fa-cogs" style="font-size: 20px!important;"></i>
-        <?php echo __('Service groups'); ?>
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-6">
+            <h6>
+                <i class="fa-solid fa-cogs"></i>
+                <?php echo __('Service groups Overview'); ?>
+            </h6>
+        </div>
+        <div class="col-6 text-end">
+            <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
+        </div>
     </div>
-    <div class="col-6">
-        <img class="float-right" src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
+
+    <div class="col-12 mb-1">
+        <div>
+            <i class="fa-solid fa-calendar"></i> <?php echo date('F d, Y H:i:s'); ?>
+        </div>
     </div>
-</div>
-<div class="col-12 no-padding">
-    <div class="text-left padding-left-10">
-        <i class="fa fa-calendar txt-color-blueDark"></i> <?php echo date('F d, Y H:i:s'); ?>
+    <div class="col-12 mb-1">
+        <div>
+            <i class="fa-solid fa-list-ol"></i> <?php echo __('Number of Servicegroups: ' . $numberOfServicegroups); ?>
+        </div>
     </div>
-</div>
-<div class="col-12 no-padding">
-    <div class="text-left padding-left-10">
-        <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Servicegroups: ' . $numberOfServicegroups); ?>
+    <div class="col-12 mb-1">
+        <div>
+            <i class="fa-solid fa-list-ol"></i> <?php echo __('Number of Hosts: ' . $numberOfHosts); ?>
+        </div>
     </div>
-</div>
-<div class="col-12 no-padding">
-    <div class="text-left padding-left-10">
-        <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Hosts: ' . $numberOfHosts); ?>
+    <div class="col-12">
+        <div>
+            <i class="fa-solid fa-list-ol"></i> <?php echo __('Number of Services: ' . $numberOfServices); ?>
+        </div>
     </div>
-</div>
-<div class="col-12 no-padding">
-    <div class="text-left padding-left-10">
-        <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Services: ' . $numberOfServices); ?>
-    </div>
-</div>
-<div class="padding-top-10">
-    <table class="table table-striped m-0 table-bordered table-hover table-sm">
-        <thead>
-        <tr>
-            <th><?php echo __('Status'); ?></th>
-            <th class="no-sort text-center width-20"><i class="fa fa-user"></i></th>
-            <th class="no-sort text-center width-20"><i class="fa fa-power-off"></i></th>
-            <th><?php echo __('Service name'); ?></th>
-            <th class="width-90"><?php echo __('Status since'); ?></th>
-            <th class="width-90"><?php echo __('Last check'); ?></th>
-            <th class="width-90"><?php echo __('Next check'); ?></th>
-            <th><?php echo __('Service output'); ?></th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php
-        if (!empty($servicegroups)): ?>
+
+    <div class="padding-top-10">
+        <table class="table table-striped table-bordered table-sm m-0">
+            <thead>
+            <tr>
+                <th><?php echo __('Status'); ?></th>
+                <th class="no-sort text-center width-20"><i class="fa-solid fa-user"></i></th>
+                <th class="no-sort text-center width-20"><i class="fa-solid fa-power-off"></i></th>
+                <th><?php echo __('Service name'); ?></th>
+                <th class="width-90"><?php echo __('Status since'); ?></th>
+                <th class="width-90"><?php echo __('Last check'); ?></th>
+                <th class="width-90"><?php echo __('Next check'); ?></th>
+                <th><?php echo __('Service output'); ?></th>
+            </tr>
+            </thead>
+            <tbody>
             <?php
             foreach ($servicegroups as $servicegroup): ?>
                 <!-- Servicegroup -->
                 <tr>
-                    <td class="bg-color-lightGray" colspan="8">
-                        <i class="fa fa-cogs"></i>
+                    <td class="table-secondary wrap" colspan="8">
+                        <i class="fa-solid fa-cogs"></i>
                         <?php echo __('Service group: '); ?>
                         <?php echo h($servicegroup['Servicegroup']['container']['name']); ?>
                     </td>
@@ -119,14 +129,14 @@ $UserTime = $User->getUserTime();
                             $tmpHostName = $Service->getHostname(); ?>
                             <!-- Host -->
                             <tr>
-                                <td class="bg-color-lightGray" colspan="8">
+                                <td class="table-secondary wrap" colspan="8">
                                     <?php
                                     $Hoststatus = new \itnovum\openITCOCKPIT\Core\Hoststatus($service['Hoststatus']);
                                     if ($Hoststatus->isFlapping()):
                                         echo $Hoststatus->getFlappingIconColored();
                                     else:
                                         $HoststatusIcon = new HoststatusIcon($Hoststatus->currentState());
-                                        echo '<i class="fa fa-square ' . $HoststatusIcon->getTextColor() . '"></i>';
+                                        echo '<i class="fa-solid fa-square ' . $HoststatusIcon->getTextColor() . '"></i>';
                                     endif;
                                     ?>
                                     <span><?php echo h($Service->getHostname()); ?></span>
@@ -142,28 +152,28 @@ $UserTime = $User->getUserTime();
                                     echo $Servicestatus->getFlappingIconColored();
                                 else:
                                     $ServicestatusIcon = new ServicestatusIcon($Servicestatus->currentState());
-                                    echo '<i class="fa fa-square ' . $ServicestatusIcon->getTextColor() . '"></i>';
+                                    echo '<i class="fa-solid fa-square ' . $ServicestatusIcon->getTextColor() . '"></i>';
                                 endif;
                                 ?>
                             </td>
                             <!-- ACK -->
                             <td class="text-center">
                                 <?php if ($Servicestatus->isAcknowledged()): ?>
-                                    <i class="fa fa-user fa-lg"></i>
+                                    <i class="fa-solid fa-user"></i>
                                 <?php endif; ?>
                             </td>
                             <!-- Downtime -->
                             <td class="text-center">
                                 <?php if ($Servicestatus->isInDowntime()): ?>
-                                    <i class="fa fa-power-off fa-lg"></i>
+                                    <i class="fa-solid fa-power-off"></i>
                                 <?php endif; ?>
                             </td>
                             <!-- name -->
-                            <td class="word-break">
+                            <td class="wrap">
                                 <?php echo h($Service->getServicename()); ?>
                             </td>
                             <!-- Status Since -->
-                            <td data-placement="bottom" rel="tooltip" data-container="body">
+                            <td>
                                 <?php echo h($UserTime->format($Servicestatus->getLastStateChange())); ?>
                             </td>
                             <!-- last check -->
@@ -186,14 +196,15 @@ $UserTime = $User->getUserTime();
                 <?php
                 endif;
             endforeach; ?>
-        <?php else: ?>
-            <tr>
-                <td class="text-center" colspan="8"><?php echo __('No entries match the selection'); ?></td>
-            </tr>
-        <?php
-        endif;
-        ?>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+
+        <?php if (empty($servicegroups)): ?>
+            <div class="w-100 text-center text-danger italic pt-1">
+                <?php echo __('No entries match the selection'); ?>
+            </div>
+        <?php endif; ?>
+
+    </div>
 </div>
 </body>
