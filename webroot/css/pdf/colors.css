@@ -150,3 +150,6 @@ openITCOCKPIT v5 Color definition classes for PDF files
     background: #a61f1c;
 }
 
+.txt-color-white {
+    color: #ffffff !important;
+}
