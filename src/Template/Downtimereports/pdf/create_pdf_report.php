@@ -58,7 +58,7 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
     <div class="row">
         <div class="col-6">
             <h6>
-                <i class="fas fa-desktop"></i>
+                <i class="fa-solid fa-power-off"></i>
                 <?php echo __('Downtime Report'); ?>
             </h6>
         </div>
