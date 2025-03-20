@@ -116,6 +116,8 @@ class UsersController extends AppController {
             $images['particles'] = 'none';
         }
 
+        $disableSocialButtons = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.DISABLE_LOGIN_SOCIAL_BUTTONS')->get('value') === '1';
+
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
@@ -174,6 +176,7 @@ class UsersController extends AppController {
         $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
         $this->set('images', $images);
         $this->set('disableAnimation', $disableAnimation);
+        $this->set('disableSocialButtons', $disableSocialButtons);
         $this->set('hasValidSslCertificate', $hasValidSslCertificate);
         $this->set('isSsoEnabled', $isSsoEnabled);
         $this->set('forceRedirectSsousersToLoginScreen', $forceRedirectSsousersToLoginScreen);
@@ -195,7 +198,7 @@ class UsersController extends AppController {
             $this->set('customLoginBackgroundHtml', $Logo->getCustomLoginBackgroundHtml());
 
             $this->set('errorMessages', $errorMessages);
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation', 'disableSocialButtons']);
             return;
         }
 
