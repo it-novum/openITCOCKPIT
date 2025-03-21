@@ -1,5 +1,26 @@
 <?php
-
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\itnovum\openITCOCKPIT\Core\AngularJS;
 
@@ -11,22 +32,13 @@ class PdfAssets {
      */
     static public function getCssFiles() {
         return [
-            '/node_modules/bootstrap/dist/css/bootstrap.css',
-            '/smartadmin4/dist/css/vendors.bundle.css',
-
-            // Attention !!!
-            // If Font Awesome in the PDF is not working, most likely someone updated the file app.bundle.css
-            // search for "@media print" and remove the font-family line !!
-            // Line 7675 /*font-family: Arial, Helvetica, sans-serif !important;*/ /* This kills Font Awesome in PDF generation! */
-            '/smartadmin4/dist/css/app.bundle.css',
-
-            '/node_modules/font-awesome/css/font-awesome.min.css', // font-awesome 4.x
+            // Load CoreUI CSS
+            '/css/coreui/coreui.css',
             '/node_modules/@fortawesome/fontawesome-free/css/all.min.css',
-            '/css/openitcockpit-colors.css',
-            '/css/openitcockpit-utils.css',
-            '/css/openitcockpit.css',
-            '/css/openitcockpit-pdf.css',
 
+            // Add custom openITCOCKPIT related CSS
+            '/css/pdf/style.css',
+            '/css/pdf/colors.css',
         ];
     }
 
