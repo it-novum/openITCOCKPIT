@@ -92,7 +92,7 @@ echo $this->element('emails/style');
                                     &nbsp;
                                 <?php endif; ?>
                                 <span>
-                                    <a href="<?php printf('https://%s/#!/hosts/browser/%s', $systemAddress, $Host->getUuid()); ?>"
+                                    <a href="<?php printf('https://%s/a/hosts/browser/%s', $systemAddress, $Host->getUuid()); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
                                             <?php echo h($Host->getHostname()); ?>
@@ -112,8 +112,8 @@ echo $this->element('emails/style');
                                                 <?= __('The current status was acknowledged by {0} with the comment: ', h($args->getOption('hostackauthor'))); ?>
                                                 <?php if (!empty($ticketsystemUrl) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $args->getOption('hostackcomment'), $ticketDetails)): ?>
                                                     <a
-                                                        href="<?= $ticketsystemUrl . $ticketDetails[3] ?>"
-                                                        target="_blank">
+                                                            href="<?= $ticketsystemUrl . $ticketDetails[3] ?>"
+                                                            target="_blank">
                                                         <?= h($ticketDetails[1] . ' ' . $ticketDetails[2]) ?>
                                                     </a>
                                                 <?php else: ?>
@@ -150,7 +150,7 @@ echo $this->element('emails/style');
                                 <?php if ($HoststatusIcon->getState() !== 0): ?>
                                     <tr>
                                         <td>
-                                            <a href="<?php printf('https://%s/#!/hosts/browser/%s%s', $systemAddress, $Host->getUuid(), '#acknowledge'); ?>"
+                                            <a href="<?php printf('https://%s/a/hosts/browser/%s%s', $systemAddress, $Host->getUuid(), '#acknowledge'); ?>"
                                                style="text-decoration:none"
                                                class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
                                                 <?php echo __('Acknowledge'); ?>

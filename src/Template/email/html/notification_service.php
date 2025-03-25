@@ -96,13 +96,13 @@ echo $this->element('emails/style');
                                     &nbsp;
                                 <?php endif; ?>
                                 <span>
-                                    <a href="<?php printf('https://%s/#!/services/browser/%s', $systemAddress, $Service->getUuid()); ?>"
+                                    <a href="<?php printf('https://%s/a/services/browser/%s', $systemAddress, $Service->getUuid()); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($ServicestatusIcon->getTextColor()) ?>">
                                             <?php echo h($Service->getServicename()); ?>
                                     </a>
                                     <?= __('on') ?>
-                                    <a href="<?php printf('https://%s/#!/hosts/browser/%s', $systemAddress, $Host->getUuid()); ?>"
+                                    <a href="<?php printf('https://%s/a/hosts/browser/%s', $systemAddress, $Host->getUuid()); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($HoststatusIcon->getTextColor()) ?>">
                                         <?php echo h($Host->getHostname()); ?>
@@ -121,8 +121,8 @@ echo $this->element('emails/style');
                                                 <?= __('The current status was acknowledged by {0} with the comment: ', h($args->getOption('serviceackauthor'))); ?>
                                                 <?php if (!empty($ticketsystemUrl) && preg_match('/^(Ticket)_?(\d+);?(\d+)/', $args->getOption('serviceackcomment'), $ticketDetails)): ?>
                                                     <a
-                                                        href="<?= $ticketsystemUrl . $ticketDetails[3] ?>"
-                                                        target="_blank">
+                                                            href="<?= $ticketsystemUrl . $ticketDetails[3] ?>"
+                                                            target="_blank">
                                                         <?= h($ticketDetails[1] . ' ' . $ticketDetails[2]) ?>
                                                     </a>
                                                 <?php else: ?>
@@ -162,10 +162,10 @@ echo $this->element('emails/style');
                                         <?= h($ServicestatusIcon->getHumanState()); ?>
                                     </td>
                                 </tr>
-                                <?php if($ServicestatusIcon->getState() !== 0): ?>
+                                <?php if ($ServicestatusIcon->getState() !== 0): ?>
                                     <tr>
                                         <td>
-                                            <a href="<?php printf('https://%s/#!/services/browser/%s%s', $systemAddress, $Service->getUuid(), '#acknowledge'); ?>"
+                                            <a href="<?php printf('https://%s/a/services/browser/%s%s', $systemAddress, $Service->getUuid(), '#acknowledge'); ?>"
                                                style="text-decoration:none"
                                                class="<?= strtoupper($ServicestatusIcon->getTextColor()) ?>">
                                                 <?php echo __('Acknowledge'); ?>
