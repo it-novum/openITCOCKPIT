@@ -205,7 +205,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isAcknowledgement()) {
             $title = sprintf(
-                'Acknowledgement for [%s](%s/#!/hosts/browser/%s) (%s)',
+                'Acknowledgement for [%s](%s/a/hosts/browser/%s) (%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -221,7 +221,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isDowntimeStart()) {
             $title = sprintf(
-                'Downtime started for [%s](%s/#!/hosts/browser/%s)',
+                'Downtime started for [%s](%s/a/hosts/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid()
@@ -235,7 +235,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isDowntimeEnd()) {
             $title = sprintf(
-                'Downtime end for [%s](%s/#!/hosts/browser/%s)',
+                'Downtime end for [%s](%s/a/hosts/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid()
@@ -250,7 +250,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isDowntimeCancelled()) {
             $title = sprintf(
-                'Downtime cancelled for [%s](%s/#!/hosts/browser/%s)',
+                'Downtime cancelled for [%s](%s/a/hosts/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid()
@@ -264,7 +264,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isFlappingStart()) {
             $title = sprintf(
-                'Flapping started on [%s](%s/#!/hosts/browser/%s)',
+                'Flapping started on [%s](%s/a/hosts/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid()
@@ -275,7 +275,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isFlappingStop()) {
             $title = sprintf(
-                'Flapping stopped on [%s](%s/#!/hosts/browser/%s)',
+                'Flapping stopped on [%s](%s/a/hosts/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid()
@@ -286,7 +286,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isFlappingDisabled()) {
             $title = sprintf(
-                'Disabled flap detection for [%s](%s/#!/hosts/browser/%s)',
+                'Disabled flap detection for [%s](%s/a/hosts/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid()
@@ -297,7 +297,7 @@ class MattermostNotificationCommand extends Command {
 
         //Default notification
         $title = sprintf(
-            '%s: [%s](%s/#!/hosts/browser/%s) is %s!',
+            '%s: [%s](%s/a/hosts/browser/%s) is %s!',
             $this->notificationtype,
             $Host->getHostname(),
             $this->baseUrl,
@@ -357,7 +357,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isAcknowledgement()) {
             $title = sprintf(
-                'Acknowledgement for service [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s) (%s)',
+                'Acknowledgement for service [%s](%s/a/hosts/browser/%s)/[%s](%s/a/services/browser/%s) (%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -376,7 +376,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isDowntimeStart()) {
             $title = sprintf(
-                'Downtime start for service [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s)',
+                'Downtime start for service [%s](%s/a/hosts/browser/%s)/[%s](%s/a/services/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -394,7 +394,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isDowntimeEnd()) {
             $title = sprintf(
-                'Downtime end for service [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s)',
+                'Downtime end for service [%s](%s/a/hosts/browser/%s)/[%s](%s/a/services/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -412,7 +412,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isDowntimeCancelled()) {
             $title = sprintf(
-                'Downtime cancelled for service [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s)',
+                'Downtime cancelled for service [%s](%s/a/hosts/browser/%s)/[%s](%s/a/services/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -430,7 +430,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isFlappingStart()) {
             $title = sprintf(
-                'Flapping started on [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s)',
+                'Flapping started on [%s](%s/a/hosts/browser/%s)/[%s](%s/a/services/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -444,7 +444,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isFlappingStop()) {
             $title = sprintf(
-                'Flapping stopped on [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s)',
+                'Flapping stopped on [%s](%s/a/hosts/browser/%s)/[%s](%s/a/services/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -458,7 +458,7 @@ class MattermostNotificationCommand extends Command {
 
         if ($this->isFlappingDisabled()) {
             $title = sprintf(
-                'Disabled flap detection for [%s](%s/#!/hosts/browser/%s)/[%s](%s/#!/services/browser/%s)',
+                'Disabled flap detection for [%s](%s/a/hosts/browser/%s)/[%s](%s/a/services/browser/%s)',
                 $Host->getHostname(),
                 $this->baseUrl,
                 $Host->getUuid(),
@@ -472,7 +472,7 @@ class MattermostNotificationCommand extends Command {
 
         //Default notification
         $title = sprintf(
-            '%s: [%s](%s/#!/services/browser/%s) on [%s](%s/#!/hosts/browser/%s) is %s!',
+            '%s: [%s](%s/a/services/browser/%s) on [%s](%s/a/hosts/browser/%s) is %s!',
             $this->notificationtype,
             $Service->getServicename(),
             $this->baseUrl,
