@@ -901,6 +901,14 @@ class Systemsetting extends Importer {
                 'created'  => '2025-03-19 15:17:17',
                 'modified' => '2025-03-19 15:17:17'
             ],
+            (int)106 => [
+                'key'      => 'FRONTEND.ENABLE_COLUMN_LAYOUT_FOR_THE_LOGIN_PAGE',
+                'value'    => '0',
+                'info'     => 'The background image on the login page should not be displayed in full width, but only on the left part of the page.',
+                'section'  => 'FRONTEND',
+                'created'  => '2025-03-26 15:17:17',
+                'modified' => '2025-03-26 15:17:17'
+            ],
         ];
 
         return $data;
