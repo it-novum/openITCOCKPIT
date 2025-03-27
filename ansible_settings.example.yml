@@ -12,6 +12,7 @@
 #  password: abcd1234
 #  timezone: Europe/Berlin
 #  hostname: null
+#  anonymous_statistics: false
 #  mail:
 #    host: 127.0.0.1
 #    port: 25

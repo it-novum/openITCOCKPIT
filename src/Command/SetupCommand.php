@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -34,6 +39,7 @@ use Cake\Console\Arguments;
 use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validation;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -210,6 +216,13 @@ class SetupCommand extends Command {
             'password' => $this->defaultConfig['mail']['password']
         ]);
 
+        // ITC-3460
+        $enabled = false;
+        if ($this->defaultConfig['anonymous_statistics'] === true) {
+            $enabled = true;
+        }
+        $this->setAnonymousStatistics($enabled);
+
         $this->createMysqlPartitions();
 
     }
@@ -231,6 +244,9 @@ class SetupCommand extends Command {
             'username' => $mailConfig['username'],
             'password' => $mailConfig['password']
         ]);
+
+        $enabled = $this->askAnonymousStatistics();
+        $this->setAnonymousStatistics($enabled);
 
         $this->createMysqlPartitions();
 
@@ -496,6 +512,7 @@ class SetupCommand extends Command {
             'password',
             'timezone',
             'hostname',
+            'anonymous_statistics',
             'mail' => [
                 'host',
                 'port',
@@ -601,6 +618,51 @@ class SetupCommand extends Command {
         fwrite($file, $mailConfigurator->getConfig());
         fclose($file);
         $this->io->success(__('Mail configuration "{0}" saved successfully.', CONFIG . 'email.php'));
+    }
+
+    /**
+     * @param bool $enabled
+     * @return \Cake\Datasource\EntityInterface
+     */
+    private function setAnonymousStatistics($enabled = false): void {
+
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        try {
+            $record = $SystemsettingsTable->getSystemsettingByKey('SYSTEM.ANONYMOUS_STATISTICS');
+        } catch (RecordNotFoundException $e) {
+            // System Settings Record is missing for some reason
+            // Ignore for now
+            return;
+        }
+
+        $value = 0; // Off by default
+        if ($enabled === true) {
+            $value = 1;
+        }
+
+        $record->set('value', $value);
+        $SystemsettingsTable->save($record);
+
+        $this->io->success(__('Sending of anonymous statistics is currently {0}. ', ($enabled ? 'enabled' : 'disabled')));
+
+    }
+
+    /**
+     * @return bool
+     */
+    public function askAnonymousStatistics() {
+        $this->io->info(__d('oitc_console', 'We ask for your help to improve openITCOCKPIT'));
+        $this->io->info(__d('oitc_console', 'Learn more at: https://openitcockpit.io/we-ask-for-your-help-to-improve-openitcockpit/'));
+        $result = strtoupper($this->io->askChoice(__d('oitc_console', 'Do you want to enable sending of anonymous statistics?'), ['Y', 'N'], 'N'));
+
+        $enabled = false;
+        if ($result === 'Y') {
+            $enabled = true;
+        }
+
+        return $enabled;
     }
 
 }
