@@ -1054,6 +1054,7 @@ class HostsController extends AppController {
             $ContactgroupCache = new KeyValueStore();
             $ObjectsCacheChangelog = new ObjectsCache();
             foreach ($hostIds as $hostId) {
+                $hasChanges = false;
 
                 $hostArray = $HostsTable->getHostByIdWithDetails($hostId);
                 $hosttemplateId = $hostArray['Host']['hosttemplate_id'];
