@@ -45,7 +45,6 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ParenthostsTable;
 use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
-use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Core\Plugin;
@@ -91,22 +90,6 @@ class DashboardsController extends AppController {
     use LocatorAwareTrait;
 
     public function index() {
-        $askForHelp = false;
-        $askAgainForHelp = $this->request->getCookie('askAgainForHelp');
-        if ($askAgainForHelp === null) {
-
-            /** @var $SystemsettingsTable SystemsettingsTable */
-            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-
-            $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
-            if (!empty($record)) {
-                if ($record['Systemsetting']['value'] === '2') {
-                    $askForHelp = true;
-                }
-            }
-        }
-        $this->set('askForHelp', $askForHelp);
-
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
@@ -144,7 +127,7 @@ class DashboardsController extends AppController {
         $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);
         $this->set('tabRotationInterval', $tabRotationInterval);
-        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp']);
+        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval']);
     }
 
     /****************************
