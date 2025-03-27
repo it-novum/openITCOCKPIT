@@ -2131,8 +2131,9 @@ class HostsController extends AppController {
             $sharedContainers = [];
             foreach ($host['hosts_to_containers_sharing'] as $container) {
                 if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                    $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
-                    //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                    if (isset($this->MY_RIGHTS_LEVEL[$container['id']])) {
+                        $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                    }
                 }
             }
         } else {
