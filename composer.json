@@ -77,7 +77,7 @@
         "cakephp/debug_kit": "~4.0",
         "cakephp/migrations": "@stable",
         "josegonzalez/dotenv": "3.*",
-        "phpunit/phpunit": "^8.0",
+        "phpunit/phpunit": "^10.0",
         "psy/psysh": "@stable"
     },
     "suggest": {
