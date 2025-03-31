@@ -211,6 +211,20 @@ if [[ ! -f "$INIFILE" ]]; then
         # set sql_mode to enable group by like it was in the good old times :)
         mysql --defaults-extra-file=${DEBIANCNF} -e "SET GLOBAL sql_mode = '';"
 
+        # Is mysql or mariadb ?
+        MYSQL_SERVER_SOFTWARE=$(mysql --defaults-extra-file=${DEBIANCNF} --batch --skip-column-names -e "SELECT IF(VERSION() LIKE '%mariadb%', 'mariadb', 'mysql');")
+        # Unicode version 4 (very old, but works everywhere)
+        MYSQL_COLLATIONS="utf8mb4_general_ci"
+
+        if [[ "$MYSQL_SERVER_SOFTWARE" == "mariadb" ]]; then
+            # Unicode version 14 (For some reason, MariaDB supports Unicode 14 but not 9)
+            MYSQL_COLLATIONS="utf8mb4_uca1400_ai_ci"
+        else
+            # Unicode version 9 - (MariaDB does support this since version 11.4.5 - Released 4. Feb. 2025)
+            # So we can only use this for MySQL at the moment since nobody has MariaDB 11.4.5 at the moment (31.03.2025)
+            MYSQL_COLLATIONS="utf8mb4_0900_ai_ci"
+        fi
+
         if [[ "$OS_BASE" == "RHEL" ]]; then
             # Set Password policy to LOW on RHEL systems with MySQL 8
             # https://dev.mysql.com/doc/refman/8.0/en/validate-password-options-variables.html#sysvar_validate_password.policy
@@ -218,7 +232,7 @@ if [[ ! -f "$INIFILE" ]]; then
         fi
 
         mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE USER '${MYSQL_DATABASE}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" -B
-        mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_general_ci;" -B
+        mysql --defaults-extra-file=${DEBIANCNF} -e "CREATE DATABASE IF NOT EXISTS \`${MYSQL_DATABASE}\` DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE ${MYSQL_COLLATIONS};" -B
         mysql --defaults-extra-file=${DEBIANCNF} -e "GRANT ALL PRIVILEGES ON \`${MYSQL_DATABASE}\`.* TO '${MYSQL_DATABASE}'@'localhost';" -B
 
         echo "; Automatically generated for openITCOCKPIT scripts. DO NOT TOUCH!" >$INIFILE
