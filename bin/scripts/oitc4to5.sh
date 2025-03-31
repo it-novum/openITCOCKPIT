@@ -178,13 +178,13 @@ check_mysql_version(){
 
       if [[ $mysqlVersion == *"MariaDB"* ]]; then
         mysqlVersion=$(echo $mysqlVersion | sed 's/[^0-9]*//g');
-        mysqlVersion=$(echo $mysqlVersion | cut -c1-3);
+        mysqlVersion=$(echo $mysqlVersion | cut -c1-4);
 
-        if [[ "$mysqlVersion" -lt "105" ]]; then
-            errors+=($(echo "openITCOCKPIT Version 5 requires at least MariaDB version 10.5" | tr ' ' '___'))
+        if [[ "$mysqlVersion" -lt "1011" ]]; then
+            errors+=($(echo "openITCOCKPIT Version 5 requires at least MariaDB version 10.11" | tr ' ' '___'))
             ((errorCount++))
         else
-          oks+=($(echo "MariaDB Version >= 10.5" | tr ' ' '___'))
+          oks+=($(echo "MariaDB Version >= 10.11" | tr ' ' '___'))
           ((okCount++))
         fi
 
