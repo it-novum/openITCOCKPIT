@@ -290,6 +290,21 @@ check_is_supported_rhel_version(){
     fi
 }
 
+check_php_version(){
+    debug_log $(echo "Checking PHP version ..." | tr ' ' '___')
+
+    $(php -r "if(version_compare(PHP_VERSION, '8.1.0') >= 0){exit(0);}exit(1);")
+    rc=$?
+
+    if [[ $rc -ne 0 ]]; then
+        errors+=($(echo "You version of php is < 8.1.0!" | tr ' ' '___'))
+        ((errorCount++))
+    else
+        oks+=($(echo "Installed version of php >= 8.1.0" | tr ' ' '___'))
+        ((okCount++))
+    fi
+}
+
 print_logo(){
 echo -e "\033[38;5;093m
                                         ///
@@ -342,6 +357,7 @@ else
     check_is_supported_debian_version
 fi
 
+check_php_version
 check_mysql_version
 
 check_for_administrator_user_role
