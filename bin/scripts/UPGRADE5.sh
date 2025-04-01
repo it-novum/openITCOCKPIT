@@ -44,4 +44,11 @@ echo ""
 echo "Upgrade to openITCOCKPIT 5 done."
 echo ""
 
+
+if [[ "${IS_CONTAINER:-}" == "1" ]]; then
+    # Upgrade is running inside a container
+    # use /opt/openitc/var/.upgrade5_done instead of /opt/openitc/etc/.upgrade5_done as /opt/openitc/etc is not persistent in the container
+    date > /opt/openitc/var/.upgrade5_done
+fi
+
 date > /opt/openitc/etc/.upgrade5_done

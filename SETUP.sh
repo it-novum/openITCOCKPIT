@@ -218,6 +218,7 @@ if [[ ! -f "$INIFILE" ]]; then
 
         if [[ "$MYSQL_SERVER_SOFTWARE" == "mariadb" ]]; then
             # Unicode version 14 (For some reason, MariaDB supports Unicode 14 but not 9)
+            # See ITC-3408
             MYSQL_COLLATIONS="utf8mb4_uca1400_ai_ci"
         else
             # Unicode version 9 - (MariaDB does support this since version 11.4.5 - Released 4. Feb. 2025)

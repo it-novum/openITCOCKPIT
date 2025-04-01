@@ -175,6 +175,7 @@ if [[ "$MYSQL_SERVER_SOFTWARE" == "mariadb" ]]; then
   echo "Convert MariaDB Tables from to utf8mb4_uca1400_ai_ci..."
   echo "This will take a while - Please be patient"
   # Unicode version 14 (For some reason, MariaDB supports Unicode 14 but not 9)
+  # See ITC-3408
   MYSQL_COLLATIONS="utf8mb4_uca1400_ai_ci"
 else
   echo "Detected MySQL"
