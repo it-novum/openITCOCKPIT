@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -290,8 +295,73 @@ class AppController extends Controller {
         return false;
     }
 
+    /**
+     * This method tries to determine if the request tries to load a legacy AngularJS template
+     * Most of the time this is the case if the URL ends with .html
+     *
+     * However, by default CakePHP will always try to render the template, also if the URL
+     * does not contain .html.
+     *
+     * In this case we check the headers
+     *
+     * @return bool
+     */
+    protected function isLegacyHtmlTemplateRequest(): bool {
+        if (!filter_var(env('DISABLE_ANGULARJS', false), FILTER_VALIDATE_BOOLEAN)) {
+            // Do not disable AngularJS frontend
+            return false;
+        }
+
+        // Some actions actually need to render HTML (phpinfo for example).
+        // In this case, we create a whitelist for now
+        $controller = strtolower($this->request->getParam('controller'));
+        $action = strtolower($this->request->getParam('action'));
+
+        $whitelist = [
+            'administrators.php_info' => 'administrators.php_info',
+            'eventlogs.listtocsv'     => 'eventlogs.listtocsv',
+            'hosts.listtocsv'         => 'hosts.listtocsv',
+            'services.listtocsv'      => 'services.listtocsv',
+            'hostgroups.listtocsv'    => 'hostgroups.listtocsv',
+            'servicegroups.listtocsv' => 'servicegroups.listtocsv',
+        ];
+
+        $key = $controller . '.' . $action;
+        if (isset($whitelist[$key])) {
+            // We hit a whitelist controller.action
+            return false;
+        }
+
+        if ($this->request->getParam('_ext') !== null) {
+            // We have an extension, make sure it is .html
+            if ($this->request->getParam('_ext') === 'html') {
+                return true;
+            } else {
+                // We have an extension like .json, .zip, .pdf etc...
+                return false;
+            }
+        }
+
+        // No extension, check headers
+        $hasHtmlHeader = false;
+        foreach ($this->request->getHeader('Accept') as $accept) {
+            if (strpos($accept, 'text/html') !== false) {
+                $hasHtmlHeader = true;
+                break;
+            }
+        }
+
+        return $hasHtmlHeader;
+    }
+
     public function beforeFilter(EventInterface $event) {
         parent::beforeFilter($event);
+
+        // Disable old AngularJS Frontend
+        if ($this->isLegacyHtmlTemplateRequest()) {
+            $this->render('/Error/errorBackend', 'backend');
+            return;
+        }
 
         $this->DbBackend = new DbBackend();
         $this->PerfdataBackend = new PerfdataBackend();
