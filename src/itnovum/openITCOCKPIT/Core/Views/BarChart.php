@@ -149,7 +149,7 @@ class BarChart {
     private function barHorizontal($chartDataArray) {
         foreach ($chartDataArray as $key => $dataArr) {
             $background = imagecolorallocatealpha($this->image, $dataArr['color'][0], $dataArr['color'][1], $dataArr['color'][2], $dataArr['color'][3]);
-            imagefilledrectangle($this->image, $dataArr['start'], $this->y, $dataArr['end'], $this->y + $this->height, $background);
+            imagefilledrectangle($this->image, (int)($dataArr['start']), (int)($this->y), (int)($dataArr['end']), (int)($this->y + $this->height), (int)($background));
         }
     }
 
@@ -158,7 +158,7 @@ class BarChart {
      */
     private function bar3dHorizontal($chartDataArray) {
         foreach ($chartDataArray as $key => $dataArr) {
-            $background = imagecolorallocatealpha($this->image, $dataArr['color'][0] * 0.75, $dataArr['color'][1] * 0.75, $dataArr['color'][2] * 0.75, $dataArr['color'][3]);
+            $background = imagecolorallocatealpha($this->image, (int)($dataArr['color'][0] * 0.75), (int)($dataArr['color'][1] * 0.75), (int)($dataArr['color'][2] * 0.75), (int)($dataArr['color'][3]));
             //top 3d
             if (version_compare(PHP_VERSION, '8.1.0') >= 0) {
                 imagefilledpolygon($this->image, [

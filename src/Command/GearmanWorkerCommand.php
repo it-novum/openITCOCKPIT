@@ -552,10 +552,18 @@ class GearmanWorkerCommand extends Command {
                     mkdir('/etc/yum.repos.d');
                 }
 
+                // ITC-3452
+                $version = $LsbRelease->getVersion();
+                if (strpos($version, '.')) {
+                    // Version is 8.4 - we need to remove the '.4' part
+                    $version = substr($version, 0, strpos($version, '.'));
+
+                }
+
                 $file = fopen('/etc/yum.repos.d/openitcockpit.repo', 'w+');
                 fwrite($file, '[openitcockpit]' . PHP_EOL);
                 fwrite($file, 'name=openITCOCKPIT System Monitoring' . PHP_EOL);
-                fwrite($file, 'baseurl=https://packages.openitcockpit.io/openitcockpit/RHEL8/stable/$basearch/' . PHP_EOL);
+                fwrite($file, 'baseurl=https://packages.openitcockpit.io/openitcockpit/RHEL' . $version . '/stable/$basearch/' . PHP_EOL);
                 fwrite($file, 'enabled=1' . PHP_EOL);
                 fwrite($file, 'gpgcheck=1' . PHP_EOL);
                 fwrite($file, 'gpgkey=https://packages.openitcockpit.io/repokey.txt' . PHP_EOL);

@@ -148,7 +148,6 @@ class HostsController extends AppController {
             $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
-
         if (!$this->isApiRequest()) {
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
@@ -279,10 +278,13 @@ class HostsController extends AppController {
 
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
+            $satelliteRestricted = false;
 
             if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
                 $satelliteName = $satellites[$Host->getSatelliteId()];
                 $satellite_id = $Host->getSatelliteId();
+            } else if ($Host->isSatelliteHost() && !isset($satellites[$Host->getSatelliteId()])) {
+                $satelliteRestricted = true;
             }
 
             $downtime = [];
@@ -313,13 +315,13 @@ class HostsController extends AppController {
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
+            $tmpRecord['Host']['satelliteRestricted'] = $satelliteRestricted;
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
             $tmpRecord['Host']['type'] = $typesForView[$host['Host']['host_type']];
             $tmpRecord['Host']['additionalInformationExists'] = $additionalInformationExists;
 
             $all_hosts[] = $tmpRecord;
         }
-
         $this->set('all_hosts', $all_hosts);
         $this->set('username', $User->getFullName());
         $this->viewBuilder()->setOption('serialize', ['all_hosts', 'username']);
@@ -1054,6 +1056,7 @@ class HostsController extends AppController {
             $ContactgroupCache = new KeyValueStore();
             $ObjectsCacheChangelog = new ObjectsCache();
             foreach ($hostIds as $hostId) {
+                $hasChanges = false;
 
                 $hostArray = $HostsTable->getHostByIdWithDetails($hostId);
                 $hosttemplateId = $hostArray['Host']['hosttemplate_id'];
@@ -2130,8 +2133,9 @@ class HostsController extends AppController {
             $sharedContainers = [];
             foreach ($host['hosts_to_containers_sharing'] as $container) {
                 if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                    $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
-                    //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                    if (isset($this->MY_RIGHTS_LEVEL[$container['id']])) {
+                        $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                    }
                 }
             }
         } else {
@@ -3175,8 +3179,19 @@ class HostsController extends AppController {
             /** @var $SatellitesTable SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
+
+            if (isset($host) && $this->hasRootPrivileges === false && $host->satellite_id != 0 && !isset($satellites[$host->satellite_id])) {
+                // if shared host the user has maybe no rights to see the satellite
+                $satellites = [];
+                $satellites[$host->satellite_id] = __('Restricted view');
+            }
         }
         $satellites = Api::makeItJavaScriptAble($satellites);
 

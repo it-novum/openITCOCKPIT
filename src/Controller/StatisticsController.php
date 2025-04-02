@@ -36,7 +36,6 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ServicesTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\Http\Cookie\Cookie;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\System\Health\StatisticsCollector;
@@ -96,17 +95,6 @@ class StatisticsController extends AppController {
 
 
         $record->set('value', (int)$this->request->getData('statistics.decision', 0));
-
-        if ($this->request->getData('statistics.cookie', null) !== null && $record->get('value') === 2) {
-            $this->response = $this->response->withCookie(new Cookie(
-                'askAgainForHelp',
-                'Remind me later',
-                new \DateTime('+16 hours'),
-                '/',
-                null,
-                true
-            ));
-        }
 
         $SystemsettingsTable->save($record);
         if ($record->hasErrors()) {

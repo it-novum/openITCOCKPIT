@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -28,18 +33,15 @@ declare(strict_types=1);
 
 namespace App\Command;
 
-use App\Lib\Interfaces\NotificationHostsTableInterface;
 use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
-use Cake\Console\Arguments;
 use Cake\Command\Command;
+use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Plugin;
-use Cake\Database\Connection;
 use Cake\Datasource\ConnectionManager;
 use Cake\Mailer\Mailer;
-use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use DistributeModule\Model\Entity\Satellite;
@@ -49,7 +51,7 @@ use itnovum\openITCOCKPIT\Core\Views\UserTime;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigurator;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValue;
 use itnovum\openITCOCKPIT\SetupShell\MailConfigValueInt;
-use ProgressBar\Manager;
+use NickBeen\ProgressBar\ProgressBar;
 
 /**
  * Update3To4 command.
@@ -349,7 +351,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating host notifications');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
       INSERT IGNORE INTO statusengine_host_notifications
@@ -383,8 +386,11 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+
+        $ProgressBar->finish();
+
         $this->io->out('');
     }
 
@@ -400,7 +406,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating service notifications');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
       INSERT IGNORE INTO statusengine_service_notifications
@@ -435,8 +442,9 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+        $ProgressBar->finish();
         $this->io->out('');
     }
 
@@ -533,7 +541,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating host acknowledgements');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
         INSERT IGNORE INTO statusengine_host_acknowledgements
@@ -569,8 +578,9 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+        $ProgressBar->finish();
         $this->io->out('');
     }
 
@@ -583,7 +593,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating service acknowledgements');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
         INSERT IGNORE INTO statusengine_service_acknowledgements
@@ -620,8 +631,9 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+        $ProgressBar->finish();
         $this->io->out('');
     }
 
@@ -636,7 +648,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating host downtimes');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
         INSERT IGNORE INTO statusengine_host_downtimehistory
@@ -677,8 +690,9 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+        $ProgressBar->finish();
         $this->io->out('');
     }
 
@@ -693,7 +707,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating service downtimes');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
         INSERT IGNORE INTO statusengine_service_downtimehistory
@@ -735,8 +750,9 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+        $ProgressBar->finish();
         $this->io->out('');
     }
 
@@ -751,7 +767,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating host checks');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
         INSERT IGNORE INTO statusengine_hostchecks
@@ -793,8 +810,9 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+        $ProgressBar->finish();
         $this->io->out('');
     }
 
@@ -809,7 +827,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating service checks');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
         INSERT IGNORE INTO statusengine_servicechecks
@@ -852,8 +871,9 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+        $ProgressBar->finish();
         $this->io->out('');
     }
 
@@ -868,7 +888,8 @@ class Update3To4Command extends Command {
         }
 
         $this->io->out('Migrating logentries');
-        $ProgressBar = new Manager(0, $numberOfSelects);
+        $ProgressBar = new ProgressBar(0, $numberOfSelects);
+        $ProgressBar->start();
 
         $query = "
         INSERT IGNORE INTO statusengine_logentries
@@ -898,8 +919,9 @@ class Update3To4Command extends Command {
                 $params
             );
 
-            $ProgressBar->update(($i + 1));
+            $ProgressBar->tick();
         }
+        $ProgressBar->finish();
         $this->io->out('');
     }
 
