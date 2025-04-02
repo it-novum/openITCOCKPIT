@@ -222,7 +222,7 @@ check_mysql_table_sizes(){
     done< <(mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${MYSQL_DATABASE}';")
 
     if [[ "$hasError" -eq "0" ]]; then
-        oks+=($(echo "Enough disk space available to convert tables to utf8mb4_0900_ai_ci (MySQL) or utf8mb4 (MariaDB)" | tr ' ' '___'))
+        oks+=($(echo "Enough disk space available to convert tables to utf8mb4_0900_ai_ci (MySQL) or utf8mb4_uca1400_ai_ci (MariaDB)" | tr ' ' '___'))
         ((okCount++))
     fi
 
