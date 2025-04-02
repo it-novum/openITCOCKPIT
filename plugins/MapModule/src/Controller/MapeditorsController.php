@@ -1842,6 +1842,74 @@ class MapeditorsController extends AppController {
             throw new NotFoundException();
         }
 
+        //Save new possition after drag and drop
+        if ($this->request->getData('action') === 'dragstop') {
+            $map = $MapsTable->get($id, [
+                'contain' => [
+                    'Containers',
+                    'Mapgadgets',
+                    'Mapicons',
+                    'Mapitems',
+                    'Maplines',
+                    'Maptexts',
+                    'Mapsummaryitems'
+                ]
+            ]);
+
+            $map->background_x = (int)$this->request->getData('Map.background_x');
+            $map->background_y = (int)$this->request->getData('Map.background_y');
+
+            $MapsTable->save($map);
+            if (!$map->hasErrors()) {
+
+                $this->set('Map', [
+                    'Map' => $map
+                ]);
+
+                $this->viewBuilder()->setOption('serialize', ['Map']);
+                return;
+            }
+
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $map->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        //Save new background size
+        if ($this->request->getData('action') === 'resizestop') {
+            $map = $MapsTable->get($id, [
+                'contain' => [
+                    'Containers',
+                    'Mapgadgets',
+                    'Mapicons',
+                    'Mapitems',
+                    'Maplines',
+                    'Maptexts',
+                    'Mapsummaryitems'
+                ]
+            ]);
+
+            $map->background_size_x = (int)$this->request->getData('Map.background_size_x');
+            $map->background_size_y = (int)$this->request->getData('Map.background_size_y');
+
+            $MapsTable->save($map);
+            if (!$map->hasErrors()) {
+
+                $this->set('Map', [
+                    'Map' => $map
+                ]);
+
+                $this->viewBuilder()->setOption('serialize', ['Map']);
+                return;
+            }
+
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $map->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
         $map = $MapsTable->get($id, [
             'contain' => [
                 'Containers',
@@ -1855,7 +1923,10 @@ class MapeditorsController extends AppController {
         ]);
 
         $map->background = $this->request->getData('Map.background');
-
+        $map->background_x = $this->request->getData('Map.background_x');
+        $map->background_y = $this->request->getData('Map.background_y');
+        $map->background_size_x = $this->request->getData('Map.background_size_x');
+        $map->background_size_y = $this->request->getData('Map.background_size_y');
 
         $MapsTable->save($map);
         if ($map->hasErrors()) {
