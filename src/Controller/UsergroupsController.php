@@ -110,10 +110,10 @@ class UsergroupsController extends AppController {
         if ($this->request->is('get') && $this->isJsonRequest()) {
             $acos = $AcosTable->find('threaded')
                 ->disableHydration()
+                ->orderAsc('alias')
                 ->all();
             $AclDependencies = new AclDependencies();
             $acos = $AclDependencies->filterAcosForFrontend($acos->toArray());
-
             $this->set('acos', $acos);
             $this->viewBuilder()->setOption('serialize', ['acos']);
             return;

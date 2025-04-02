@@ -25,6 +25,7 @@
 namespace App\Lib;
 
 use Acl\Model\Table\AcosTable;
+use Cake\Utility\Hash;
 
 /**
  * Class AclDependencies
@@ -1008,7 +1009,11 @@ class AclDependencies {
 
             //Make sure we have arrays [] not hashmaps {} !!!
             $acosResultThreaded[0]['children'][$controllerIndex]['children'] = array_values($acosResultThreaded[0]['children'][$controllerIndex]['children']);
-
+        }
+        foreach ($acosResultThreaded[0]['children'] as $key => $value) {
+            if (Hash::dimensions($value['children']) === 2) {
+                $acosResultThreaded[0]['children'][$key] = Hash::sort($acosResultThreaded[0]['children'][$key], 'alias', 'asc');
+            }
         }
         return $acosResultThreaded;
     }
