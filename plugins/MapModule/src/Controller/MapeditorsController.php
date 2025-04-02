@@ -1844,26 +1844,23 @@ class MapeditorsController extends AppController {
 
         //Save new possition after drag and drop
         if ($this->request->getData('action') === 'dragstop') {
-            $mapEntity = $MapsTable->get($id);
+            $map = $MapsTable->get($id, [
+                'contain' => [
+                    'Containers',
+                    'Mapgadgets',
+                    'Mapicons',
+                    'Mapitems',
+                    'Maplines',
+                    'Maptexts',
+                    'Mapsummaryitems'
+                ]
+            ]);
 
-            $map['background_x'] = (int)$this->request->getData('Map.background_x');
-            $map['background_y'] = (int)$this->request->getData('Map.background_y');
+            $map->background_x = (int)$this->request->getData('Map.background_x');
+            $map->background_y = (int)$this->request->getData('Map.background_y');
 
-            $mapEntity = $MapsTable->patchEntity($mapEntity, $map);
-            $MapsTable->save($mapEntity);
-            if (!$mapEntity->hasErrors()) {
-
-                $map = $MapsTable->get($id, [
-                    'contain' => [
-                        'Containers',
-                        'Mapgadgets',
-                        'Mapicons',
-                        'Mapitems',
-                        'Maplines',
-                        'Maptexts',
-                        'Mapsummaryitems'
-                    ]
-                ]);
+            $MapsTable->save($map);
+            if (!$map->hasErrors()) {
 
                 $this->set('Map', [
                     'Map' => $map
@@ -1872,32 +1869,32 @@ class MapeditorsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['Map']);
                 return;
             }
-            $this->serializeCake4Id($mapEntity);
+
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $map->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
         //Save new background size
         if ($this->request->getData('action') === 'resizestop') {
-            $mapEntity = $MapsTable->get($id);
+            $map = $MapsTable->get($id, [
+                'contain' => [
+                    'Containers',
+                    'Mapgadgets',
+                    'Mapicons',
+                    'Mapitems',
+                    'Maplines',
+                    'Maptexts',
+                    'Mapsummaryitems'
+                ]
+            ]);
 
-            $map['background_size_x'] = (int)$this->request->getData('Map.background_size_x');
-            $map['background_size_y'] = (int)$this->request->getData('Map.background_size_y');
+            $map->background_size_x = (int)$this->request->getData('Map.background_size_x');
+            $map->background_size_y = (int)$this->request->getData('Map.background_size_y');
 
-            $mapEntity = $MapsTable->patchEntity($mapEntity, $map);
-            $MapsTable->save($mapEntity);
-            if (!$mapEntity->hasErrors()) {
-
-                $map = $MapsTable->get($id, [
-                    'contain' => [
-                        'Containers',
-                        'Mapgadgets',
-                        'Mapicons',
-                        'Mapitems',
-                        'Maplines',
-                        'Maptexts',
-                        'Mapsummaryitems'
-                    ]
-                ]);
+            $MapsTable->save($map);
+            if (!$map->hasErrors()) {
 
                 $this->set('Map', [
                     'Map' => $map
@@ -1906,7 +1903,10 @@ class MapeditorsController extends AppController {
                 $this->viewBuilder()->setOption('serialize', ['Map']);
                 return;
             }
-            $this->serializeCake4Id($mapEntity);
+
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $map->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
