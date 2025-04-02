@@ -129,8 +129,16 @@ class UsersController extends AppController {
 
         $isLoggedIn = $this->getUser() !== null;
         $errorMessages = [];
+        $successMessages = [];
 
         if ($this->request->is('GET') && $this->request->getQuery('code', null) !== null && $isSsoEnabled) {
+            // The browser fires two requests.
+            // One is a GET request, when the user gets redirected from the oAuth Login Page back to openITCOCKPIT.
+            // This is the request where the oAuth Login happens.
+            //
+            // The second request is also a GET Request done by Angular to query status information.
+            // So we need to store any errors to the session that we can return errors for angularjs
+            $Session = $this->request->getSession();
             //FileDebugger::dump($this->request->getQuery());
             // The user came back from the oAuth login page.
             // Check if we have any errors during the oAuth login
@@ -138,13 +146,6 @@ class UsersController extends AppController {
             if ($result->getStatus() !== ResultInterface::SUCCESS) {
                 if ($result->getStatus() === 'FAILURE_IDENTITY_NOT_FOUND') {
 
-                    // The browser fires two requests.
-                    // One is a GET request, when the user gets redirected from the oAuth Login Page back to openITCOCKPIT.
-                    // This is the request where the oAuth Login happens.
-                    //
-                    // The second request is also a GET Request done by Angular to query status information.
-                    // So we need to store any errors to the session that we can return errors for angularjs
-                    $Session = $this->request->getSession();
                     try {
                         $oauth_error = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.NO_EMAIL_MESSAGE')->get('value');
                     } catch (RecordNotFoundException $e) {
@@ -168,6 +169,8 @@ class UsersController extends AppController {
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
                     $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, $containerIds);
                 }
+                $Session->write('oauth_login_successful', 'Login via Single sign-on successful');
+                $this->redirect('/a/users/login', 302);
             }
         }
 
@@ -186,6 +189,10 @@ class UsersController extends AppController {
                     $errorMessages[] = $Session->read('oauth_user_not_found');
                     $Session->delete('oauth_user_not_found');
                 }
+                if ($Session->read('oauth_login_successful', null) !== null) {
+                    $successMessages[] = $Session->read('oauth_login_successful');
+                    $Session->delete('oauth_login_successful');
+                }
             }
 
             // Add URL for (custom) logo
@@ -195,7 +202,8 @@ class UsersController extends AppController {
             $this->set('customLoginBackgroundHtml', $Logo->getCustomLoginBackgroundHtml());
 
             $this->set('errorMessages', $errorMessages);
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation']);
+            $this->set('successMessages', $successMessages);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'successMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation']);
             return;
         }
 
