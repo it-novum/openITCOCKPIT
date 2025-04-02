@@ -908,6 +908,87 @@ class UsersController extends AppController {
 
     }
 
+
+    public function listToCsv() {
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $UsersFilter = new UsersFilter($this->request);
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            // root users can see all users
+            $MY_RIGHTS = [];
+        }
+        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, null, $MY_RIGHTS);
+        $all_users = [];
+
+        $UserTime = $User->getUserTime();
+        foreach ($all_tmp_users as $_user) {
+            /** @var User $_user */
+            $user = $_user->toArray();
+            if (!empty($user['last_login'])) {
+                $user['last_login'] = $UserTime->format($user['last_login']->getTimestamp());
+            }
+            $user['isLdapUser'] = __('No');
+            $user['isOAuthUser'] = __('No');
+            if (!empty($user['samaccountname'])) {
+                $user['isLdapUser'] = __('Yes');
+                if ($user['is_oauth'] === true) {
+                    $user['isOAuthUser'] = __('Yes');
+                }
+            } else if ($user['is_oauth'] === true) {
+                $user['isOAuthUser'] = __('Yes');
+            }
+
+            $all_users[] = [
+                $user['full_name'],
+                $user['id'],
+                $user['email'],
+                $user['phone'],
+                $user['company'],
+                $user['is_active'],
+                $user['isLdapUser'],
+                $user['isOAuthUser'],
+                $user['usergroup']['name'],
+                $user['last_login']
+            ];
+        }
+
+
+        $header = [
+            'full_name',
+            'user_id',
+            'email',
+            'phone',
+            'company',
+            'is_active',
+            'is_ldap_user',
+            'is_oauth_user',
+            'user_role',
+            'last_login'
+        ];
+
+
+        $this->set('data', $all_users);
+
+        $filename = __('Users_') . date('dmY_his') . '.csv';
+        $this->setResponse($this->getResponse()->withDownload($filename));
+        $this->viewBuilder()
+            ->setClassName('CsvView.Csv')
+            ->setOptions([
+                'delimiter' => ';', // Excel prefers ; over ,
+                'bom'       => true, // Fix UTF-8 umlauts in Excel
+                'serialize' => 'data',
+                'header'    => $header,
+            ]);
+    }
+
+
     /**
      * @throws \FreeDSx\Ldap\Exception\BindException
      */
