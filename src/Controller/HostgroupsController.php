@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -1120,7 +1120,7 @@ class HostgroupsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true, [CT_HOSTGROUP]);
 
         $tenantContainerIds = [];
 
