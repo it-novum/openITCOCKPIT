@@ -66,6 +66,7 @@ class UsercontainerrolesController extends AppController {
             return $v == WRITE_RIGHT;
         }, ARRAY_FILTER_USE_BOTH);
         $containerWithWritePermissions = array_keys($containerWithWritePermissions);
+        $containerWithWritePermissionByUserContainerRoles = [];
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
             $userRoleContainerIdsWithWritePermission = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
             if (!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIdsWithWritePermission, $containerWithWritePermissions))) {
@@ -117,6 +118,8 @@ class UsercontainerrolesController extends AppController {
 
             $all_usercontainerroles[$index]['users'] = $usercontainerrole['users'];
         }
+        // return an array instead of a list
+        $all_usercontainerroles = array_values($all_usercontainerroles);
         $this->set('all_usercontainerroles', $all_usercontainerroles);
         $toJson = ['paging', 'all_usercontainerroles'];
         if ($this->isScrollRequest()) {
