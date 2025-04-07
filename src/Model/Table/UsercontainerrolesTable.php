@@ -308,8 +308,8 @@ class UsercontainerrolesTable extends Table {
         //Build up data struct for radio inputs
         $usercontainerrole['ContainersUsercontainerrolesMemberships'] = [];
         foreach ($query['containers'] as $container) {
-            //Cast permission_level to string for AngularJS...
-            $usercontainerrole['ContainersUsercontainerrolesMemberships'][$container['id']] = (string)$container['_joinData']['permission_level'];
+            //Don't cast permission_level to string for Angular (old method for AngularJS removed...)
+            $usercontainerrole['ContainersUsercontainerrolesMemberships'][$container['id']] = $container['_joinData']['permission_level'];
         }
 
         return [
