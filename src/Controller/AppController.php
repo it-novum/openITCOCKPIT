@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -324,6 +324,7 @@ class AppController extends Controller {
             'services.listtocsv'      => 'services.listtocsv',
             'hostgroups.listtocsv'    => 'hostgroups.listtocsv',
             'servicegroups.listtocsv' => 'servicegroups.listtocsv',
+            'statuspages.publicview'  => 'statuspages.publicview',
         ];
 
         $key = $controller . '.' . $action;
