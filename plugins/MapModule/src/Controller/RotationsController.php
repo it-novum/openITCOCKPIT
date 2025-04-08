@@ -195,13 +195,14 @@ class RotationsController extends AppController {
             $data = $this->request->getData();
             $data['Rotation']['id'] = $id;
 
-            if (empty($data['Rotation']['interval'])) {
+            // get handled by the validation
+            /*if (empty($data['Rotation']['interval'])) {
                 $data['Rotation']['interval'] = 90;
             } else {
                 if ($data['Rotation']['interval'] < 10) {
                     $data['Rotation']['interval'] = 10;
                 }
-            }
+            }*/
 
             $data['Rotation']['containers']['_ids'] = $data['Rotation']['container_id'];
             $data['Rotation']['maps']['_ids'] = $data['Rotation']['Map'];
