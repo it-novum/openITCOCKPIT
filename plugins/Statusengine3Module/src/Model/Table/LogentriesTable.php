@@ -30,10 +30,9 @@ namespace Statusengine3Module\Model\Table;
 use App\Lib\Interfaces\LogentriesTableInterface;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Database\Expression\Comparison;
-use Cake\ORM\Query;
-use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
+use itnovum\openITCOCKPIT\Core\LogentryConditions;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\LogentryFilter;
 
@@ -95,20 +94,41 @@ class LogentriesTable extends Table implements LogentriesTableInterface {
      * @param PaginateOMat|null $PaginateOMat
      * @return array
      */
-    public function getLogentries(LogentryFilter $LogentryFilter, $PaginateOMat = null) {
+    public function getLogentries(LogentryFilter $LogentryFilter, $PaginateOMat = null, LogentryConditions $LogentryConditions = null) {
         //Get all user ids where container assigned are made directly at the user
         $query = $this->find()
             ->where($LogentryFilter->indexFilter())
             ->order($LogentryFilter->getOrderForPaginator('Logentries.entry_time', 'desc'));
 
         if (!empty($LogentryFilter->getMatchingUuids())) {
+            //Refactoring: to avoid "Timeout exceeded in regular expression match." error
+            /*
             $query->andWhere(new Comparison(
                 'Logentries.logentry_data',
                 sprintf('.*(%s).*', implode('|', $LogentryFilter->getMatchingUuids())),
                 'string',
                 'RLIKE'
             ));
+            */
+            $comparisons = [];
+            foreach ($LogentryFilter->getMatchingUuids() as $uuid) {
+                $comparisons[] = new Comparison(
+                    'Logentries.logentry_data',
+                    sprintf('%%%s%%', $uuid),
+                    'string',
+                    'LIKE'
+                );
+            }
+            $query->where([
+                'OR' =>
+                    $comparisons
+            ]);
         }
+
+        $query->where([
+            'Logentries.entry_time >' => $LogentryConditions->getFrom(),
+            'Logentries.entry_time <' => $LogentryConditions->getTo()
+        ]);
 
         if ($PaginateOMat === null) {
             //Just execute query
