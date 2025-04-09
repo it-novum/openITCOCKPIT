@@ -68,6 +68,10 @@ class TenantsTable extends Table {
             ->allowEmptyString('id', null, 'create');
 
         $validator
+            ->integer('zipcode')
+            ->allowEmptyString('zipcode');
+
+        $validator
             ->scalar('description')
             ->maxLength('description', 255)
             ->allowEmptyString('description');
