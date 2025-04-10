@@ -426,21 +426,19 @@ class ServicesController extends AppController {
         }
 
         $hostContainers = [];
+        foreach ($services as $index => $service) {
+            $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+
+        }
         if ($this->hasRootPrivileges === false) {
-            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                foreach ($services as $index => $service) {
-                    $hostId = $service['_matchingData']['Hosts']['id'];
-                    if (!isset($hostContainers[$hostId])) {
-                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
-                    }
-                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
-                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
-                }
-            }
-        } else {
-            //Root user
             foreach ($services as $index => $service) {
-                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+                $hostId = $service['_matchingData']['Hosts']['id'];
+                if (!isset($hostContainers[$hostId])) {
+                    $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
+                }
+
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
             }
         }
 
@@ -510,22 +508,20 @@ class ServicesController extends AppController {
         $services = $ServicesTable->getServicesForDisabled($ServiceConditions, $PaginateOMat);
 
         $hostContainers = [];
-        if ($this->hasRootPrivileges === false) {
-            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                foreach ($services as $index => $service) {
-                    $hostId = $service['_matchingData']['Hosts']['id'];
-                    if (!isset($hostContainers[$hostId])) {
-                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
-                    }
 
-                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
-                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
-                }
-            }
-        } else {
-            //Root user
+        foreach ($services as $index => $service) {
+            $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+
+        }
+        if ($this->hasRootPrivileges === false) {
             foreach ($services as $index => $service) {
-                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+                $hostId = $service['_matchingData']['Hosts']['id'];
+                if (!isset($hostContainers[$hostId])) {
+                    $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
+                }
+
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
             }
         }
 
@@ -3098,7 +3094,7 @@ class ServicesController extends AppController {
         }
 
         $ServiceFilter = new ServiceFilter($this->request);
-        
+
         $containerIds = [ROOT_CONTAINER, $containerId];
 
         /** @var $ContainersTable ContainersTable */
