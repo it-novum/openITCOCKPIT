@@ -466,7 +466,7 @@ class UsersController extends AppController {
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('UserTypes', $UserTypes);
-            $this->set('notPermittedContainerIds', $notPermittedContainerIds);
+            $this->set('notPermittedContainerIds', array_map('intval', $notPermittedContainerIds)); // Make sure its a int array for Angular
             $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds']);
             return;
         }
