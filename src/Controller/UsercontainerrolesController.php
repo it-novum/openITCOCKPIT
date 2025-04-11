@@ -201,6 +201,26 @@ class UsercontainerrolesController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /** @var UsersTable $UsersTable */
             $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+            //autofill restricted containers for save
+            $autofillRights = [];
+            if (!$this->hasRootPrivileges) {
+                if (!empty($usercontainerrole['Usercontainerrole']['ContainersUsercontainerrolesMemberships'])) {
+                    foreach ($usercontainerrole['Usercontainerrole']['ContainersUsercontainerrolesMemberships'] as $containerId => $permissionLevel) {
+                        if (!isset($this->MY_RIGHTS_LEVEL[$containerId])) {
+                            $autofillRights[] = [
+                                'id'        => $containerId,
+                                '_joinData' => [
+                                    'permission_level' => $permissionLevel
+                                ]
+                            ];
+                        }
+                    }
+                }
+            }
+
+            $usercontainerrole = $UsercontainerrolesTable->get($id);
+
             $data = $this->request->getData('Usercontainerrole', []);
             if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
                 $data['ContainersUsercontainerrolesMemberships'] = [];
@@ -210,7 +230,8 @@ class UsercontainerrolesController extends AppController {
                 $this->hasRootPrivileges,
                 $this->MY_RIGHTS_LEVEL
             );
-            $usercontainerrole = $UsercontainerrolesTable->get($id);
+            $data['containers'] = array_merge($data['containers'], $autofillRights);
+
             $usercontainerrole->setAccess('id', false);
 
             $usercontainerrole = $UsercontainerrolesTable->patchEntity($usercontainerrole, $data);
