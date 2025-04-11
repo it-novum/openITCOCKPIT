@@ -415,6 +415,9 @@ class UsersController extends AppController {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
         if (!$UsersTable->existsById($id)) {
             throw new NotFoundException(__('User not found'));
         }
@@ -438,6 +441,22 @@ class UsersController extends AppController {
         if (!$this->allowedByContainerId($containersToCheck)) {
             $this->render403();
             return;
+        }
+
+        $userContainerRolesReadonly = !$this->hasRootPrivileges;
+        if (!$this->hasRootPrivileges) {
+            $containersWithWriteRights = $this->getWriteContainers();
+            $allowedUserContainerRoles = $UsercontainerrolesTable->getUsercontainerrolesForPermissionCheck($containersWithWriteRights);
+            $allowedUserContainerRolesIds = Hash::extract(
+                $allowedUserContainerRoles,
+                '{n}.id'
+            );
+
+            $userContainerRolesReadonly = !empty(
+            array_diff(
+                array_merge($user['User']['usercontainerroles']['_ids'], $user['User']['usercontainerroles_ldap']['_ids']),
+                $allowedUserContainerRolesIds
+            ));
         }
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
@@ -466,8 +485,9 @@ class UsersController extends AppController {
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('UserTypes', $UserTypes);
+            $this->set('userContainerRolesReadonly', $userContainerRolesReadonly);
             $this->set('notPermittedContainerIds', array_map('intval', $notPermittedContainerIds)); // Make sure its a int array for Angular
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds']);
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds', 'userContainerRolesReadonly']);
             return;
         }
 
@@ -507,6 +527,10 @@ class UsersController extends AppController {
             );
             $user = $UsersTable->get($id);
             $user->setAccess('id', false);
+
+            if ($userContainerRolesReadonly) {
+                $user->setAccess('usercontainerroles', false);
+            }
 
             if ($isLdapUser) {
                 $data['is_ldap'] = true;
