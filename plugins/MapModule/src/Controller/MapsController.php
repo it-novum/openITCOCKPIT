@@ -163,7 +163,12 @@ class MapsController extends AppController {
             }
         }
 
-        $requiredContainers = $map['Map']['containers']['_ids'];
+        $requiredContainers = $MapsTable->getRequiredContainerIdsForMap(
+            intval($id),
+            $map['Map']['containers']['_ids']
+        );
+
+
         $MapContainersPermissions = new MapContainersPermissions(
             $map['Map']['containers']['_ids'],
             $this->getWriteContainers(),

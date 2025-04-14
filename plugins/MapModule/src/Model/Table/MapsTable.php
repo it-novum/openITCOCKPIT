@@ -2449,4 +2449,76 @@ class MapsTable extends Table {
 
         return $this->emptyArrayIfNull($query->toArray());
     }
+
+    /**
+     * @param $mapId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getRequiredContainerIdsForMap($mapId, array $containerIds) {
+        $requiredIds = [];
+        if (empty($containerIds)) {
+            return $requiredIds;
+        }
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+        $ids = array_unique(
+            array_merge_recursive(
+                $this->getRotationContainerIdsForMap($mapId, $containerIds)
+            )
+        );
+
+        foreach ($ids as $requiredId) {
+            $requiredIds[] = (int)$requiredId;
+        }
+        return $requiredIds;
+    }
+
+    /**
+     * MapsToRotations
+     * @param int $mapId
+     * @param array $containerIds
+     * @return array
+     */
+    public function getRotationContainerIdsForMap(int $mapId, array $containerIds) {
+        if (empty($containerIds)) {
+            return [];
+        }
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $query = $this->find()
+            ->select([
+                'Containers.id'
+            ])
+            ->innerJoin(
+                ['MapsToRotations' => 'maps_to_rotations'],
+                ['MapsToRotations.map_id = Maps.id']
+            )
+            ->innerJoin(
+                ['Rotations' => 'rotations'],
+                ['Rotations.id = MapsToRotations.rotation_id']
+            )
+            ->innerJoin(
+                ['RotationsToContainers' => 'rotations_to_containers'],
+                ['RotationsToContainers.rotation_id = Rotations.id']
+            )
+            ->innerJoin(
+                ['Containers' => 'containers'],
+                ['Containers.id = RotationsToContainers.container_id']
+            )
+            ->where([
+                'Maps.id'          => $mapId,
+                'Containers.id IN' => $containerIds
+            ])
+            ->distinct()
+            ->disableAutoFields()
+            ->disableHydration()
+            ->toArray();
+        return Hash::extract($query, '{n}.Containers.id');
+    }
+
 }
