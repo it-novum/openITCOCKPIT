@@ -568,4 +568,61 @@ class UsercontainerrolesTable extends Table {
             ->all()
             ->toArray();
     }
+
+    /**
+     * @param array $MY_WRITABLE_CONTAINERS
+     * @return array
+     */
+    public function getUsercontainerrolesForPermissionCheck(array $MY_WRITABLE_CONTAINERS = []): array {
+        if (!is_array($MY_WRITABLE_CONTAINERS)) {
+            $MY_WRITABLE_CONTAINERS = [$MY_WRITABLE_CONTAINERS];
+        }
+
+        $query = $this->find();
+
+        $query->select([
+            'Usercontainerroles.id',
+            'Usercontainerroles.name'
+        ])
+            ->contain('Containers')
+            ->matching('Containers');
+        if (!empty($MY_WRITABLE_CONTAINERS)) {
+            $query->where([
+                    'ContainersUsercontainerrolesMemberships.container_id IN' => $MY_WRITABLE_CONTAINERS
+                ]
+            );
+        }
+        $query->group([
+            'Usercontainerroles.id'
+        ])
+            ->order([
+                'Usercontainerroles.name' => 'asc',
+                'Usercontainerroles.id'   => 'asc'
+            ])
+            ->disableHydration();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+        $filteredUserContainerRoles = [];
+
+        // clean up user container roles
+        foreach ($result as $userContainerRole) {
+            $userContainerRolesWithContainerIDs = Hash::extract(
+                $userContainerRole,
+                'containers.{n}.id'
+            );
+            if (!empty($userContainerRolesWithContainerIDs)) {
+                //Check if user has rights to see all containers in container user role
+                if (empty(array_diff(
+                    $userContainerRolesWithContainerIDs,
+                    $MY_WRITABLE_CONTAINERS)
+                )) {
+                    $filteredUserContainerRoles[] = $userContainerRole;
+                }
+            }
+        }
+        return $filteredUserContainerRoles;
+    }
 }

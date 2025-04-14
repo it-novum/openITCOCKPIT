@@ -31,6 +31,8 @@ use App\itnovum\openITCOCKPIT\Core\UuidCache;
 use App\Model\Table\HostsTable;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
+use itnovum\openITCOCKPIT\Core\AngularJS\Request\AngularRequest;
+use itnovum\openITCOCKPIT\Core\LogentryConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\LogentryTypes;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Logentry;
@@ -64,12 +66,18 @@ class LogentriesController extends AppController {
             $LogentryFilter->addUuidsToMatching(Hash::extract($hosts, '{n}.uuid'));
         }
 
+        $AngularRequest = new AngularRequest($this->request);
+        $LogentryConditions = new LogentryConditions();
+        $LogentryConditions->setFrom($AngularRequest->getFrom());
+        $LogentryConditions->setTo($AngularRequest->getTo());
+        $LogentryConditions->setOrder($AngularRequest->getOrderForPaginator('Logentries.entry_time', 'desc'));
+
         $PaginateOMat = new PaginateOMat($this, $this->isScrollRequest(), $LogentryFilter->getPage());
 
         $UuidCache = new UuidCache();
         $UuidCache->buildCache();
 
-        $all_logentries = $LogentriesTable->getLogentries($LogentryFilter, $PaginateOMat);
+        $all_logentries = $LogentriesTable->getLogentries($LogentryFilter, $PaginateOMat, $LogentryConditions);
         $logentries = [];
         foreach ($all_logentries as $logentry) {
             $logentry = new Logentry($logentry, $UserTime);

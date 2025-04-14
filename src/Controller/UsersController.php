@@ -132,8 +132,16 @@ class UsersController extends AppController {
 
         $isLoggedIn = $this->getUser() !== null;
         $errorMessages = [];
+        $successMessages = [];
 
         if ($this->request->is('GET') && $this->request->getQuery('code', null) !== null && $isSsoEnabled) {
+            // The browser fires two requests.
+            // One is a GET request, when the user gets redirected from the oAuth Login Page back to openITCOCKPIT.
+            // This is the request where the oAuth Login happens.
+            //
+            // The second request is also a GET Request done by Angular to query status information.
+            // So we need to store any errors to the session that we can return errors for angularjs
+            $Session = $this->request->getSession();
             //FileDebugger::dump($this->request->getQuery());
             // The user came back from the oAuth login page.
             // Check if we have any errors during the oAuth login
@@ -141,13 +149,6 @@ class UsersController extends AppController {
             if ($result->getStatus() !== ResultInterface::SUCCESS) {
                 if ($result->getStatus() === 'FAILURE_IDENTITY_NOT_FOUND') {
 
-                    // The browser fires two requests.
-                    // One is a GET request, when the user gets redirected from the oAuth Login Page back to openITCOCKPIT.
-                    // This is the request where the oAuth Login happens.
-                    //
-                    // The second request is also a GET Request done by Angular to query status information.
-                    // So we need to store any errors to the session that we can return errors for angularjs
-                    $Session = $this->request->getSession();
                     try {
                         $oauth_error = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.NO_EMAIL_MESSAGE')->get('value');
                     } catch (RecordNotFoundException $e) {
@@ -171,6 +172,8 @@ class UsersController extends AppController {
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
                     $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, $containerIds);
                 }
+                $Session->write('oauth_login_successful', 'Login via Single sign-on successful');
+                $this->redirect('/a/users/login', 302);
             }
         }
 
@@ -191,6 +194,10 @@ class UsersController extends AppController {
                     $errorMessages[] = $Session->read('oauth_user_not_found');
                     $Session->delete('oauth_user_not_found');
                 }
+                if ($Session->read('oauth_login_successful', null) !== null) {
+                    $successMessages[] = $Session->read('oauth_login_successful');
+                    $Session->delete('oauth_login_successful');
+                }
             }
 
             // Add URL for (custom) logo
@@ -200,7 +207,9 @@ class UsersController extends AppController {
             $this->set('customLoginBackgroundHtml', $Logo->getCustomLoginBackgroundHtml());
 
             $this->set('errorMessages', $errorMessages);
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation', 'disableSocialButtons', 'enableColumnLayout']);
+            $this->set('successMessages', $successMessages);
+
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'successMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation', 'disableSocialButtons', 'enableColumnLayout']);
             return;
         }
 
@@ -261,9 +270,7 @@ class UsersController extends AppController {
         }
 
 
-        $this->redirect([
-            'action' => 'login'
-        ]);
+        $this->redirect('/a/users/login');
     }
 
     public function index() {
@@ -415,6 +422,9 @@ class UsersController extends AppController {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
         if (!$UsersTable->existsById($id)) {
             throw new NotFoundException(__('User not found'));
         }
@@ -438,6 +448,22 @@ class UsersController extends AppController {
         if (!$this->allowedByContainerId($containersToCheck)) {
             $this->render403();
             return;
+        }
+
+        $userContainerRolesReadonly = !$this->hasRootPrivileges;
+        if (!$this->hasRootPrivileges) {
+            $containersWithWriteRights = $this->getWriteContainers();
+            $allowedUserContainerRoles = $UsercontainerrolesTable->getUsercontainerrolesForPermissionCheck($containersWithWriteRights);
+            $allowedUserContainerRolesIds = Hash::extract(
+                $allowedUserContainerRoles,
+                '{n}.id'
+            );
+
+            $userContainerRolesReadonly = !empty(
+            array_diff(
+                array_merge($user['User']['usercontainerroles']['_ids'], $user['User']['usercontainerroles_ldap']['_ids']),
+                $allowedUserContainerRolesIds
+            ));
         }
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
@@ -466,8 +492,9 @@ class UsersController extends AppController {
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('UserTypes', $UserTypes);
-            $this->set('notPermittedContainerIds', $notPermittedContainerIds);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds']);
+            $this->set('userContainerRolesReadonly', $userContainerRolesReadonly);
+            $this->set('notPermittedContainerIds', array_map('intval', $notPermittedContainerIds)); // Make sure its a int array for Angular
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds', 'userContainerRolesReadonly']);
             return;
         }
 
@@ -507,6 +534,10 @@ class UsersController extends AppController {
             );
             $user = $UsersTable->get($id);
             $user->setAccess('id', false);
+
+            if ($userContainerRolesReadonly) {
+                $user->setAccess('usercontainerroles', false);
+            }
 
             if ($isLdapUser) {
                 $data['is_ldap'] = true;
