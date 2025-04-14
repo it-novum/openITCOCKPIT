@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -25,6 +30,7 @@
 
 namespace MapModule\Controller;
 
+use App\itnovum\openITCOCKPIT\Core\Permissions\MapContainersPermissions;
 use App\Model\Table\ContainersTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -151,8 +157,28 @@ class MapsController extends AppController {
             return;
         }
 
+        if ($this->hasRootPrivileges === false) {
+            if (empty(array_intersect($map['Map']['containers']['_ids'], $this->getWriteContainers()))) {
+                $this->render403();
+            }
+        }
+
+        $requiredContainers = $MapsTable->getRequiredContainerIdsForMap(
+            intval($id),
+            $map['Map']['containers']['_ids']
+        );
+
+
+        $MapContainersPermissions = new MapContainersPermissions(
+            $map['Map']['containers']['_ids'],
+            $this->getWriteContainers(),
+            $this->hasRootPrivileges
+        );
+
         if ($this->request->is('get')) {
-            $this->viewBuilder()->setOption('serialize', ['map']);
+            $this->set('areContainersChangeable', $MapContainersPermissions->areContainersChangeable());
+            $this->set('requiredContainers', $requiredContainers);
+            $this->viewBuilder()->setOption('serialize', ['map', 'areContainersChangeable', 'requiredContainers']);
             $this->set('map', $map);
         }
 
@@ -167,6 +193,18 @@ class MapsController extends AppController {
 
                 $data['refresh_interval'] = ((int)$data['refresh_interval'] * 1000);
             }
+
+            if ($MapContainersPermissions->areContainersChangeable() === false) {
+                //Overwrite post data. User is not permitted to change container ids!
+                $data['Map']['containers']['_ids'] = $map['Map']['containers']['_ids'];
+            }
+            if (!empty($requiredContainers)) {
+                //autofill required containers
+                foreach ($requiredContainers as $requiredContainerId) {
+                    $data['Map']['containers']['_ids'][] = $requiredContainerId;
+                }
+            }
+
 
             $map = $MapsTable->get($id);
             $map->setAccess('id', false);
