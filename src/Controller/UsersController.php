@@ -270,9 +270,7 @@ class UsersController extends AppController {
         }
 
 
-        $this->redirect([
-            'action' => 'login'
-        ]);
+        $this->redirect('/a/users/login');
     }
 
     public function index() {
