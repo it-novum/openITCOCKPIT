@@ -174,7 +174,9 @@ class MonitoringEngine {
             // We always use Naemon for containers
             return true;
         }
-
+        if(empty($this->monitoringEngine)){
+            return false;
+        }
         $monitoringEngine = strtolower($this->monitoringEngine);
         if (preg_match('/naemon/', $monitoringEngine)) {
             return true;
