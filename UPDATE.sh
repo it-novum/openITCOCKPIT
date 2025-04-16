@@ -164,15 +164,37 @@ mysqldump --defaults-extra-file=${DUMPINIFILE} --databases $dbc_dbname --flush-p
   >$BACKUP_DIR/openitcockpit_dump_$BACKUP_TIMESTAMP.sql
 
 echo "---------------------------------------------------------------"
-echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
+# Is mysql or mariadb ?
+MYSQL_SERVER_SOFTWARE=$(mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT IF(VERSION() LIKE '%mariadb%', 'mariadb', 'mysql');")
+
+# Unicode version 4 (very old, but works everywhere)
+MYSQL_COLLATIONS="utf8mb4_general_ci"
+
+if [[ "$MYSQL_SERVER_SOFTWARE" == "mariadb" ]]; then
+  echo "Detected MariaDB"
+  echo "Convert MariaDB Tables from to utf8mb4_uca1400_ai_ci..."
+  echo "This will take a while - Please be patient"
+  # Unicode version 14 (For some reason, MariaDB supports Unicode 14 but not 9)
+  # See ITC-3408
+  MYSQL_COLLATIONS="utf8mb4_uca1400_ai_ci"
+else
+  echo "Detected MySQL"
+  echo "Convert MySQL Tables from to utf8mb4_0900_ai_ci..."
+  echo "This will take a while - Please be patient"
+  # Unicode version 9 - (MariaDB does support this since version 11.4.5 - Released 4. Feb. 2025)
+  # So we can only use this for MySQL at the moment since nobody has MariaDB 11.4.5 at the moment (31.03.2025)
+  MYSQL_COLLATIONS="utf8mb4_0900_ai_ci"
+fi
 
 # Disabled - this takes ages!
 #mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
 
-mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_COLLATION\`='utf8_general_ci'" | while read TABLE_NAME; do
-    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4; ✔"
-    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
+mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_COLLATION\` NOT LIKE '${MYSQL_COLLATIONS}'" | while read TABLE_NAME; do
+    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4 COLLATE  ${MYSQL_COLLATIONS}; ✔"
+    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4 COLLATE  ${MYSQL_COLLATIONS};"
 done
+
+mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE ${MYSQL_COLLATIONS};"
 
 echo "Running openITCOCKPIT Core database migration"
 oitc migrations migrate
@@ -241,16 +263,6 @@ for Module in "${LOADED_MODULE_SCRIPTS[@]}"; do
             module.initialize
         fi
     fi
-done
-
-echo "---------------------------------------------------------------"
-echo "Convert MySQL Tables from utf8_general_ci to utf8mb4_general_ci..."
-# Disabled - this takes ages!
-#mysql --defaults-extra-file=${INIFILE} -e "ALTER DATABASE ${dbc_dbname} CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
-
-mysql --defaults-extra-file=${INIFILE} --batch --skip-column-names -e "SELECT TABLE_NAME FROM \`information_schema\`.\`TABLES\` WHERE \`TABLE_SCHEMA\`='${dbc_dbname}' AND \`TABLE_NAME\` NOT LIKE 'nagios_%' AND \`TABLE_COLLATION\`='utf8_general_ci'" | while read TABLE_NAME; do
-    echo "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4; ✔"
-    mysql --defaults-extra-file=${INIFILE} -e "ALTER TABLE \`${TABLE_NAME}\` CONVERT TO CHARACTER SET utf8mb4;"
 done
 
 echo "Update Containertype from Devicegroup to Node"

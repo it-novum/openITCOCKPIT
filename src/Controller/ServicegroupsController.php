@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -908,6 +913,81 @@ class ServicegroupsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
 
+    public function loadServicesByStringForOptionGroup($onlyHostsWithWritePermission = false) {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        if ($this->request->is('post')) {
+            // ITC-2124
+            $containerId = $this->request->getData('containerId');
+            $selected = $this->request->getData('selected');
+        } else {
+            // Keep the API stable for GET
+            $selected = $this->request->getQuery('selected');
+            $containerId = $this->request->getQuery('containerId');
+        }
+
+        $ServiceFilter = new ServiceFilter($this->request);
+
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if ($containerId == ROOT_CONTAINER) {
+            //Don't panic! Only root users can edit /root objects ;)
+            //So no loss of selected hosts/host templates
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds(ROOT_CONTAINER, true, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_LOCATION,
+                CT_NODE
+            ]);
+        } else {
+            $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, false, [
+                CT_GLOBAL,
+                CT_TENANT,
+                CT_LOCATION,
+                CT_NODE
+            ]);
+        }
+
+        $ServiceConditions = new ServiceConditions($ServiceFilter->indexFilter());
+        $ServiceConditions->setContainerIds($containerIds);
+
+        /** @var $ServicesTable ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        $services = $ServicesTable->getServicesForAngularCake4($ServiceConditions, $selected, true);
+        $reorderServicesArray = [];
+        foreach ($services as $service) {
+            if (!isset($reorderServicesArray[$service['_matchingData']['Hosts']['name']])) {
+                $reorderServicesArray[$service['_matchingData']['Hosts']['name']] = [
+                    'label' => $service['_matchingData']['Hosts']['name'],
+                    'value' => $service['_matchingData']['Hosts']['id'],
+                    'items' => []
+                ];
+            }
+            $serviceName = $service['servicename'];
+            if ($service['disabled'] == 1) {
+                $serviceName .= '🔌';
+            }
+            $reorderServicesArray[$service['_matchingData']['Hosts']['name']]['items'][] = [
+                'label'    => $serviceName,
+                'value'    => $service['id'],
+                'disabled' => ($service['disabled'] == 1)  // if needed can be configured by parameter
+            ];
+        }
+
+
+        $reorderServicesArray = Hash::sort($reorderServicesArray, '{s}', 'asc', 'natural');
+        $services = array_values($reorderServicesArray);
+
+        $this->set('services', $services);
+        $this->viewBuilder()->setOption('serialize', ['services']);
+    }
+
     /**
      * @param int|null $containerId
      */
@@ -1082,7 +1162,8 @@ class ServicegroupsController extends AppController {
         ];
 
         $this->set('servicegroup', $servicegroup);
-        $this->viewBuilder()->setOption('serialize', ['servicegroup']);
+        $this->set('username', $User->getFullName());
+        $this->viewBuilder()->setOption('serialize', ['servicegroup', 'username']);
     }
 
     public function loadServicegroupsByContainerId() {
@@ -1152,7 +1233,7 @@ class ServicegroupsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true, [CT_SERVICEGROUP]);
 
         $tenantContainerIds = [];
 

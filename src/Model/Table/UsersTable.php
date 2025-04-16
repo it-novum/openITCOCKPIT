@@ -581,8 +581,8 @@ class UsersTable extends Table {
         //Build up data struct for radio inputs (only of user containers - NOT for container roles)
         $user['ContainersUsersMemberships'] = [];
         foreach ($query['containers'] as $container) {
-            //Cast permission_level to string for AngularJS...
-            $user['ContainersUsersMemberships'][$container['id']] = (string)$container['_joinData']['permission_level'];
+            //Cast permission_level to int for Angular... (AngularJS requires a string)
+            $user['ContainersUsersMemberships'][$container['id']] = (int)$container['_joinData']['permission_level'];
         }
 
         if (empty($user['ContainersUsersMemberships'])) {
@@ -1298,6 +1298,10 @@ class UsersTable extends Table {
             $newImageFull = $path . $newImage;
 
             $imgsize = getimagesize($tmpImageFull);
+            if (!isset($imgsize[0])) {
+                // Not an image at all?
+                return false;
+            }
             $width = $imgsize[0];
             $height = $imgsize[1];
             $imgtype = $imgsize[2];
@@ -1486,19 +1490,19 @@ class UsersTable extends Table {
         $types = [
             'LOCAL_USER' => [
                 'title' => __('Local user'),
-                'color' => 'text-generic',
+                'color' => 'info',
                 'class' => 'border-generic'
             ],
 
             'LDAP_USER' => [
                 'title' => __('LDAP user'),
-                'color' => 'text-prometheus',
+                'color' => 'warning',
                 'class' => 'border-prometheus'
             ],
 
             'OAUTH_USER' => [
                 'title' => __('OAuth user'),
-                'color' => 'text-evc',
+                'color' => 'primary',
                 'class' => 'border-evc'
             ]
 

@@ -1,4 +1,26 @@
 <?php
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\Model\Table;
 
@@ -1360,52 +1382,58 @@ class ServicetemplatesTable extends Table {
      */
     public function getServicetemplateTypesWithStyles() {
         $types[GENERIC_SERVICE] = [
-            'title' => __('Generic templates'),
-            'color' => 'text-generic',
-            'class' => 'border-generic',
-            'icon'  => 'fa fa-cog'
+            'title'  => __('Generic templates'),
+            'color'  => 'text-generic',
+            'class'  => 'border-generic',
+            'icon'   => ['fas', 'cog'],
+            'rotate' => 0
         ];
 
         if (Plugin::isLoaded('EventcorrelationModule')) {
             $types[EVK_SERVICE] = [
-                'title' => __('EVC templates'),
-                'color' => 'text-evc',
-                'class' => 'border-evc',
-                'icon'  => 'fa fa-sitemap fa-rotate-90'
+                'title'  => __('EVC templates'),
+                'color'  => 'text-evc',
+                'class'  => 'border-evc',
+                'icon'   => ['fas', 'sitemap'],
+                'rotate' => 90
             ];
         }
 
         if (Plugin::isLoaded('CheckmkModule')) {
             $types[MK_SERVICE] = [
-                'title' => __('Checkmk templates'),
-                'color' => 'text-mk',
-                'class' => 'border-mk',
-                'icon'  => 'fas fa-search-plus'
+                'title'  => __('Checkmk templates'),
+                'color'  => 'text-mk',
+                'class'  => 'border-mk',
+                'icon'   => ['fas', 'search-plus'],
+                'rotate' => 0
             ];
         }
 
         if (Plugin::isLoaded('PrometheusModule')) {
             $types[PROMETHEUS_SERVICE] = [
-                'title' => __('Prometheus templates'),
-                'color' => 'text-prometheus',
-                'class' => 'border-prometheus',
-                'icon'  => 'fas fa-burn'
+                'title'  => __('Prometheus templates'),
+                'color'  => 'text-prometheus',
+                'class'  => 'border-prometheus',
+                'icon'   => ['fas', 'burn'],
+                'rotate' => 0
             ];
         }
 
         $types[OITC_AGENT_SERVICE] = [
-            'title' => __('Agent templates'),
-            'color' => 'text-agent',
-            'class' => 'border-agent',
-            'icon'  => 'fa fa-user-secret'
+            'title'  => __('Agent templates'),
+            'color'  => 'text-agent',
+            'class'  => 'border-agent',
+            'icon'   => ['fas', 'user-secret'],
+            'rotate' => 0
         ];
 
         if (Plugin::isLoaded('ImportModule')) {
             $types[EXTERNAL_SERVICE] = [
-                'title' => __('External templates'),
-                'color' => 'text-external',
-                'class' => 'border-external',
-                'icon'  => 'fa-solid fa-tower-observation'
+                'title'  => __('External templates'),
+                'color'  => 'text-external',
+                'class'  => 'border-external',
+                'icon'   => ['fas', 'tower-observation'],
+                'rotate' => 0
             ];
         }
 

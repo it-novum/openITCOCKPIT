@@ -1,30 +1,30 @@
 <?php declare(strict_types=1);
-// Copyright (C) <2024>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\Perfdata;
 
-use \InvalidArgumentException;
+use InvalidArgumentException;
 
 class ScaleType {
     /**
@@ -121,18 +121,24 @@ class ScaleType {
         # echo "$crit->low < $warn->low < $warn->high < $crit->high";
         if (false) {
             // Just for legibility
-        } else if ($invert && self::validateOrder($crit->low, $warn->low, $warn->high, $crit->high)) {
+        } else if ($invert && self::validateOrder($warn->low, $crit->low, $crit->high, $warn->high)) {
             return ScaleType::O_W_C_W_O;
+
         } else if (!$invert && self::validateOrder($crit->low, $warn->low, $warn->high, $crit->high)) {
             return ScaleType::C_W_O_W_C;
+
         } else if (self::validateOrder($warn->low, $crit->low)) {
             return ScaleType::O_W_C;
+
         } else if (self::validateOrder($crit->low, $warn->low)) {
             return ScaleType::C_W_O;
+
         } else if ($warn->high && $crit->high === null) {
             return ScaleType::O_W;
+
         } else if ($warn->low && $crit->low === null) {
             return ScaleType::W_O;
+
         } else if ($warn->low === null && $warn->high === null && $crit->low === null && $crit->high === null) {
             return ScaleType::O;
         }
@@ -141,7 +147,7 @@ class ScaleType {
     }
 
     public static function findMin(): ?float {
-        $last   = null;
+        $last = null;
         $values = func_get_args();
         foreach ($values as $value) {
             if ($value === null) {
@@ -154,7 +160,7 @@ class ScaleType {
         if ($last === null) {
             return null;
         }
-        return  (float)$last;
+        return (float)$last;
     }
 
     public static function findMax(): ?float {
@@ -174,3 +180,62 @@ class ScaleType {
         return (float)$last;
     }
 }
+
+// Check Plugin for testing
+/*
+ #!/usr/bin/php
+<?php
+
+$type = $_SERVER['argv'][1];
+
+$min = -10;
+$max = 10;
+$value = rand($min, $max);
+$wl = -3;
+$wh = 3;
+$cl = -5;
+$ch = 5;
+
+
+switch($type){
+
+        case 'W<O':
+                echo "Case 'W<O' | value=$value;$wl;;;\n";
+                break;
+
+        case 'C<W<O':
+                // : < 10, (outside {10 .. ∞})
+                echo "Case 'C<W<O' | value=$value;$wl:;$cl:;;\n";
+                break;
+
+        case 'O<W':
+                //
+                echo "Case 'O<W' | value=$value;$wl:$wh;;;\n";
+                break;
+
+        case 'O<W<C':
+                echo "Case 'O<W<C' | value=$value;$wh;$ch;;\n";
+                break;
+
+        case 'C<W<O<W<C':
+                // < 10 or > 20, (outside the range of {10 .. 20})
+                echo "Case 'C<W<O<W<C' | value=$value;$wl:$wh;$cl:$ch;;\n";
+                break;
+
+        case 'O<W<C<W<O':
+                // @ ≥ 10 and ≤ 20, (inside the range of {10 .. 20})
+                echo "Case 'O<W<C<W<O' | value=$value;@-5:5;@-3:3;;\n";
+                break;
+
+        case 'O':
+                echo "Case 'O' | value=$value;;;;\n";
+                break;
+
+        default:
+                echo "Unsupported type '$type'\n";
+                exit(1);
+
+}
+
+exit(0);
+ */

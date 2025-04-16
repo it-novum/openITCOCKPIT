@@ -43,91 +43,98 @@ $css = \App\itnovum\openITCOCKPIT\Core\AngularJS\PdfAssets::getCssFiles();
 
 ?>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <?php
     foreach ($css as $cssFile): ?>
         <link rel="stylesheet" type="text/css" href="<?php echo WWW_ROOT . $cssFile; ?>"/>
     <?php endforeach; ?>
 </head>
 <body>
-<div class="row">
-    <div class="col-6 padding-left-15 font-lg">
-        <i class="fa fa-file-text" style="font-size: 20px!important;"></i>
-        <?php echo __('Event Logs'); ?>
+<div class="container-fluid">
+
+    <div class="row">
+        <div class="col-6">
+            <h6>
+                <i class="fa-solid fa-file-text"></i>
+                <?php echo __('Event Logs Overview'); ?>
+            </h6>
+        </div>
+        <div class="col-6 text-end">
+            <img src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
+        </div>
     </div>
-    <div class="col-6">
-        <img class="float-right" src="<?php echo $Logo->getLogoPdfPath(); ?>" width="200"/>
+    <div class="col-12 mb-1">
+        <div>
+            <i class="fa-solid fa-calendar"></i> <?php echo date('F d, Y H:i:s'); ?>
+        </div>
     </div>
-</div>
-<div class="col-12 no-padding">
-    <div class="text-left padding-left-5">
-        <i class="fa fa-calendar txt-color-blueDark"></i> <?php echo date('F d, Y H:i:s'); ?>
+    <div class="col-12">
+        <div>
+            <i class="fa-solid fa-list-ol"></i> <?php echo __('Number of Events: ' . sizeof($all_events)); ?>
+        </div>
     </div>
-</div>
-<div class="col-12 no-padding">
-    <div class="text-left padding-left-5">
-        <i class="fa fa-list-ol txt-color-blueDark"></i> <?php echo __('Number of Events: ' . sizeof($all_events)); ?>
-    </div>
-</div>
-<div class="padding-top-10">
-    <table class="table table-striped m-0 table-bordered table-hover table-sm">
-        <thead>
-        <tr>
-            <th colspan="2">
-                <?php echo __('Event Type'); ?>
-            </th>
-            <th>
-                <?php echo __('Name'); ?>
-            </th>
-            <?php if (in_array('login', $logTypes) || in_array('user_delete', $logTypes) || in_array('user_password_change', $logTypes)): ?>
-                <th>
-                    <?php echo __('Email'); ?>
-                </th>
-            <?php endif; ?>
-            <th>
-                <?php echo __('Date'); ?>
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <?php foreach ($all_events as $event): ?>
+    <div class="padding-top-10">
+        <table class="table table-striped table-bordered table-sm m-0">
+            <thead>
             <tr>
-                <td>
-                    <i class="<?= h($typeIconClasses[$event['type']]); ?>"
-                       title="<?= h($typeTranslations[$event['type']]); ?>">
-                </td>
-                <td>
-                    <?= h($typeTranslations[$event['type']]); ?>
-                </td>
-                <td>
-                    <?php if ($event['recordExists']): ?>
-                        <?= h($event['name']); ?>
-                    <?php else: ?>
-                        <s><?= h($event['name']); ?></s>
-                    <?php endif; ?>
-                </td>
+                <th colspan="2">
+                    <?php echo __('Event Type'); ?>
+                </th>
+                <th>
+                    <?php echo __('Name'); ?>
+                </th>
                 <?php if (in_array('login', $logTypes) || in_array('user_delete', $logTypes) || in_array('user_password_change', $logTypes)): ?>
+                    <th>
+                        <?php echo __('Email'); ?>
+                    </th>
+                <?php endif; ?>
+                <th>
+                    <?php echo __('Date'); ?>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <?php foreach ($all_events as $event): ?>
+                <tr>
                     <td>
+                        <i class="<?= h($typeIconClasses[$event['type']]['iconPdf']); ?> <?= h($typeIconClasses[$event['type']]['className']); ?>"
+                           title="<?= h($typeTranslations[$event['type']]); ?>">
+                    </td>
+                    <td>
+                        <?= h($typeTranslations[$event['type']]); ?>
+                    </td>
+                    <td class="wrap">
                         <?php if ($event['recordExists']): ?>
-                            <?= h($event['user_email']); ?>
+                            <?= h($event['name']); ?>
                         <?php else: ?>
-                            <s><?= h($event['data']['user_email']); ?></s>
+                            <s><?= h($event['name']); ?></s>
                         <?php endif; ?>
                     </td>
-                <?php endif; ?>
-                <td>
-                    <?= h($event['time']); ?>
-                </td>
-            </tr>
-        <?php endforeach; ?>
+                    <?php if (in_array('login', $logTypes) || in_array('user_delete', $logTypes) || in_array('user_password_change', $logTypes)): ?>
+                        <td>
+                            <?php if ($event['recordExists']): ?>
+                                <?= h($event['user_email']); ?>
+                            <?php else: ?>
+                                <s><?= h($event['data']['user_email']); ?></s>
+                            <?php endif; ?>
+                        </td>
+                    <?php endif; ?>
+                    <td>
+                        <?= h($event['time']); ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
 
         <?php if (empty($all_events)): ?>
-            <div class="noMatch">
-                <center>
-                    <span class="txt-color-red italic"><?php echo __('No entries match the selection'); ?></span>
-                </center>
+            <div class="w-100 text-center text-danger italic pt-1">
+                <?php echo __('No entries match the selection'); ?>
             </div>
         <?php endif; ?>
-        </tbody>
-    </table>
+
+    </div>
 </div>
 </body>

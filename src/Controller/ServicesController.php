@@ -319,8 +319,11 @@ class ServicesController extends AppController {
             $all_services[] = $tmpRecord;
         }
 
+        $satellites = Api::makeItJavaScriptAble($satellites);
         $this->set('all_services', $all_services);
-        $this->viewBuilder()->setOption('serialize', ['all_services']);
+        $this->set('username', $User->getFullName());
+        $this->set('satellites', $satellites);
+        $this->viewBuilder()->setOption('serialize', ['all_services', 'username', 'satellites']);
     }
 
     /**
@@ -423,27 +426,25 @@ class ServicesController extends AppController {
         }
 
         $hostContainers = [];
+        foreach ($services as $index => $service) {
+            $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+
+        }
         if ($this->hasRootPrivileges === false) {
-            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                foreach ($services as $index => $service) {
-                    $hostId = $service['_matchingData']['Hosts']['id'];
-                    if (!isset($hostContainers[$hostId])) {
-                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
-                    }
-                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
-                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
-                }
-            }
-        } else {
-            //Root user
             foreach ($services as $index => $service) {
-                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+                $hostId = $service['_matchingData']['Hosts']['id'];
+                if (!isset($hostContainers[$hostId])) {
+                    $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
+                }
+
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
             }
         }
 
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState();
+        $HoststatusFields->currentState()->isHardstate();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
@@ -507,28 +508,26 @@ class ServicesController extends AppController {
         $services = $ServicesTable->getServicesForDisabled($ServiceConditions, $PaginateOMat);
 
         $hostContainers = [];
-        if ($this->hasRootPrivileges === false) {
-            if ($this->hasPermission('edit', 'hosts') && $this->hasPermission('edit', 'services')) {
-                foreach ($services as $index => $service) {
-                    $hostId = $service['_matchingData']['Hosts']['id'];
-                    if (!isset($hostContainers[$hostId])) {
-                        $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
-                    }
 
-                    $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
-                    $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
-                }
-            }
-        } else {
-            //Root user
+        foreach ($services as $index => $service) {
+            $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+
+        }
+        if ($this->hasRootPrivileges === false) {
             foreach ($services as $index => $service) {
-                $services[$index]['allow_edit'] = $this->hasRootPrivileges;
+                $hostId = $service['_matchingData']['Hosts']['id'];
+                if (!isset($hostContainers[$hostId])) {
+                    $hostContainers[$hostId] = $HostsTable->getHostContainerIdsByHostId($hostId);
+                }
+
+                $ContainerPermissions = new ContainerPermissions($this->MY_RIGHTS_LEVEL, $hostContainers[$hostId]);
+                $services[$index]['allow_edit'] = $ContainerPermissions->hasPermission();
             }
         }
 
         $HoststatusTable = $this->DbBackend->getHoststatusTable();
         $HoststatusFields = new HoststatusFields($this->DbBackend);
-        $HoststatusFields->currentState();
+        $HoststatusFields->currentState()->isHardstate();
         $hoststatusCache = $HoststatusTable->byUuid(
             array_unique(Hash::extract($services, '{n}._matchingData.Hosts.uuid')),
             $HoststatusFields
@@ -1410,12 +1409,13 @@ class ServicesController extends AppController {
 
         $canUserSeeCheckCommand = isset($this->PERMISSIONS['services']['checkcommand']);
 
-        if ($this->isHtmlRequest()) {
-            /** @var SystemsettingsTable $SystemsettingsTable */
-            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
-            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
+        $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
+        if ($this->isHtmlRequest()) {
             //Only ship template
             $this->set('username', $User->getFullName());
             $this->set('blurryCommandLine', $blurryCommandLine);
@@ -1625,6 +1625,7 @@ class ServicesController extends AppController {
         $HoststatusFields = new HoststatusFields($this->DbBackend);
         $HoststatusFields
             ->currentState()
+            ->isHardstate()
             ->problemHasBeenAcknowledged()
             ->scheduledDowntimeDepth()
             ->lastStateChange();
@@ -1854,6 +1855,9 @@ class ServicesController extends AppController {
         $this->set('sharedContainers', $sharedContainers);
         $this->set('objects', $objects);
         $this->set('usageFlag', $serviceObj->getUsageFlag());
+        $this->set('username', $User->getFullName());
+        $this->set('blurryCommandLine', $blurryCommandLine);
+        $this->set('masterInstanceName', $masterInstanceName);
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedService',
@@ -1877,7 +1881,10 @@ class ServicesController extends AppController {
             'sharedContainers',
             'objects',
             'usageFlag',
-            'mapModule'
+            'mapModule',
+            'username',
+            'blurryCommandLine',
+            'masterInstanceName'
         ]);
     }
 
@@ -3067,6 +3074,10 @@ class ServicesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['services']);
     }
 
+    /**
+     * @return void
+     * @deprecated
+     */
     public function loadServicesByContainerIdCake4() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
@@ -3083,7 +3094,7 @@ class ServicesController extends AppController {
         }
 
         $ServiceFilter = new ServiceFilter($this->request);
-        
+
         $containerIds = [ROOT_CONTAINER, $containerId];
 
         /** @var $ContainersTable ContainersTable */

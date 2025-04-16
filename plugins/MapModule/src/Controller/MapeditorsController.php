@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -1179,11 +1184,12 @@ class MapeditorsController extends AppController {
      * @param null $id
      */
     public function edit($id = null) {
+
+        /** @var MapUploadsTable $MapUploadsTable */
+        $MapUploadsTable = TableRegistry::getTableLocator()->get('MapModule.MapUploads');
+
         if (!$this->isApiRequest() && $id === null) {
             //Only ship template
-
-            /** @var MapUploadsTable $MapUploadsTable */
-            $MapUploadsTable = TableRegistry::getTableLocator()->get('MapModule.MapUploads');
 
             $gadgetPreviews = [
                 'RRDGraph'      => 'graph_gadget.png',
@@ -1194,10 +1200,21 @@ class MapeditorsController extends AppController {
                 'Temperature'   => 'temperature_gadget.png',
                 'ServiceOutput' => 'serviceoutput_gadget.png'
             ];
+
             $this->set('gadgetPreviews', $gadgetPreviews);
             $this->set('requiredIcons', $MapUploadsTable->getIconsNames());
             return;
         }
+
+        $gadgetPreviews = [
+            ['name' => 'RRDGraph', 'preview' => 'graph_gadget.png'],
+            ['name' => 'Tacho', 'preview' => 'tacho_gadget.png'],
+            ['name' => 'TrafficLight', 'preview' => 'trafficlight_gadget.png'],
+            ['name' => 'Cylinder', 'preview' => 'cylinder_gadget.png'],
+            ['name' => 'Text', 'preview' => 'perfdata_gadget.png'],
+            ['name' => 'Temperature', 'preview' => 'temperature_gadget.png'],
+            ['name' => 'ServiceOutput', 'preview' => 'serviceoutput_gadget.png']
+        ];
 
         $FileUploadSize = new FileUploadSize();
         /** @var MapsTable $MapsTable */
@@ -1227,12 +1244,16 @@ class MapeditorsController extends AppController {
         $this->set('maxUploadLimit', $FileUploadSize->toArray());
         $this->set('max_z_index', $MapForAngular->getMaxZIndex());
         $this->set('layers', $MapForAngular->getLayers());
+        $this->set('gadgetPreviews', $gadgetPreviews);
+        $this->set('requiredIcons', $MapUploadsTable->getIconsNames());
         $this->viewBuilder()->setOption('serialize', [
             'map',
             'maxUploadLimit',
             'max_z_index',
             'layers',
-            'config'
+            'config',
+            'gadgetPreviews',
+            'requiredIcons'
         ]);
     }
 
@@ -1821,6 +1842,74 @@ class MapeditorsController extends AppController {
             throw new NotFoundException();
         }
 
+        //Save new possition after drag and drop
+        if ($this->request->getData('action') === 'dragstop') {
+            $map = $MapsTable->get($id, [
+                'contain' => [
+                    'Containers',
+                    'Mapgadgets',
+                    'Mapicons',
+                    'Mapitems',
+                    'Maplines',
+                    'Maptexts',
+                    'Mapsummaryitems'
+                ]
+            ]);
+
+            $map->background_x = (int)$this->request->getData('Map.background_x');
+            $map->background_y = (int)$this->request->getData('Map.background_y');
+
+            $MapsTable->save($map);
+            if (!$map->hasErrors()) {
+
+                $this->set('Map', [
+                    'Map' => $map
+                ]);
+
+                $this->viewBuilder()->setOption('serialize', ['Map']);
+                return;
+            }
+
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $map->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
+        //Save new background size
+        if ($this->request->getData('action') === 'resizestop') {
+            $map = $MapsTable->get($id, [
+                'contain' => [
+                    'Containers',
+                    'Mapgadgets',
+                    'Mapicons',
+                    'Mapitems',
+                    'Maplines',
+                    'Maptexts',
+                    'Mapsummaryitems'
+                ]
+            ]);
+
+            $map->background_size_x = (int)$this->request->getData('Map.background_size_x');
+            $map->background_size_y = (int)$this->request->getData('Map.background_size_y');
+
+            $MapsTable->save($map);
+            if (!$map->hasErrors()) {
+
+                $this->set('Map', [
+                    'Map' => $map
+                ]);
+
+                $this->viewBuilder()->setOption('serialize', ['Map']);
+                return;
+            }
+
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $map->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
+            return;
+        }
+
         $map = $MapsTable->get($id, [
             'contain' => [
                 'Containers',
@@ -1834,7 +1923,10 @@ class MapeditorsController extends AppController {
         ]);
 
         $map->background = $this->request->getData('Map.background');
-
+        $map->background_x = $this->request->getData('Map.background_x');
+        $map->background_y = $this->request->getData('Map.background_y');
+        $map->background_size_x = $this->request->getData('Map.background_size_x');
+        $map->background_size_y = $this->request->getData('Map.background_size_y');
 
         $MapsTable->save($map);
         if ($map->hasErrors()) {

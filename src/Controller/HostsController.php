@@ -148,7 +148,6 @@ class HostsController extends AppController {
             $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
         }
-
         if (!$this->isApiRequest()) {
             $this->set('username', $User->getFullName());
             $this->set('satellites', $satellites);
@@ -279,10 +278,13 @@ class HostsController extends AppController {
 
             $satelliteName = $masterInstanceName;
             $satellite_id = 0;
+            $satelliteRestricted = false;
 
             if ($Host->isSatelliteHost() && isset($satellites[$Host->getSatelliteId()])) {
                 $satelliteName = $satellites[$Host->getSatelliteId()];
                 $satellite_id = $Host->getSatelliteId();
+            } else if ($Host->isSatelliteHost() && !isset($satellites[$Host->getSatelliteId()])) {
+                $satelliteRestricted = true;
             }
 
             $downtime = [];
@@ -313,15 +315,16 @@ class HostsController extends AppController {
             $tmpRecord['Host']['allow_sharing'] = $allowSharing;
             $tmpRecord['Host']['satelliteName'] = $satelliteName;
             $tmpRecord['Host']['satelliteId'] = $satellite_id;
+            $tmpRecord['Host']['satelliteRestricted'] = $satelliteRestricted;
             $tmpRecord['Host']['allow_edit'] = $allowEdit;
             $tmpRecord['Host']['type'] = $typesForView[$host['Host']['host_type']];
             $tmpRecord['Host']['additionalInformationExists'] = $additionalInformationExists;
 
             $all_hosts[] = $tmpRecord;
         }
-
         $this->set('all_hosts', $all_hosts);
-        $this->viewBuilder()->setOption('serialize', ['all_hosts']);
+        $this->set('username', $User->getFullName());
+        $this->viewBuilder()->setOption('serialize', ['all_hosts', 'username']);
     }
 
     public function icon() {
@@ -1053,6 +1056,7 @@ class HostsController extends AppController {
             $ContactgroupCache = new KeyValueStore();
             $ObjectsCacheChangelog = new ObjectsCache();
             foreach ($hostIds as $hostId) {
+                $hasChanges = false;
 
                 $hostArray = $HostsTable->getHostByIdWithDetails($hostId);
                 $hosttemplateId = $hostArray['Host']['hosttemplate_id'];
@@ -1110,7 +1114,7 @@ class HostsController extends AppController {
                     $mergedHost = $HostMergerForView->getDataForView();
 
                     foreach ($editDetailKeysToFields as $editDetailKey => $editDetailField) {
-                        if ($detailsToEdit[$editDetailKey] == 1) {
+                        if ($detailsToEdit[$editDetailKey]) {
                             if (!empty($detailsToEdit['Host'][$editDetailField]) && $detailsToEdit['Host'][$editDetailField] != $mergedHost['Host'][$editDetailField]) {
                                 $hostArray['Host'][$editDetailField] = $detailsToEdit['Host'][$editDetailField];
                                 $hasChanges = true;
@@ -1118,7 +1122,7 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($detailsToEdit['editSatellites'] == 1) {
+                    if ($detailsToEdit['editSatellites']) {
                         if ($hostArray['Host']['host_type'] !== EVK_HOST) {
                             if (is_numeric($detailsToEdit['Host']['satellite_id']) && $detailsToEdit['Host']['satellite_id'] != $hostArray['Host']['satellite_id']) {
                                 $hostArray['Host']['satellite_id'] = $detailsToEdit['Host']['satellite_id'];
@@ -1127,9 +1131,9 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($detailsToEdit['editSharedContainers'] == 1) {
+                    if ($detailsToEdit['editSharedContainers']) {
                         if (!empty($detailsToEdit['Host']['hosts_to_containers_sharing']['_ids'])) {
-                            if ($detailsToEdit['keepSharedContainers'] == 1) {
+                            if ($detailsToEdit['keepSharedContainers']) {
                                 $containerIds = array_merge(
                                     $sharedContainers,
                                     $detailsToEdit['Host']['hosts_to_containers_sharing']['_ids']
@@ -1149,7 +1153,7 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($detailsToEdit['editContacts'] == 1) {
+                    if ($detailsToEdit['editContacts']) {
                         $newContacts = $detailsToEdit['Host']['contacts']['_ids'];
                         $allContactsAreVisibleForUser = empty($mergedHost['Host']['contacts']) && empty($hosttemplate['Hosttemplate']['contacts']);
                         $contactsFromHost = [];
@@ -1233,7 +1237,7 @@ class HostsController extends AppController {
                         }
                     }
 
-                    if ($detailsToEdit['editContactgroups'] == 1) {
+                    if ($detailsToEdit['editContactgroups']) {
                         $newContactgroups = $detailsToEdit['Host']['contactgroups']['_ids'];
                         $allContactGroupsAreVisibleForUser = empty($mergedHost['Host']['contactgroups']) && empty($hosttemplate['Hosttemplate']['contactgroups']);
                         if (!empty($newContactgroups)) {
@@ -1708,6 +1712,8 @@ class HostsController extends AppController {
                 if (!$HostsTable->existsById($host2copyData['Source']['id'])) {
                     continue;
                 }
+
+                $contactsIds = [];
                 if (!isset($host2copyData['Host']['id'])) {
                     $hostgroupsIds = [];
                     $parenthostsIds = [];
@@ -2039,11 +2045,12 @@ class HostsController extends AppController {
         /** @var SystemsettingsTable $SystemsettingsTable */
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
+        $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
+        $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
+
         if ($this->isHtmlRequest()) {
             //Only ship template
 
-            $masterInstanceName = $SystemsettingsTable->getMasterInstanceName();
-            $blurryCommandLine = $SystemsettingsTable->blurCheckCommand();
             $this->set('masterInstanceName', $masterInstanceName);
             $this->set('blurryCommandLine', $blurryCommandLine);
             $this->set('username', $User->getFullName());
@@ -2126,8 +2133,9 @@ class HostsController extends AppController {
             $sharedContainers = [];
             foreach ($host['hosts_to_containers_sharing'] as $container) {
                 if (isset($container['id']) && $container['id'] != $host['container_id']) {
-                    $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
-                    //$sharedContainers[$container['id']] = $ContainersTable->treePath($container['id']);
+                    if (isset($this->MY_RIGHTS_LEVEL[$container['id']])) {
+                        $sharedContainers[$container['id']] = $ContainersTable->getTreePathForBrowser($container['id'], $this->MY_RIGHTS_LEVEL);
+                    }
                 }
             }
         } else {
@@ -2299,7 +2307,7 @@ class HostsController extends AppController {
         //Load parent hosts and parent host status
         $parenthosts = $host['parenthosts'];
         $ParentHoststatusFields = new HoststatusFields($this->DbBackend);
-        $ParentHoststatusFields->currentState()->lastStateChange();
+        $ParentHoststatusFields->currentState()->lastStateChange()->isHardstate();
         $parentHostStatusRaw = $HoststatusTable->byUuid(
             Hash::extract($host['parenthosts'], '{n}.uuid'),
             $ParentHoststatusFields
@@ -2379,6 +2387,9 @@ class HostsController extends AppController {
         $this->set('canSubmitExternalCommands', $canSubmitExternalCommands);
         $this->set('objects', $objects);
         $this->set('satelliteId', $hostObj->getSatelliteId());
+        $this->set('username', $User->getFullName());
+        $this->set('blurryCommandLine', $blurryCommandLine);
+        $this->set('masterInstanceName', $masterInstanceName);
 
         $this->viewBuilder()->setOption('serialize', [
             'mergedHost',
@@ -2398,7 +2409,10 @@ class HostsController extends AppController {
             'canSubmitExternalCommands',
             'objects',
             'satelliteId',
-            'mapModule'
+            'mapModule',
+            'username',
+            'blurryCommandLine',
+            'masterInstanceName'
         ]);
     }
 
@@ -3081,15 +3095,19 @@ class HostsController extends AppController {
     /**
      * @param $containerId
      * @param int $hostId
+     * @param int $isEvCHost // Add only
      * @throws \Exception
      */
-    public function loadElementsByContainerId($containerId, $hostId = 0) {
+    public function loadElementsByContainerId($containerId, $hostId = 0, $isEvCHost = 0) {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
         }
 
         $hostId = (int)$hostId;
         $hosttemplateType = GENERIC_HOST;
+        if ($isEvCHost) {
+            $hosttemplateType = EVK_HOSTTEMPLATE;
+        }
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
@@ -3161,8 +3179,19 @@ class HostsController extends AppController {
             /** @var $SatellitesTable SatellitesTable */
             $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
 
-            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($this->MY_RIGHTS);
+            $MY_RIGHTS = [];
+            if ($this->hasRootPrivileges === false) {
+                $MY_RIGHTS = $this->MY_RIGHTS;
+            }
+
+            $satellites = $SatellitesTable->getSatellitesAsListWithDescription($MY_RIGHTS);
             $satellites[0] = $masterInstanceName;
+
+            if (isset($host) && $this->hasRootPrivileges === false && $host->satellite_id != 0 && !isset($satellites[$host->satellite_id])) {
+                // if shared host the user has maybe no rights to see the satellite
+                $satellites = [];
+                $satellites[$host->satellite_id] = __('Restricted view');
+            }
         }
         $satellites = Api::makeItJavaScriptAble($satellites);
 

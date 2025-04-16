@@ -1,26 +1,26 @@
 <?php
-// Copyright (C) <2018>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 // 2.
-//  If you purchased an openITCOCKPIT Enterprise Edition you can use this file
-//  under the terms of the openITCOCKPIT Enterprise Edition license agreement.
-//  License agreement and license key will be shipped with the order
-//  confirmation.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace itnovum\openITCOCKPIT\ConfigGenerator;
 
@@ -173,12 +173,15 @@ class phpNSTAMaster extends ConfigGenerator implements ConfigInterface {
             }
         }
 
-        $grepCommand = 'ps -eaf | grep "/opt/openitc/nagios/bin/naemon -d /opt/openitc/etc/nagios/nagios.cfg" |grep -v "grep"';
+        // replacement of ps -eaf because it takes ps too long to display the username in an LDAP based setup
+        // https://www.ibm.com/support/pages/apar/IJ08995
+        // we have no need for the username, so we can use the faster ps -eo command
+        $grepCommand = 'ps -eo command | grep "/opt/openitc/nagios/bin/naemon -d /opt/openitc/etc/nagios/nagios.cfg" |grep -v "grep"';
         $MonitoringEngine = new MonitoringEngine();
-        if($MonitoringEngine->isNagios()){
-            $grepCommand = 'ps -eaf | grep "/opt/openitc/nagios/bin/nagios -d /opt/openitc/etc/nagios/nagios.cfg" |grep -v "grep"';
+        if ($MonitoringEngine->isNagios()) {
+            $grepCommand = 'ps -eo command | grep "/opt/openitc/nagios/bin/nagios -d /opt/openitc/etc/nagios/nagios.cfg" |grep -v "grep"';
 
-            if($configToExport['use_spooldir'] == '3'){
+            if ($configToExport['use_spooldir'] == '3') {
                 //Query handler not supported by Nagios 4.x
                 //Fallback to nagios.cmd
                 $configToExport['use_spooldir'] = '2';
@@ -200,7 +203,7 @@ class phpNSTAMaster extends ConfigGenerator implements ConfigInterface {
         }
 
         require_once $this->linkedOutfile;
-        if(!isset($config)){
+        if (!isset($config)) {
             return false;
         }
         $configFromFile = $config; //$config gets defined in required file

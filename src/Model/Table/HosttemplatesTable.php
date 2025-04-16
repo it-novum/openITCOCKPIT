@@ -1,4 +1,26 @@
 <?php
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\Model\Table;
 
@@ -16,7 +38,6 @@ use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Filter\HosttemplateFilter;
 
 /**
@@ -1319,18 +1340,20 @@ class HosttemplatesTable extends Table {
      */
     public function getHosttemplateTypesWithStyles() {
         $types[GENERIC_HOST] = [
-            'title' => __('Generic templates'),
-            'color' => 'text-generic',
-            'class' => 'border-generic',
-            'icon'  => 'fa fa-cog'
+            'title'  => __('Generic templates'),
+            'color'  => 'text-generic',
+            'class'  => 'border-generic',
+            'icon'   => ['fas', 'cog'],
+            'rotate' => 0
         ];
 
         if (Plugin::isLoaded('EventcorrelationModule')) {
             $types[EVK_HOST] = [
-                'title' => __('EVC templates'),
-                'color' => 'text-evc',
-                'class' => 'border-evc',
-                'icon'  => 'fa fa-sitemap fa-rotate-90'
+                'title'  => __('EVC templates'),
+                'color'  => 'text-evc',
+                'class'  => 'border-evc',
+                'icon'   => ['fas', 'sitemap'],
+                'rotate' => 90
             ];
         }
         return $types;
