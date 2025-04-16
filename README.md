@@ -6,7 +6,6 @@ and [Prometheus](https://prometheus.io/)
 ![openITCOCKPIT Logo](https://openitcockpit.io/assets/images/site/logos/logo_open_it_cockpit_community_edition_rgb.svg)
 
 [![Discord: ](https://img.shields.io/badge/Discord-Discord.svg?label=&logo=discord&logoColor=ffffff&color=7389D8&labelColor=6A7EC2)](https://discord.gg/G8KhxKuQ9G)
-[![Twitter: ](https://img.shields.io/twitter/follow/openitcockpit?style=social)](https://twitter.com/openitcockpit)
 [![Reddit: ](https://img.shields.io/reddit/subreddit-subscribers/openitcockpit?style=social)](https://www.reddit.com/r/openitcockpit/)
 [![IRC: #openitcockpit on chat.freenode.net](https://img.shields.io/badge/%23openitcockpit-Libera.Chat-blue.svg)](https://web.libera.chat/#openitcockpit)
 [![Build Status Stable](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&subject=stable)](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&subject=stable)
@@ -18,7 +17,10 @@ openITCOCKPIT is an Open Source system monitoring tool built for different monit
 Prometheus.
 
 So easy that everyone can use it: create your entire monitoring configuration with a few clicks due to our smart
-interface written in PHP
+interface.
+
+This is the repository of the backend server code, that is providing the API for
+the [official openITCOCKPIT frontend](https://github.com/it-novum/openITCOCKPIT-frontend-angular).
 
 ![openITCOCKPIT](screenshots/dashboard_v4.png?raw=true "openITCOCKPIT")
 
@@ -38,9 +40,8 @@ Password: demo123
 
 | Distribution | Stable                                                                                                           | Nightly                                                                                                           |
 |--------------|------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| Focal        | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
 | Jammy        | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
-| Bullseye     | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
+| Noble        | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
 | Bookworm     | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
 | RHEL 8       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
 | RHEL 9       | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fstable&style=flat-square) | ![status](https://drone.openitcockpit.io/buildStatus/icon?job=openitcockpit-packages%2Fnightly&style=flat-square) |
@@ -50,15 +51,13 @@ Password: demo123
 
 * Ubuntu LTS or Debian
 * 2 CPU cores (x86-64)
-* 2 GB RAM
-* 40 GB space
+* 4 GB RAM
+* 60 GB space
 
 ### Production system sizing
 
 Unfortunately there is no golden rule for the right sizing of a monitoring system. This depends on the amount of hosts
 and services you like to monitor.
-
-Please keep in mind that a monitoring system usually will create more I/O than your KVM farm!
 
 It's recommended to use SSD as main storage.
 
@@ -70,7 +69,7 @@ A rough guide:
 
 # Installation
 
-openITCOCKPIT runs on Ubuntu and Debian Linux systems and is available for download/installation via a apt repository.
+openITCOCKPIT runs on Ubuntu and Debian Linux systems and is available for download/installation via an apt repository.
 
 To install openITCOCKPIT on your system, please follow the official
 documentation: https://openitcockpit.io/download_server/
@@ -79,6 +78,11 @@ documentation: https://openitcockpit.io/download_server/
 
 openITCOCKPIT is 100% compatible to arm64. More information can be found on the project
 website: [https://openitcockpit.io/download_server/](https://openitcockpit.io/download_server/)
+
+## Docker
+
+We provide pre-build Docker images of openITCOCKPIT. Please follow the instructions provided in the
+documentation: [https://docs.openitcockpit.io/en/installation/docker/](https://docs.openitcockpit.io/en/installation/docker/)
 
 # Register openitcockpit community version:
 
@@ -120,7 +124,7 @@ After successful registration you can install the free community modules at Syst
 
 openITCOCKPIT's development is publicly available in GitHub. Everybody is welcome to join :-)
 
-- [Creating an openITCOCKPIT development environment¶](https://docs.openitcockpit.io/en/development/setup-dev-env/)
+- [Creating an openITCOCKPIT development environment](https://docs.openitcockpit.io/en/development/setup-dev-env/)
 - [Create your own translation](https://github.com/it-novum/openITCOCKPIT/issues/1573)
 - [Creating a new openITCOCKPIT module](https://docs.openitcockpit.io/en/development/create-new-module/introduction/)
 - [Creating a new check plugin](https://docs.openitcockpit.io/en/development/new-check-plugin/)
@@ -142,7 +146,7 @@ here: [https://openitcockpit.io/security/](https://openitcockpit.io/security/)
 # License
 
 ```
-Copyright (C) 2015-2020  it-novum GmbH
+Copyright (C) 2015-2025  it-novum GmbH
 
 
 openITCOCKPIT is dual licensed
