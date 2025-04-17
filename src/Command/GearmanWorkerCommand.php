@@ -533,7 +533,7 @@ class GearmanWorkerCommand extends Command {
                     mkdir('/etc/apt/auth.conf.d');
                 }
                 $authFile = fopen('/etc/apt/auth.conf.d/openitcockpit.conf', 'w+');
-                fwrite($authFile, 'machine packages.openitcockpit.io login secret password ' . $payload['key'] . PHP_EOL);
+                fwrite($authFile, 'machine packages5.openitcockpit.io login secret password ' . $payload['key'] . PHP_EOL);
                 fclose($authFile);
 
 
@@ -563,10 +563,10 @@ class GearmanWorkerCommand extends Command {
                 $file = fopen('/etc/yum.repos.d/openitcockpit.repo', 'w+');
                 fwrite($file, '[openitcockpit]' . PHP_EOL);
                 fwrite($file, 'name=openITCOCKPIT System Monitoring' . PHP_EOL);
-                fwrite($file, 'baseurl=https://packages.openitcockpit.io/openitcockpit/RHEL' . $version . '/stable/$basearch/' . PHP_EOL);
+                fwrite($file, 'baseurl=https://packages5.openitcockpit.io/openitcockpit/RHEL' . $version . '/stable/$basearch/' . PHP_EOL);
                 fwrite($file, 'enabled=1' . PHP_EOL);
                 fwrite($file, 'gpgcheck=1' . PHP_EOL);
-                fwrite($file, 'gpgkey=https://packages.openitcockpit.io/repokey.txt' . PHP_EOL);
+                fwrite($file, 'gpgkey=https://packages5.openitcockpit.io/repokey.txt' . PHP_EOL);
                 fwrite($file, 'username=secret' . PHP_EOL);
                 fwrite($file, 'password=' . $payload['key'] . PHP_EOL);
                 fclose($file);
