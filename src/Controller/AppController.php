@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -360,6 +360,20 @@ class AppController extends Controller {
 
         // Disable old AngularJS Frontend
         if ($this->isLegacyHtmlTemplateRequest()) {
+
+            $path = $this->request->getPath();
+            if (empty($path) || $path === '/') {
+                $isLoggedIn = $this->getUser() !== null;
+                if ($isLoggedIn) {
+                    // The user is logged in and probably wants to access the openITCOCKPIT Angular Frontend
+                    // Most likely the user as accessed the system via an IP-Address or a saved bookmark
+                    // Users that are not logged in should be caught by the AppAuthenticationMiddleware
+
+                    // Instead of rendering the default error message, we redirect the user to the Angular Frontend
+                    return $this->redirect('/a/');
+                }
+            }
+
             $this->render('/Error/errorBackend', 'backend');
             return;
         }
