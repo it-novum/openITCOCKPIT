@@ -365,8 +365,8 @@ check_for_administrator_user_role
 print_results
 
 echo "${BgBlack}${Yellow}"
-echo "#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-echo "# Please ensure that you have a valid backup of the system BEFORE your continue!"
+echo "#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+echo "# Please ensure that you have a valid backup of the system BEFORE you continue!"
 echo "${Reset}"
 echo ""
 
