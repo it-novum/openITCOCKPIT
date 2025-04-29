@@ -50,7 +50,7 @@ $images = $LoginBackgrounds->getImages();
     <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css">
 
     <link rel="stylesheet" type="text/css" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/coreui/coreui.min.css">
 
 
     <link rel="stylesheet" type="text/css" href="/css/login/adminator.min.css">
