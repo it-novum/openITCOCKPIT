@@ -27,6 +27,7 @@ declare(strict_types=1);
 
 namespace GrafanaModule\Model\Table;
 
+use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Table\HostsTable;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
@@ -55,6 +56,7 @@ use itnovum\openITCOCKPIT\Filter\GenericFilter;
  * @method GrafanaDashboard findOrCreate($search, callable $callback = null, $options = [])
  */
 class GrafanaDashboardsTable extends Table {
+    use PaginationAndScrollIndexTrait;
     /**
      * Initialize method
      *
@@ -185,20 +187,20 @@ class GrafanaDashboardsTable extends Table {
     /**
      * @return array
      */
-    public function getAllDashboardsForDeleteCronjob() {
+    public function getAllDashboardsForDeleteCronjob(): array {
         $query = $this->find()
             ->select([
+                'id',
                 'host_uuid',
                 'grafana_uid'
-            ])
+            ])->leftJoinWith('Hosts', function (Query $query) {
+                return $query
+                    ->select(['id']);
+            })->whereNull(['Hosts.id'])
             ->disableHydration()
             ->all();
 
-        if ($query === null) {
-            return [];
-        }
-
-        return $query->toArray();
+        return $this->emptyArrayIfNull($query->toArray());
     }
 
     /**

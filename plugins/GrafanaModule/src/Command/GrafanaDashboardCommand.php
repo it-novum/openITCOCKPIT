@@ -13,6 +13,7 @@ use Cake\Console\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Plugin;
+use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\Query;
 use Cake\ORM\TableRegistry;
@@ -21,6 +22,7 @@ use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
 use GrafanaModule\Model\Table\GrafanaDashboardsTable;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Request;
 use itnovum\openITCOCKPIT\Core\DbBackend;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
@@ -29,9 +31,9 @@ use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\ValueObjects\Perfdata;
 use itnovum\openITCOCKPIT\Grafana\GrafanaApiConfiguration;
 use itnovum\openITCOCKPIT\Grafana\GrafanaDashboard;
+use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaPanel;
 use itnovum\openITCOCKPIT\Grafana\GrafanaRow;
-use itnovum\openITCOCKPIT\Grafana\GrafanaOverrides;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTag;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetCollection;
 use itnovum\openITCOCKPIT\Grafana\GrafanaTargetPrometheus;
@@ -87,6 +89,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
      * @param \Cake\Console\Arguments $args The command arguments.
      * @param \Cake\Console\ConsoleIo $io The console io
      * @return null|void|int The exit code or null for success
+     * @throws GuzzleException
      */
     public function execute(Arguments $args, ConsoleIo $io) {
         $this->io = $io;
@@ -149,11 +152,9 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             $this->GrafanaApiConfiguration->getExcludedHostgroups()
         );
 
-        $GrafanaDashboardsTable->deleteAll([]);
-
         foreach ($filteredHosts as $id => $hostUuid) {
             $json = $this->getJsonForImport($id, $HostsTable, $ServicestatusTable, $ServicestatusFields, $ServicestatusConditions);
-
+            $start = microtime(true);
             if ($json) {
                 $request = new Request('POST', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
                 try {
@@ -165,17 +166,36 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                 }
 
                 if ($response->getStatusCode() == 200) {
-                    $this->io->success('Dashboard for host with id ' . $id . ' created');
+                    $end = microtime(true);
+                    $this->io->success('Dashboard for host with id ' . $id . ' created [Took: ' . ($end - $start) . ' seconds]');
 
                     $responseBody = $response->getBody()->getContents();
                     $responseBody = json_decode($responseBody, true);
 
-                    $entity = $GrafanaDashboardsTable->newEntity([
-                        'configuration_id' => $GrafanaConfigurationsTable->getConfigurationId(),
-                        'host_id'          => $id,
-                        'host_uuid'        => $hostUuid,
-                        'grafana_uid'      => $responseBody['uid']
-                    ]);
+                    try {
+                        $record = $GrafanaDashboardsTable->find()
+                            ->where([
+                                'configuration_id' => $GrafanaConfigurationsTable->getConfigurationId(),
+                                'host_id'          => $id,
+                                'host_uuid'        => $hostUuid,
+                            ])
+                            ->firstOrFail();
+
+                        $entity = $GrafanaDashboardsTable->patchEntity($record, [
+                            'configuration_id' => $GrafanaConfigurationsTable->getConfigurationId(),
+                            'host_id'          => $id,
+                            'host_uuid'        => $hostUuid,
+                            'grafana_uid'      => $responseBody['uid']
+                        ]);
+                    } catch (RecordNotFoundException $e) {
+                        $entity = $GrafanaDashboardsTable->newEntity([
+                            'configuration_id' => $GrafanaConfigurationsTable->getConfigurationId(),
+                            'host_id'          => $id,
+                            'host_uuid'        => $hostUuid,
+                            'grafana_uid'      => $responseBody['uid']
+                        ]);
+                    }
+
                     $GrafanaDashboardsTable->save($entity);
                 }
             }
@@ -387,16 +407,16 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         }
         if ($response->getStatusCode() == 200) {
             $body = $response->getBody();
-            $response = json_decode($body->getContents());
-            return $response;
+            return json_decode($body->getContents());
         }
     }
 
     /**
-     * Delete all Dashboards with the given tag
      * @param $tag
+     * @return void
+     * @throws GuzzleException
      */
-    private function deleteDashboards($tag) {
+    private function deleteDashboards($tag): void {
         try {
             if (empty($tag)) {
                 throw new \Exception('No Grafana Tag given');
@@ -407,11 +427,11 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
 
             //Only delete auto generated dashboards
             $dashboardUuids = $GrafanaDashboardsTable->getAllDashboardsForDeleteCronjob();
-
             foreach ($dashboardUuids as $dashboard) {
                 $hostUuid = $dashboard['host_uuid'];
                 $grafanaUid = $dashboard['grafana_uid'];
                 //New grafana >= 8.0
+                $start = microtime(true);
                 if ($grafanaUid !== null) {
                     $request = new Request('DELETE', sprintf('%s/dashboards/uid/%s',
                             $this->GrafanaApiConfiguration->getApiUrl(),
@@ -421,17 +441,21 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                 } else {
                     $request = new Request('DELETE', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db/' . $hostUuid);
                 }
-
+                $end = microtime(true);
+                // Delete dashboard from openITCOCKPIT if host or dashboard does not exist
+                $entityToDelete = $GrafanaDashboardsTable->get($dashboard['id']);
                 try {
                     $response = $this->client->send($request);
 
                     if ($response->getStatusCode() == 200) {
                         $body = $response->getBody();
                         $response = json_decode($body->getContents());
-                        $this->io->success('Dashboard ' . $hostUuid . ' deleted!');
+                        $GrafanaDashboardsTable->delete($entityToDelete);
+                        $this->io->success('Dashboard ' . $hostUuid . ' deleted! [Took: ' . ($end - $start) . ' seconds]');
                     }
                 } catch (BadResponseException $e) {
                     $response = $e->getResponse();
+                    $GrafanaDashboardsTable->delete($entityToDelete);
                     $responseBody = $response->getBody()->getContents();
                     $this->io->error($responseBody);
                 }

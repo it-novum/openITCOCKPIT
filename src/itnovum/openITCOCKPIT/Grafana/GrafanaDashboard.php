@@ -62,30 +62,28 @@ class GrafanaDashboard {
      */
 
     private $grafanaDashboardDataArray = [
-        'annotations'  => [
+        'annotations'          => [
             'list' => []
         ],
-        "editable"     => false, // testing true
+        "editable"             => false, // testing true
         "fiscalYearStartMonth" => 0,
-        "graphTooltip" => GrafanaTooltip::DEFAULT,
-        "id"           => null,
-        "links"        => [],
-        "liveNow"      => false,
-        "panels"       => [],
+        "graphTooltip"         => GrafanaTooltip::DEFAULT,
+        "id"                   => null,
+        "links"                => [],
+        "liveNow"              => false,
+        "panels"               => [],
 
 
-
-
-        "uid"          => null,
-        "title"        => "",
-        "tags"         => [],
+        "uid"        => null,
+        "title"      => "",
+        "tags"       => [],
         //"style" => "light",
-        "timezone"     => "browser",
-        "time"         => [
+        "timezone"   => "browser",
+        "time"       => [
             "from" => "now-6h",
             "to"   => "now"
         ],
-        "timepicker"   => [
+        "timepicker" => [
             "refresh_intervals" => [
                 "5s",
                 "10s",
@@ -110,13 +108,13 @@ class GrafanaDashboard {
                 "30d"
             ],
         ],
-        "templating"   => [
+        "templating" => [
             "list" => []
         ],
-        "rows"         => [
+        "rows"       => [
             //Insert rows here
         ],
-        "version"      => 0,
+        "version"    => 0,
     ];
 
     /**
@@ -130,7 +128,11 @@ class GrafanaDashboard {
 
         // Decide some things basedon the setup.
         $this->grafanaDashboardDataArray['graphTooltip'] = $this->graphTooltip;
-        return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/], JSON_PRETTY_PRINT);
+        return json_encode([
+            'dashboard' => $this->grafanaDashboardDataArray,
+            'overwrite' => true
+            /*'inputs' => $additional*/
+        ], JSON_PRETTY_PRINT);
     }
 
     /**
