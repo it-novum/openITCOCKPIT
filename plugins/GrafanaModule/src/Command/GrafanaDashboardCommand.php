@@ -154,6 +154,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
 
         foreach ($filteredHosts as $id => $hostUuid) {
             $json = $this->getJsonForImport($id, $HostsTable, $ServicestatusTable, $ServicestatusFields, $ServicestatusConditions);
+
             $start = microtime(true);
             if ($json) {
                 $request = new Request('POST', $this->GrafanaApiConfiguration->getApiUrl() . '/dashboards/db', ['content-type' => 'application/json'], $json);
@@ -218,8 +219,13 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             ->select([
                 'id',
                 'uuid',
-                'name'
+                'name',
+                'GrafanaDashboards.grafana_uid'
             ])
+            ->leftJoin(
+                ['GrafanaDashboards' => 'grafana_dashboards'],
+                ['GrafanaDashboards.host_id = Hosts.id']
+            )
             ->contain([
                 'Services' => function (Query $query) {
                     $query
@@ -280,7 +286,6 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             //Host not found
             return false;
         }
-
         if (empty($host['services'])) {
             //Host has no services
             return false;
@@ -302,6 +307,9 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
         $grafanaDashboard->setTags($this->tag);
         $grafanaDashboard->setTags('🖥️ ' . $host['name']);
         $grafanaDashboard->setTooltip(GrafanaTooltip::DEFAULT);
+        if (!empty($host['GrafanaDashboards']['grafana_uid'])) {
+            $grafanaDashboard->setUid($host['GrafanaDashboards']['grafana_uid']);
+        }
         $panelId = 1;
         $grafanaRow = new GrafanaRow();
 

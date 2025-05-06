@@ -57,6 +57,8 @@ class GrafanaDashboard {
      */
     private $tags = [];
 
+    private $uid = null;
+
     /**
      * @var array
      */
@@ -125,6 +127,7 @@ class GrafanaDashboard {
         $this->grafanaDashboardDataArray['rows'] = $this->rows;
         $this->grafanaDashboardDataArray['editable'] = $this->editable;
         $this->grafanaDashboardDataArray['tags'] = $this->tags;
+        $this->grafanaDashboardDataArray['uid'] = $this->uid;
 
         // Decide some things basedon the setup.
         $this->grafanaDashboardDataArray['graphTooltip'] = $this->graphTooltip;
@@ -140,6 +143,10 @@ class GrafanaDashboard {
      */
     public function setTitle($title) {
         $this->title = $title;
+    }
+
+    public function setUid($uid) {
+        $this->uid = $uid;
     }
 
     public function setTooltip(int $graphTooltip) {
