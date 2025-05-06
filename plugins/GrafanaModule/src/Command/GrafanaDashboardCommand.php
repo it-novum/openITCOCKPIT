@@ -167,7 +167,6 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
 
                 if ($response->getStatusCode() == 200) {
                     $end = microtime(true);
-                    $this->io->success('Dashboard for host with id ' . $id . ' created [Took: ' . ($end - $start) . ' seconds]');
 
                     $responseBody = $response->getBody()->getContents();
                     $responseBody = json_decode($responseBody, true);
@@ -187,6 +186,8 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                             'host_uuid'        => $hostUuid,
                             'grafana_uid'      => $responseBody['uid']
                         ]);
+                        $this->io->success('Dashboard for host with id ' . $id . ' updated [Took: ' . ($end - $start) . ' seconds]');
+
                     } catch (RecordNotFoundException $e) {
                         $entity = $GrafanaDashboardsTable->newEntity([
                             'configuration_id' => $GrafanaConfigurationsTable->getConfigurationId(),
@@ -194,6 +195,8 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                             'host_uuid'        => $hostUuid,
                             'grafana_uid'      => $responseBody['uid']
                         ]);
+                        $this->io->success('Dashboard for host with id ' . $id . ' created [Took: ' . ($end - $start) . ' seconds]');
+
                     }
 
                     $GrafanaDashboardsTable->save($entity);
