@@ -343,4 +343,19 @@ class GrafanaDashboardsTable extends Table {
             ])
             ->first();
     }
+
+
+    /**
+     * @return array
+     */
+    public function getDashboardUuids(): array {
+        $query = $this->find()
+            ->select([
+                'grafana_uid'
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }

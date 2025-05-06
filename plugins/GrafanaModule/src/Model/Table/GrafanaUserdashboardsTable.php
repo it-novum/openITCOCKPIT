@@ -454,4 +454,18 @@ class GrafanaUserdashboardsTable extends Table {
 
         return $result->toArray();
     }
+
+    /**
+     * @return array
+     */
+    public function getDashboardUuids(): array {
+        $query = $this->find()
+            ->select([
+                'grafana_uid'
+            ])
+            ->disableHydration()
+            ->all();
+
+        return $this->emptyArrayIfNull($query->toArray());
+    }
 }
