@@ -302,10 +302,10 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             return false;
         }
         $grafanaDashboard = new GrafanaDashboard();
-        $grafanaDashboard->setTitle($host['uuid']);
+        $grafanaDashboard->setTitle(sprintf('%s | %s', $host['uuid'], '🖥️ ' . $host['name']));
         $grafanaDashboard->setEditable(false);
-        $grafanaDashboard->setTags($this->tag);
-        $grafanaDashboard->setTags('🖥️ ' . $host['name']);
+        //$grafanaDashboard->setTags($this->tag);
+        //$grafanaDashboard->setTags('🖥️ ' . $host['name']);
         $grafanaDashboard->setTooltip(GrafanaTooltip::DEFAULT);
         if (!empty($host['GrafanaDashboards']['grafana_uid'])) {
             $grafanaDashboard->setUid($host['GrafanaDashboards']['grafana_uid']);
