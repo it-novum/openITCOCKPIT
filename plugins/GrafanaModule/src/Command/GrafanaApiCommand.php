@@ -1,4 +1,27 @@
 <?php
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
+
 declare(strict_types=1);
 
 namespace GrafanaModule\Command;
@@ -51,7 +74,15 @@ class GrafanaApiCommand extends Command {
      * @return \Cake\Console\ConsoleOptionParser The built parser.
      */
     public function buildOptionParser(ConsoleOptionParser $parser): ConsoleOptionParser {
-        $parser = parent::buildOptionParser($parser);
+
+        $parser->addOption(
+            'cleanup-dashboards',
+            [
+                'help'    => __d('oitc_console', 'Delete all dashboards from Grafana that exist in Grafana but not in openITCOCKPIT'),
+                'boolean' => true,
+                'default' => false,
+            ]
+        );
 
         return $parser;
     }
@@ -78,6 +109,22 @@ class GrafanaApiCommand extends Command {
             throw new \RuntimeException('No Grafana configuration found');
         }
 
+        if ($args->getOption('cleanup-dashboards')) {
+            $this->cleanupDashboards();
+            return;
+        }
+
+
+        $this->displayHelp($this->getOptionParser(), $args, $io);
+
+
+    }
+
+    private function cleanupDashboards() {
+        /** @var GrafanaConfigurationsTable $GrafanaConfigurationsTable */
+        $GrafanaConfigurationsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaConfigurations');
+
+
         /** @var ProxiesTable $ProxiesTable */
         $ProxiesTable = TableRegistry::getTableLocator()->get('Proxies');
         /** @var GrafanaDashboardsTable $GrafanaDashboardsTable */
@@ -86,19 +133,22 @@ class GrafanaApiCommand extends Command {
         /** @var GrafanaUserdashboardsTable $GrafanaUserdashboardsTable */
         $GrafanaUserdashboardsTable = TableRegistry::getTableLocator()->get('GrafanaModule.GrafanaUserdashboards');
 
-        $io->out('Check Connection to Grafana');
+        $this->io->out('Check Connection to Grafana');
         $this->client = $GrafanaConfigurationsTable->testConnection($this->GrafanaApiConfiguration, $ProxiesTable->getSettings());
 
         if ($this->client instanceof Client) {
-            $io->success('Connection check successful');
+            $this->io->success('Connection check successful');
             $allGrafanaDashboards = $this->getAllGrafanaDashboards();
+
+            $this->io->info('Found ' . sizeof($allGrafanaDashboards) . ' dashboards in Grafana');
+
             $existingDashboardUuids = Hash::extract($GrafanaDashboardsTable->getDashboardUuids(), '{n}.grafana_uid');
             $existingUserDashboardUuids = Hash::extract($GrafanaUserdashboardsTable->getDashboardUuids(), '{n}.grafana_uid');
 
             $existingDashboardUuids = array_merge($existingDashboardUuids, $existingUserDashboardUuids);
 
             if (!empty($allGrafanaDashboards)) {
-                $io->out('Start cleanup for Grafana Dashboards:');
+                $this->io->out('Start cleanup for Grafana Dashboards:');
                 $grafanaDashboardsUuids = Hash::extract($allGrafanaDashboards, '{n}.uid');
                 $dashboardsToDelete = array_diff($grafanaDashboardsUuids, $existingDashboardUuids);
                 if (!empty($dashboardsToDelete)) {
@@ -109,23 +159,50 @@ class GrafanaApiCommand extends Command {
             Log::error('GrafanaDashboardCommand: ' . $this->client);
             Log::error('GrafanaDashboardCommand: Connection check failed');
         }
-        $io->out('Done');
+        $this->io->out('Done');
     }
 
+    private function getAllGrafanaDashboards(): array {
+        $allDashboards = [];
+        $page = 1;
+        $loadMore = true;
 
-    private function getAllGrafanaDashboards() {
-        try {
-            $request = new Request('GET', $this->GrafanaApiConfiguration->getApiUrl() . '/search?query=');
-            $response = $this->client->send($request);
-        } catch (BadResponseException $e) {
-            $response = $e->getResponse();
-            $responseBody = $response->getBody()->getContents();
-            $this->io->error($responseBody);
-        }
-        if ($response->getStatusCode() == 200) {
-            $body = $response->getBody();
-            return json_decode($body->getContents());
-        }
+        do {
+            try {
+
+                $request = new Request('GET', $this->GrafanaApiConfiguration->getApiUrl() . '/search');
+                $response = $this->client->send($request, [
+                    'query' => [
+                        'limit' => 500,
+                        'page'  => $page,
+                        'type'  => 'dash-db',
+                    ],
+                ]);
+            } catch (BadResponseException $e) {
+                $response = $e->getResponse();
+                $responseBody = $response->getBody()->getContents();
+                $this->io->error($responseBody);
+            }
+
+            if ($response->getStatusCode() == 200) {
+                $body = $response->getBody();
+                $dashboards = json_decode($body->getContents());
+
+                if (empty($dashboards)) {
+                    // No more dashboards
+                    $loadMore = false;
+                    break;
+                }
+
+                foreach ($dashboards as $dashboard) {
+                    $allDashboards[] = $dashboard;
+                }
+
+                $page++;
+            }
+        } while ($loadMore);
+
+        return $allDashboards;
     }
 
     /**
