@@ -26,6 +26,7 @@ namespace App\Model\Table;
 
 use App\Lib\PluginManager;
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Model\Entity\Cronjob;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 
@@ -143,15 +144,26 @@ class CronjobsTable extends Table {
     /**
      * @return array
      */
-    public function getEnabledCronjobs() {
+    public function getEnabledCronjobs($priority = Cronjob::PRIORITY_LOW) {
         $query = $this->find()
-            ->where(['enabled' => 1])
+            ->where([
+                'enabled'  => 1,
+                'priority' => $priority
+            ])
             ->contain('Cronschedules')
             ->disableHydration();
 
         return $this->formatResultAsCake2($query->toArray());
     }
 
+    public function getEnabledCronjobsLowPriority() {
+        return $this->getEnabledCronjobs(Cronjob::PRIORITY_LOW);
+    }
+
+
+    public function getEnabledCronjobsHighPriority() {
+        return $this->getEnabledCronjobs(Cronjob::PRIORITY_HIGH);
+    }
 
     /**
      * @return array

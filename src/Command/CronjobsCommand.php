@@ -154,44 +154,52 @@ class CronjobsCommand extends Command {
         $io->info('Start openITCOCKPIT cronjobs...');
         $io->hr();
 
-        $fp = fopen('/var/run/oitc_cronjob.lock', 'wb');
-        if (!$fp || !flock($fp, LOCK_EX | LOCK_NB)) {
-            Log::error('Cronjob: Cronjob already running!');
-            fclose($fp);
-            exit(1);
-        }
+        foreach ([Cronjob::PRIORITY_HIGH, Cronjob::PRIORITY_LOW] as $priority) {
+            $io->info('Priority: ' . $priority);
+            $lockFile = '/var/run/oitc_cronjob.lock';
+            if ($priority === Cronjob::PRIORITY_HIGH) {
+                $lockFile = '/var/run/oitc_cronjob_high.lock';
+            }
 
-        $this->force = $args->getOption('force');
-        $this->quiet = $args->getOption('quiet');
+            $fp = fopen($lockFile, 'wb');
+            if (!$fp || !flock($fp, LOCK_EX | LOCK_NB)) {
+                Log::error('Cronjob: Cronjob for ' . $priority . ' priority is already running!');
+                fclose($fp);
+                exit(1);
+            }
 
-        try {
-            /** @var CronjobsTable $CronjobsTable */
-            $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
-            $cronjobs = $CronjobsTable->getEnabledCronjobs();
-        } catch (\Exception $e) {
-            dump($e->getMessage());
-            exit(0);
-        }
+            $this->force = $args->getOption('force');
+            $this->quiet = $args->getOption('quiet');
 
-        foreach ($cronjobs as $cronjob) {
-            if (!empty($task)) {
-                // Only execute the given cronjob
-                if ($cronjob['Cronjob']['task'] !== $task) {
-                    $io->info(sprintf('Skipping cronjob %s.%s', $cronjob['Cronjob']['plugin'], $cronjob['Cronjob']['task']));
-                    continue;
+            try {
+                /** @var CronjobsTable $CronjobsTable */
+                $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+                $cronjobs = $CronjobsTable->getEnabledCronjobs($priority);
+            } catch (\Exception $e) {
+                dump($e->getMessage());
+                exit(0);
+            }
+
+            foreach ($cronjobs as $cronjob) {
+                if (!empty($task)) {
+                    // Only execute the given cronjob
+                    if ($cronjob['Cronjob']['task'] !== $task) {
+                        $io->info(sprintf('Skipping cronjob %s.%s', $cronjob['Cronjob']['plugin'], $cronjob['Cronjob']['task']));
+                        continue;
+                    }
                 }
-            }
 
-            if (
-                !(isset($cronjob['Cronschedule']['start_time'])) ||
-                (time() >= (strtotime($cronjob['Cronschedule']['start_time']) + $this->m2s($cronjob['Cronjob']['interval'])) && $cronjob['Cronschedule']['is_running'] == 0) ||
-                $this->force === true
-            ) {
-                $this->scheduleCronjob($cronjob);
-            }
+                if (
+                    !(isset($cronjob['Cronschedule']['start_time'])) ||
+                    (time() >= (strtotime($cronjob['Cronschedule']['start_time']) + $this->m2s($cronjob['Cronjob']['interval'])) && $cronjob['Cronschedule']['is_running'] == 0) ||
+                    $this->force === true
+                ) {
+                    $this->scheduleCronjob($cronjob);
+                }
 
+            }
+            fclose($fp);
         }
-        fclose($fp);
     }
 
 
