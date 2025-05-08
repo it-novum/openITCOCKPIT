@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Model\Entity\Cronjob;
 use App\Model\Table\CronjobsTable;
 use App\Model\Table\CronschedulesTable;
 use Cake\Console\Arguments;
@@ -40,6 +41,7 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 /**
  * Cronjobs command.
@@ -102,9 +104,11 @@ class CronjobsCommand extends Command {
             $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
             $cronjobs = $CronjobsTable->getCronjobs();
 
+            $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
+
             $tableData = [
                 [
-                    'Task', 'Plugin', 'Interval', 'Last scheduled', 'Is currently running', 'Enabled'
+                    'Task', 'Plugin', 'Interval', 'Last scheduled', 'Last execution time', 'Is currently running', 'Enabled', 'Priority'
                 ]
             ];
             foreach ($cronjobs as $cronjob) {
@@ -118,13 +122,25 @@ class CronjobsCommand extends Command {
                     $enabled = '<success>✓</success>';
                 }
 
+                $priority = '<success>Low</success>';
+                if ($cronjob['Cronjob']['priority'] === Cronjob::PRIORITY_HIGH) {
+                    $priority = '<error>High</error>';
+                }
+
+                $lastExecutionTime = 'n/a';
+                if (isset($cronjob['Cronschedule']['execution_time'])) {
+                    $lastExecutionTime = $UserTime->secondsInHumanShort($cronjob['Cronschedule']['execution_time']);
+                }
+
                 $tableData[] = [
                     $cronjob['Cronjob']['task'],
                     $cronjob['Cronjob']['plugin'],
                     $cronjob['Cronjob']['interval'],
                     $cronjob['Cronschedule']['start_time'] ?? 'n/a',
+                    $lastExecutionTime,
                     $isRunning,
                     $enabled,
+                    $priority
                 ];
             }
 
