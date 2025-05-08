@@ -1,5 +1,5 @@
+#@formatter:off
 {{STATIC_FILE_HEADER}}
-
 version: '3'
 services:
 {%for CarbonCache in CarbonCaches %}
@@ -59,6 +59,9 @@ services:
         max-file: "10"
   grafana:
     image: grafana/grafana
+    depends_on:
+      mysql:
+        condition: service_healthy
     environment:
       - GF_SECURITY_ADMIN_PASSWORD__FILE=/etc/openitcockpit/grafana/admin_password
       - GF_PATHS_CONFIG=/etc/openitcockpit/grafana/grafana.ini
@@ -77,8 +80,33 @@ services:
       options:
         max-size: "200k"
         max-file: "10"
+  mysql:
+    image: mysql:latest
+    environment:
+      - MYSQL_ROOT_PASSWORD=grafana_root
+      - MYSQL_DATABASE=grafana
+      - MYSQL_USER=grafana
+      - MYSQL_PASSWORD=grafana
+    healthcheck:
+      test: mysqladmin ping
+      interval: 10s
+      retries: 5
+      timeout: 5s
+    ports:
+      - "3306"       # MySQL Default Ports
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - mysql-data:/var/lib/mysql
+    command: mysqld --sql_mode="" --innodb-buffer-pool-size=256M --innodb-flush-log-at-trx-commit=2 --innodb-file-per-table=1 --innodb-flush-method=O_DIRECT --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci --skip-log-bin
+    deploy:
+      restart_policy:
+        condition: on-failure
 volumes:
   grafana-data:
+  mysql-data:      # In case you lose the data stored in the mysql-data volume run the command openitcockpit-update && oitc cronjobs -f
 {% if USE_AUTO_NETWORKING == 0 %}
 networks:
   default:
