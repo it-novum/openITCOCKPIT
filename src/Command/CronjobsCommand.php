@@ -180,6 +180,8 @@ class CronjobsCommand extends Command {
 
 
     public function scheduleCronjob($cronjob) {
+        $start = time();
+
         /** @var CronschedulesTable $CronschedulesTable */
         $CronschedulesTable = TableRegistry::getTableLocator()->get('Cronschedules');
 
@@ -220,10 +222,13 @@ class CronjobsCommand extends Command {
             dump($e->getMessage());
         }
 
+        $end = time();
+
         try {
             //Cronjob is done, set is_running back to 0 and the end_time
             $scheduleEntity->set('end_time', date('Y-m-d H:i:s'));
             $scheduleEntity->set('is_running', 0);
+            $scheduleEntity->set('execution_time', ($end - $start));
 
             $CronschedulesTable->save($scheduleEntity);
         } catch (\PDOException $e) {
