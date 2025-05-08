@@ -546,6 +546,10 @@ set -e
 if [[ -d /opt/openitc/frontend/plugins/GrafanaModule ]]; then
     # ITC-3479 In case we migrate from SQLite to MySQL
     set +e
+
+    echo "Waiting 3 seconds for Grafana..."
+    sleep 3
+
     oitc GrafanaModule.service_account
     set -e
 fi
