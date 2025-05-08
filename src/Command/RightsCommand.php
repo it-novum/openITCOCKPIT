@@ -78,6 +78,7 @@ class RightsCommand extends Command {
 
         $directories = [
             '/opt/openitc/frontend/',
+            '/opt/openitc/frontend-angular/',
             '/opt/openitc/frontend-modules/'
         ];
         $this->setRights($io, $directories);
