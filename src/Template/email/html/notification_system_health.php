@@ -84,7 +84,7 @@ echo $this->element('emails/style');
                                 <?= $StatusIcon->getEmoji() ?>
                                 &nbsp;
                                 <span>
-                                    <a href="<?php printf('https://%s/#!/Administrators/debug', $systemAddress); ?>"
+                                    <a href="<?php printf('https://%s/a/administrators/debug', $systemAddress); ?>"
                                        style="text-decoration:none"
                                        class="<?= strtoupper($StatusIcon->getTextColor()) ?>">
                                             <?= __('System health') ?>
