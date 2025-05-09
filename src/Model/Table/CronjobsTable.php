@@ -1,12 +1,34 @@
 <?php
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\Model\Table;
 
 use App\Lib\PluginManager;
 use App\Lib\Traits\Cake2ResultTableTrait;
+use App\Model\Entity\Cronjob;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use Cake\Core\Plugin;
 
 /**
  * Cronjobs Model
@@ -21,8 +43,11 @@ use Cake\Core\Plugin;
  * @method \App\Model\Entity\Cronjob patchEntity(\Cake\Datasource\EntityInterface $entity, array $data, array $options = [])
  * @method \App\Model\Entity\Cronjob[] patchEntities($entities, array $data, array $options = [])
  * @method \App\Model\Entity\Cronjob findOrCreate($search, callable $callback = null, $options = [])
+ *
+ * @mixin \Cake\ORM\Behavior\TimestampBehavior
  */
 class CronjobsTable extends Table {
+
 
     use Cake2ResultTableTrait;
 
@@ -32,8 +57,10 @@ class CronjobsTable extends Table {
      * @param array $config The configuration for the Table.
      * @return void
      */
-    public function initialize(array $config) :void {
+    public function initialize(array $config): void {
         parent::initialize($config);
+
+        $this->addBehavior('Timestamp');
 
         $this->setTable('cronjobs');
         $this->setDisplayField('id');
@@ -50,7 +77,7 @@ class CronjobsTable extends Table {
      * @param \Cake\Validation\Validator $validator Validator instance.
      * @return \Cake\Validation\Validator
      */
-    public function validationDefault(Validator $validator) :Validator {
+    public function validationDefault(Validator $validator): Validator {
         $validator
             ->integer('id')
             ->allowEmptyString('id', null, 'create');
@@ -75,6 +102,12 @@ class CronjobsTable extends Table {
             ->boolean('enabled')
             ->requirePresence('enabled', 'create')
             ->allowEmptyString('enabled', null, false);
+
+        $validator
+            ->scalar('priority')
+            ->requirePresence('priority', 'create')
+            ->allowEmptyString('priority', null, false)
+            ->inList('priority', ['low', 'high'], __('The priority must be one of the following: low, high.'));
 
         return $validator;
     }
@@ -111,15 +144,26 @@ class CronjobsTable extends Table {
     /**
      * @return array
      */
-    public function getEnabledCronjobs() {
+    public function getEnabledCronjobs($priority = Cronjob::PRIORITY_LOW) {
         $query = $this->find()
-            ->where(['enabled' => 1])
+            ->where([
+                'enabled'  => 1,
+                'priority' => $priority
+            ])
             ->contain('Cronschedules')
             ->disableHydration();
 
         return $this->formatResultAsCake2($query->toArray());
     }
 
+    public function getEnabledCronjobsLowPriority() {
+        return $this->getEnabledCronjobs(Cronjob::PRIORITY_LOW);
+    }
+
+
+    public function getEnabledCronjobsHighPriority() {
+        return $this->getEnabledCronjobs(Cronjob::PRIORITY_HIGH);
+    }
 
     /**
      * @return array
@@ -128,7 +172,7 @@ class CronjobsTable extends Table {
         $plugins = [];
         $plugins['Core'] = 'Core';
 
-        foreach ( PluginManager::getAvailablePlugins() as $pluginName) {
+        foreach (PluginManager::getAvailablePlugins() as $pluginName) {
             $plugins[$pluginName] = $pluginName;
         }
 

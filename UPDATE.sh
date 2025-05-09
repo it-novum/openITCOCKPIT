@@ -469,9 +469,12 @@ if [[ -d "/opt/openitc/nagios/rollout" ]]; then
     fi
 fi
 
-if [[ -d /opt/openitc/frontend/plugins/GrafanaModule ]]; then
-    oitc GrafanaModule.service_account
-fi
+# ITC-3479
+#if [[ -d /opt/openitc/frontend/plugins/GrafanaModule ]]; then
+#    set +e
+#    oitc GrafanaModule.service_account
+#    set -e
+#fi
 
 if [ ! -f /opt/openitc/etc/mod_gearman/secret.file ]; then
     echo "Generate new shared secret for Mod-Gearman"
@@ -539,6 +542,17 @@ else
   fi
 fi
 set -e
+
+if [[ -d /opt/openitc/frontend/plugins/GrafanaModule ]]; then
+    # ITC-3479 In case we migrate from SQLite to MySQL
+    set +e
+
+    echo "Waiting 3 seconds for Grafana..."
+    sleep 3
+
+    oitc GrafanaModule.service_account
+    set -e
+fi
 
 echo "Cleanup old Docker images"
 if systemctl is-active --quiet docker.service; then

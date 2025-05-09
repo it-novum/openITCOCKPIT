@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -27,6 +32,7 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Model\Entity\Cronjob;
 use App\Model\Table\CronjobsTable;
 use App\Model\Table\CronschedulesTable;
 use Cake\Console\Arguments;
@@ -35,6 +41,7 @@ use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Log\Log;
 use Cake\ORM\TableRegistry;
+use itnovum\openITCOCKPIT\Core\Views\UserTime;
 
 /**
  * Cronjobs command.
@@ -97,9 +104,11 @@ class CronjobsCommand extends Command {
             $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
             $cronjobs = $CronjobsTable->getCronjobs();
 
+            $UserTime = new UserTime(date_default_timezone_get(), 'd.m.Y H:i:s');
+
             $tableData = [
                 [
-                    'Task', 'Plugin', 'Interval', 'Last scheduled', 'Is currently running', 'Enabled'
+                    'Task', 'Plugin', 'Interval', 'Last scheduled', 'Last execution time', 'Is currently running', 'Enabled', 'Priority'
                 ]
             ];
             foreach ($cronjobs as $cronjob) {
@@ -113,13 +122,25 @@ class CronjobsCommand extends Command {
                     $enabled = '<success>✓</success>';
                 }
 
+                $priority = '<success>Low</success>';
+                if ($cronjob['Cronjob']['priority'] === Cronjob::PRIORITY_HIGH) {
+                    $priority = '<error>High</error>';
+                }
+
+                $lastExecutionTime = 'n/a';
+                if (isset($cronjob['Cronschedule']['execution_time'])) {
+                    $lastExecutionTime = $UserTime->secondsInHumanShort($cronjob['Cronschedule']['execution_time']);
+                }
+
                 $tableData[] = [
                     $cronjob['Cronjob']['task'],
                     $cronjob['Cronjob']['plugin'],
                     $cronjob['Cronjob']['interval'],
                     $cronjob['Cronschedule']['start_time'] ?? 'n/a',
+                    $lastExecutionTime,
                     $isRunning,
                     $enabled,
+                    $priority
                 ];
             }
 
@@ -133,48 +154,58 @@ class CronjobsCommand extends Command {
         $io->info('Start openITCOCKPIT cronjobs...');
         $io->hr();
 
-        $fp = fopen('/var/run/oitc_cronjob.lock', 'wb');
-        if (!$fp || !flock($fp, LOCK_EX | LOCK_NB)) {
-            Log::error('Cronjob: Cronjob already running!');
-            fclose($fp);
-            exit(1);
-        }
+        foreach ([Cronjob::PRIORITY_HIGH, Cronjob::PRIORITY_LOW] as $priority) {
+            $io->info('Priority: ' . $priority);
+            $lockFile = '/var/run/oitc_cronjob.lock';
+            if ($priority === Cronjob::PRIORITY_HIGH) {
+                $lockFile = '/var/run/oitc_cronjob_high.lock';
+            }
 
-        $this->force = $args->getOption('force');
-        $this->quiet = $args->getOption('quiet');
+            $fp = fopen($lockFile, 'wb');
+            if (!$fp || !flock($fp, LOCK_EX | LOCK_NB)) {
+                Log::error('Cronjob: Cronjob for ' . $priority . ' priority is already running!');
+                fclose($fp);
+                exit(1);
+            }
 
-        try {
-            /** @var CronjobsTable $CronjobsTable */
-            $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
-            $cronjobs = $CronjobsTable->getEnabledCronjobs();
-        } catch (\Exception $e) {
-            dump($e->getMessage());
-            exit(0);
-        }
+            $this->force = $args->getOption('force');
+            $this->quiet = $args->getOption('quiet');
 
-        foreach ($cronjobs as $cronjob) {
-            if (!empty($task)) {
-                // Only execute the given cronjob
-                if ($cronjob['Cronjob']['task'] !== $task) {
-                    $io->info(sprintf('Skipping cronjob %s.%s', $cronjob['Cronjob']['plugin'], $cronjob['Cronjob']['task']));
-                    continue;
+            try {
+                /** @var CronjobsTable $CronjobsTable */
+                $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
+                $cronjobs = $CronjobsTable->getEnabledCronjobs($priority);
+            } catch (\Exception $e) {
+                dump($e->getMessage());
+                exit(0);
+            }
+
+            foreach ($cronjobs as $cronjob) {
+                if (!empty($task)) {
+                    // Only execute the given cronjob
+                    if ($cronjob['Cronjob']['task'] !== $task) {
+                        $io->info(sprintf('Skipping cronjob %s.%s', $cronjob['Cronjob']['plugin'], $cronjob['Cronjob']['task']));
+                        continue;
+                    }
                 }
-            }
 
-            if (
-                !(isset($cronjob['Cronschedule']['start_time'])) ||
-                (time() >= (strtotime($cronjob['Cronschedule']['start_time']) + $this->m2s($cronjob['Cronjob']['interval'])) && $cronjob['Cronschedule']['is_running'] == 0) ||
-                $this->force === true
-            ) {
-                $this->scheduleCronjob($cronjob);
-            }
+                if (
+                    !(isset($cronjob['Cronschedule']['start_time'])) ||
+                    (time() >= (strtotime($cronjob['Cronschedule']['start_time']) + $this->m2s($cronjob['Cronjob']['interval'])) && $cronjob['Cronschedule']['is_running'] == 0) ||
+                    $this->force === true
+                ) {
+                    $this->scheduleCronjob($cronjob);
+                }
 
+            }
+            fclose($fp);
         }
-        fclose($fp);
     }
 
 
     public function scheduleCronjob($cronjob) {
+        $start = time();
+
         /** @var CronschedulesTable $CronschedulesTable */
         $CronschedulesTable = TableRegistry::getTableLocator()->get('Cronschedules');
 
@@ -215,10 +246,13 @@ class CronjobsCommand extends Command {
             dump($e->getMessage());
         }
 
+        $end = time();
+
         try {
             //Cronjob is done, set is_running back to 0 and the end_time
             $scheduleEntity->set('end_time', date('Y-m-d H:i:s'));
             $scheduleEntity->set('is_running', 0);
+            $scheduleEntity->set('execution_time', ($end - $start));
 
             $CronschedulesTable->save($scheduleEntity);
         } catch (\PDOException $e) {
@@ -252,6 +286,12 @@ class CronjobsCommand extends Command {
         return !$scheduleEntity->hasErrors();
     }
 
+    /**
+     * Convert minutes to seconds
+     *
+     * @param $minutes
+     * @return float|int
+     */
     public function m2s($minutes) {
         return $minutes * 60;
     }
