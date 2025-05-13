@@ -94,6 +94,11 @@ class UsersController extends AppController {
             $forceRedirectSsousersToLoginScreen = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE')->get('value') === '1';
         }
 
+        // touch /opt/openitc/frontend/src/../DEMO_MODE to enable demo mode
+        // In demoe mode, the frontend will autofill the credentials
+        $demoFile = APP . '..' . DS . 'DEMO_MODE';
+        $demoMode = file_exists($demoFile);
+
         if ($redirectToSsoLoginPage === true) {
             $oAuthClient = new oAuthClient();
 
@@ -186,6 +191,7 @@ class UsersController extends AppController {
         $this->set('isSsoEnabled', $isSsoEnabled);
         $this->set('forceRedirectSsousersToLoginScreen', $forceRedirectSsousersToLoginScreen);
         $this->set('isLoggedIn', $isLoggedIn);
+        $this->set('demoMode', $demoMode);
 
         if ($this->request->is('get')) {
             if ($this->isJsonRequest()) {
@@ -209,7 +215,7 @@ class UsersController extends AppController {
             $this->set('errorMessages', $errorMessages);
             $this->set('successMessages', $successMessages);
 
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'successMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation', 'disableSocialButtons', 'enableColumnLayout']);
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'successMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation', 'disableSocialButtons', 'enableColumnLayout', 'demoMode']);
             return;
         }
 
