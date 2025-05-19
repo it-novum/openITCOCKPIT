@@ -1,5 +1,26 @@
 <?php
-
+// Copyright (C) <2015-present>  <it-novum GmbH>
+//
+// This file is dual licensed
+//
+// 1.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
+//
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
+//
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 namespace App\itnovum\openITCOCKPIT\Core;
 
@@ -133,6 +154,44 @@ class UuidCache {
                         $object['id'],
                         h($object['name'])
                     );
+                } else {
+                    return '<i>[' . $uuid . ']</i>';
+                }
+            }
+            return '';
+        }, $str);
+        return $outputStr;
+    }
+
+    /**
+     * @param $str
+     * @param $permissions
+     * @return array|string|string[]|null
+     */
+    public function replaceUuidWithAngularLink($str, $permissions) {
+
+        $outputStr = preg_replace_callback(UUID::regex(), function ($matches) use ($permissions) {
+            foreach ($matches as $uuid) {
+                $object = null;
+                foreach (array_keys($this->cache) as $ObjectName) {
+                    if (isset($this->cache[$ObjectName][$uuid])) {
+                        $object = $this->cache[$ObjectName][$uuid];
+                        break;
+                    }
+                }
+
+                if ($object) {
+                    $objectType = strtolower($ObjectName);
+                    if (isset($permissions[$objectType]['index'])) {
+                        return sprintf('<a rel="ng" href="/%s/index?id=%s"><b>%s</b></a>',
+                            $objectType,
+                            $object['id'],
+                            h($object['name']));
+
+                    } else {
+                        return sprintf('<b>%s</b>', h($object['name']));
+
+                    }
                 } else {
                     return '<i>[' . $uuid . ']</i>';
                 }

@@ -225,7 +225,7 @@ class ServiceAccountCommand extends Command {
         $counter = 1;
 
         do {
-            $this->io->info("Try to connect to Grafana API... (" . $counter . " / 30)");
+            $this->io->info("Try to connect to Grafana API... (" . $counter . " / 45)");
 
             try {
                 $response = $Client->get($this->grafanaUrl . '/api/health');
@@ -240,7 +240,7 @@ class ServiceAccountCommand extends Command {
 
             $counter++;
             sleep(1);
-        } while ($counter < 30);
+        } while ($counter < 45);
 
         $this->io->error('Grafana not reachable');
         return false;

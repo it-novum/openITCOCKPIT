@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015-present>  <it-novum GmbH>
+// Copyright (C) <2015>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -507,7 +507,8 @@ class HostgroupsController extends AppController {
 
 
         $this->set('hostgroup', $data);
-        $this->viewBuilder()->setOption('serialize', ['hostgroup']);
+        $this->set('username', $User->getFullName());
+        $this->viewBuilder()->setOption('serialize', ['hostgroup', 'username']);
     }
 
 
@@ -1119,7 +1120,7 @@ class HostgroupsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId);
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerId, true, [CT_HOSTGROUP]);
 
         $tenantContainerIds = [];
 

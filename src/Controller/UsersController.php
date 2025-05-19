@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Lib\PluginManager;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\User;
 use App\Model\Table\ChangelogsTable;
@@ -93,6 +94,11 @@ class UsersController extends AppController {
             $forceRedirectSsousersToLoginScreen = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.FORCE_USER_TO_LOGINPAGE')->get('value') === '1';
         }
 
+        // touch /opt/openitc/frontend/src/../DEMO_MODE to enable demo mode
+        // In demoe mode, the frontend will autofill the credentials
+        $demoFile = APP . '..' . DS . 'DEMO_MODE';
+        $demoMode = file_exists($demoFile);
+
         if ($redirectToSsoLoginPage === true) {
             $oAuthClient = new oAuthClient();
 
@@ -115,6 +121,9 @@ class UsersController extends AppController {
             $images['particles'] = 'none';
         }
 
+        $disableSocialButtons = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.DISABLE_LOGIN_SOCIAL_BUTTONS')->get('value') === '1';
+        $enableColumnLayout = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.ENABLE_COLUMN_LAYOUT_FOR_THE_LOGIN_PAGE')->get('value') === '1';
+
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
@@ -128,8 +137,16 @@ class UsersController extends AppController {
 
         $isLoggedIn = $this->getUser() !== null;
         $errorMessages = [];
+        $successMessages = [];
 
         if ($this->request->is('GET') && $this->request->getQuery('code', null) !== null && $isSsoEnabled) {
+            // The browser fires two requests.
+            // One is a GET request, when the user gets redirected from the oAuth Login Page back to openITCOCKPIT.
+            // This is the request where the oAuth Login happens.
+            //
+            // The second request is also a GET Request done by Angular to query status information.
+            // So we need to store any errors to the session that we can return errors for angularjs
+            $Session = $this->request->getSession();
             //FileDebugger::dump($this->request->getQuery());
             // The user came back from the oAuth login page.
             // Check if we have any errors during the oAuth login
@@ -137,13 +154,6 @@ class UsersController extends AppController {
             if ($result->getStatus() !== ResultInterface::SUCCESS) {
                 if ($result->getStatus() === 'FAILURE_IDENTITY_NOT_FOUND') {
 
-                    // The browser fires two requests.
-                    // One is a GET request, when the user gets redirected from the oAuth Login Page back to openITCOCKPIT.
-                    // This is the request where the oAuth Login happens.
-                    //
-                    // The second request is also a GET Request done by Angular to query status information.
-                    // So we need to store any errors to the session that we can return errors for angularjs
-                    $Session = $this->request->getSession();
                     try {
                         $oauth_error = $SystemsettingsTable->getSystemsettingByKey('FRONTEND.SSO.NO_EMAIL_MESSAGE')->get('value');
                     } catch (RecordNotFoundException $e) {
@@ -167,16 +177,21 @@ class UsersController extends AppController {
                     $fullName = $userFromDb->get('firstname') . ' ' . $userFromDb->get('lastname');
                     $EventlogsTable->saveNewEntity('login', 'User', $userFromDb->id, $fullName, $loginData, $containerIds);
                 }
+                $Session->write('oauth_login_successful', 'Login via Single sign-on successful');
+                $this->redirect('/a/users/login', 302);
             }
         }
 
         $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
         $this->set('images', $images);
         $this->set('disableAnimation', $disableAnimation);
+        $this->set('disableSocialButtons', $disableSocialButtons);
+        $this->set('enableColumnLayout', $enableColumnLayout);
         $this->set('hasValidSslCertificate', $hasValidSslCertificate);
         $this->set('isSsoEnabled', $isSsoEnabled);
         $this->set('forceRedirectSsousersToLoginScreen', $forceRedirectSsousersToLoginScreen);
         $this->set('isLoggedIn', $isLoggedIn);
+        $this->set('demoMode', $demoMode);
 
         if ($this->request->is('get')) {
             if ($this->isJsonRequest()) {
@@ -185,10 +200,22 @@ class UsersController extends AppController {
                     $errorMessages[] = $Session->read('oauth_user_not_found');
                     $Session->delete('oauth_user_not_found');
                 }
+                if ($Session->read('oauth_login_successful', null) !== null) {
+                    $successMessages[] = $Session->read('oauth_login_successful');
+                    $Session->delete('oauth_login_successful');
+                }
             }
 
+            // Add URL for (custom) logo
+            $Logo = new Logo();
+            $this->set('logoUrl', $Logo->getLoginLogoHtml());
+            $this->set('isCustomLoginBackground', $Logo->isCustomLoginBackground());
+            $this->set('customLoginBackgroundHtml', $Logo->getCustomLoginBackgroundHtml());
+
             $this->set('errorMessages', $errorMessages);
-            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages']);
+            $this->set('successMessages', $successMessages);
+
+            $this->viewBuilder()->setOption('serialize', ['_csrfToken', 'logoUrl', 'images', 'hasValidSslCertificate', 'isLoggedIn', 'isSsoEnabled', 'forceRedirectSsousersToLoginScreen', 'errorMessages', 'successMessages', 'isCustomLoginBackground', 'customLoginBackgroundHtml', 'disableAnimation', 'disableSocialButtons', 'enableColumnLayout', 'demoMode']);
             return;
         }
 
@@ -223,7 +250,8 @@ class UsersController extends AppController {
 
             $this->set('success', false);
             $this->set('errors', $errors);
-            $this->viewBuilder()->setOption('serialize', ['success', 'errors']);
+            $this->set('_csrfToken', $this->request->getParam('_csrfToken'));
+            $this->viewBuilder()->setOption('serialize', ['success', 'errors', '_csrfToken']);
         }
     }
 
@@ -248,9 +276,7 @@ class UsersController extends AppController {
         }
 
 
-        $this->redirect([
-            'action' => 'login'
-        ]);
+        $this->redirect('/a/users/login');
     }
 
     public function index() {
@@ -331,9 +357,10 @@ class UsersController extends AppController {
             $all_users[] = $user;
         }
 
+        $this->set('isLdapAuth', $SystemsettingsTable->isLdapAuth());
         $this->set('all_users', $all_users);
         $this->set('myUserId', $User->getId());
-        $this->viewBuilder()->setOption('serialize', ['all_users', 'myUserId']);
+        $this->viewBuilder()->setOption('serialize', ['all_users', 'myUserId', 'isLdapAuth']);
     }
 
     public function add() {
@@ -401,6 +428,9 @@ class UsersController extends AppController {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
+        /** @var UsercontainerrolesTable $UsercontainerrolesTable */
+        $UsercontainerrolesTable = TableRegistry::getTableLocator()->get('Usercontainerroles');
+
         if (!$UsersTable->existsById($id)) {
             throw new NotFoundException(__('User not found'));
         }
@@ -424,6 +454,22 @@ class UsersController extends AppController {
         if (!$this->allowedByContainerId($containersToCheck)) {
             $this->render403();
             return;
+        }
+
+        $userContainerRolesReadonly = !$this->hasRootPrivileges;
+        if (!$this->hasRootPrivileges) {
+            $containersWithWriteRights = $this->getWriteContainers();
+            $allowedUserContainerRoles = $UsercontainerrolesTable->getUsercontainerrolesForPermissionCheck($containersWithWriteRights);
+            $allowedUserContainerRolesIds = Hash::extract(
+                $allowedUserContainerRoles,
+                '{n}.id'
+            );
+
+            $userContainerRolesReadonly = !empty(
+            array_diff(
+                array_merge($user['User']['usercontainerroles']['_ids'], $user['User']['usercontainerroles_ldap']['_ids']),
+                $allowedUserContainerRolesIds
+            ));
         }
 
         $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
@@ -452,8 +498,9 @@ class UsersController extends AppController {
             $this->set('user', $user['User']);
             $this->set('isLdapUser', $isLdapUser);
             $this->set('UserTypes', $UserTypes);
-            $this->set('notPermittedContainerIds', $notPermittedContainerIds);
-            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds']);
+            $this->set('userContainerRolesReadonly', $userContainerRolesReadonly);
+            $this->set('notPermittedContainerIds', array_map('intval', $notPermittedContainerIds)); // Make sure its a int array for Angular
+            $this->viewBuilder()->setOption('serialize', ['user', 'isLdapUser', 'UserTypes', 'notPermittedContainerIds', 'userContainerRolesReadonly']);
             return;
         }
 
@@ -493,6 +540,10 @@ class UsersController extends AppController {
             );
             $user = $UsersTable->get($id);
             $user->setAccess('id', false);
+
+            if ($userContainerRolesReadonly) {
+                $user->setAccess('usercontainerroles', false);
+            }
 
             if ($isLdapUser) {
                 $data['is_ldap'] = true;
@@ -787,6 +838,7 @@ class UsersController extends AppController {
             }
 
 
+            Cache::clear('permissions');
             $this->set('user', $user);
             $this->viewBuilder()->setOption('serialize', ['user']);
         }
@@ -893,6 +945,87 @@ class UsersController extends AppController {
 
     }
 
+
+    public function listToCsv() {
+        /** @var SystemsettingsTable $SystemsettingsTable */
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+
+        $User = new \itnovum\openITCOCKPIT\Core\ValueObjects\User($this->getUser());
+
+        /** @var UsersTable $UsersTable */
+        $UsersTable = TableRegistry::getTableLocator()->get('Users');
+        $UsersFilter = new UsersFilter($this->request);
+
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            // root users can see all users
+            $MY_RIGHTS = [];
+        }
+        $all_tmp_users = $UsersTable->getUsersIndex($UsersFilter, null, $MY_RIGHTS);
+        $all_users = [];
+
+        $UserTime = $User->getUserTime();
+        foreach ($all_tmp_users as $_user) {
+            /** @var User $_user */
+            $user = $_user->toArray();
+            if (!empty($user['last_login'])) {
+                $user['last_login'] = $UserTime->format($user['last_login']->getTimestamp());
+            }
+            $user['isLdapUser'] = __('No');
+            $user['isOAuthUser'] = __('No');
+            if (!empty($user['samaccountname'])) {
+                $user['isLdapUser'] = __('Yes');
+                if ($user['is_oauth'] === true) {
+                    $user['isOAuthUser'] = __('Yes');
+                }
+            } else if ($user['is_oauth'] === true) {
+                $user['isOAuthUser'] = __('Yes');
+            }
+
+            $all_users[] = [
+                $user['full_name'],
+                $user['id'],
+                $user['email'],
+                $user['phone'],
+                $user['company'],
+                $user['is_active'],
+                $user['isLdapUser'],
+                $user['isOAuthUser'],
+                $user['usergroup']['name'],
+                $user['last_login']
+            ];
+        }
+
+
+        $header = [
+            'full_name',
+            'user_id',
+            'email',
+            'phone',
+            'company',
+            'is_active',
+            'is_ldap_user',
+            'is_oauth_user',
+            'user_role',
+            'last_login'
+        ];
+
+
+        $this->set('data', $all_users);
+
+        $filename = __('Users_') . date('dmY_his') . '.csv';
+        $this->setResponse($this->getResponse()->withDownload($filename));
+        $this->viewBuilder()
+            ->setClassName('CsvView.Csv')
+            ->setOptions([
+                'delimiter' => ';', // Excel prefers ; over ,
+                'bom'       => true, // Fix UTF-8 umlauts in Excel
+                'serialize' => 'data',
+                'header'    => $header,
+            ]);
+    }
+
+
     /**
      * @throws \FreeDSx\Ldap\Exception\BindException
      */
@@ -980,9 +1113,14 @@ class UsersController extends AppController {
         $dateformats = Api::makeItJavaScriptAble($options);
         $defaultDateFormat = 'H:i:s - d.m.Y'; // key 10
 
+        $timezones = \itnovum\openITCOCKPIT\Core\Timezone::listTimezones();
+
         $this->set('dateformats', $dateformats);
         $this->set('defaultDateFormat', $defaultDateFormat);
-        $this->viewBuilder()->setOption('serialize', ['dateformats', 'defaultDateFormat']);
+        $this->set('timezones', $timezones);
+        $this->set('serverTimeZone', date_default_timezone_get());
+        $this->set('serverTime', date('d.m.Y H:i:s'));
+        $this->viewBuilder()->setOption('serialize', ['dateformats', 'defaultDateFormat', 'timezones', 'serverTime', 'serverTimeZone']);
     }
 
     public function loadContainerRoles() {
@@ -1188,7 +1326,12 @@ class UsersController extends AppController {
             //Only ship HTML template
             return;
         }
+
+        $modules = PluginManager::getAvailablePlugins();
+
+
         $this->set('permissions', $this->PERMISSIONS);
-        $this->viewBuilder()->setOption('serialize', ['permissions']);
+        $this->set('modules', $modules);
+        $this->viewBuilder()->setOption('serialize', ['permissions', 'modules']);
     }
 }

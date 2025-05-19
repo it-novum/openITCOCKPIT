@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -125,7 +130,10 @@ class GearmanWorkerCommand extends Command {
             $pid = trim(file_get_contents($gearmanConfig['pidfile']));
             if (is_numeric($pid)) {
                 //We got a pid. Is this a gearman_worker or is this a pid from an died process?
-                exec('ps -eaf | grep ' . escapeshellarg($pid) . '| grep gearman_worker |grep -v grep', $output);
+                // replacement of ps -eaf because it takes ps too long to display the username in an LDAP based setup
+                // https://www.ibm.com/support/pages/apar/IJ08995
+                // we have no need for the username, so we can use the faster ps -eo pid,command
+                exec('ps -eo pid,command | grep ' . escapeshellarg($pid) . '| grep gearman_worker |grep -v grep', $output);
 
                 if (!empty($output)) {
                     Log::error(sprintf('GearmanWorker: Pidfile "%s" allready exists.', $pidfile));
@@ -525,7 +533,7 @@ class GearmanWorkerCommand extends Command {
                     mkdir('/etc/apt/auth.conf.d');
                 }
                 $authFile = fopen('/etc/apt/auth.conf.d/openitcockpit.conf', 'w+');
-                fwrite($authFile, 'machine packages.openitcockpit.io login secret password ' . $payload['key'] . PHP_EOL);
+                fwrite($authFile, 'machine packages5.openitcockpit.io login secret password ' . $payload['key'] . PHP_EOL);
                 fclose($authFile);
 
 
@@ -544,13 +552,21 @@ class GearmanWorkerCommand extends Command {
                     mkdir('/etc/yum.repos.d');
                 }
 
+                // ITC-3452
+                $version = $LsbRelease->getVersion();
+                if (strpos($version, '.')) {
+                    // Version is 8.4 - we need to remove the '.4' part
+                    $version = substr($version, 0, strpos($version, '.'));
+
+                }
+
                 $file = fopen('/etc/yum.repos.d/openitcockpit.repo', 'w+');
                 fwrite($file, '[openitcockpit]' . PHP_EOL);
                 fwrite($file, 'name=openITCOCKPIT System Monitoring' . PHP_EOL);
-                fwrite($file, 'baseurl=https://packages.openitcockpit.io/openitcockpit/RHEL8/stable/$basearch/' . PHP_EOL);
+                fwrite($file, 'baseurl=https://packages5.openitcockpit.io/openitcockpit/RHEL' . $version . '/stable/$basearch/' . PHP_EOL);
                 fwrite($file, 'enabled=1' . PHP_EOL);
                 fwrite($file, 'gpgcheck=1' . PHP_EOL);
-                fwrite($file, 'gpgkey=https://packages.openitcockpit.io/repokey.txt' . PHP_EOL);
+                fwrite($file, 'gpgkey=https://packages5.openitcockpit.io/repokey.txt' . PHP_EOL);
                 fwrite($file, 'username=secret' . PHP_EOL);
                 fwrite($file, 'password=' . $payload['key'] . PHP_EOL);
                 fclose($file);
@@ -863,9 +879,15 @@ class GearmanWorkerCommand extends Command {
                     break;
                 }
 
+                if (file_exists('/opt/openitc/nagios/backup/finishBackup.txt.sql')) {
+                    unlink('/opt/openitc/nagios/backup/finishBackup.txt.sql');
+                }
+
                 $MysqlBackup = new Backup();
                 $return = $MysqlBackup->createMysqlDump($filename);
-                exec('touch /opt/openitc/nagios/backup/finishBackup.txt.sql');
+
+                touch('/opt/openitc/nagios/backup/finishBackup.txt.sql');
+
                 break;
 
             case 'restore_sql_backup':
@@ -880,9 +902,13 @@ class GearmanWorkerCommand extends Command {
                     break;
                 }
 
+                if (file_exists('/opt/openitc/nagios/backup/finishRestore.txt.sql')) {
+                    unlink('/opt/openitc/nagios/backup/finishRestore.txt.sql');
+                }
+
                 $MysqlBackup = new Backup();
                 $return = $MysqlBackup->restoreMysqlDump($filename);
-                exec('touch /opt/openitc/nagios/backup/finishRestore.txt.sql');
+                touch('/opt/openitc/nagios/backup/finishRestore.txt.sql');
                 break;
 
             case 'delete_sql_backup':

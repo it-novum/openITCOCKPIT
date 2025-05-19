@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -195,8 +200,16 @@ class InstantreportsController extends AppController {
             return;
         }
 
+        $requestData = $this->request->getData();
+        if (isset($requestData['from_date'])) {
+            $requestData['from_date'] = Api::replaceAngularDateYmd($requestData['from_date']);
+        }
+        if (isset($requestData['to_date'])) {
+            $requestData['to_date'] = Api::replaceAngularDateYmd($requestData['to_date']);
+        }
+
         $instantreportForm = new InstantreportForm();
-        $instantreportForm->execute($this->request->getData());
+        $instantreportForm->execute($requestData);
 
         if (!empty($instantreportForm->getErrors())) {
             $this->response = $this->response->withStatus(400);
@@ -206,8 +219,8 @@ class InstantreportsController extends AppController {
         }
 
         $instantreportId = $this->request->getData('instantreport_id');
-        $fromDate = strtotime($this->request->getData('from_date') . ' 00:00:00');
-        $toDate = strtotime($this->request->getData('to_date') . ' 23:59:59');
+        $fromDate = strtotime($requestData['from_date'] . ' 00:00:00');
+        $toDate = strtotime($requestData['to_date'] . ' 23:59:59');
 
         $User = new User($this->getUser());
         if ($toDate > time()) {
@@ -295,6 +308,13 @@ class InstantreportsController extends AppController {
 
 
         $requestData = $this->request->getQuery('data', []);
+        if (isset($requestData['from_date'])) {
+            $requestData['from_date'] = Api::replaceAngularDateYmd($requestData['from_date']);
+        }
+        if (isset($requestData['to_date'])) {
+            $requestData['to_date'] = Api::replaceAngularDateYmd($requestData['to_date']);
+        }
+
         $instantreportForm = new InstantreportForm();
 
         $instantreportForm->execute($requestData);
@@ -306,18 +326,6 @@ class InstantreportsController extends AppController {
             return;
         }
 
-        if ($this->isJsonRequest()) {
-            //Only validate parameters
-            $this->set('success', true);
-            $this->viewBuilder()->setOption('serialize', ['success']);
-            return;
-        }
-
-        $fromDate = strtotime($this->request->getQuery('data.from_date', date('d.m.Y')) . ' 00:00:00');
-        $toDate = strtotime($this->request->getQuery('data.to_date', date('d.m.Y')) . ' 23:59:59');
-        if ($toDate > time()) {
-            $toDate = time();
-        }
         $instantreportId = $this->request->getQuery('data.instantreport_id', 0);
 
 
@@ -325,6 +333,24 @@ class InstantreportsController extends AppController {
         $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
         if (!$InstantreportsTable->existsById($instantreportId)) {
             throw new NotFoundException('Instant report not found!');
+        }
+
+        $instantreportEntity = $InstantreportsTable->get($instantreportId);
+
+        if ($this->isJsonRequest()) {
+            //Only validate parameters
+            $filename = sprintf('InstantReport_%s', $instantreportEntity->name) . date('dmY_his') . '.pdf';
+
+            $this->set('success', true);
+            $this->set('filename', $filename);
+            $this->viewBuilder()->setOption('serialize', ['success', 'filename']);
+            return;
+        }
+
+        $fromDate = strtotime($this->request->getQuery('data.from_date', date('d.m.Y')) . ' 00:00:00');
+        $toDate = strtotime($this->request->getQuery('data.to_date', date('d.m.Y')) . ' 23:59:59');
+        if ($toDate > time()) {
+            $toDate = time();
         }
 
         $InstantreportCreator = new InstantreportCreator(
@@ -390,6 +416,31 @@ class InstantreportsController extends AppController {
 
         $this->set('containers', $containers);
         $this->viewBuilder()->setOption('serialize', ['containers']);
+    }
+
+    public function loadInstantreports() {
+        if (!$this->isAngularJsRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var $InstantreportsTable InstantreportsTable */
+        $InstantreportsTable = TableRegistry::getTableLocator()->get('Instantreports');
+
+        $MY_RIGHTS = [];
+        if ($this->hasRootPrivileges === false) {
+            /** @var $ContainersTable ContainersTable */
+            //$ContainersTable = TableRegistry::getTableLocator()->get('Containers');
+            //$MY_RIGHTS = $ContainersTable->resolveChildrenOfContainerIds($this->MY_RIGHTS);
+            // ITC-2863 $this->MY_RIGHTS is already resolved and contains all containerIds a user has access to
+            $MY_RIGHTS = $this->MY_RIGHTS;
+        }
+
+        $instantreports = Api::makeItJavaScriptAble(
+            $InstantreportsTable->getInstantreportsForAngular($MY_RIGHTS)
+        );
+
+        $this->set('instantreports', $instantreports);
+        $this->viewBuilder()->setOption('serialize', ['instantreports']);
     }
 
     public function hostAvailabilityPieChart() {

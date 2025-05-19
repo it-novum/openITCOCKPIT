@@ -1,5 +1,5 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
@@ -45,7 +45,6 @@ use App\Model\Table\HostsTable;
 use App\Model\Table\ParenthostsTable;
 use App\Model\Table\RegistersTable;
 use App\Model\Table\ServicesTable;
-use App\Model\Table\SystemsettingsTable;
 use App\Model\Table\UsersTable;
 use App\Model\Table\WidgetsTable;
 use Cake\Core\Plugin;
@@ -91,22 +90,6 @@ class DashboardsController extends AppController {
     use LocatorAwareTrait;
 
     public function index() {
-        $askForHelp = false;
-        $askAgainForHelp = $this->request->getCookie('askAgainForHelp');
-        if ($askAgainForHelp === null) {
-
-            /** @var $SystemsettingsTable SystemsettingsTable */
-            $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-
-            $record = $SystemsettingsTable->getSystemsettingByKeyAsCake2('SYSTEM.ANONYMOUS_STATISTICS');
-            if (!empty($record)) {
-                if ($record['Systemsetting']['value'] === '2') {
-                    $askForHelp = true;
-                }
-            }
-        }
-        $this->set('askForHelp', $askForHelp);
-
         if (!$this->isAngularJsRequest()) {
             //Only ship template
             return;
@@ -144,7 +127,7 @@ class DashboardsController extends AppController {
         $this->set('tabs', $tabs);
         $this->set('widgets', $widgets);
         $this->set('tabRotationInterval', $tabRotationInterval);
-        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval', 'askForHelp']);
+        $this->viewBuilder()->setOption('serialize', ['tabs', 'widgets', 'tabRotationInterval']);
     }
 
     /****************************
@@ -832,7 +815,7 @@ class DashboardsController extends AppController {
         }
 
         $widget = $WidgetsTable->patchEntity($widget, [
-            'name' => $name
+            'title' => $name
         ]);
 
         $WidgetsTable->save($widget);
@@ -936,6 +919,45 @@ class DashboardsController extends AppController {
      *      Basic Widgets       *
      ****************************/
     public function welcomeWidget() {
+        /* New Angular API */
+        if ($this->isApiRequest()) {
+            /** @var RegistersTable $RegistersTable */
+            $RegistersTable = TableRegistry::getTableLocator()->get('Registers');
+
+
+            $license = $RegistersTable->getLicense();
+            $isCommunityEdition = false;
+            $hasSubscription = $license !== null;
+            if (isset($license['license']) && $license['license'] === $RegistersTable->getCommunityLicenseKey()) {
+                $isCommunityEdition = true;
+            }
+
+            $user = $this->getUser();
+            $User = new User($this->getUser());
+
+            $ServerTime = new \DateTime();
+            $ServerTimeZone = new \DateTimeZone($ServerTime->getTimezone()->getName());
+
+            $userImage = null;
+            if ($user->get('image') != null && $user->get('image') != '') {
+                if (file_exists(WWW_ROOT . 'img' . DS . 'userimages' . DS . $user->get('image'))) {
+                    $userImage = '/img/userimages' . DS . $user->get('image');
+                }
+            }
+
+            $this->set('isCommunityEdition', $isCommunityEdition);
+            $this->set('hasSubscription', $hasSubscription);
+            $this->set('server_timezone', $ServerTimeZone->getName());
+            $this->set('user_timezone', $User->getTimezone());
+            $this->set('userImage', $userImage);
+            $this->set('user_fullname', $User->getFullName());
+            $this->set('OPENITCOCKPIT_VERSION', OPENITCOCKPIT_VERSION);
+
+            $this->viewBuilder()->setOption('serialize', ['isCommunityEdition', 'hasSubscription', 'server_timezone', 'user_timezone', 'userImage', 'user_fullname', 'OPENITCOCKPIT_VERSION']);
+            return;
+        }
+
+        /** Remove all code below - old AngularJS template code */
         if (!$this->isApiRequest()) {
             //Only ship HTML template
 
@@ -1684,6 +1706,7 @@ class DashboardsController extends AppController {
 
     /**
      * @return array
+     * @deprecated Remove with openITCOCKPIT 5 as this is not required for the Angular Frontend anymore !!
      */
     private function getAcls() {
         $acl = [
@@ -2215,7 +2238,7 @@ class DashboardsController extends AppController {
 
         if ($this->request->is('get')) {
             $data = [];
-            $url = 'https://openitcockpit.io';
+            $url = 'https://itsm.love'; // https://openitcockpit.io is forbidden to be loaded in an iframe
             if ($widget->get('json_data') !== null && $widget->get('json_data') !== '') {
                 $data = json_decode($widget->get('json_data'), true);
                 if (!empty($data['url'])) {
@@ -2367,6 +2390,21 @@ class DashboardsController extends AppController {
                     break;
 
             }
+
+            $hostgroupIds = [];
+            $servicegroupIds = [];
+            if (!empty($config['Hostgroup']['_ids'])) {
+                foreach (explode(',', $config['Hostgroup']['_ids']) as $hostgroupId) {
+                    $hostgroupIds[] = (int)$hostgroupId;
+                }
+            }
+            if (!empty($config['Servicegroup']['_ids'])) {
+                foreach (explode(',', $config['Servicegroup']['_ids']) as $servicegroupId) {
+                    $servicegroupIds[] = (int)$servicegroupId;
+                }
+            }
+            $config['Hostgroup']['_ids'] = $hostgroupIds;
+            $config['Servicegroup']['_ids'] = $servicegroupIds;
 
 
             $this->set('config', $config);

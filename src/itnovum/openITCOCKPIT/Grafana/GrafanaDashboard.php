@@ -57,35 +57,35 @@ class GrafanaDashboard {
      */
     private $tags = [];
 
+    private $uid = null;
+
     /**
      * @var array
      */
 
     private $grafanaDashboardDataArray = [
-        'annotations'  => [
+        'annotations'          => [
             'list' => []
         ],
-        "editable"     => false, // testing true
+        "editable"             => false, // testing true
         "fiscalYearStartMonth" => 0,
-        "graphTooltip" => GrafanaTooltip::DEFAULT,
-        "id"           => null,
-        "links"        => [],
-        "liveNow"      => false,
-        "panels"       => [],
+        "graphTooltip"         => GrafanaTooltip::DEFAULT,
+        "id"                   => null,
+        "links"                => [],
+        "liveNow"              => false,
+        "panels"               => [],
 
 
-
-
-        "uid"          => null,
-        "title"        => "",
-        "tags"         => [],
+        "uid"        => null,
+        "title"      => "",
+        "tags"       => [],
         //"style" => "light",
-        "timezone"     => "browser",
-        "time"         => [
+        "timezone"   => "browser",
+        "time"       => [
             "from" => "now-6h",
             "to"   => "now"
         ],
-        "timepicker"   => [
+        "timepicker" => [
             "refresh_intervals" => [
                 "5s",
                 "10s",
@@ -110,13 +110,13 @@ class GrafanaDashboard {
                 "30d"
             ],
         ],
-        "templating"   => [
+        "templating" => [
             "list" => []
         ],
-        "rows"         => [
+        "rows"       => [
             //Insert rows here
         ],
-        "version"      => 0,
+        "version"    => 0,
     ];
 
     /**
@@ -127,10 +127,15 @@ class GrafanaDashboard {
         $this->grafanaDashboardDataArray['rows'] = $this->rows;
         $this->grafanaDashboardDataArray['editable'] = $this->editable;
         $this->grafanaDashboardDataArray['tags'] = $this->tags;
+        $this->grafanaDashboardDataArray['uid'] = $this->uid;
 
         // Decide some things basedon the setup.
         $this->grafanaDashboardDataArray['graphTooltip'] = $this->graphTooltip;
-        return json_encode(['dashboard' => $this->grafanaDashboardDataArray, 'overwrite' => true /*'inputs' => $additional*/], JSON_PRETTY_PRINT);
+        return json_encode([
+            'dashboard' => $this->grafanaDashboardDataArray,
+            'overwrite' => true
+            /*'inputs' => $additional*/
+        ], JSON_PRETTY_PRINT);
     }
 
     /**
@@ -138,6 +143,10 @@ class GrafanaDashboard {
      */
     public function setTitle($title) {
         $this->title = $title;
+    }
+
+    public function setUid($uid) {
+        $this->uid = $uid;
     }
 
     public function setTooltip(int $graphTooltip) {

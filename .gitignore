@@ -50,6 +50,7 @@ nbproject/*
 #######################
 docker
 schema-dump-default.lock
+DEMO_MODE
 config/graphite.php
 src/Lib/openITCOCKPIT_AvailableVersion.php
 webroot/img/userimages
@@ -128,3 +129,4 @@ plugins/ChangecalendarModule
 plugins/MSTeamsModule
 plugins/IsarFlowModule
 plugins/ScmModule
+plugins/JiraModule

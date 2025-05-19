@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -30,7 +35,7 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
 ?>
 
 <!DOCTYPE html>
-<html ng-app="openITCOCKPITLogin">
+<html>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -41,12 +46,11 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
     <link rel="stylesheet" type="text/css" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
 
-    <link rel="stylesheet" type="text/css" href="/node_modules/noty/lib/noty.css">
 
     <link rel="stylesheet" type="text/css" href="/css/login/adminator.min.css">
     <link rel="stylesheet" type="text/css" href="/css/login/login.css">
 
-    <title><?= __('Sign In') ?></title>
+    <title><?= __('openITCOCKPIT - Backend API') ?></title>
 
     <!-- FAVICONS -->
     <link rel="shortcut icon" type="image/x-icon; charset=binary" href="/img/favicons/favicon.ico">
@@ -89,14 +93,6 @@ $Logo = new \itnovum\openITCOCKPIT\Core\Views\Logo();
         }
     </style>
 
-    <script>
-        <?php if($disableAnimation): ?>
-        var disableLoginAnimation = true;
-        <?php else: ?>
-        var disableLoginAnimation = false;
-        <?php endif; ?>
-    </script>
-
 </head>
 <body class="app">
 
@@ -108,7 +104,7 @@ endif;
 ?>
 
 
-<div class="peers ai-s fxw-nw h-100vh" ng-controller="LoginLayoutController">
+<div class="peers ai-s fxw-nw h-100vh" style="display:flex; justify-content: center">
 
     <?php if ($disableAnimation === false && $Logo->isCustomLoginBackground() === false): ?>
         <div class="login-screen">
@@ -127,18 +123,6 @@ endif;
     <?= $this->fetch('content') ?>
 
 </div>
-
-<script src="/node_modules/jquery/dist/jquery.min.js"></script>
-<script src="/node_modules/angular/angular.min.js"></script>
-<script src="/node_modules/angular-ui-router/release/angular-ui-router.min.js"></script>
-<script src="/node_modules/tsparticles/tsparticles.min.js"></script>
-<script src="/node_modules/noty/lib/noty.min.js"></script>
-
-<script src="/js/lib/parseuri.js"></script>
-<script src="/js/login/ng.login-app.js"></script>
-<script src="/js/login/LoginLayoutController.js"></script>
-<script src="/js/login/UsersLoginController.js"></script>
-
 
 </body>
 </html>

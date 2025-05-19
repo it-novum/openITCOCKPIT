@@ -363,3 +363,8 @@ age_perfdata: 0
 # Disable (0) and Statusengine will use the proxy out of your environment
 disable_http_proxy: 1
 
+# This option is only for users of openITCOCKPIT (https://openitcockpit.io)
+# It enables specific performance optimizations, that can only be used with openITCOCKPIT.
+# Enable (1) If Statusengine is running with openITCOCKPIT
+# Disable (0) you are a happy user of standalone Statusengine :)
+is_openitcockpit: 1

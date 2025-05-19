@@ -45,7 +45,7 @@ angular.module('openITCOCKPIT').directive('tacticalOverviewServicesWidget', func
                 }).then(function(result){
                     $scope.filter.Host = result.data.config.Host;
                     $scope.filter.Service = result.data.config.Service;
-                    $scope.filter.Servicegroup._ids = result.data.config.Servicegroup._ids.split(',').map(Number);
+                    $scope.filter.Servicegroup._ids = result.data.config.Servicegroup._ids;
 
                     $('#ServicesKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Service.keywords);
                     $('#ServicesNotKeywordsInput' + $scope.widget.id).tagsinput('add', $scope.filter.Service.not_keywords);

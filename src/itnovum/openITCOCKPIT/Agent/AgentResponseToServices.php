@@ -100,6 +100,9 @@ class AgentResponseToServices {
      */
     public function getAllServices() {
         $services = [];
+        if (!is_array($this->agentResponse)) {
+            return [];
+        }
         foreach ($this->agentResponse as $mainKey => $items) {
             switch ($mainKey) {
                 case 'agent':

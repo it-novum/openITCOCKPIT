@@ -1,21 +1,26 @@
 <?php
-// Copyright (C) <2015>  <it-novum GmbH>
+// Copyright (C) <2015-present>  <it-novum GmbH>
 //
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -25,6 +30,7 @@
 
 namespace MapModule\Controller;
 
+use App\itnovum\openITCOCKPIT\Core\Permissions\RotationContainersPermissions;
 use App\Model\Table\ContainersTable;
 use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Exception\NotFoundException;
@@ -73,7 +79,7 @@ class RotationsController extends AppController {
                 continue;
             }
             foreach ($rotation['containers'] as $cKey => $container) {
-                if ($this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
+                if (array_key_exists($container['id'], $this->MY_RIGHTS_LEVEL) && $this->MY_RIGHTS_LEVEL[$container['id']] == WRITE_RIGHT) {
                     $all_rotations[$key]['allowEdit'] = true;
                     break;
                 }
@@ -131,8 +137,18 @@ class RotationsController extends AppController {
 
         /** @var MapsTable $MapsTable */
         $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
+        /** @var $ContainersTable ContainersTable */
+        $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
-        $maps = $MapsTable->getMapsForRotations($MapFilter->indexFilter(), $this->hasRootPrivileges ? [] : $this->MY_RIGHTS);
+        $containerIds = $this->request->getQuery('containerIds');
+
+        if (!is_array($containerIds)) {
+            $containerIds = [$containerIds];
+        }
+
+        $containerIds = $ContainersTable->resolveChildrenOfContainerIds($containerIds);
+
+        $maps = $MapsTable->getMapsForRotations($MapFilter->indexFilter(), $containerIds);
 
         $maps = Hash::combine($maps, '{n}.id', '{n}.name');
         $maps = Api::makeItJavaScriptAble($maps);
@@ -183,22 +199,61 @@ class RotationsController extends AppController {
             ]
         ]);
 
-        $this->viewBuilder()->setOption('serialize', ['rotation']);
+        $containerIds = Hash::extract($rotation, 'containers.{n}.id');
+
+        if (!$this->allowedByContainerId($containerIds)) {
+            $this->render403();
+            return;
+        }
+
+        if ($this->hasRootPrivileges === false) {
+            if (empty(array_intersect($containerIds, $this->getWriteContainers()))) {
+                $this->render403();
+            }
+        }
+
+        $requiredContainers = $RotationsTable->getRequiredContainerIdsForRotation(
+            intval($id),
+            $containerIds
+        );
+
+        $RotationContainersPermissions = new RotationContainersPermissions(
+            $containerIds,
+            $this->getWriteContainers(),
+            $this->hasRootPrivileges
+        );
+
+        $this->set('areContainersChangeable', $RotationContainersPermissions->areContainersChangeable());
+        $this->set('requiredContainers', $requiredContainers);
+        $this->viewBuilder()->setOption('serialize', ['rotation', 'areContainersChangeable', 'requiredContainers']);
         $this->set(compact('rotation'));
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
             $data['Rotation']['id'] = $id;
+            $data['Rotation']['containers']['_ids'] = $data['Rotation']['container_id'];
 
-            if (empty($data['Rotation']['interval'])) {
+            // get handled by the validation
+            /*if (empty($data['Rotation']['interval'])) {
                 $data['Rotation']['interval'] = 90;
             } else {
                 if ($data['Rotation']['interval'] < 10) {
                     $data['Rotation']['interval'] = 10;
                 }
+            }*/
+
+            if ($RotationContainersPermissions->areContainersChangeable() === false) {
+                //Overwrite post data. User is not permitted to change container ids!
+                $data['Rotation']['containers']['_ids'] = $data['Rotation']['container_id'];
+            }
+            if (!empty($requiredContainers)) {
+                //autofill required containers
+                foreach ($requiredContainers as $requiredContainerId) {
+                    $data['Rotation']['containers']['_ids'][] = $requiredContainerId;
+                }
             }
 
-            $data['Rotation']['containers']['_ids'] = $data['Rotation']['container_id'];
+
             $data['Rotation']['maps']['_ids'] = $data['Rotation']['Map'];
 
 

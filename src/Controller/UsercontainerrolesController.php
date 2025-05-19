@@ -66,6 +66,7 @@ class UsercontainerrolesController extends AppController {
             return $v == WRITE_RIGHT;
         }, ARRAY_FILTER_USE_BOTH);
         $containerWithWritePermissions = array_keys($containerWithWritePermissions);
+        $containerWithWritePermissionByUserContainerRoles = [];
         foreach ($all_usercontainerroles as $index => $usercontainerrole) {
             $userRoleContainerIdsWithWritePermission = Hash::extract($usercontainerrole['containers'], '{n}._joinData[permission_level=2].container_id');
             if (!$this->hasRootPrivileges && !empty(array_diff($userRoleContainerIdsWithWritePermission, $containerWithWritePermissions))) {
@@ -117,6 +118,8 @@ class UsercontainerrolesController extends AppController {
 
             $all_usercontainerroles[$index]['users'] = $usercontainerrole['users'];
         }
+        // return an array instead of a list
+        $all_usercontainerroles = array_values($all_usercontainerroles);
         $this->set('all_usercontainerroles', $all_usercontainerroles);
         $toJson = ['paging', 'all_usercontainerroles'];
         if ($this->isScrollRequest()) {
@@ -198,6 +201,26 @@ class UsercontainerrolesController extends AppController {
         if ($this->request->is('post') || $this->request->is('put')) {
             /** @var UsersTable $UsersTable */
             $UsersTable = TableRegistry::getTableLocator()->get('Users');
+
+            //autofill restricted containers for save
+            $autofillRights = [];
+            if (!$this->hasRootPrivileges) {
+                if (!empty($usercontainerrole['Usercontainerrole']['ContainersUsercontainerrolesMemberships'])) {
+                    foreach ($usercontainerrole['Usercontainerrole']['ContainersUsercontainerrolesMemberships'] as $containerId => $permissionLevel) {
+                        if (!isset($this->MY_RIGHTS_LEVEL[$containerId])) {
+                            $autofillRights[] = [
+                                'id'        => $containerId,
+                                '_joinData' => [
+                                    'permission_level' => $permissionLevel
+                                ]
+                            ];
+                        }
+                    }
+                }
+            }
+
+            $usercontainerrole = $UsercontainerrolesTable->get($id);
+
             $data = $this->request->getData('Usercontainerrole', []);
             if (!isset($data['ContainersUsercontainerrolesMemberships'])) {
                 $data['ContainersUsercontainerrolesMemberships'] = [];
@@ -207,7 +230,8 @@ class UsercontainerrolesController extends AppController {
                 $this->hasRootPrivileges,
                 $this->MY_RIGHTS_LEVEL
             );
-            $usercontainerrole = $UsercontainerrolesTable->get($id);
+            $data['containers'] = array_merge($data['containers'], $autofillRights);
+
             $usercontainerrole->setAccess('id', false);
 
             $usercontainerrole = $UsercontainerrolesTable->patchEntity($usercontainerrole, $data);

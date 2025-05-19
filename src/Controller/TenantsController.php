@@ -75,7 +75,8 @@ class TenantsController extends AppController {
         }
 
         $this->set('all_tenants', $all_tenants);
-        $this->viewBuilder()->setOption('serialize', ['all_tenants']);
+        $this->set('hasRootPrivileges', $this->hasRootPrivileges);
+        $this->viewBuilder()->setOption('serialize', ['all_tenants', 'hasRootPrivileges']);
     }
 
     /**
