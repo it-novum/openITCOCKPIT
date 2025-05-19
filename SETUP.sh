@@ -351,6 +351,8 @@ echo "Configure Grafana"
 systemctl restart openitcockpit-graphing.service
 
 if [[ -d /opt/openitc/frontend/plugins/GrafanaModule ]]; then
+    echo "Waiting for Grafana to execute database migrations. This could take a while..."
+    sleep 30
     oitc GrafanaModule.service_account
 fi
 
