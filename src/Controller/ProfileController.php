@@ -405,7 +405,6 @@ class ProfileController extends AppController {
             $session = $this->request->getSession();
 
             $newApiKey = $session->read('latest_api_key');
-            $session->delete('latest_api_key');
 
             if (!isset($newApiKey['key']) || !$newApiKey['time']) {
                 throw new BadRequestException();
@@ -432,8 +431,8 @@ class ProfileController extends AppController {
             } else {
                 $this->set('message', __('API key created successfully'));
                 $this->viewBuilder()->setOption('serialize', ['message']);
+                $session->delete('latest_api_key');
             }
-            return;
         }
     }
 
