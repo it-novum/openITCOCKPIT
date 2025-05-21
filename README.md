@@ -22,7 +22,7 @@ interface.
 This is the repository of the backend server code, that is providing the API for
 the [official openITCOCKPIT frontend](https://github.com/it-novum/openITCOCKPIT-frontend-angular).
 
-![openITCOCKPIT](screenshots/dashboard_v4.png?raw=true "openITCOCKPIT")
+![openITCOCKPIT](screenshots/dashboard.png?raw=true "openITCOCKPIT")
 
 # Demo
 
