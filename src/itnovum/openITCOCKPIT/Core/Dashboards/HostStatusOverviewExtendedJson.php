@@ -52,6 +52,9 @@ class HostStatusOverviewExtendedJson extends DashboardJsonStandardizer {
             'state_older_than'      => null,
             'state_older_than_unit' => 'MINUTE'
         ],
+        'Container'  => [
+            '_ids' => ''
+        ],
         'Hostgroup'  => [
             '_ids' => ''
         ]
@@ -62,6 +65,14 @@ class HostStatusOverviewExtendedJson extends DashboardJsonStandardizer {
      * @return array
      */
     public function standardizedData($request = []) {
+        if (isset($request['Container']['_ids']) && is_array($request['Container']['_ids'])) {
+            $request['Container']['_ids'] = array_filter(
+                $request['Container']['_ids'], function ($value) {
+                return $value > 0;
+            });
+            // POST request to save to database
+            $request['Container']['_ids'] = implode(',', $request['Container']['_ids']);
+        }
         if (isset($request['Hostgroup']['_ids']) && is_array($request['Hostgroup']['_ids'])) {
             $request['Hostgroup']['_ids'] = array_filter(
                 $request['Hostgroup']['_ids'], function ($value) {
