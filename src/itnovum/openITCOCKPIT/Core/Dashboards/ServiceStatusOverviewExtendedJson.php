@@ -56,6 +56,9 @@ class ServiceStatusOverviewExtendedJson extends DashboardJsonStandardizer {
             'keywords'          => '',
             'not_keywords'      => ''
         ],
+        'Container'  => [
+            '_ids' => ''
+        ],
         'Servicegroup'  => [
             '_ids' => ''
         ]
@@ -66,6 +69,14 @@ class ServiceStatusOverviewExtendedJson extends DashboardJsonStandardizer {
      * @return array
      */
     public function standardizedData($request = []) {
+        if (isset($request['Container']['_ids']) && is_array($request['Container']['_ids'])) {
+            $request['Container']['_ids'] = array_filter(
+                $request['Container']['_ids'], function ($value) {
+                return $value > 0;
+            });
+            // POST request to save to database
+            $request['Container']['_ids'] = implode(',', $request['Container']['_ids']);
+        }
         if (isset($request['Servicegroup']['_ids']) && is_array($request['Servicegroup']['_ids'])) {
             $request['Servicegroup']['_ids'] = array_filter(
                 $request['Servicegroup']['_ids'], function ($value) {

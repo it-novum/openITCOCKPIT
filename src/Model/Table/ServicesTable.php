@@ -3547,6 +3547,19 @@ class ServicesTable extends Table {
             $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
+            if (!empty($conditions['Container']['_ids'])) {
+                $query->where([
+                    'HostsToContainersSharing.container_id IN' => $conditions['Container']['_ids']
+                ]);
+            }
+        } else if (!empty($conditions['Container']['_ids'])) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $containerIds = explode(',', $conditions['Container']['_ids']);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $containerIds
+            ]);
         }
         $where = [];
 

@@ -43,6 +43,7 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Cache\ObjectsCache;
+use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -3241,7 +3242,21 @@ class HostsTable extends Table {
             $query->where([
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
+            if (!empty($conditions['Container']['_ids'])) {
+                $query->where([
+                    'HostsToContainersSharing.container_id IN' => $conditions['Container']['_ids']
+                ]);
+            }
+        } else if (!empty($conditions['Container']['_ids'])) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $containerIds = explode(',', $conditions['Container']['_ids']);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $containerIds
+            ]);
         }
+
         $where = [];
 
         $where['Hoststatus.current_state'] = $conditions['Hoststatus']['current_state'];
