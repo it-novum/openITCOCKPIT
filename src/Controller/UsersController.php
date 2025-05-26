@@ -553,6 +553,7 @@ class UsersController extends AppController {
                 $user->setAccess('password', false);
                 $user->setAccess('samaccountname', false);
                 $user->setAccess('ldap_dn', false);
+                $user->setAccess('department', false);
 
                 // Get User Container Roles from LDAP groups
                 /** @var SystemsettingsTable $SystemsettingsTable */
