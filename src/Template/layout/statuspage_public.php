@@ -4,18 +4,23 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -23,11 +28,14 @@
 //	License agreement and license key will be shipped with the order
 //	confirmation.
 
+
+use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
+use itnovum\openITCOCKPIT\Core\Views\Logo;
+
 /**
  * @var \App\View\AppView $this
  */
 
-use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 /**
  * @var \App\View\AppView $this
@@ -37,6 +45,8 @@ use itnovum\openITCOCKPIT\Core\Views\Logo;
  */
 
 $logo = new Logo();
+$LoginBackgrounds = new LoginBackgrounds();
+$images = $LoginBackgrounds->getImages();
 ?>
 
 <!DOCTYPE html>
@@ -106,54 +116,99 @@ $logo = new Logo();
     <link rel="icon" type="image/png" sizes="16x16" href="/img/favicons/favicon-16x16.png">
     <link rel="manifest" href="/img/favicons/site.webmanifest">
 
+    <style>
+        body {
+            background-color: transparent;
+        }
+        
+
+        .bg-not-monitored {
+            background-color: rgb(88, 86, 214) !important;
+        }
+
+        .border-not-monitored {
+            background-color: rgb(88, 86, 214) !important;
+        }
+
+        .login-screen-vnc {
+            background-image: url('/img/login/<?= h($images['images'][0]['image']) ?>');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-size: cover;
+            -moz-background-size: cover;
+            -webkit-background-size: cover;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            left: 0;
+            opacity: 0.3;
+        }
+
+        <?php if($logo->isCustomLoginBackground()): ?>
+        .login-screen-vnc {
+            background-image: url('<?= h($logo->getCustomLoginBackgroundHtml()) ?>');
+        }
+
+        <?php endif; ?>
+    </style>
+
 </head>
+
 <body class="mod-bg-1 mod-nav-link desktop pace-done nav-function-top blur dark-mode-body">
 
-<header class="page-header" role="banner">
-    <!-- we need this logo when user switches to nav-function-top -->
+<header class="page-header sticky-header" id="myHeader">
+
+    <!--we need this logo when user switches to nav-function-top-->
     <div class="page-logo">
+
         <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
            class="page-logo-link d-flex align-items-center position-relative">
-            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp"
-                 aria-roledescription="logo">
+
+            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp" width="64px"
+                 style="max-height: 64px; vertical-align:middle" aria-roledescription="logo">
             <span class="page-logo-text mr-1"><?= h($systemname); ?></span>
         </a>
     </div>
 
-    <!-- DOC: mobile button appears during mobile width -->
+    <!--DOC: mobile button appears during mobile width-->
     <div class="hidden-lg-up">
         <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
            class="page-logo-link d-flex align-items-center position-relative">
-            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp"
-                 aria-roledescription="logo">
+
+            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp" width="64px"
+                 style="max-height: 64px; vertical-align:middle" aria-roledescription="logo">
+
             <span class="page-logo-text mr-1 text-dark"><?= h($systemname); ?></span>
+
         </a>
-    </div>
-
-    <div class="ml-auto d-flex">
-
-        <?php /*
-        // This is here as reference if we want to add some icons to the main menu bar in the future
-        <!-- app settings -->
-        <div class="hidden-md-down">
-            <a href="#" class="header-icon">
-                <i class="fa fa-cogs"></i>
-            </a>
-        </div>
-        */ ?>
 
     </div>
+
+    <div class="ml-auto d-flex"></div>
+
 </header>
+
 <div class="page-content-margin">
+
     <main role="main">
         <?= $this->fetch('content') ?>
-    </main>
-</div>
 
+        <?php if ($logo->isCustomLoginBackground()): ?>
+            <div class="peers ai-s fxw-nw h-100vh" style="display:flex; justify-content: center;">
+                <div class="login-screen-vnc" style=""></div>
+            </div>
+        <?php endif; ?>
+
+    </main>
+
+</div>
 <?php /*
  // At the moment we do not need any JavaScript on this page
 <script src="/node_modules/jquery/dist/jquery.min.js"></script>
 */ ?>
 
 </body>
+
 </html>
