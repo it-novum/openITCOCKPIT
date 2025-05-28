@@ -75,10 +75,11 @@ $images = $LoginBackgrounds->getImages();
 
 </header>
 
-<div class="container-fluid">
+<div class="container">
+
     <div class="row">
 
-        <div class="panel w-100 m-lg-3">
+        <div class="panel w-100 m-lg-3 no-border">
 
             <!-- Statuspage over all status -->
             <div class="panel-container show">
@@ -86,6 +87,13 @@ $images = $LoginBackgrounds->getImages();
                     <div class="no-padding">
 
                         <div class="col-12 pt-2 pb-4">
+
+                            <div class="row" style="height:200px;">
+                                <?php if ($logo->isCustomLoginBackground()): ?>
+                                    <div class="login-screen-vnc img-fluid"></div>
+                                <?php endif; ?>
+                            </div>
+
                             <h4 class="d-block l-h-n m-0 fw-500">
                                 <?= h($statuspage['statuspage']['name']); ?>
                                 <small class="m-0 l-h-n">
@@ -240,8 +248,8 @@ $images = $LoginBackgrounds->getImages();
         </div>
     </div>
 </div>
-<?php if ($logo->isCustomLoginBackground()): ?>
-    <div class="peers ai-s fxw-nw h-100vh" style="display:flex; justify-content: center;">
-        <div class="login-screen-vnc" style=""></div>
-    </div>
-<?php endif; ?>
+
+<!-- <div class="peers ai-s fxw-nw h-100vh" style="display:flex; justify-content: center;">
+     <div class="login-screen-vnc" style=""></div>
+ </div>-->
+

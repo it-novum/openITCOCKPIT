@@ -102,6 +102,7 @@ $images = $LoginBackgrounds->getImages();
     <link rel="stylesheet" type="text/css" href="/css/openitcockpit.css">
 
     <link rel="stylesheet" type="text/css" href="/css/statuspage.css">
+    <link rel="stylesheet" type="text/css" href="/css/coreui/coreui.css">
 
     <title>
         <?= __('Statuspage') ?>
@@ -138,12 +139,11 @@ $images = $LoginBackgrounds->getImages();
             background-size: cover;
             -moz-background-size: cover;
             -webkit-background-size: cover;
-            position: fixed;
+            position: relative;
             top: 0;
             bottom: 0;
             right: 0;
             left: 0;
-            opacity: 0.3;
         }
 
         <?php if($logo->isCustomLoginBackground()): ?>
