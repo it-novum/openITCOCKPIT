@@ -88,9 +88,14 @@ $images = $LoginBackgrounds->getImages();
 
                         <div class="col-12 pt-2 pb-4">
 
-                            <div class="row" style="height:200px;">
+                            <div class="row pb-3">
                                 <?php if ($logo->isCustomLoginBackground()): ?>
-                                    <div class="login-screen-vnc img-fluid"></div>
+                                    <!--<div class="login-screen-vnc img-fluid"></div>-->
+                                    <img src="<?= $logo->getCustomLoginBackgroundHtml(); ?>"
+                                         alt="<?= h($systemname); ?> WebApp" width="64px"
+                                         class="img-fluid"
+                                         style="max-height: 500px; object-fit:cover;"
+                                         aria-roledescription="logo">
                                 <?php endif; ?>
                             </div>
 
