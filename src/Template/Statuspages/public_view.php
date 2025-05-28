@@ -4,24 +4,31 @@
 // This file is dual licensed
 //
 // 1.
-//	This program is free software: you can redistribute it and/or modify
-//	it under the terms of the GNU General Public License as published by
-//	the Free Software Foundation, version 3 of the License.
+//     This program is free software: you can redistribute it and/or modify
+//     it under the terms of the GNU General Public License as published by
+//     the Free Software Foundation, version 3 of the License.
 //
-//	This program is distributed in the hope that it will be useful,
-//	but WITHOUT ANY WARRANTY; without even the implied warranty of
-//	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//	GNU General Public License for more details.
+//     This program is distributed in the hope that it will be useful,
+//     but WITHOUT ANY WARRANTY; without even the implied warranty of
+//     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//     GNU General Public License for more details.
 //
-//	You should have received a copy of the GNU General Public License
-//	along with this program.  If not, see <http://www.gnu.org/licenses/>.
+//     You should have received a copy of the GNU General Public License
+//     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+// 2.
+//     If you purchased an openITCOCKPIT Enterprise Edition you can use this file
+//     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
+//     License agreement and license key will be shipped with the order
+//     confirmation.
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
 //	under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //	License agreement and license key will be shipped with the order
 //	confirmation.
+use itnovum\openITCOCKPIT\Core\LoginBackgrounds;
+use itnovum\openITCOCKPIT\Core\Views\Logo;
 
 /**
  * @var \App\View\AppView $this
@@ -29,7 +36,44 @@
  * @var int $id
  */
 
+$logo = new Logo();
+$LoginBackgrounds = new LoginBackgrounds();
+$images = $LoginBackgrounds->getImages();
+
 ?>
+<header class="page-header">
+
+    <!--we need this logo when user switches to nav-function-top-->
+    <div class="page-logo">
+
+        <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
+           class="page-logo-link d-flex align-items-center position-relative">
+
+            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp" width="64px"
+                 style="max-height: 64px; vertical-align:middle" aria-roledescription="logo">
+            <span class="page-logo-text mr-1">
+                <?= h($statuspage['statuspage']['public_title']); ?>
+            </span>
+        </a>
+    </div>
+
+    <!--DOC: mobile button appears during mobile width-->
+    <div class="hidden-lg-up">
+        <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
+           class="page-logo-link d-flex align-items-center position-relative">
+
+            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp" width="64px"
+                 style="max-height: 64px; vertical-align:middle" aria-roledescription="logo">
+
+            <span class="page-logo-text mr-1 text-dark"><?= h($systemname); ?></span>
+
+        </a>
+
+    </div>
+
+    <div class="ml-auto d-flex"></div>
+
+</header>
 
 <div class="container-fluid">
     <div class="row">
@@ -101,11 +145,11 @@
                                                             </div>
                                                         <?php endif; ?>
                                                         <?php if (!empty($item['acknowledgeComment'])): ?>
-                                                        <?php foreach ($item['acknowledgeComment'] as $comment): ?>
+                                                            <?php foreach ($item['acknowledgeComment'] as $comment): ?>
                                                                 <div class="text-truncate">
-                                                                    <?php echo __('Comment'); ?>:  <?= h($comment); ?>
+                                                                    <?php echo __('Comment'); ?>: <?= h($comment); ?>
                                                                 </div>
-                                                        <?php endforeach; ?>
+                                                            <?php endforeach; ?>
                                                         <?php endif; ?>
 
                                                         <!-- Handle acknowledgement comments -->
@@ -125,20 +169,20 @@
                                                                 <?= __('Currently under maintenance.'); ?>
                                                             </div>
                                                             <?php foreach ($item['downtimeData'] as $downtime): ?>
-                                                            <div class="row">
-                                                                <div class="col-xs-12 col-md-3">
-                                                                    <?= __('Start'); ?>:
-                                                                    <?= h($downtime['scheduledStartTime']); ?>
+                                                                <div class="row">
+                                                                    <div class="col-xs-12 col-md-3">
+                                                                        <?= __('Start'); ?>:
+                                                                        <?= h($downtime['scheduledStartTime']); ?>
+                                                                    </div>
+                                                                    <div class="col-xs-12 col-md-3">
+                                                                        <?= __('End'); ?>:
+                                                                        <?= h($downtime['scheduledEndTime']); ?>
+                                                                    </div>
+                                                                    <div class="col-xs-12 col-md-3">
+                                                                        <?= __('Comment'); ?>:
+                                                                        <?= h($downtime['comment']); ?>
+                                                                    </div>
                                                                 </div>
-                                                                <div class="col-xs-12 col-md-3">
-                                                                    <?= __('End'); ?>:
-                                                                    <?= h($downtime['scheduledEndTime']); ?>
-                                                                </div>
-                                                                <div class="col-xs-12 col-md-3">
-                                                                    <?= __('Comment'); ?>:
-                                                                    <?= h($downtime['comment']); ?>
-                                                                </div>
-                                                            </div>
                                                             <?php endforeach; ?>
                                                         </div>
                                                     </div>
@@ -148,7 +192,7 @@
                                             <!-- end of current downtimes -->
 
                                             <!-- handle plant downtime comments -->
-                                            <?php if (!empty($item['plannedDowntimeData'])  && count($item['plannedDowntimeData']) > 0): ?>
+                                            <?php if (!empty($item['plannedDowntimeData']) && count($item['plannedDowntimeData']) > 0): ?>
                                                 <div class="col-12 ">
                                                     <div class="row">
                                                         <div class="col-12 ">
@@ -196,3 +240,8 @@
         </div>
     </div>
 </div>
+<?php if ($logo->isCustomLoginBackground()): ?>
+    <div class="peers ai-s fxw-nw h-100vh" style="display:flex; justify-content: center;">
+        <div class="login-screen-vnc" style=""></div>
+    </div>
+<?php endif; ?>

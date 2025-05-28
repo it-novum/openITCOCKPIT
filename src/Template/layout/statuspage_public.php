@@ -120,7 +120,7 @@ $images = $LoginBackgrounds->getImages();
         body {
             background-color: transparent;
         }
-        
+
 
         .bg-not-monitored {
             background-color: rgb(88, 86, 214) !important;
@@ -158,56 +158,14 @@ $images = $LoginBackgrounds->getImages();
 
 <body class="mod-bg-1 mod-nav-link desktop pace-done nav-function-top blur dark-mode-body">
 
-<header class="page-header sticky-header" id="myHeader">
-
-    <!--we need this logo when user switches to nav-function-top-->
-    <div class="page-logo">
-
-        <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
-           class="page-logo-link d-flex align-items-center position-relative">
-
-            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp" width="64px"
-                 style="max-height: 64px; vertical-align:middle" aria-roledescription="logo">
-            <span class="page-logo-text mr-1"><?= h($systemname); ?></span>
-        </a>
-    </div>
-
-    <!--DOC: mobile button appears during mobile width-->
-    <div class="hidden-lg-up">
-        <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
-           class="page-logo-link d-flex align-items-center position-relative">
-
-            <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp" width="64px"
-                 style="max-height: 64px; vertical-align:middle" aria-roledescription="logo">
-
-            <span class="page-logo-text mr-1 text-dark"><?= h($systemname); ?></span>
-
-        </a>
-
-    </div>
-
-    <div class="ml-auto d-flex"></div>
-
-</header>
 
 <div class="page-content-margin">
 
     <main role="main">
         <?= $this->fetch('content') ?>
-
-        <?php if ($logo->isCustomLoginBackground()): ?>
-            <div class="peers ai-s fxw-nw h-100vh" style="display:flex; justify-content: center;">
-                <div class="login-screen-vnc" style=""></div>
-            </div>
-        <?php endif; ?>
-
     </main>
 
 </div>
-<?php /*
- // At the moment we do not need any JavaScript on this page
-<script src="/node_modules/jquery/dist/jquery.min.js"></script>
-*/ ?>
 
 </body>
 

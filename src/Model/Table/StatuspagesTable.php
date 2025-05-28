@@ -151,7 +151,7 @@ class StatuspagesTable extends Table {
 
         $validator
             ->scalar('public_title')
-            ->maxLength('description', 255)
+            ->maxLength('public_title', 255)
             ->allowEmptyString('public_title');
 
         $validator
@@ -844,6 +844,7 @@ class StatuspagesTable extends Table {
                 'statuspage' => [
                     'name'                        => $statuspage['name'],
                     'description'                 => $statuspage['description'],
+                    'public_title'                => $statuspage['public_title'],
                     'public'                      => $statuspage['public'],
                     'showDowntimes'               => $statuspage['show_downtimes'],
                     'showDowntimeComments'        => $statuspage['show_downtime_comments'],
@@ -864,6 +865,7 @@ class StatuspagesTable extends Table {
             'statuspage' => [
                 'name'                        => $statuspage['name'],
                 'description'                 => $statuspage['description'],
+                'public_title'                => $statuspage['public_title'],
                 'public'                      => $statuspage['public'],
                 'showDowntimes'               => $statuspage['show_downtimes'],
                 'showDowntimeComments'        => $statuspage['show_downtime_comments'],
