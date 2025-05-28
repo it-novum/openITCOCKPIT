@@ -327,11 +327,11 @@ class LdapClient {
         if ($this->isOpenLdap === false) {
             //MS AD
             $filter = $this->getUsersFilter($sAMAccountName, true);
-            $search = \FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf');
+            $search = \FreeDSx\Ldap\Operations::search($filter, 'samaccountname', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf', 'department', 'company');
         } else {
             //OpenLDAP
             $filter = $this->getUsersFilter($sAMAccountName, true);
-            $search = \FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf');
+            $search = \FreeDSx\Ldap\Operations::search($filter, 'uid', 'mail', 'sn', 'givenname', 'displayname', 'dn', 'memberOf', 'department', 'company');
         }
 
         //debug($filter->toString());
@@ -349,6 +349,16 @@ class LdapClient {
                 $entry['samaccountname'] = $entry['uid'];
             }
 
+            $company = '';
+            if (isset($entry['company'][0])) {
+                $company = h($entry['company'][0]);
+            }
+
+            $department = '';
+            if (isset($entry['department'][0])) {
+                $department = h($entry['department'][0]);
+            }
+
             $memberOf = [];
             if ($includeMember) {
                 $memberOf = $entry['memberof'] ?? [];
@@ -359,6 +369,8 @@ class LdapClient {
                 'sn'             => $entry['sn'][0],
                 'samaccountname' => $entry['samaccountname'][0],
                 'email'          => $entry['mail'][0],
+                'company'        => $company,
+                'department'     => $department,
                 'dn'             => $userDn,
                 'memberof'       => $memberOf,
                 'display_name'   => sprintf(
