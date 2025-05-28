@@ -41,7 +41,7 @@ $LoginBackgrounds = new LoginBackgrounds();
 $images = $LoginBackgrounds->getImages();
 
 ?>
-<header class="page-header">
+<header class="page-header container">
 
     <!--we need this logo when user switches to nav-function-top-->
     <div class="page-logo">
@@ -79,7 +79,7 @@ $images = $LoginBackgrounds->getImages();
 
     <div class="row">
 
-        <div class="panel w-100 m-lg-3 no-border">
+        <div class="panel w-100">
 
             <!-- Statuspage over all status -->
             <div class="panel-container show">
@@ -109,7 +109,7 @@ $images = $LoginBackgrounds->getImages();
 
 
                         <div
-                            class="p-3 bg-<?= h($statuspage['statuspage']['cumulatedColor']); ?> rounded overflow-hidden position-relative text-white">
+                                class="p-3 bg-<?= h($statuspage['statuspage']['cumulatedColor']); ?> rounded overflow-hidden position-relative text-white">
                             <div>
                                 <h2 class="d-block l-h-n m-0 fw-500">
                                     <?= h($statuspage['statuspage']['cumulatedHumanStatus']); ?>
@@ -131,7 +131,7 @@ $images = $LoginBackgrounds->getImages();
                             <div class="card d-flex flex-row min-h-110 margin-bottom-10">
                                 <div class="p-2">
                                     <div
-                                        class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
+                                            class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
                                 </div>
 
                                 <div class="flex-1">
@@ -242,7 +242,7 @@ $images = $LoginBackgrounds->getImages();
 
                                 <div class="p-2 hidden-md-down">
                                     <div
-                                        class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
+                                            class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
                                 </div>
                             </div>
                             <!-- end object card -->

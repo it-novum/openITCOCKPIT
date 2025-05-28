@@ -92,6 +92,7 @@ $images = $LoginBackgrounds->getImages();
     <meta name="theme-color" content="#4085c6">
 
     <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/coreui/coreui.css">
 
     <link rel="stylesheet" type="text/css" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
@@ -102,7 +103,7 @@ $images = $LoginBackgrounds->getImages();
     <link rel="stylesheet" type="text/css" href="/css/openitcockpit.css">
 
     <link rel="stylesheet" type="text/css" href="/css/statuspage.css">
-    <link rel="stylesheet" type="text/css" href="/css/coreui/coreui.css">
+
 
     <title>
         <?= __('Statuspage') ?>
