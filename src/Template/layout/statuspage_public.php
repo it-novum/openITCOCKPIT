@@ -92,17 +92,22 @@ $images = $LoginBackgrounds->getImages();
     <meta name="theme-color" content="#4085c6">
 
     <link rel="stylesheet" type="text/css" href="/node_modules/font-awesome/css/font-awesome.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/coreui/coreui.css">
+
 
     <link rel="stylesheet" type="text/css" href="/node_modules/@fortawesome/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="/dist/compressed_app.css">
-    <link rel="stylesheet" type="text/css" href="/smartadmin4/dist/css/themes/cust-theme-10.css">
-    <link rel="stylesheet" type="text/css" href="/css/openitcockpit-colors.css">
-    <link rel="stylesheet" type="text/css" href="/css/openitcockpit-utils.css">
-    <link rel="stylesheet" type="text/css" href="/css/openitcockpit.css">
+    <!--<link rel="stylesheet" type="text/css" href="/node_modules/bootstrap/dist/css/bootstrap.min.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/dist/compressed_app.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/smartadmin4/dist/css/themes/cust-theme-10.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/public_statuspage/colors.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/openitcockpit-utils.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="/css/openitcockpit.css">-->
 
-    <link rel="stylesheet" type="text/css" href="/css/statuspage.css">
+    <!--<link rel="stylesheet" type="text/css" href="/css/statuspage.css">-->
+    <link rel="stylesheet" type="text/css" href="/css/coreui/coreui.css">
+    <!--<link rel="stylesheet" type="text/css" href="/css/openitcockpit-colors.css">-->
+    <link rel="stylesheet" type="text/css" href="/css/public_statuspage/colors.css">
+    <link rel="stylesheet" type="text/css" href="/css/public_statuspage/style.css">
+    <!--<link rel="stylesheet" type="text/css" href="/css/statuspage.css">-->
 
 
     <title>
@@ -119,18 +124,18 @@ $images = $LoginBackgrounds->getImages();
     <link rel="manifest" href="/img/favicons/site.webmanifest">
 
     <style>
-        body {
-            background-color: transparent;
-        }
+        /*  body {
+              background-color: transparent;
+          }
 
 
-        .bg-not-monitored {
-            background-color: rgb(88, 86, 214) !important;
-        }
+          .bg-not-monitored {
+              background-color: rgb(88, 86, 214) !important;
+          }
 
-        .border-not-monitored {
-            background-color: rgb(88, 86, 214) !important;
-        }
+          .border-not-monitored {
+              background-color: rgb(88, 86, 214) !important;
+          } */
 
         .login-screen-vnc {
             background-image: url('/img/login/<?= h($images['images'][0]['image']) ?>');
@@ -157,10 +162,10 @@ $images = $LoginBackgrounds->getImages();
 
 </head>
 
-<body class="mod-bg-1 mod-nav-link desktop pace-done nav-function-top blur dark-mode-body">
+<body class="dark-mode-body">
 
 
-<div class="page-content-margin">
+<div>
 
     <main role="main">
         <?= $this->fetch('content') ?>
