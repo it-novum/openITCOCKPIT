@@ -51,8 +51,9 @@
     }
 
     .card {
-        background-color: #212631;;
+        background-color: #212631;
         color: var(--cui-body-bg) !important;
+        border-color: #323a49 !important;
     }
 }
 

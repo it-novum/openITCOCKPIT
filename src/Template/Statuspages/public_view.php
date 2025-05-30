@@ -115,7 +115,7 @@ $images = $LoginBackgrounds->getImages();
 
 
                             <div
-                                class="p-3 bg-<?= h($statuspage['statuspage']['cumulatedColor']); ?> rounded overflow-hidden position-relative text-white">
+                                    class="p-3 bg-<?= h($statuspage['statuspage']['cumulatedColor']); ?> rounded overflow-hidden position-relative text-white">
                                 <div>
                                     <h5 class="d-block l-h-n m-0 fw-500">
                                         <?= h($statuspage['statuspage']['cumulatedHumanStatus']); ?>
@@ -137,12 +137,12 @@ $images = $LoginBackgrounds->getImages();
                                 <div class="card d-flex flex-row min-h-110 mb-2">
                                     <div class="p-2">
                                         <div
-                                            class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
+                                                class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
                                     </div>
 
                                     <div class="flex-1">
                                         <div class="row p-2">
-                                            <div class="col-12  h5">
+                                            <div class="col-12 text-primary h5">
                                                 <?= h($item['name']); ?>
                                             </div>
 
@@ -249,7 +249,7 @@ $images = $LoginBackgrounds->getImages();
 
                                     <div class="p-2 hidden-md-down">
                                         <div
-                                            class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
+                                                class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
                                     </div>
                                 </div>
                                 <!-- end object card -->
