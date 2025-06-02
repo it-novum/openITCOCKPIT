@@ -120,14 +120,14 @@ $logo = new Logo();
 
                                     <!-- Handle status name -->
                                     <div class="col-12">
-                                        <h5 class="<?= h($item['cumulatedColor']); ?>"><?= h($item['cumulatedStateName']); ?></h5>
+                                        <h6 class="<?= h($item['cumulatedColor']); ?>"><?= h($item['cumulatedStateName']); ?></h6>
                                     </div>
                                     <!-- end of status name -->
                                     <!-- Handle acknowledgement comments -->
                                     <?php if (!empty($item['acknowledgedProblemsText']) && $statuspage['statuspage']['showAcknowledgements'] && $item['cumulatedColorId'] > 0): ?>
                                         <div class="col-12">
                                             <div class="row">
-                                                <div class="col-12 ">
+                                                <div class="col-12">
                                                     <?php if (!empty($item['acknowledgedProblemsText'])): ?>
                                                         <div>
                                                             <i class="far fa-user"></i>
