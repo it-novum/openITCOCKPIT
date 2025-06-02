@@ -52,28 +52,12 @@ $logo = new Logo();
                    class="d-flex align-items-center position-relative">
 
                     <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp"
-                         width="64px"
-                         style="max-height: 64px; vertical-align:middle" aria-roledescription="logo">
-                    <span class="ms-2 text-white">
+                         class=" ms-2 img-fluid logo-public" aria-roledescription="logo">
+                    <span class="h5 pt-1 ms-2 text-white text-truncate">
                         <?= h($statuspage['statuspage']['public_title']); ?>
                     </span>
                 </a>
             </div>
-
-            <!--DOC: mobile button appears during mobile width-->
-            <!--<div class="hidden-lg-up">
-                <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
-                   class="page-logo-link d-flex align-items-center position-relative">
-
-                    <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp" width="64px"
-                         style="max-height: 64px; vertical-align:middle" aria-roledescription="logo">
-
-                    <span class="page-logo-text mr-1 text-dark"><?= h($systemname); ?></span>
-
-                </a>
-
-            </div>-->
-
             <div class="ml-auto d-flex"></div>
         </div>
     </nav>
@@ -81,11 +65,8 @@ $logo = new Logo();
 </header>
 
 <div class="container">
-
     <div class="row">
-
         <div class="m-0 w-100">
-
             <!-- Statuspage over all status -->
             <div>
                 <div class="p-0">
@@ -107,7 +88,6 @@ $logo = new Logo();
                             <?= h($statuspage['statuspage']['description']); ?>
                         </div>
                     </div>
-
 
                     <div
                         class="p-3 bg-<?= h($statuspage['statuspage']['cumulatedColor']); ?> rounded overflow-hidden position-relative text-white">
@@ -132,7 +112,6 @@ $logo = new Logo();
                                 <div
                                     class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
                             </div>
-
                             <div class="flex-1">
                                 <div class="row p-2">
                                     <div class="col-12 text-primary h5">
@@ -144,7 +123,6 @@ $logo = new Logo();
                                         <h5 class="<?= h($item['cumulatedColor']); ?>"><?= h($item['cumulatedStateName']); ?></h5>
                                     </div>
                                     <!-- end of status name -->
-
                                     <!-- Handle acknowledgement comments -->
                                     <?php if (!empty($item['acknowledgedProblemsText']) && $statuspage['statuspage']['showAcknowledgements'] && $item['cumulatedColorId'] > 0): ?>
                                         <div class="col-12">
@@ -164,13 +142,11 @@ $logo = new Logo();
                                                             </div>
                                                         <?php endforeach; ?>
                                                     <?php endif; ?>
-
                                                     <!-- Handle acknowledgement comments -->
                                                 </div>
                                             </div>
                                         </div>
                                     <?php endif; ?>
-
                                     <!-- handle current downtime comments -->
                                     <?php if ($statuspage['statuspage']['showDowntimes']): ?>
                                         <?php if (!empty($item['downtimeData']) && count($item['downtimeData']) > 0): ?>
@@ -201,9 +177,7 @@ $logo = new Logo();
                                                 </div>
                                             </div>
                                         <?php endif; ?>
-
                                         <!-- end of current downtimes -->
-
                                         <!-- handle plant downtime comments -->
                                         <?php if (!empty($item['plannedDowntimeData']) && count($item['plannedDowntimeData']) > 0): ?>
                                             <div class="col-12 ">
@@ -237,7 +211,6 @@ $logo = new Logo();
                                     <?php endif; ?>
                                 </div>
                             </div>
-
                             <div class="p-2 hidden-md-down">
                                 <div
                                     class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>

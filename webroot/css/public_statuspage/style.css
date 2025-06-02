@@ -153,6 +153,11 @@ body {
     object-fit: cover;
 }
 
+.logo-public {
+    max-width: 64px;
+    object-fit: cover;
+}
+
 a {
     text-decoration: none;
 }
@@ -163,20 +168,4 @@ a {
 
 .fxw-nw {
     flex-wrap: nowrap !important;
-}
-
-.ai-s {
-    align-items: stretch;
-}
-
-.peers {
-    box-sizing: border-box;
-    display: flex !important;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-flow: row wrap;
-    height: auto;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
 }
