@@ -3171,7 +3171,7 @@ class ServicesController extends AppController {
         }
 
         $host = $HostsTable->getHostForSlaBrowserTabWithHosttemplateById($service->get('host_id'));
-        if (!$this->allowedByContainerId($host['hosts_to_containers_sharing']['_ids'])) {
+        if (!$this->allowedByContainerId($host['hosts_to_containers_sharing']['_ids'], false)) {
             $this->render403();
             return;
         }
