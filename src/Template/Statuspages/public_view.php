@@ -44,17 +44,19 @@ $logo = new Logo();
 <!--<div>-->
 
 <header class="container">
-    <nav class="navbar bg-dark border-bottom mb-3">
+    <nav class="navbar bg-dark border-bottom my-3">
         <div>
-            <!--we need this logo when user switches to nav-function-top-->
             <div>
                 <a href="<?= $this->Html->Url->build(['controller' => 'Statuspages', 'action' => 'publicView', $id]); ?>"
                    class="d-flex align-items-center position-relative">
-
                     <img src="<?= $logo->getHeaderLogoForHtml(); ?>" alt="<?= h($systemname); ?> WebApp"
                          class=" ms-2 img-fluid logo-public" aria-roledescription="logo">
                     <span class="h5 pt-1 ms-2 text-white text-truncate">
-                        <?= h($statuspage['statuspage']['public_title']); ?>
+                        <?php if (!empty($statuspage['statuspage']['public_title'])): ?>
+                            <?= h($statuspage['statuspage']['public_title']); ?>
+                        <?php else: ?>
+                            <?= h($systemname); ?>
+                        <?php endif; ?>
                     </span>
                 </a>
             </div>
@@ -90,7 +92,7 @@ $logo = new Logo();
                     </div>
 
                     <div
-                        class="p-3 bg-<?= h($statuspage['statuspage']['cumulatedColor']); ?> rounded overflow-hidden position-relative text-white">
+                            class="p-3 bg-<?= h($statuspage['statuspage']['cumulatedColor']); ?> rounded overflow-hidden position-relative text-white">
                         <div>
                             <h5 class="d-block l-h-n m-0 fw-500">
                                 <?= h($statuspage['statuspage']['cumulatedHumanStatus']); ?>
@@ -110,7 +112,7 @@ $logo = new Logo();
                         <div class="card d-flex flex-row min-h-110 mb-2">
                             <div class="p-2">
                                 <div
-                                    class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
+                                        class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
                             </div>
                             <div class="flex-1">
                                 <div class="row p-2">
@@ -213,7 +215,7 @@ $logo = new Logo();
                             </div>
                             <div class="p-2 hidden-md-down">
                                 <div
-                                    class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
+                                        class="h-100 status-line bg-<?= h($item['cumulatedColor']); ?> shadow-<?= h($item['cumulatedColor']); ?>"></div>
                             </div>
                         </div>
                         <!-- end object card -->
