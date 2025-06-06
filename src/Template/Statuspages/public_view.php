@@ -75,9 +75,9 @@ $logo = new Logo();
                     <div class="col-12 pt-2 pb-4">
 
                         <div class="row pb-3">
-                            <?php if ($logo->isCustomLoginBackground()): ?>
-                                <img src="<?= $logo->getCustomLoginBackgroundHtml(); ?>"
-                                     alt="<?= h($systemname); ?> WebApp" width="64px"
+                            <?php if ($logo->isCustomStatusPageHeader()): ?>
+                                <img src="<?= $logo->getCustomStatusPageHeaderHtml(); ?>"
+                                     alt="<?= h($systemname); ?> WebApp"
                                      class="img-fluid img-public"
                                      aria-roledescription="logo">
                             <?php endif; ?>
