@@ -159,6 +159,10 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ]);
 
+        $this->hasMany('MapgeneratorsToContainers', [
+            'foreignKey' => 'container_id'
+        ]);
+
         $this->hasMany('Tenants', [
             'foreignKey'       => 'container_id',
             'cascadeCallbacks' => true
@@ -1580,4 +1584,83 @@ class ContainersTable extends Table {
 
         return $MY_WRITE_RIGHTS;
     }
+
+    /**
+     * @param array $hosts
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getContainersForMapgeneratorByContainerStructure($hosts, $MY_RIGHTS) {
+
+        $containersAndHosts = [];
+
+        foreach ($hosts as $host) {
+
+            // skip hosts without container_id or id or name
+            if (!isset($host['container_id'], $host['id'], $host['name'])) {
+                continue;
+            }
+
+            $containerHierarchyForHost = [];
+            $mandantContainerId = 0; // this is the first container in the hierarchy and gets checked for rights
+            $currentContainerId = $host['container_id'];
+            $skipHost = false;
+
+            // skip host if container is root
+            if ($currentContainerId === ROOT_CONTAINER) {
+                continue;
+            }
+
+            while ($mandantContainerId === 0) {
+
+                $currentContainer = $this->getContainerById($currentContainerId);
+                if (empty($currentContainer)) {
+                    // Container not found, skip this host
+                    $skipHost = true;
+                    break;
+                }
+
+                // check if container is mandant
+                if ($currentContainer['containertype_id'] === 2) {
+                    // check for rights
+                    if (!empty($MY_RIGHTS) && !in_array($currentContainer['id'], $MY_RIGHTS, true)) {
+                        $skipHost = true;
+                        break;
+                    }
+                    $mandantContainerId = $currentContainer['id'];
+                }
+
+                $containerForHost = [
+                    'id'   => $currentContainer['id'],
+                    'name' => $currentContainer['name']
+                ];
+
+                $containerHierarchyForHost[] = $containerForHost;
+                $currentContainerId = $currentContainer['parent_id'] ?? null;
+
+                // if next element is root break the loop
+                if ($currentContainerId === null) {
+                    break;
+                }
+
+            };
+
+            if (!$skipHost) {
+
+                // reverse array to have higher containers first
+                $hostObject = [
+                    'hostId'             => $host['id'],
+                    'hostName'           => $host['name'],
+                    'containerHierarchy' => array_reverse($containerHierarchyForHost),
+                ];
+
+                $containersAndHosts[] = $hostObject;
+            }
+
+        }
+
+        return $containersAndHosts;
+
+    }
+
 }

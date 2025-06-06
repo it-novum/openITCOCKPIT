@@ -43,7 +43,6 @@ use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Cache\ObjectsCache;
-use itnovum\openITCOCKPIT\Core\FileDebugger;
 use itnovum\openITCOCKPIT\Core\HostConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -5400,4 +5399,39 @@ class HostsTable extends Table {
                 'IF(Hosts.sla_id IS NULL, Hosttemplates.sla_id, Hosts.sla_id) > 0'
             ])->count();
     }
+
+    /**
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getHostsForMapgenerator($MY_RIGHTS) {
+        $query = $this->find();
+
+        $query->select([
+            'Hosts.id',
+            'Hosts.container_id',
+            'Hosts.name',
+        ]);
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+        }
+
+        $query->contain('HostsToContainersSharing')
+            ->disableHydration()
+            ->all();
+
+        $result = $query->toArray();
+        if (empty($result)) {
+            return [];
+        }
+
+        return $result;
+    }
+
 }
