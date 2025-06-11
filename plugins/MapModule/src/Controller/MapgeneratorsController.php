@@ -40,8 +40,10 @@ use Exception;
 use itnovum\openITCOCKPIT\Core\AngularJS\Api;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
 use itnovum\openITCOCKPIT\Filter\MapgeneratorFilter;
+use itnovum\openITCOCKPIT\Maps\MapForAngular;
 use MapModule\Model\Table\MapgeneratorsTable;
 use MapModule\Model\Table\MapsTable;
+use MapModule\Model\Table\MapsummaryitemsTable;
 
 class MapgeneratorsController extends AppController {
 
@@ -280,15 +282,14 @@ class MapgeneratorsController extends AppController {
         // get already generated maps
         if (!empty($data['Mapgenerator']['maps']['_ids'])) {
 
-            /** @var MapsTable $MapsTable */
-            $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
-
             $generatedMaps = $MapsTable->getMapsByIds($data['Mapgenerator']['maps']['_ids']);
 
         }
 
         // generate maps
         foreach ($containersAndHosts as $containerAndHostKey => $containerAndHost) {
+
+            $higherMap = null; // this is the map that is generated for the container that is higher in the hierarchy
 
             // container for map is the mandant (first container in the list)
             $containerIdForNewMap = $containerAndHost['containerHierarchy'][0]['id'];
@@ -297,34 +298,137 @@ class MapgeneratorsController extends AppController {
 
                 // check if container is already generated
                 $containerName = $container['name'];
+                $map = null;
 
-                // if map is not yet generated
-                if (!in_array($containerName, Hash::extract($generatedMaps, '{n}.name'), true)) {
+                // if map is already generated continue
+                if (in_array($containerName, Hash::extract($generatedMaps, '{n}.name'), true)) {
+                    continue;
+                }
 
-                    // create new map for this container
-                    $mapData = [
-                        'containers'       => [
-                            '_ids' => [$containerIdForNewMap]
-                        ],
-                        'name'             => $containerName,
-                        'title'            => $containerName,
-                        'refresh_interval' => $data['Mapgenerator']['refresh_interval'],
+                // create new map for this container
+                $mapData = [
+                    'containers'       => [
+                        '_ids' => [$containerIdForNewMap]
+                    ],
+                    'name'             => $containerName,
+                    'title'            => $containerName,
+                    'refresh_interval' => $data['Mapgenerator']['refresh_interval'],
+                ];
+
+                $map = $MapsTable->newEmptyEntity();
+                $map = $MapsTable->patchEntity($map, $mapData);
+                $generatedMaps[] = $map;
+
+                $MapsTable->save($map);
+                if ($map->hasErrors()) {
+                    $this->response = $this->response->withStatus(400);
+                    $this->set('error', $map->getErrors());
+                    $this->viewBuilder()->setOption('serialize', ['error']);
+                    return;
+                }
+
+                // add maps as mapsummaryitems to the previously generated map
+                if ($higherMap && $containerKey > 0) {
+
+                    //get item that is furthest to the right
+                    $higherMapWithItems = $MapsTable->get($higherMap["id"], [
+                        'contain' => [
+                            'Containers',
+                            'Mapgadgets',
+                            'Mapicons',
+                            'Mapitems',
+                            'Maplines',
+                            'Maptexts',
+                            'Mapsummaryitems'
+                        ]
+                    ])->toArray();
+
+                    $MapForAngular = new MapForAngular($higherMapWithItems);
+                    $higherMapWithItems = $MapForAngular->toArray();
+
+                    /**
+                     * calculate new x and y position for the new mapsummaryitems
+                     * by searching for the highest x and y position of the existing items
+                     */
+                    $x = 0;
+                    $y = 0;
+                    foreach ($higherMapWithItems['Mapgadgets'] as $mapgdagetKey => $mapgadget) {
+                        if ($mapgadget['x'] >= $x && $mapgadget['y'] >= $y) {
+                            $x = $mapgadget['x'];
+                            $y = $mapgadget['y'];
+                        }
+                    }
+                    foreach ($higherMapWithItems['Mapicons'] as $mapicon) {
+                        if ($mapicon['x'] >= $x && $mapicon['y'] >= $y) {
+                            $x = $mapicon['x'];
+                            $y = $mapicon['y'];
+                        }
+                    }
+                    foreach ($higherMapWithItems['Mapitems'] as $mapitem) {
+                        if ($mapitem['x'] >= $x && $mapitem['y'] >= $y) {
+                            $x = $mapitem['x'];
+                            $y = $mapitem['y'];
+                        }
+                    }
+                    foreach ($higherMapWithItems['Maplines'] as $mapline) {
+                        if ($mapline['endX'] >= $x && $mapline['endY'] >= $y) {
+                            $x = $mapline['endX'];
+                            $y = $mapline['endY'];
+                        }
+                    }
+                    foreach ($higherMapWithItems['Maptexts'] as $maptext) {
+                        if ($maptext['x'] >= $x && $maptext['y'] >= $y) {
+                            $x = $maptext['x'];
+                            $y = $maptext['y'];
+                        }
+                    }
+                    foreach ($higherMapWithItems['Mapsummaryitems'] as $mapsummaryitem) {
+                        if ($mapsummaryitem['x'] >= $x && $mapsummaryitem['y'] >= $y) {
+                            $x = $mapsummaryitem['x'];
+                            $y = $mapsummaryitem['y'];
+                        }
+                    }
+
+                    if ($x > 0) {
+                        $x += 200; // add some space to the right
+                    }
+                    if ($x > 1500) {
+                        $x = 0;
+                        $y += 120; // add some space to the bottom
+                    }
+
+                    /** @var MapsummaryitemsTable $MapsummaryitemsTable */
+                    $MapsummaryitemsTable = TableRegistry::getTableLocator()->get('MapModule.Mapsummaryitems');
+
+                    $mapsummaryitemEntity = $MapsummaryitemsTable->newEmptyEntity();
+
+                    // add map item to the map
+                    $mapsummaryitem['Mapsummaryitem'] = [
+                        "z_index"         => "0",
+                        "x"               => $x,
+                        "y"               => $y,
+                        "size_x"          => 0,
+                        "size_y"          => 0,
+                        "show_label"      => 1,
+                        "label_possition" => 2,
+                        "type"            => "map",
+                        "object_id"       => $map["id"],
+                        "map_id"          => $higherMap["id"]
                     ];
+                    $mapsummaryitemEntity = $MapsummaryitemsTable->patchEntity($mapsummaryitemEntity, $mapsummaryitem['Mapsummaryitem']);
+                    $MapsummaryitemsTable->save($mapsummaryitemEntity);
 
-                    $map = $MapsTable->newEmptyEntity();
-                    $map = $MapsTable->patchEntity($map, $mapData);
-                    $generatedMaps[] = $map;
-
-                    $MapsTable->save($map);
-                    if ($map->hasErrors()) {
+                    if ($mapsummaryitemEntity->hasErrors()) {
                         $this->response = $this->response->withStatus(400);
-                        $this->set('error', $map->getErrors());
+                        $this->set('error', $mapsummaryitemEntity->getErrors());
                         $this->viewBuilder()->setOption('serialize', ['error']);
                         return;
                     }
-
                 }
 
+                if (count($containerAndHost['containerHierarchy']) > 1) {
+                    $higherMap = $map;
+                }
 
             }
 
