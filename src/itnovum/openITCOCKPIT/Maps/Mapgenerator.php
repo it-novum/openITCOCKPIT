@@ -239,9 +239,9 @@ class Mapgenerator {
          */
         $x = 0; // x position of the new item
         $y = 0; // y position of the new item
-        $lineSize = 140; // size of one line in the map
-        $itemMinWidth = 200; // minimum width of an item
-        $maxX = 1500; // maximum x position in the map
+        $LINE_SIZE = 140; // size of one line in the map
+        $ITEM_MIN_WIDTH = 200; // minimum width of an item
+        $MAX_X = 1500; // maximum x position in the map
         $mapHasItems = false; // if map has only one item, calculate position based on this item
         $previousItem = [
             'type' => "",
@@ -274,36 +274,24 @@ class Mapgenerator {
             }
         }
 
-        $width = 0;
         // get name of the previous item to calculate the width
-        if ($mapHasItems) {
-            $namesById = [];
-            if ($previousItem['type'] === 'map') {
-                $namesById = Hash::combine($this->allGeneratedMaps, '{n}.id', '{n}.name');
-            }
-            if ($previousItem['type'] === 'host') {
-                $namesById = Hash::combine($this->hostsAndData, '{n}.hostId', '{n}.hostName');
-            }
-            if ($namesById && isset($namesById[$previousItem['id']])) {
-                $width = strlen($namesById[$previousItem['id']]) * 7; // calculate width based on name length
-            }
-        }
+        $width = $this->calculateItemWidth($previousItem);
 
         // if y does not fit the line size (130px), add some space to the top
-        if ($y > 0 && $y % $lineSize !== 0) {
-            $y += ($y % $lineSize); // add some space to the top
+        if ($y > 0 && $y % $LINE_SIZE !== 0) {
+            $y += ($y % $LINE_SIZE); // add some space to the top
         }
 
         if ($x > 0 || $mapHasItems) {
-            if ($width < $itemMinWidth) {
-                $width = $itemMinWidth;
+            if ($width < $ITEM_MIN_WIDTH) {
+                $width = $ITEM_MIN_WIDTH;
             }
             $x += $width; // add some space to the right
         }
         // if item is too far to the right, move it to the next line
-        if ($x > $maxX) {
+        if ($x > $MAX_X) {
             $x = 0; // reset x position to start
-            $y += $lineSize; // add some space to the bottom
+            $y += $LINE_SIZE; // add some space to the bottom
         }
 
         /** @var MapsummaryitemsTable $MapsummaryitemsTable */
@@ -335,6 +323,23 @@ class Mapgenerator {
 
         return $mapsummaryitemEntity->toArray();
 
+    }
+
+    private function calculateItemWidth(array $previousItem) {
+        $width = 0;
+        $namesById = [];
+        if ($previousItem['type'] && $previousItem['id']) {
+            if ($previousItem['type'] === 'map') {
+                $namesById = Hash::combine($this->allGeneratedMaps, '{n}.id', '{n}.name');
+            } else if ($previousItem['type'] === 'host') {
+                $namesById = Hash::combine($this->hostsAndData, '{n}.hostId', '{n}.hostName');
+            }
+
+            if ($namesById && isset($namesById[$previousItem['id']])) {
+                $width = strlen($namesById[$previousItem['id']]) * 7; // calculate width based on name length
+            }
+        }
+        return $width;
     }
 
     private function convertToArray() {
