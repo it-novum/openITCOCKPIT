@@ -101,12 +101,14 @@ class Mapgenerator {
     private function generateByContainerHierarchy(array $hostAndData, int $containerIdForNewMap) {
 
         $higherMap = []; // this is the map that is generated for the container that is higher in the hierarchy
+        $lastMap = []; // this is the last map in the hierarchy, used to add items to it
         //echo chr(10) . " dessign higher map " . ' in ' . $hostAndData["hostId"] . ", " . $hostAndData['hostName'];
         $generatedMapsAndItems = [
             'maps'  => [],
             'items' => []
         ];
 
+        // create maps
         foreach ($hostAndData['containerHierarchy'] as $containerKey => $container) {
 
             // check if container is already generated
@@ -115,12 +117,13 @@ class Mapgenerator {
 
             if (in_array($containerName, Hash::extract($this->allGeneratedMaps, '{n}.name'), true)) {
                 //echo chr(10) . " map for container " . $containerName . ' already created, skip!!!';
-                if (count($hostAndData['containerHierarchy']) > 1) {
-                    foreach ($this->allGeneratedMaps as $generatedMap) {
-                        if ($containerName === $generatedMap['name']) {
+                foreach ($this->allGeneratedMaps as $generatedMap) {
+                    if ($containerName === $generatedMap['name']) {
+                        $lastMap = $generatedMap;
+                        if (count($hostAndData['containerHierarchy']) > 1) {
                             $higherMap = $generatedMap;
-                            //echo chr(10) . " assign higher map";
                         }
+                        //echo chr(10) . " assign higher map";
                     }
                 }
                 continue;
@@ -136,10 +139,11 @@ class Mapgenerator {
             $this->allGeneratedMaps[] = $map;
             $this->newGeneratedMaps[] = $map;
             $generatedMapsAndItems['maps'][] = $map;
+            $lastMap = $map;
 
             //echo chr(10) . print_r($container, true) . "; containerKey " . $containerKey;
 
-            // add map as mapsummaryitems to the previously generated map
+            // add map as mapsummaryitem to the previously generated map
             if ($higherMap && $containerKey > 0) {
 
                 $mapsummaryitem = $this->createNewMapSummaryItem($higherMap, $map["id"], 'map');
@@ -158,6 +162,18 @@ class Mapgenerator {
                 //echo chr(10) . " assign higher map";
             }
 
+        }
+
+        // create Host
+        $newHostItem = $this->createNewMapSummaryItem($lastMap, $hostAndData['hostId'], 'host');
+
+        if (array_key_exists("error", $newHostItem)) {
+            return $newHostItem;
+        }
+
+        if ($newHostItem) {
+            $this->generatedItems[] = $newHostItem;
+            $generatedMapsAndItems['items'][] = $newHostItem;
         }
 
         return $generatedMapsAndItems;
@@ -200,7 +216,7 @@ class Mapgenerator {
         /** @var MapsTable $MapsTable */
         $MapsTable = TableRegistry::getTableLocator()->get('MapModule.Maps');
 
-        //get item that is furthest to the right
+        //get all items of the map to add the new item
         $mapToAddItemsWithItems = $MapsTable->get($mapToAddItems["id"], [
             'contain' => [
                 'Containers',
@@ -217,74 +233,77 @@ class Mapgenerator {
         $mapToAddItemsWithItems = $MapForAngular->toArray();
 
         /**
-         * calculate new x and y position for the new mapsummaryitems
-         * by searching for the highest x and y position of the existing items
+         * calculate new x and y position for the new mapsummaryitem
+         * by searching for the previous item and its position in the existing items
+         * and calculate the position based on this item
          */
-        $x = 0;
-        $y = 0;
+        $x = 0; // x position of the new item
+        $y = 0; // y position of the new item
+        $lineSize = 140; // size of one line in the map
+        $itemMinWidth = 200; // minimum width of an item
+        $maxX = 1500; // maximum x position in the map
         $mapHasItems = false; // if map has only one item, calculate position based on this item
-        if (isset($mapToAddItemsWithItems['Mapgadgets'])) {
-            $mapHasItems = true;
-            foreach ($mapToAddItemsWithItems['Mapgadgets'] as $mapgdagetKey => $mapgadget) {
-                if ($mapgadget['x'] >= $x && $mapgadget['y'] >= $y) {
-                    $x = $mapgadget['x'];
-                    $y = $mapgadget['y'];
-                }
-            }
-        }
-        if (isset($mapToAddItemsWithItems['Mapicons'])) {
-            $mapHasItems = true;
-            foreach ($mapToAddItemsWithItems['Mapicons'] as $mapicon) {
-                if ($mapicon['x'] >= $x && $mapicon['y'] >= $y) {
-                    $x = $mapicon['x'];
-                    $y = $mapicon['y'];
-                }
-            }
-        }
-        if (isset($mapToAddItemsWithItems['Mapitems'])) {
-            $mapHasItems = true;
-            foreach ($mapToAddItemsWithItems['Mapitems'] as $mapitem) {
-                if ($mapitem['x'] >= $x && $mapitem['y'] >= $y) {
-                    $x = $mapitem['x'];
-                    $y = $mapitem['y'];
-                }
-            }
-        }
-        if (isset($mapToAddItemsWithItems['Maplines'])) {
-            $mapHasItems = true;
-            foreach ($mapToAddItemsWithItems['Maplines'] as $mapline) {
-                if ($mapline['endX'] >= $x && $mapline['endY'] >= $y) {
-                    $x = $mapline['endX'];
-                    $y = $mapline['endY'];
-                }
-            }
-        }
-        if (isset($mapToAddItemsWithItems['Maptexts'])) {
-            $mapHasItems = true;
-            foreach ($mapToAddItemsWithItems['Maptexts'] as $maptext) {
-                if ($maptext['x'] >= $x && $maptext['y'] >= $y) {
-                    $x = $maptext['x'];
-                    $y = $maptext['y'];
-                }
-            }
-        }
-        if (isset($mapToAddItemsWithItems['Mapsummaryitems'])) {
-            $mapHasItems = true;
-            foreach ($mapToAddItemsWithItems['Mapsummaryitems'] as $mapsummaryitem) {
-                if ($mapsummaryitem['x'] >= $x && $mapsummaryitem['y'] >= $y) {
-                    $x = $mapsummaryitem['x'];
-                    $y = $mapsummaryitem['y'];
+        $previousItem = [
+            'type' => "",
+            'id'   => 0,
+        ];
+
+        // searching for the previous item and its position in the existing items
+        foreach (['Mapgadgets', 'Mapicons', 'Mapitems', 'Maplines', 'Maptexts', 'Mapsummaryitems'] as $itemType) {
+            if (isset($mapToAddItemsWithItems[$itemType])) {
+                $mapHasItems = true;
+                foreach ($mapToAddItemsWithItems[$itemType] as $item) {
+
+                    // check if mapsummaryitem is already on the map and break if so
+                    if ($itemType === "Mapsummaryitems" && $item['object_id'] === $objectId && $item['type'] === $type) {
+                        return [];
+                    }
+
+                    $itemX = ($itemType === 'Maplines') ? $item['endX'] : $item['x'];
+                    $itemY = ($itemType === 'Maplines') ? $item['endY'] : $item['y'];
+
+                    if ($itemY > $y || ($itemY === $y && $itemX > $x)) {
+                        $x = $itemX;
+                        $y = $itemY;
+                        $previousItem = [
+                            'type' => $item['type'],
+                            'id'   => $item['object_id']
+                        ];
+                    }
                 }
             }
         }
 
+        $width = 0;
+        // get name of the previous item to calculate the width
+        if ($mapHasItems) {
+            $namesById = [];
+            if ($previousItem['type'] === 'map') {
+                $namesById = Hash::combine($this->allGeneratedMaps, '{n}.id', '{n}.name');
+            }
+            if ($previousItem['type'] === 'host') {
+                $namesById = Hash::combine($this->hostsAndData, '{n}.hostId', '{n}.hostName');
+            }
+            if ($namesById && isset($namesById[$previousItem['id']])) {
+                $width = strlen($namesById[$previousItem['id']]) * 7; // calculate width based on name length
+            }
+        }
+
+        // if y does not fit the line size (130px), add some space to the top
+        if ($y > 0 && $y % $lineSize !== 0) {
+            $y += ($y % $lineSize); // add some space to the top
+        }
+
         if ($x > 0 || $mapHasItems) {
-            $x += 200; // add some space to the right
+            if ($width < $itemMinWidth) {
+                $width = $itemMinWidth;
+            }
+            $x += $width; // add some space to the right
         }
         // if item is too far to the right, move it to the next line
-        if ($x > 1500) {
-            $x = 0;
-            $y += 130; // add some space to the bottom
+        if ($x > $maxX) {
+            $x = 0; // reset x position to start
+            $y += $lineSize; // add some space to the bottom
         }
 
         /** @var MapsummaryitemsTable $MapsummaryitemsTable */

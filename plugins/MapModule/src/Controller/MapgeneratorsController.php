@@ -289,14 +289,14 @@ class MapgeneratorsController extends AppController {
         $Mapgenerator = new Mapgenerator($data, $containersAndHosts, $generatedMaps);
         $generatedMapsAndItems = $Mapgenerator->generate();
 
+        // TODO: save new generated maps in MapgeneratorsTable
+
         if (array_key_exists("error", $generatedMapsAndItems)) {
             $this->response = $this->response->withStatus(400);
             $this->set('error', $generatedMapsAndItems['error']);
             $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
-
-        // TODO: save new generated maps in MapgeneratorsTable
 
 
         return $generatedMapsAndItems;
