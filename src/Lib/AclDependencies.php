@@ -711,6 +711,11 @@ class AclDependencies {
         $this
             ->dependency('SystemHealthUsers', 'add', 'SystemHealthUsers', 'loadUsers');
 
+        $this
+            ->dependency('OrganizationalCharts', 'add', 'OrganizationalCharts', 'loadContainers')
+            ->dependency('OrganizationalCharts', 'edit', 'OrganizationalCharts', 'loadContainers');
+
+
         //Load Plugin ALC Dependencies
         foreach (PluginManager::getAvailablePlugins() as $pluginName) {
             $className = sprintf('\%s\Lib\AclDependencies', $pluginName);

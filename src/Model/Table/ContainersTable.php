@@ -1580,4 +1580,54 @@ class ContainersTable extends Table {
 
         return $MY_WRITE_RIGHTS;
     }
+
+    /**
+     * @param int|array $ids
+     * @param array $options
+     * @param array $valide_types
+     * @return array
+     *
+     * ### Options
+     * - `delimiter`   The delimiter for the path (default /)
+     * - `order`       Order of the returned array asc|desc (default asc)
+     */
+    public function getContainersByIdsGroupByType($ids, $options = [], $valide_types = [CT_GLOBAL, CT_TENANT, CT_LOCATION, CT_NODE]): array {
+        $_options = [
+            'delimiter'    => '/',
+            'valide_types' => $valide_types,
+            'order'        => 'asc',
+        ];
+        $options = Hash::merge($_options, $options);
+
+        if (!is_array($ids)) {
+            $ids = [$ids];
+        }
+
+        $query = $this->find();
+        if (!empty($ids)) {
+            $query->where(['id IN ' => $ids]);
+        }
+
+        $query->disableHydration()
+            ->all()
+            ->toArray();
+
+        $containers = [];
+        foreach ($query as $container) {
+            $containerTypeId = (int)$container['containertype_id'];
+            if (in_array($containerTypeId, $options['valide_types'], true)) {
+                $containers[$container['id']] = '/' . $this->treePath($container['id'], $options['delimiter']);
+            }
+        }
+
+        if ($options['order'] === 'asc') {
+            asort($containers);
+        }
+
+        if ($options['order'] === 'desc') {
+            arsort($containers);
+        }
+
+        return $containers;
+    }
 }
