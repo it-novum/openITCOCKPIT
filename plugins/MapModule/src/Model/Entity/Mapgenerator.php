@@ -46,6 +46,7 @@ use Cake\ORM\Entity;
  * @property FrozenTime $modified
  *
  * @property Containers[] $containers
+ * @property Containers[] $start_containers
  */
 class Mapgenerator extends Entity {
     /**
@@ -58,11 +59,12 @@ class Mapgenerator extends Entity {
      * @var array
      */
     protected $_accessible = [
-        'name'       => true,
-        'interval'   => true,
-        'type'       => true,
-        'created'    => true,
-        'modified'   => true,
-        'containers' => true,
+        'name'             => true,
+        'interval'         => true,
+        'type'             => true,
+        'created'          => true,
+        'modified'         => true,
+        'containers'       => true,
+        'start_containers' => true,
     ];
 }

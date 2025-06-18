@@ -159,8 +159,16 @@ class ContainersTable extends Table {
             'cascadeCallbacks' => true
         ]);
 
-        $this->hasMany('MapgeneratorsToContainers', [
-            'foreignKey' => 'container_id'
+        $this->belongsToMany('Mapgenerators', [
+            'foreignKey'       => 'container_id',
+            'targetForeignKey' => 'mapgenerator_id',
+            'joinTable'        => 'mapgenerators_to_containers',
+        ]);
+
+        $this->belongsToMany('MapgeneratorsStartContainers', [
+            'foreignKey'       => 'container_id',
+            'targetForeignKey' => 'mapgenerator_id',
+            'joinTable'        => 'mapgenerators_to_start_containers',
         ]);
 
         $this->hasMany('Tenants', [
@@ -1660,6 +1668,55 @@ class ContainersTable extends Table {
         }
 
         return $containersAndHosts;
+
+    }
+
+    /**
+     * @param array $selectedContainerIds
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getStartContainersForMapgenerator($selectedContainerIds, $MY_RIGHTS) {
+
+        $startContainers = [];
+        if (empty($selectedContainerIds)) {
+            // if no container is selected, return all containers with write rights
+            $writeContainers = $this->getWriteContainers($MY_RIGHTS);
+            foreach ($writeContainers as $writeContainer) {
+                $startContainers[] = $this->getContainerById($writeContainer['id']);
+            }
+        } else {
+
+            $filteredContainerIds = $this->resolveChildrenOfContainerIds($selectedContainerIds, true, [CT_TENANT, CT_LOCATION, CT_NODE]);
+
+            // remove ROOT_CONTAINER from the list
+            foreach ($filteredContainerIds as $key => $containerId) {
+                if ($filteredContainerIds[$key] === ROOT_CONTAINER) {
+                    unset($filteredContainerIds[$key]);
+                }
+            }
+
+            //add all filtered children containers
+            foreach ($filteredContainerIds as $containerId) {
+                if ($containerId == ROOT_CONTAINER) {
+                    continue;
+                }
+                $startContainers[] = $this->getContainerById($containerId);
+            }
+
+            // add selected Containers to children containers
+            foreach ($selectedContainerIds as $containerId) {
+                if ($containerId == ROOT_CONTAINER) {
+                    continue;
+                }
+                $startContainers[] = $this->getContainerById($containerId);
+            }
+
+        }
+
+        $startContainers = Hash::combine($startContainers, '{n}.id', '{n}.name');
+
+        return $startContainers;
 
     }
 

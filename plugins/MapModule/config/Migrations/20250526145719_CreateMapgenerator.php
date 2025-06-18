@@ -95,6 +95,32 @@ class CreateMapgenerator extends AbstractMigration {
                 ->create();
         }
 
+        if (!$this->hasTable('mapgenerators_to_start_containers')) {
+            $this->table('mapgenerators_to_start_containers')
+                ->addPrimaryKey(['id'])
+                ->addColumn('container_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addColumn('mapgenerator_id', 'integer', [
+                    'default' => null,
+                    'limit'   => 11,
+                    'null'    => false,
+                ])
+                ->addIndex(
+                    [
+                        'container_id',
+                    ]
+                )
+                ->addIndex(
+                    [
+                        'mapgenerator_id',
+                    ]
+                )
+                ->create();
+        }
+
         if (!$this->hasTable('mapgenerators_to_containers')) {
             $this->table('mapgenerators_to_containers')
                 ->addPrimaryKey(['id'])

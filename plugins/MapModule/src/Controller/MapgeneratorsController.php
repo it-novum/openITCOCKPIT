@@ -98,8 +98,6 @@ class MapgeneratorsController extends AppController {
 
         if ($this->request->is('post') || $this->request->is('put')) {
             $data = $this->request->getData();
-            $data['Mapgenerator']['containers']['_ids'] = $data['Mapgenerator']['container_id'];
-            $data['Mapgenerator']['maps']['_ids'] = $data['Mapgenerator']['Map'];
 
             /** @var MapgeneratorsTable $MapgeneratorsTable */
             $MapgeneratorsTable = TableRegistry::getTableLocator()->get('MapModule.Mapgenerators');
@@ -127,11 +125,22 @@ class MapgeneratorsController extends AppController {
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
+        $selectedContainerIds = $this->request->getQuery('selectedContainers', []);
+
         if ($this->hasRootPrivileges === true) {
             $containers = $ContainersTable->easyPath($this->MY_RIGHTS, CT_TENANT, [], $this->hasRootPrivileges);
         } else {
             $containers = $ContainersTable->easyPath($this->getWriteContainers(), CT_TENANT, [], $this->hasRootPrivileges);
         }
+
+        if (!empty($selectedContainerIds)) {
+            $filteredContainers = $ContainersTable->getStartContainersForMapgenerator($selectedContainerIds, $this->MY_RIGHTS);
+
+            if (!empty($filteredContainers)) {
+                $containers = $filteredContainers;
+            }
+        }
+
         $containers = Api::makeItJavaScriptAble($containers);
 
         $this->set('containers', $containers);

@@ -90,6 +90,15 @@ class MapgeneratorsTable extends Table {
             'saveStrategy'     => 'replace'
         ]);
 
+        $this->belongsToMany('StartContainers', [
+            'className'        => 'Containers',
+            'foreignKey'       => 'mapgenerator_id',
+            'targetForeignKey' => 'container_id',
+            'joinTable'        => 'mapgenerators_to_start_containers',
+            'joinType'         => 'INNER',
+            'saveStrategy'     => 'replace'
+        ]);
+
         $this->belongsToMany('Maps', [
             'className'        => 'MapModule.Maps',
             'foreignKey'       => 'mapgenerator_id',
@@ -102,7 +111,7 @@ class MapgeneratorsTable extends Table {
             'foreignKey'   => 'mapgenerator_id',
             'saveStrategy' => 'replace'
         ])->setDependent(true);
-        
+
     }
 
     /**
