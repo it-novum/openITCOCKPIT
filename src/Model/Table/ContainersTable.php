@@ -1612,20 +1612,50 @@ class ContainersTable extends Table {
             ->all()
             ->toArray();
 
-        $containers = [];
+        $containers = [
+            'tenants'   => [],
+            'locations' => [],
+            'nodes'     => []
+        ];
         foreach ($query as $container) {
             $containerTypeId = (int)$container['containertype_id'];
             if (in_array($containerTypeId, $options['valide_types'], true)) {
-                $containers[$container['id']] = '/' . $this->treePath($container['id'], $options['delimiter']);
+                $path = $this->treePath($container['id'], $options['delimiter']);
+                switch ($containerTypeId) {
+                    case CT_TENANT:
+                        $containers['tenants'][] = [
+                            'key'   => $container['id'],
+                            'value' => [
+                                'name' => $container['name'],
+                                'path' => $path,
+                            ]
+                        ];
+                        break;
+                    case CT_LOCATION:
+                        $containers['locations'][] = [
+                            'key'   => $container['id'],
+                            'value' => [
+                                'name' => $container['name'],
+                                'path' => $path,
+                            ]
+                        ];
+                    case CT_NODE:
+                        $containers['nodes'][] = [
+                            'key'   => $container['id'],
+                            'value' => [
+                                'name' => $container['name'],
+                                'path' => $path,
+                            ]
+                        ];
+                        break;
+
+                }
             }
         }
-
-        if ($options['order'] === 'asc') {
-            asort($containers);
-        }
-
-        if ($options['order'] === 'desc') {
-            arsort($containers);
+        if (!empty($options['order']) && in_array($options['order'], ['asc', 'desc'], true)) {
+            $containers['tenants'] = Hash::sort($containers['tenants'], '{n}.value.path', $options['order']);
+            $containers['locations'] = Hash::sort($containers['locations'], '{n}.value.path', $options['order']);
+            $containers['nodes'] = Hash::sort($containers['nodes'], '{n}.value.path', $options['order']);
         }
 
         return $containers;

@@ -173,23 +173,11 @@ class OrganizationalChartsController extends AppController {
 
         /** @var $ContainersTable ContainersTable */
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
-
-        $containersGroupByType = [
-            'tenants'   => [],
-            'locations' => [],
-            'nodes'     => []
-        ];
-
         $containers = $ContainersTable->getContainersByIdsGroupByType($MY_RIGHTS, [], [CT_TENANT, CT_LOCATION, CT_NODE]);
 
-        if (!empty($containers)) {
-            foreach ($containers as $container) {
-
-            }
-        }
-
-        $this->set('containers', Api::makeItJavaScriptAble($containers));
-        $this->viewBuilder()->setOption('serialize', ['containers']);
+        $this->set('tenants', $containers['tenants']);
+        $this->set('locations', $containers['locations']);
+        $this->set('nodes', $containers['nodes']);
+        $this->viewBuilder()->setOption('serialize', ['tenants', 'locations', 'nodes']);
     }
-
 }
