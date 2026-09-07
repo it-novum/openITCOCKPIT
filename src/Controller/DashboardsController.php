@@ -2967,7 +2967,10 @@ class DashboardsController extends AppController {
 
                     $this->set('config', $config);
                     $this->set('hoststatusSummary', $hoststatusSummary);
-                    $this->viewBuilder()->setOption('serialize', ['config', 'hoststatusSummary']);
+                    $this->viewBuilder()->setOption('serialize', [
+                        'config',
+                        'hoststatusSummary'
+                    ]);
                     return;
                 case 'services':
                     $servicestatus = [];

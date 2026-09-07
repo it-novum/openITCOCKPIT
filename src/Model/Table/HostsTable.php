@@ -6213,7 +6213,10 @@ class HostsTable extends Table {
                 'up'          => [],
                 'down'        => [],
                 'unreachable' => [],
-            ]
+            ],
+            'from'               => $timestampFrom,
+            'to'                 => $timestampTo,
+            'userTimezone'       => $UserTimeZone
         ];
         if (empty($hoststatus)) {
             return $hostStateSummary;
