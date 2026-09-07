@@ -65,6 +65,7 @@ class OperationsSummaryJson extends DashboardJsonStandardizer {
         ],
         'hostpriority'    => [],
         'servicepriority' => [],
+        'refresh_key'     => 0 // interval in seconds / 0 = refresh disabled
     ];
 
     /**
