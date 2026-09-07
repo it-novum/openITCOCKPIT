@@ -35,9 +35,9 @@ class Statusengine4Cfg extends ConfigGenerator implements ConfigInterface {
 
     protected $template = 'config.yml.tpl';
 
-    protected $realOutfile = '/opt/openitc/statusengine4/worker/etc/config.yml';
+    protected $realOutfile = '/opt/openitc/statusengine4/worker/etc/worker-config.yml';
 
-    protected $linkedOutfile = '/opt/openitc/etc/statusengine/config.yml';
+    protected $linkedOutfile = '/opt/openitc/etc/statusengine/worker-config.yml';
 
     /**
      * @var string
@@ -176,17 +176,17 @@ class Statusengine4Cfg extends ConfigGenerator implements ConfigInterface {
         if (empty($configToExport['command_api_keys'])) {
             $configToExport['command_api_keys'] = [];
         }
-        
+
         /*
          * Write:
-         * - config.yml
+         * - worker-config.yml
          */
         $loader = new FilesystemLoader([
             $this->getTemplatePath()
         ]);
         $twig = new Environment($loader, ['debug' => true]);
 
-        // /opt/openitc/statusengine4/worker/etc/config.yml
+        // /opt/openitc/statusengine4/worker/etc/worker-config.yml
         $ConfigSymlink = new ConfigSymlink($this->realOutfile, $this->linkedOutfile);
         if (!file_put_contents($this->realOutfile, $twig->render($this->getTemplateName(), $configToExport))) {
             $success = false;

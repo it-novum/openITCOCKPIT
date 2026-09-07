@@ -40,7 +40,7 @@ class Statusengine3Cfg extends ConfigGenerator implements ConfigInterface {
 
     protected $realOutfile = '/opt/openitc/statusengine3/worker/etc/config.yml';
 
-    protected $linkedOutfile = '/opt/openitc/etc/statusengine/config-php.yml';
+    protected $linkedOutfile = '/opt/openitc/etc/statusengine/config.yml';
 
     /**
      * @var string
