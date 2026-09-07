@@ -1,3 +1,5 @@
+{{STATIC_FILE_HEADER}}
+#
 # Example configuration file for the Statusengine Go worker (cmd/app).
 #
 # @formatter:off
@@ -133,7 +135,10 @@ nodename: openITCOCKPIT
 # changes on every restart, so configure a real key here for anything
 # that has to reconnect on its own.
 {% if api_keys|length > 0  %}
-api_keys: ["{{ api_keys|join('"," ') }}"]
+api_keys:
+{% for key in api_keys %}
+   - {{ key }}
+{% endfor %}
 {% else %}
 api_keys: []
 {% endif %}
@@ -153,7 +158,10 @@ api_keys: []
 # asked for is worse than no endpoint, so with nothing configured here the
 # worker does not serve /commands at all and says so at startup.
 {% if command_api_keys|length > 0  %}
-command_api_keys: ["{{ command_api_keys|join('"," ') }}"]
+command_api_keys:
+{% for command_key in command_api_keys %}
+   - {{ command_key }}
+{% endfor %}
 {% else %}
 command_api_keys: []
 {% endif %}

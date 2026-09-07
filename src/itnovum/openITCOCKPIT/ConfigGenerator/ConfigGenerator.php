@@ -362,6 +362,15 @@ class ConfigGenerator {
                 switch ($type) {
                     case 'string_array':
                         $value = implode(',', $value);
+
+                        if (empty($value)) {
+                            // The database does not support to store empty values, as in a config file
+                            // usually no empty records exist. In case the value is empty, we skip it
+                            // and the ConfigurationFilesTable::saveConfigurationValuesForConfigFile()
+                            // will first delete all records and then save the new ones.
+                            continue 2; // 'continue' would 'break' the switch, that's why we need to 'continue 2'
+                        }
+
                         break;
 
                     // Add more type conversions here if needed

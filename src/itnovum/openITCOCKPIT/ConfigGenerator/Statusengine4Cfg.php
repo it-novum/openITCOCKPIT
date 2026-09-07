@@ -169,24 +169,14 @@ class Statusengine4Cfg extends ConfigGenerator implements ConfigInterface {
         $configToExport['mysql_password'] = $ini_file['password'];
         $configToExport['mysql_database'] = $ini_file['database'];
 
-        // Statusengine expects the API Keys to be in array
-        // Currently the Config File Generator can not handle array
-        // so we have to convert the keys to array here
-        $configToExport['api_keys'] = [];
-        $configToExport['command_api_keys'] = [];
-        foreach (['ws_api_key', 'command_api_key'] as $keyPrefix) {
-            foreach ([1, 2, 3] as $keyNumber) {
-                $keyName = $keyPrefix . '_' . $keyNumber;
-                if (!empty($configToExport[$keyName])) {
-                    if ($keyPrefix === 'ws_api_key') {
-                        $configToExport['api_keys'][] = $configToExport[$keyName];
-                    } else {
-                        $configToExport['command_api_keys'][] = $configToExport[$keyName];
-                    }
-                }
-            }
+        // Ensure both keys exists and be arrays
+        if (empty($configToExport['api_keys'])) {
+            $configToExport['api_keys'] = [];
         }
-
+        if (empty($configToExport['command_api_keys'])) {
+            $configToExport['command_api_keys'] = [];
+        }
+        
         /*
          * Write:
          * - config.yml
