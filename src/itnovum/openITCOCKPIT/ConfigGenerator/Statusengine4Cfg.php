@@ -33,7 +33,7 @@ class Statusengine4Cfg extends ConfigGenerator implements ConfigInterface {
 
     protected $templateDir = 'statusengine4';
 
-    protected $template = 'config.yml.tpl';
+    protected $template = 'worker-config.yml.tpl';
 
     protected $realOutfile = '/opt/openitc/statusengine4/worker/etc/worker-config.yml';
 
