@@ -201,7 +201,12 @@ class ContactgroupsController extends AppController {
             $ContainersTable->acquireLock();
 
             $contactgroupEntity = $ContactgroupsTable->get($id, contain: [
-                'Containers'
+                'Containers' => [
+                    'fields' => [
+                        'Containers.id',
+                        'Containers.parent_id'
+                    ],
+                ],
             ]);
             $contactgroupEntity->setAccess('uuid', false);
             $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->getData('Contactgroup'));
