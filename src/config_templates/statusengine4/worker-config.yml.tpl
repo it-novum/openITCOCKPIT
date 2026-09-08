@@ -85,7 +85,7 @@ mysql_max_open_conns: {{mysql_max_open_conns}}
 # table - 100 caps at ~400 rows/s per table, 700 at ~2800. Note also that a
 # failed flush drops its batch, so this is equally the number of events one
 # bad row can take down with it.
-mysql_batch_size: {{number_of_bulk_records}}
+mysql_batch_size: {{mysql_batch_size}}
 
 # Metrics buffered before a Graphite Carbon write is flushed ahead of the
 # 250ms ticker. Default 100, maximum 1000, which is also the documented
