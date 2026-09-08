@@ -22,6 +22,7 @@
 //     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //     License agreement and license key will be shipped with the order
 //     confirmation.
+//
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -132,6 +133,11 @@ class ContactgroupsController extends AppController {
             $contactgroup = $ContactgroupsTable->patchEntity($contactgroup, $this->request->getData('Contactgroup'));
             $contactgroup->set('uuid', UUID::v4());
             $contactgroup->get('container')->set('containertype_id', CT_CONTACTGROUP);
+
+            if (!$this->isWritableContainer($contactgroup->get('container')->get('parent_id'))) {
+                $this->render403();
+                return;
+            }
 
             $User = new User($this->getUser());
 
