@@ -248,7 +248,12 @@ class HostgroupsController extends AppController {
             $ContainersTable->acquireLock();
 
             $hostgroupEntity = $HostgroupsTable->get($id, contain: [
-                'Containers'
+                'Containers' => [
+                    'fields' => [
+                        'Containers.id',
+                        'Containers.parent_id'
+                    ],
+                ],
             ]);
 
             $hostgroupEntity->setAccess('uuid', false);
