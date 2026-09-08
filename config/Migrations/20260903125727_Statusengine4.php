@@ -166,7 +166,7 @@ class Statusengine4 extends BaseMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
-                ->addPrimaryKey(['hostname', 'internal_downtime_id', 'scheduled_start_time', 'node_name'])
+                ->addPrimaryKey(['hostname', 'node_name', 'scheduled_start_time', 'internal_downtime_id'])
                 ->addColumn('entry_time', 'biginteger', [
                     'default' => null,
                     'limit'   => null,
@@ -362,7 +362,7 @@ class Statusengine4 extends BaseMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
-                ->addPrimaryKey(['hostname', 'internal_downtime_id', 'scheduled_start_time', 'node_name'])
+                ->addPrimaryKey(['hostname', 'node_name', 'scheduled_start_time', 'internal_downtime_id'])
                 ->addColumn('entry_time', 'biginteger', [
                     'default' => null,
                     'limit'   => null,
@@ -1091,7 +1091,7 @@ class Statusengine4 extends BaseMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
-                ->addPrimaryKey(['hostname', 'service_description', 'internal_downtime_id', 'scheduled_start_time', 'node_name'])
+                ->addPrimaryKey(['hostname', 'service_description', 'node_name', 'scheduled_start_time', 'internal_downtime_id'])
                 ->addColumn('entry_time', 'biginteger', [
                     'default' => null,
                     'limit'   => null,
@@ -1300,7 +1300,7 @@ class Statusengine4 extends BaseMigration {
                     'limit'   => 255,
                     'null'    => false,
                 ])
-                ->addPrimaryKey(['hostname', 'service_description', 'internal_downtime_id', 'scheduled_start_time', 'node_name'])
+                ->addPrimaryKey(['hostname', 'service_description', 'node_name', 'scheduled_start_time', 'internal_downtime_id'])
                 ->addColumn('entry_time', 'biginteger', [
                     'default' => null,
                     'limit'   => null,
