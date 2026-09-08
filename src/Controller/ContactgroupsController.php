@@ -205,6 +205,12 @@ class ContactgroupsController extends AppController {
             ]);
             $contactgroupEntity->setAccess('uuid', false);
             $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->getData('Contactgroup'));
+
+            if (!$this->isWritableContainer($contactgroupEntity->get('container')->get('parent_id'))) {
+                $this->render403();
+                return;
+            }
+
             $contactgroupEntity->id = $id;
 
             $requestData = $this->request->getData();
