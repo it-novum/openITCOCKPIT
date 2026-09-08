@@ -6393,11 +6393,6 @@ class HostsTable extends Table {
         $now = time();
         $from = $now - 86400; // 24 hours ago
 
-        $stateToTimeField = [
-            0 => 'last_time_up',
-            1 => 'last_time_down',
-            2 => 'last_time_unreachable',
-        ];
         $stateLabels = [
             -1 => 'not_in_monitoring',
             0  => 'up',
@@ -6410,7 +6405,6 @@ class HostsTable extends Table {
             1 => [],
             2 => [],
         ];
-
 
         foreach ($hoststatusList as $key => $hoststatus) {
             $hoststatus['Hoststatus'] = new Hoststatus($hoststatus['Hoststatus']);
