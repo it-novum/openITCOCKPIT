@@ -22,6 +22,7 @@
 //     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //     License agreement and license key will be shipped with the order
 //     confirmation.
+//
 
 // 2.
 //	If you purchased an openITCOCKPIT Enterprise Edition you can use this file
@@ -159,6 +160,11 @@ class ServicegroupsController extends AppController {
             $servicegroup = $ServicegroupsTable->patchEntity($servicegroup, $this->request->getData('Servicegroup'));
             $servicegroup->set('uuid', UUID::v4());
             $servicegroup->get('container')->set('containertype_id', CT_SERVICEGROUP);
+
+            if (!$this->isWritableContainer($servicegroup->get('container')->get('parent_id'))) {
+                $this->render403();
+                return;
+            }
 
             /** @var ContainersTable $ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
