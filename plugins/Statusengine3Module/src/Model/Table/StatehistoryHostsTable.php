@@ -236,6 +236,8 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
                 'StatehistoryHosts.hostname',
                 'StatehistoryHosts.state',
                 'StatehistoryHosts.state_time',
+                'StatehistoryHosts.state_change',
+                'StatehistoryHosts.last_state'
             ])
             ->where([
                 'StatehistoryHosts.hostname IN'  => $StatehistoryHostConditions->getHostUuids(),

@@ -6326,20 +6326,27 @@ class HostsTable extends Table {
                     && $host['Hoststatus']->getLastTimeDown() <= $timestampFrom) {
                     $hostStateSummary['lastTimeAlwaysUp']['count']++;
                     $hostStateSummary['lastTimeAlwaysUp']['ids'][] = $host['id'];
-                } else if ($host['Hoststatus']->getLastStateChange() > $timestampFrom
-                    && $host['Hoststatus']->getLastTimeDown() < $timestampFrom) {
-                    $hostStateSummary['recovered']['count']++;
-                    $hostStateSummary['recovered']['ids'][] = $host['id'];
+                }
+
+                if (isset($host['statehistory'][0])) {
+                    if ($host['statehistory'][0]['state'] > 0 &&
+                        date('d.m.Y H:i:s', $host['statehistory'][0]['state_time']) < $host['Hoststatus']->getLastStateChange()) {
+                        $hostStateSummary['recovered']['count']++;
+                        $hostStateSummary['recovered']['ids'][] = $host['id'];
+                    }
                 }
             } else if ($host['Hoststatus']->currentState() === 1) {
                 if ($host['Hoststatus']->getLastStateChange() <= $timestampFrom
                     && $host['Hoststatus']->getLastTimeUp() <= $timestampFrom) {
                     $hostStateSummary['lastTimeAlwaysDown']['count']++;
                     $hostStateSummary['lastTimeAlwaysDown']['ids'][] = $host['id'];
-                } else if ($host['Hoststatus']->getLastStateChange() > $timestampFrom
-                    && $host['Hoststatus']->getLastTimeUp() < $timestampFrom) {
-                    $hostStateSummary['failed']['count']++;
-                    $hostStateSummary['failed']['ids'][] = $host['id'];
+                }
+                if (isset($host['statehistory'][0])) {
+                    if ($host['statehistory'][0]['state'] === 0 &&
+                        date('d.m.Y H:i:s', $host['statehistory'][0]['state_time']) < $host['Hoststatus']->getLastStateChange()) {
+                        $hostStateSummary['failed']['count']++;
+                        $hostStateSummary['failed']['ids'][] = $host['id'];
+                    }
                 }
             }
 
@@ -6371,7 +6378,6 @@ class HostsTable extends Table {
             $hostStateSummary['total']++;
             $hostStateSummary['totalHostIds'][] = $host['id'];
         }
-
         uksort($hostStateSummary['tagsOverview'], 'strcasecmp');
         return $hostStateSummary;
     }
