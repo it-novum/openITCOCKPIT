@@ -253,6 +253,11 @@ class HostgroupsController extends AppController {
 
             $hostgroupEntity->setAccess('uuid', false);
             $hostgroupEntity = $HostgroupsTable->patchEntity($hostgroupEntity, $this->request->getData('Hostgroup'));
+
+            if (!$this->isWritableContainer($hostgroupEntity->get('container')->get('parent_id'))) {
+                $this->render403();
+                return;
+            }
             $hostgroupEntity->id = $id;
 
             $requestData = $this->request->getData();
