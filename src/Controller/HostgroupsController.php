@@ -22,6 +22,7 @@
 //     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //     License agreement and license key will be shipped with the order
 //     confirmation.
+//
 
 declare(strict_types=1);
 
@@ -171,6 +172,11 @@ class HostgroupsController extends AppController {
             $hostgroup = $HostgroupsTable->patchEntity($hostgroup, $this->request->getData('Hostgroup'));
             $hostgroup->set('uuid', UUID::v4());
             $hostgroup->get('container')->set('containertype_id', CT_HOSTGROUP);
+
+            if (!$this->isWritableContainer($hostgroup->get('container')->get('parent_id'))) {
+                $this->render403();
+                return;
+            }
 
             /** @var ContainersTable $ContainersTable */
             $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
