@@ -220,7 +220,9 @@ class LocationsController extends AppController {
                 return;
             }
 
-            $location = $LocationsTable->patchEntity($oldLocation, $this->request->getData());
+            $locationData = $this->request->getData();
+            unset($locationData['container']['parent_id'], $locationData['container']['lft'], $locationData['container']['rght']);
+            $location = $LocationsTable->patchEntity($oldLocation, $locationData);
 
             $location->container_id = $oldLocation->get('container_id');
             $location->container->id = $oldLocation->get('container_id');
