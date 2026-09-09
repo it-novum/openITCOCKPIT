@@ -246,6 +246,10 @@ class ServicegroupsController extends AppController {
             $data = $this->request->getData('Servicegroup');
             unset($data['container']['lft'], $data['container']['rght']);
             $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, $data);
+            if (!$this->isWritableContainer($servicegroupEntity->get('container')->get('parent_id'))) {
+                $this->render403();
+                return;
+            }
             $servicegroupEntity->id = $id;
 
             $requestData = $this->request->getData();
