@@ -200,16 +200,14 @@ class ContactgroupsController extends AppController {
 
             $ContainersTable->acquireLock();
 
+            $data = $this->request->getData('Contactgroup');
+            unset($data['container']['lft'], $data['container']['rght']);
+
             $contactgroupEntity = $ContactgroupsTable->get($id, contain: [
-                'Containers' => [
-                    'fields' => [
-                        'Containers.id',
-                        'Containers.parent_id'
-                    ],
-                ],
+                'Containers'
             ]);
             $contactgroupEntity->setAccess('uuid', false);
-            $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $this->request->getData('Contactgroup'));
+            $contactgroupEntity = $ContactgroupsTable->patchEntity($contactgroupEntity, $data);
 
             if (!$this->isWritableContainer($contactgroupEntity->get('container')->get('parent_id'))) {
                 $this->render403();
