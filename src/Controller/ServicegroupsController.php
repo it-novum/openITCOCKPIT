@@ -243,7 +243,9 @@ class ServicegroupsController extends AppController {
             ]);
 
             $servicegroupEntity->setAccess('uuid', false);
-            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, $this->request->getData('Servicegroup'));
+            $data = $this->request->getData('Servicegroup');
+            unset($data['container']['lft'], $data['container']['rght']);
+            $servicegroupEntity = $ServicegroupsTable->patchEntity($servicegroupEntity, $data);
             $servicegroupEntity->id = $id;
 
             $requestData = $this->request->getData();
