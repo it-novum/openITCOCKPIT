@@ -6444,7 +6444,12 @@ class HostsTable extends Table {
                 foreach ($hostStatusByMinutes as $minute => $hostStatusArray) {
                     $sizeofHostStatusArray = sizeof($hostStatusArray);
                     $statusDetails = [];
-                    foreach ($hostStatusArray as $hostStatusDetails) {
+
+                    $maxDetails = 10; // for limit check
+                    foreach ($hostStatusArray as $key => $hostStatusDetails) {
+                        if ($key > $maxDetails) {
+                            break;
+                        }
                         $statusDetails[$hostStatusDetails['id']] = [
                             'id'            => $hostStatusDetails['id'],
                             'hostUuid'      => $hostStatusDetails['uuid'],
