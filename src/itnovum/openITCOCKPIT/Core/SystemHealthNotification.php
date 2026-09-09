@@ -145,7 +145,7 @@ class SystemHealthNotification {
             $statusSatelliteIcon = $this->getStatusIcon($this->satellites_state);
             $subject = $statusIcon->getEmoji() . ' ' . __('System health is {0}', $this->getState());
 
-            if ($this->data['isDistributeModuleInstalled'] == 1) {
+            if ($this->data['isDistributeModuleInstalled'] ?? 0 == 1) {
                 $subject .= ' , ' . $statusSatelliteIcon->getEmoji() . ' ' . __('Satellites System Health is {0}', $this->getSatellitesState());
             }
 
