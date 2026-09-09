@@ -397,7 +397,7 @@ class WidgetsTable extends Table {
                 'icon'      => 'fas fa-magnifying-glass-chart',
                 'directive' => 'host-operations-summary-widget',
                 'width'     => 12,
-                'height'    => 15
+                'height'    => 30
             ];
         }
 
