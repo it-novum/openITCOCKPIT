@@ -32,7 +32,7 @@ use ArrayObject;
 use Cake\Cache\Cache;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\EventInterface;
-use Cake\Http\Exception\UnauthorizedException;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\ORM\Behavior;
 use Cake\Routing\Router;
 
@@ -48,23 +48,23 @@ class ContainerOwnedBehavior extends Behavior {
 
     /**
      * I will verify that the given $entity can be modified by the logged-in user.
-     * @throws UnauthorizedException In case the User has no permission to modify elements based on their container_id.
+     * @throws ForbiddenException In case the User has no permission to modify elements based on their container_id.
      * @see ContainerOwnedBehavior::canEditEntity()
      */
     public function beforeDelete(EventInterface $event, EntityInterface $entity, ArrayObject $options): void {
         if (!$this->canEditEntity($event, $entity, $options)) {
-            throw new UnauthorizedException(__('Deleting not permitted: You do not have write permissions to the container_id') . ' #' . $entity->container_id);
+            throw new ForbiddenException(__('Deleting not permitted: You do not have write permissions to the container_id') . ' #' . $entity->container_id);
         }
     }
 
     /**
      * I will verify that the given $entity can be modified by the logged-in user.
-     * @throws UnauthorizedException In case the User has no permission to modify elements based on their container_id.
+     * @throws ForbiddenException In case the User has no permission to modify elements based on their container_id.
      * @see ContainerOwnedBehavior::canEditEntity()
      */
     public function beforeSave(EventInterface $event, EntityInterface $entity, ArrayObject $options): void {
         if (!$this->canEditEntity($event, $entity, $options)) {
-            throw new UnauthorizedException(__('Editing not permitted: You do not have write permissions to the container_id') . ' #' . $entity->container_id);
+            throw new ForbiddenException(__('Editing not permitted: You do not have write permissions to the container_id') . ' #' . $entity->container_id);
         }
     }
 
@@ -87,10 +87,15 @@ class ContainerOwnedBehavior extends Behavior {
             return true;
         }
 
+        if ($this->isConsoleContext()) {
+            // CLI / cronjobs / setup / migrations - nothing to check
+            return true;
+        }
+
         $permissions = $this->getPermissions();
         if ($permissions === null) {
-            // No request (CLI) - nothing to check
-            return true;
+            // Web request without an authenticated identity must never write container owned data
+            return false;
         }
 
         // hasRootPrivileges?
@@ -116,6 +121,15 @@ class ContainerOwnedBehavior extends Behavior {
         }
 
         return true;
+    }
+
+    /**
+     * I tell you whether we are running outside of a web request (console, cronjob, setup, migration).
+     * Those contexts are trusted, there is no user whose permissions could be checked.
+     * @return bool
+     */
+    private function isConsoleContext(): bool {
+        return PHP_SAPI === 'cli' || Router::getRequest() === null;
     }
 
     /**
