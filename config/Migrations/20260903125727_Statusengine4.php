@@ -549,13 +549,13 @@ class Statusengine4 extends BaseMigration {
                     'limit'   => null,
                     'null'    => true,
                 ])
-                ->addColumn('latency', 'float', [
+                ->addColumn('latency', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
                     'signed'  => true,
                 ])
-                ->addColumn('execution_time', 'float', [
+                ->addColumn('execution_time', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
@@ -745,13 +745,13 @@ class Statusengine4 extends BaseMigration {
                     'limit'   => null,
                     'null'    => true,
                 ])
-                ->addColumn('latency', 'float', [
+                ->addColumn('latency', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
                     'signed'  => true,
                 ])
-                ->addColumn('execution_time', 'float', [
+                ->addColumn('execution_time', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
@@ -819,7 +819,7 @@ class Statusengine4 extends BaseMigration {
                     'null'    => true,
                     'signed'  => false,
                 ])
-                ->addColumn('percent_state_change', 'float', [
+                ->addColumn('percent_state_change', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
@@ -946,7 +946,7 @@ class Statusengine4 extends BaseMigration {
                     'null'    => false,
                     'signed'  => true,
                 ])
-                ->addColumn('value', 'float', [
+                ->addColumn('value', 'double', [
                     'default' => null,
                     'limit'   => null,
                     'null'    => true,
@@ -1505,13 +1505,13 @@ class Statusengine4 extends BaseMigration {
                     'limit'   => null,
                     'null'    => true,
                 ])
-                ->addColumn('latency', 'float', [
+                ->addColumn('latency', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
                     'signed'  => true,
                 ])
-                ->addColumn('execution_time', 'float', [
+                ->addColumn('execution_time', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
@@ -1700,13 +1700,13 @@ class Statusengine4 extends BaseMigration {
                     'limit'   => null,
                     'null'    => true,
                 ])
-                ->addColumn('latency', 'float', [
+                ->addColumn('latency', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
                     'signed'  => true,
                 ])
-                ->addColumn('execution_time', 'float', [
+                ->addColumn('execution_time', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
@@ -1780,7 +1780,7 @@ class Statusengine4 extends BaseMigration {
                     'null'    => true,
                     'signed'  => false,
                 ])
-                ->addColumn('percent_state_change', 'float', [
+                ->addColumn('percent_state_change', 'double', [
                     'default' => '0',
                     'limit'   => null,
                     'null'    => true,
