@@ -2966,6 +2966,7 @@ class DashboardsController extends AppController {
                         $Conditions->setFrom($timestampFrom);
                         $Conditions->setHostUuids($hostUuids);
                         $Conditions->setOrder(['StatehistoryHosts.state_time' => 'asc']);
+                        $Conditions->setHardStateTypeAndUpState(true);
                         $statehistoriesHost = $StatehistoryHostsTable->getStatehistoryByUuids(
                             $Conditions,
                             false
@@ -3020,6 +3021,7 @@ class DashboardsController extends AppController {
                         $Conditions->setFrom($timestampFrom);
                         $Conditions->setServiceUuids($serviceUuids);
                         $Conditions->setOrder(['StatehistoryServices.state_time' => 'asc']);
+                        $Conditions->setHardStateTypeAndOkState(true);
                         $statehistoriesService = $StatehistoryServicesTable->getStatehistoryByUuids(
                             $Conditions,
                             false
