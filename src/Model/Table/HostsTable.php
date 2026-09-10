@@ -6135,6 +6135,7 @@ class HostsTable extends Table {
      * @param int $timestampFrom
      * @param int $timestampTo
      * @param array $hostConditions
+     * @param string $UserTimeZone
      * @return array
      */
     public function getHostStateSummaryWithLastTimeStats(array $hoststatus, int $timestampFrom, int $timestampTo, array $hostConditions, string $UserTimeZone): array {

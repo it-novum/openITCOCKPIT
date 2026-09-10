@@ -46,6 +46,9 @@ class StatehistoryHostConditions extends ListSettingsConditions {
      */
     protected $hostUuid;
 
+    /**
+     * @var array
+     */
     protected $hostUuids = [];
 
     /**

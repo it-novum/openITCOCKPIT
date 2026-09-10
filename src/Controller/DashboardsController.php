@@ -77,6 +77,7 @@ use itnovum\openITCOCKPIT\Core\HoststatusFields;
 use itnovum\openITCOCKPIT\Core\Servicestatus;
 use itnovum\openITCOCKPIT\Core\ServicestatusFields;
 use itnovum\openITCOCKPIT\Core\StatehistoryHostConditions;
+use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
 use itnovum\openITCOCKPIT\Core\ValueObjects\User;
 use itnovum\openITCOCKPIT\Core\Views\Host;
 use itnovum\openITCOCKPIT\Core\Views\Service;
@@ -2907,7 +2908,7 @@ class DashboardsController extends AppController {
                     }
                 }
             }
-
+            $containerIds = [];
             $hostgroupIds = [];
             $servicegroupIds = [];
             if (!empty($config['Hostgroup']['_ids'])) {
@@ -2920,9 +2921,14 @@ class DashboardsController extends AppController {
                     $servicegroupIds[] = (int)$servicegroupId;
                 }
             }
+            if (!empty($config['Container']['_ids'])) {
+                foreach (explode(',', $config['Container']['_ids']) as $containerId) {
+                    $containerIds[] = (int)$containerId;
+                }
+            }
+            $config['Container']['_ids'] = $containerIds;
             $config['Hostgroup']['_ids'] = $hostgroupIds;
             $config['Servicegroup']['_ids'] = $servicegroupIds;
-
 
             $now = time();
             $timestampFrom = $now - 24 * 60 * 60;
@@ -2987,13 +2993,15 @@ class DashboardsController extends AppController {
                         'config',
                         'hoststatusSummary'
                     ]);
-                    return;
+                    break;
                 case 'services':
-                    $servicestatus = [];
+                    /** @var ServicesTable $ServicesTable */
+                    $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+                    $servicestatusSummary = [];
                     if ($this->DbBackend->isNdoUtils()) {
-                        /** @var ServicesTable $ServicesTable */
-                        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
                         $servicestatus = $ServicesTable->getServicesWithStatusByConditions($MY_RIGHTS, $conditions);
+                        $servicestatusSummary = $ServicesTable->getServiceStateSummary($servicestatus);
                     }
 
                     if ($this->DbBackend->isCrateDb()) {
@@ -3001,41 +3009,47 @@ class DashboardsController extends AppController {
                     }
 
                     if ($this->DbBackend->isStatusengine3()) {
-                        /** @var ServicesTable $ServicesTable */
-                        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                        $servicestatus = $ServicesTable->getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions);
-                    };
+                        $StatehistoryServicesTable = $this->DbBackend->getStatehistoryServicesTable();
+
+                        //Process conditions
+                        $Conditions = new StatehistoryServiceConditions();
+
+
+                        $servicestatus = $ServicesTable->getServicesWithExtendedStatusByConditionsStatusengine3($MY_RIGHTS, $conditions);
+                        $serviceUuids = Hash::extract($servicestatus, '{n}.uuid');
+                        $Conditions->setFrom($timestampFrom);
+                        $Conditions->setServiceUuids($serviceUuids);
+                        $Conditions->setOrder(['StatehistoryServices.state_time' => 'asc']);
+                        $statehistoriesService = $StatehistoryServicesTable->getStatehistoryByUuids(
+                            $Conditions,
+                            false
+                        );
+
+                        foreach ($servicestatus as $key => $service) {
+                            $serviceUuid = $service['uuid'];
+                            if (isset($statehistoriesService[$serviceUuid])) {
+                                $servicestatus[$key]['statehistory'] = $statehistoriesService[$serviceUuid];
+                            } else {
+                                $servicestatus[$key]['statehistory'] = [];
+                            }
+                        }
+                        $servicestatusSummary = $ServicesTable->getServiceStateSummaryWithLastTimeStats(
+                            $servicestatus,
+                            $timestampFrom,
+                            $timestampTo,
+                            $conditions['Service'],
+                            $userTimezone
+                        );
+                    }
+
+                    $this->set('config', $config);
+                    $this->set('servicestatusSummary', $servicestatusSummary);
+                    $this->viewBuilder()->setOption('serialize', [
+                        'config',
+                        'servicestatusSummary'
+                    ]);
                     break;
             }
-
-            $hostgroupIds = [];
-            $servicegroupIds = [];
-            $containerIds = [];
-            if (!empty($config['Hostgroup']['_ids'])) {
-                foreach (explode(',', $config['Hostgroup']['_ids']) as $hostgroupId) {
-                    $hostgroupIds[] = (int)$hostgroupId;
-                }
-            }
-            if (!empty($config['Servicegroup']['_ids'])) {
-                foreach (explode(',', $config['Servicegroup']['_ids']) as $servicegroupId) {
-                    $servicegroupIds[] = (int)$servicegroupId;
-                }
-            }
-            if (!empty($config['Container']['_ids'])) {
-                foreach (explode(',', $config['Container']['_ids']) as $containerId) {
-                    $containerIds[] = (int)$containerId;
-                }
-            }
-            $config['Hostgroup']['_ids'] = $hostgroupIds;
-            $config['Servicegroup']['_ids'] = $servicegroupIds;
-            $config['Container']['_ids'] = $containerIds;
-
-
-            $this->set('config', $config);
-
-            $this->viewBuilder()->setOption('serialize', [
-                'config'
-            ]);
             return;
         }
 
