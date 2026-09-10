@@ -49,8 +49,8 @@ class GeneratorRegistry {
             new PerfdataBackend(),
             new Gearman(),
             new GraphingDocker(),
-            new StatusengineCfg(),
-            new Statusengine3Cfg(),
+            //new StatusengineCfg(),
+            //new Statusengine3Cfg(),
             new Statusengine4Cfg(),
             new GraphiteWeb(),
             new NSTAMaster(),
@@ -113,8 +113,8 @@ class GeneratorRegistry {
                 new ModGearmanModule(),
             ],
             __('Statusengine')                                => [
-                new StatusengineCfg(),
-                new Statusengine3Cfg(),
+                //new StatusengineCfg(),
+                //new Statusengine3Cfg(),
                 new Statusengine4Cfg(),
             ],
             //__('phpNSTA')                                     => [
