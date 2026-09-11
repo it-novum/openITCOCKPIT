@@ -3029,9 +3029,21 @@ class HostsController extends AppController {
             $timeperiodId = $host->get('hosttemplate')->get('check_period_id');
         }
 
+        $notify_period_time_id = $host->get('notify_period_id');
+        if ($notify_period_time_id === null || $notify_period_time_id === '') {
+            $notify_period_time_id = $host->get('hosttemplate')->get('notify_period_id');
+        }
+
         /** @var TimeperiodsTable $TimeperiodsTable */
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
+        /*$checkNotifyTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($notify_period_time_id);
+        print_r($checkNotifyTimePeriod);
+        echo '<<<<-------<----->>>>><';*/
+
         $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
+
+        //print_r($checkTimePeriod);
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
@@ -3072,8 +3084,44 @@ class HostsController extends AppController {
         );
 
         $TimeRangeSerializer = new TimeRangeSerializer($timeRanges, $UserTime);
+        $TimeRangeSerializer_2 = new TimeRangeSerializer($timeRanges, $UserTime);
         $this->set('timeranges', $TimeRangeSerializer->serialize());
+
+        $notification_timeranges = [
+            [
+                "start"     => "2026-09-08 02:00:00",
+                "end"       => "2026-09-08 12:59:59",
+                "type"      => "background",
+                "className" => "bg-notification-period",
+                "group"     => 6,
+            ],
+            [
+                "start"     => "2026-09-09 02:00:00",
+                "end"       => "2026-09-09 12:59:59",
+                "type"      => "background",
+                "className" => "bg-notification-period",
+                "group"     => 6,
+            ],
+            [
+                "start"     => "2026-09-10 02:00:00",
+                "end"       => "2026-09-10 12:53:10",
+                "className" => "bg-notification-period",
+                "type"      => "background",
+                "group"     => 6,
+            ],
+            [
+                "start"     => "2026-09-11 10:00:10",
+                "end"       => "2026-09-11 16:53:10",
+                "className" => "bg-notification-period",
+                "type"      => "background",
+                "group"     => 6,
+            ]
+        ];
+
+
+        $this->set('notification_timeranges', $notification_timeranges);
         unset($TimeRangeSerializer, $timeRanges);
+        unset($TimeRangeSerializer_2, $timeRanges);
 
         $hostUuid = $host->get('uuid');
 
@@ -3225,6 +3273,134 @@ class HostsController extends AppController {
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
 
+        $noti = [
+            [
+                'id'      => 1,
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'Mohammed 1<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+                'start'   => "2026-09-09 08:00:35",
+                'end'     => "2026-09-09 14:00:35",
+                'group'   => 6,
+                'type'    => 'range',
+            ],
+            [
+                'id'      => 2,
+                'start'   => "2026-09-10 08:00:35",
+                'end'     => "2026-09-10 14:00:35",
+                'group'   => 6,
+                'type'    => 'range',
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'Mohammed 1<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+            ],
+            [
+                'id'      => 3,
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'Mohammed 1<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+                'start'   => "2026-09-11 08:00:35",
+                'end'     => "2026-09-11 14:00:35",
+                'group'   => 6,
+                'type'    => 'range',
+            ],
+            [
+                'id'      => 4,
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'Mohammed 1<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+                'start'   => "2026-09-12 08:00:35",
+                'end'     => "2026-09-12 14:00:35",
+                'group'   => 6,
+                'type'    => 'range',
+            ],
+            [
+                'id'      => 5,
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'Mohammed 1<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+                'start'   => "2026-09-09 13:47:35",
+                'group'   => 6,
+            ],
+            [
+                'id'      => 6,
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'John Doe<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+                'start'   => "2026-09-09 00:00:00",
+                'end'     => "2026-09-09 08:00:00",
+                'group'   => 6,
+                'type'    => 'range',
+            ],
+            [
+                'id'      => 7,
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'John Doe<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+                'start'   => "2026-09-10 00:00:00",
+                'end'     => "2026-09-10 08:00:00",
+                'group'   => 6,
+                'type'    => 'range',
+            ],
+            [
+                'id'      => 8,
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'John Doe<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+                'start'   => "2026-09-11 00:00:00",
+                'end'     => "2026-09-11 08:00:00",
+                'group'   => 6,
+                'type'    => 'range',
+            ],
+            [
+                'id'      => 9,
+                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                    . 'John Doe<br>'
+                    . '<b class="badge bg-success badge-micro">Enabled</b> '
+                    . '<b class="badge bg-success badge-nano">R</b> '
+                    . '<b class="badge bg-danger badge-nano">D</b> '
+                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '</b>',
+                'start'   => "2026-09-08 00:00:00",
+                'end'     => "2026-09-08 08:00:00",
+                'group'   => 6,
+                'type'    => 'range',
+            ],
+        ];
+
+        $this->set('notifications_contact', $noti);
         $start += $offset;
         $end += $offset;
 
@@ -3238,6 +3414,8 @@ class HostsController extends AppController {
             'downtimes',
             'notifications',
             'acknowledgements',
+            'notifications_contact',
+            'notification_timeranges',
             'timeranges'
         ]);
     }

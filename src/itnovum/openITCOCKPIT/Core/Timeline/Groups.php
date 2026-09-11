@@ -34,31 +34,36 @@ class Groups {
 
         //group->id gets rendered as order to the frontend
         $this->groups = [
-            'acknowledgements'    => [
+            'acknowledgements'     => [
                 'id'   => 2,
                 'icon' => ' <i class=\'fas fa-commenting\'></i>',
                 'text' => __('Acknowledgements')
             ],
-            'downtimes'           => [
+            'downtimes'            => [
                 'id'   => 3,
                 'icon' => '<i class=\'fas fa-power-off\'></i>',
                 'text' => __('Downtimes')
             ],
-            'notifications'       => [
+            'notifications'        => [
                 'id'   => 1,
                 'icon' => '<i class=\'fas fa-envelope\'></i>',
                 'text' => __('Notifications')
             ],
-            'servicestatehistory' => [
+            'servicestatehistory'  => [
                 'id'   => 4,
                 'icon' => '<i class=\'fas fa-cog\'></i>',
                 'text' => __('State history service')
             ],
-            'hoststatehistory'    => [
+            'hoststatehistory'     => [
                 'id'   => 5,
                 'icon' => '<i class=\'fas fa-desktop\'></i>',
                 'text' => __('State history host')
-            ]
+            ],
+            'notifications_period' => [
+                'id'   => 6,
+                'icon' => '<i class=\'fas fa-hourglass-start\'></i>',
+                'text' => __('Notifications Period')
+            ],
         ];
     }
 
