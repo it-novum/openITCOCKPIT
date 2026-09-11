@@ -3024,32 +3024,25 @@ class HostsController extends AppController {
             return;
         }
 
+        /** @var TimeperiodsTable $TimeperiodsTable */
+        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
+
         $timeperiodId = $host->get('check_period_id');
         if ($timeperiodId === null || $timeperiodId === '') {
             $timeperiodId = $host->get('hosttemplate')->get('check_period_id');
         }
 
+        $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
+
         $notify_period_time_id = $host->get('notify_period_id');
         if ($notify_period_time_id === null || $notify_period_time_id === '') {
             $notify_period_time_id = $host->get('hosttemplate')->get('notify_period_id');
         }
-
-        /** @var TimeperiodsTable $TimeperiodsTable */
-        $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
-
-        /*$checkNotifyTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($notify_period_time_id);
-        print_r($checkNotifyTimePeriod);
-        echo '<<<<-------<----->>>>><';*/
-
-        $checkTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($timeperiodId);
-
-        //print_r($checkTimePeriod);
+        $notifyTimePeriod = $TimeperiodsTable->getTimeperiodWithTimerangesById($notify_period_time_id);
 
         $User = new User($this->getUser());
         $UserTime = $User->getUserTime();
         $offset = $UserTime->getUserTimeToServerOffset();
-
-
         $Groups = new Groups();
         $this->set('groups', $Groups->serialize(true));
 
@@ -3077,51 +3070,32 @@ class HostsController extends AppController {
         }
 
         /*************  TIME RANGES *************/
-        $timeRanges = DaterangesCreator::createDateRanges(
+        $timeRangesCheckPeriod = DaterangesCreator::createDateRanges(
             $start,
             $end,
             $checkTimePeriod['Timeperiod']['timeperiod_timeranges']
         );
+        $timeRangesNotifyPeriod = DaterangesCreator::createDateRanges(
+            $start,
+            $end,
+            $notifyTimePeriod['Timeperiod']['timeperiod_timeranges']
+        );
 
-        $TimeRangeSerializer = new TimeRangeSerializer($timeRanges, $UserTime);
-        $TimeRangeSerializer_2 = new TimeRangeSerializer($timeRanges, $UserTime);
+
+        $TimeRangeSerializer = new TimeRangeSerializer($timeRangesCheckPeriod, $UserTime);
         $this->set('timeranges', $TimeRangeSerializer->serialize());
 
-        $notification_timeranges = [
-            [
-                "start"     => "2026-09-08 02:00:00",
-                "end"       => "2026-09-08 12:59:59",
-                "type"      => "background",
-                "className" => "bg-notification-period",
-                "group"     => 6,
-            ],
-            [
-                "start"     => "2026-09-09 02:00:00",
-                "end"       => "2026-09-09 12:59:59",
-                "type"      => "background",
-                "className" => "bg-notification-period",
-                "group"     => 6,
-            ],
-            [
-                "start"     => "2026-09-10 02:00:00",
-                "end"       => "2026-09-10 12:53:10",
-                "className" => "bg-notification-period",
-                "type"      => "background",
-                "group"     => 6,
-            ],
-            [
-                "start"     => "2026-09-11 10:00:10",
-                "end"       => "2026-09-11 16:53:10",
-                "className" => "bg-notification-period",
-                "type"      => "background",
-                "group"     => 6,
-            ]
-        ];
 
+        $TimeRangeSerializer = new TimeRangeSerializer(
+            $timeRangesNotifyPeriod,
+            $UserTime,
+            'bg-notification-period',
+            6
+        );
 
-        $this->set('notification_timeranges', $notification_timeranges);
-        unset($TimeRangeSerializer, $timeRanges);
-        unset($TimeRangeSerializer_2, $timeRanges);
+        $this->set('notification_timeranges', $TimeRangeSerializer->serialize());
+        unset($TimeRangeSerializer, $timeRangesCheckPeriod, $timeRangesNotifyPeriod);
+
 
         $hostUuid = $host->get('uuid');
 
@@ -3272,6 +3246,64 @@ class HostsController extends AppController {
 
         $AcknowledgementSerializer = new AcknowledgementSerializer($acknowledgementRecords, $UserTime);
         $this->set('acknowledgements', $AcknowledgementSerializer->serialize());
+
+        $hostContacts = $host->get('contacts');
+        if (empty($hostContact)) {
+            $hostContacts = $host->get('hosttemplate')->get('contacts');
+        }
+
+
+        $hostContactgroups = $host->get('contactgroups');
+        if (empty($hostContactgroups)) {
+            $hostContactgroups = $host->get('hosttemplate')->get('contactgroups');
+        }
+        if (!empty($hostContactgroups)) {
+            foreach ($hostContactgroups as $contactgroup) {
+                $contactgroupContacts = $contactgroup->get('contacts');
+                if (!empty($contactgroupContacts)) {
+                    foreach ($contactgroupContacts as $contact) {
+                        $hostContacts[] = $contact;
+                    }
+                }
+            }
+        }
+
+        $contactNotificationPeriodIdsByContacts = [];
+        $filteredContacts = [];
+        if (!empty($hostContacts)) {
+            foreach ($hostContacts as $contact) {
+                $filteredContacts[$contact->get('id')] = $contact->toArray();
+                $hostTimeperiodId = $contact->get('host_timeperiod_id');
+                $contactNotificationPeriodIdsByContacts[$hostTimeperiodId] = $hostTimeperiodId;
+            }
+        }
+        $filteredContacts = Hash::remove($filteredContacts, '{n}._joinData');
+        $contactNotificationPeriods = $TimeperiodsTable->getTimeperiodsByIdsForTimeline(
+            $contactNotificationPeriodIdsByContacts
+        );
+
+        $timerangesForContactNotificationPeriods = [];
+        if (!empty($contactNotificationPeriods)) {
+            foreach ($contactNotificationPeriods as $contactNotificationPeriod) {
+                $timerangesForContactNotificationPeriods[$contactNotificationPeriod['id']] = DaterangesCreator::createDateRanges(
+                    $start,
+                    $end,
+                    $contactNotificationPeriod['timeperiod_timeranges']
+                );
+            }
+        }
+
+        //dd($timerangesForContactNotificationPeriods);
+
+
+        dd($contactNotificationPeriods);
+
+        debug($filteredContacts);
+        dd($contactNotificationPeriodIdsByContacts);
+
+        dd($host->get('contactgroups'));
+
+        dd('HERE');
 
         $noti = [
             [
