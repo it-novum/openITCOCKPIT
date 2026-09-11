@@ -4364,7 +4364,7 @@ class ServicesTable extends Table {
             if (!empty($conditions['Servicegroup']['not_keywords'])) {
                 $serviceGroupsWhere[] = new ComparisonExpression(
                     'sg.tags',
-                    $conditions['Servicegroups']['not_keywords'],
+                    $conditions['Servicegroup']['not_keywords'],
                     'string',
                     'NOT RLIKE'
                 );
