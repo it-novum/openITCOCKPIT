@@ -292,11 +292,11 @@ class HostescalationsController extends AppController {
         $hostsWithCheckValues = [];
         foreach ($hostsForNotificationCalc as $host) {
             //Merge host and inheritance data
-            $HostMergerForBrowser = new HostMergerForCheckValues(
+            $HostMergerForCheckValues = new HostMergerForCheckValues(
                 $host,
                 $host['hosttemplate']
             );
-            $mergedHost = $HostMergerForBrowser->getDataForView();
+            $mergedHost = $HostMergerForCheckValues->getDataForView();
             $hostsWithCheckValues[$mergedHost['id']] = [
                 'id'                 => $mergedHost['id'],
                 'name'               => $mergedHost['name'],
