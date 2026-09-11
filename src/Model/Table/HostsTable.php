@@ -5482,70 +5482,90 @@ class HostsTable extends Table {
             $conditions['Hostgroup'] = Hash::filter($conditions['Hostgroup']);
         }
         if (!empty($conditions['Hostgroup'])) {
-            $hostgroups = $this->fetchTable('Hostgroups');
             $hostgroupIds = [];
+            $hostGroupsWhere = [];
             if (!empty($conditions['Hostgroup']['_ids'])) {
                 $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
             }
-            $whereForCount = [
-                $query->newExpr('FIND_IN_SET (Hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                                GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
-                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))')
-            ];
-
             if (!empty($hostgroupIds)) {
-                $whereForCount[] = ['Hostgroups.id IN' => $hostgroupIds];
+                $hostGroupsWhere[] = ['hg.id IN' => $hostgroupIds];
             }
-
             if (!empty($conditions['Hostgroup']['keywords'])) {
-                $whereForCount[] = new ComparisonExpression(
-                    'IF((Hostgroups.tags IS NOT NULL), Hostgroups.tags, "")',
+                $hostGroupsWhere[] = new ComparisonExpression(
+                    'hg.tags',
                     $conditions['Hostgroup']['keywords'],
                     'string',
                     'RLIKE'
 
                 );
             }
-
             if (!empty($conditions['Hostgroup']['not_keywords'])) {
-                $whereForCount[] = new ComparisonExpression(
-                    'IF((Hostgroups.tags IS NOT NULL), Hostgroups.tags, "")',
+                $hostGroupsWhere[] = new ComparisonExpression(
+                    'hg.tags',
                     $conditions['Hostgroup']['not_keywords'],
                     'string',
                     'NOT RLIKE'
                 );
             }
 
-            if (!empty($whereForCount)) {
-                $query->select([
-                    'hostgroup_ids' => $query->newExpr(
-                        'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                    GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
-                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
-                    'count'         => $hostgroups->find()->select([$query->func()->count('Hostgroups.id')])
-                        ->where($whereForCount)
-                ]);
+            // Direct assignment Host -> Hostgroup
+            $path1 = TableRegistry::getTableLocator()->get('HostsToHostgroups')->find();
+            $path1->select([
+                'host_id'       => 'HostsToHostgroups.host_id',
+                'hostgroup_ids' => $path1->newExpr('GROUP_CONCAT(DISTINCT HostsToHostgroups.hostgroup_id)'),
+                'host_count'    => $path1->newExpr('COUNT(DISTINCT hg.id)')
+            ])
+                ->join([
+                    'table'      => 'hostgroups',
+                    'alias'      => 'hg',
+                    'type'       => 'INNER',
+                    'conditions' => 'hg.id = HostsToHostgroups.hostgroup_id'
+                ])
+                ->where($hostGroupsWhere)
+                ->groupBy(['HostsToHostgroups.host_id']);
 
-            }
-
-            $query->join([
-                'hosts_to_hostgroups'         => [
-                    'table'      => 'hosts_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HostToHostgroups',
-                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
-                ],
-                'hosttemplates_to_hostgroups' => [
+            // Assignment via Template -> Hostgroup
+            $path2 = $this->find();
+            $path2->select([
+                'host_id'       => 'Hosts.id',
+                'hostgroup_ids' => $path2->newExpr('GROUP_CONCAT(DISTINCT ht2hg.hostgroup_id)'),
+                'host_count'    => $path2->newExpr('COUNT(DISTINCT hg.id)')
+            ])
+                ->join([
                     'table'      => 'hosttemplates_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HosttemplatesToHostgroups',
-                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
-                ]
-            ]);
-            $query->having([
-                'hostgroup_ids IS NOT NULL',
-                'count > 0'
-            ]);
+                    'alias'      => 'ht2hg',
+                    'type'       => 'INNER',
+                    'conditions' => 'ht2hg.hosttemplate_id = Hosts.hosttemplate_id'
+                ])
+                ->join([
+                    'table'      => 'hostgroups',
+                    'alias'      => 'hg',
+                    'type'       => 'INNER',
+                    'conditions' => 'hg.id = ht2hg.hostgroup_id'
+                ])
+                ->where($hostGroupsWhere)
+                ->groupBy(['Hosts.id']);
+
+            // Combine both query paths using UNION ALL
+            $unionQuery = $path1->unionAll($path2);
+
+            // Extend base query with union
+            $query
+                ->select([
+                    'hsotgroup_ids' => 'ValidHosts.hostgroup_ids',
+                    'host_count'    => 'ValidHosts.host_count'
+                ])
+                ->join([
+                    'ValidHosts' => [
+                        'table'      => $unionQuery,
+                        'type'       => 'INNER',
+                        'alias'      => 'ValidHosts',
+                        'conditions' => 'ValidHosts.host_id = Hosts.id',
+                    ]
+                ])
+                ->groupBy([
+                    'Hosts.id'
+                ]);
         }
 
         $where = [];

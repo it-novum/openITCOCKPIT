@@ -4192,9 +4192,9 @@ class ServicesTable extends Table {
                 'Hosts.name',
                 'Services.id',
                 'Services.uuid',
-                'servicename'     => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
-                'servicepriority' => $query->newExpr('IF(Services.priority IS NULL, Servicetemplates.priority, Services.priority)'),
-                'tags'            => $query->newExpr('IF(Services.tags IS NULL, Servicetemplates.tags, Services.tags)'),
+                'servicename'     => $query->func()->coalesce(['Services.name' => 'identifier', 'Servicetemplates.name' => 'identifier']),
+                'servicepriority' => $query->func()->coalesce(['Services.priority' => 'identifier', 'Servicetemplates.priority' => 'identifier']),
+                'tags'            => $query->func()->coalesce(['Services.tags' => 'identifier', 'Servicetemplates.tags' => 'identifier']),
                 'Servicestatus.current_state',
                 'Servicestatus.scheduled_downtime_depth',
                 'Servicestatus.active_checks_enabled',
@@ -4230,46 +4230,37 @@ class ServicesTable extends Table {
                 ]
             ]);
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
-                if (!empty($MY_RIGHTS)) {
-                    $q->where([
-                        'HostsToContainersSharing.id IN ' => $MY_RIGHTS
-                    ]);
-                }
-                return $q;
-            });
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
+            ]);
+            if (!empty($conditions['Container']['_ids'])) {
+                $query->where([
+                    'HostsToContainersSharing.container_id IN' => $conditions['Container']['_ids']
+                ]);
+            }
+        } else if (!empty($conditions['Container']['_ids'])) {
+            $query->innerJoin(['HostsToContainersSharing' => 'hosts_to_containers'], [
+                'HostsToContainersSharing.host_id = Hosts.id'
+            ]);
+            $containerIds = explode(',', $conditions['Container']['_ids']);
+            $query->where([
+                'HostsToContainersSharing.container_id IN' => $containerIds
+            ]);
         }
         if (!empty($conditions['Hostgroup'])) {
             $conditions['Hostgroup'] = Hash::filter($conditions['Hostgroup']);
         }
         if (!empty($conditions['Hostgroup'])) {
-            $query->join([
-                    'hosttemplates' => [
-                        'table'      => 'hosttemplates',
-                        'type'       => 'INNER',
-                        'alias'      => 'Hosttemplates',
-                        'conditions' => 'Hosttemplates.id = Hosts.hosttemplate_id',
-                    ]
-                ]
-            );
-            $hostgroups = $this->fetchTable('Hostgroups');
-            $hostgroupIds = [];
-            if (!empty($conditions['Hostgroup']['_ids'])) {
-                $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
-            }
-            $whereForCount = [
-                $query->newExpr('FIND_IN_SET (Hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                                GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
-                                GROUP_CONCAT(HostToHostgroups.hostgroup_id)))')
-            ];
-
+            $hostGroupsWhere = [];
             if (!empty($hostgroupIds)) {
-                $whereForCount[] = ['Hostgroups.id IN' => $hostgroupIds];
+                $hostGroupsWhere[] = ['hg.id IN' => $hostgroupIds];
             }
-
             if (!empty($conditions['Hostgroup']['keywords'])) {
-                $whereForCount[] = new ComparisonExpression(
-                    'IF((Hostgroups.tags IS NOT NULL), Hostgroups.tags, "")',
+                $hostGroupsWhere[] = new ComparisonExpression(
+                    'hg.tags',
                     $conditions['Hostgroup']['keywords'],
                     'string',
                     'RLIKE'
@@ -4278,150 +4269,167 @@ class ServicesTable extends Table {
             }
 
             if (!empty($conditions['Hostgroup']['not_keywords'])) {
-                $whereForCount[] = new ComparisonExpression(
-                    'IF((Hostgroups.tags IS NOT NULL), Hostgroups.tags, "")',
+                $hostGroupsWhere[] = new ComparisonExpression(
+                    'hg.tags',
                     $conditions['Hostgroup']['not_keywords'],
                     'string',
                     'NOT RLIKE'
                 );
             }
+            // Direct assignment Host -> Hostgroup
+            $path1 = TableRegistry::getTableLocator()->get('HostsToHostgroups')->find();
+            $path1->select([
+                'host_id'       => 'HostsToHostgroups.host_id',
+                // newExpr() forces CakePHP to treat the string as raw SQL without automatic backticks
+                'hostgroup_ids' => $path1->newExpr('GROUP_CONCAT(DISTINCT HostsToHostgroups.hostgroup_id)'),
+                'host_count'    => $path1->newExpr('COUNT(DISTINCT hg.id)')
+            ])
+                ->join([
+                    'table'      => 'hostgroups',
+                    'alias'      => 'hg',
+                    'type'       => 'INNER',
+                    'conditions' => 'hg.id = HostsToHostgroups.hostgroup_id'
+                ])
+                ->where($hostGroupsWhere)
+                ->groupBy(['HostsToHostgroups.host_id']);
 
-            if (!empty($whereForCount)) {
-                $query->select([
-                    'hostgroup_ids' => $query->newExpr(
-                        'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
-                    GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
-                    GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
-                    'host_count'    => $hostgroups->find()->select([$query->func()->count('Hostgroups.id')])
-                        ->where($whereForCount)
-                ]);
-
-            }
-
-            $query->join([
-                'hosts_to_hostgroups'         => [
-                    'table'      => 'hosts_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HostToHostgroups',
-                    'conditions' => 'HostToHostgroups.host_id = Hosts.id',
-                ],
-                'hosttemplates_to_hostgroups' => [
+            // Assignment via Template -> Hostgroup
+            $path2 = TableRegistry::getTableLocator()->get('Hosts')->find();
+            $path2->select([
+                'host_id'       => 'Hosts.id',
+                // Using newExpr() here as well to protect the aggregation expressions
+                'hostgroup_ids' => $path2->newExpr('GROUP_CONCAT(DISTINCT ht2hg.hostgroup_id)'),
+                'host_count'    => $path2->newExpr('COUNT(DISTINCT hg.id)')
+            ])
+                ->join([
                     'table'      => 'hosttemplates_to_hostgroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'HosttemplatesToHostgroups',
-                    'conditions' => 'HosttemplatesToHostgroups.hosttemplate_id = Hosttemplates.id',
-                ]
-            ]);
-            $query->having([
-                'hostgroup_ids IS NOT NULL',
-                'host_count > 0'
-            ]);
+                    'alias'      => 'ht2hg',
+                    'type'       => 'INNER',
+                    'conditions' => 'ht2hg.hosttemplate_id = Hosts.hosttemplate_id'
+                ])
+                ->join([
+                    'table'      => 'hostgroups',
+                    'alias'      => 'hg',
+                    'type'       => 'INNER',
+                    'conditions' => 'hg.id = ht2hg.hostgroup_id'
+                ])
+                ->where($hostGroupsWhere)
+                ->groupBy(['Hosts.id']);
+
+            // Combine both query paths using UNION ALL
+            $unionQuery = $path1->unionAll($path2);
+
+            // Extend base query with union
+            $query
+                // Fetch the pre-aggregated fields flat from the ValidHosts subquery
+                ->select([
+                    'hostgroup_ids' => 'ValidHosts.hostgroup_ids',
+                    'host_count'    => 'ValidHosts.host_count'
+                ])
+                ->join([
+                    // Attach the filtered and pre-aggregated UNION table as an INNER JOIN
+                    'ValidHosts' => [
+                        'table'      => $unionQuery,
+                        'type'       => 'INNER',
+                        'alias'      => 'ValidHosts',
+                        'conditions' => 'ValidHosts.host_id = Hosts.id',
+                    ]
+                ])
+                ->groupBy([
+                    'Services.id'
+                ]);
         }
 
         if (!empty($conditions['Servicegroup'])) {
             $conditions['Servicegroup'] = Hash::filter($conditions['Servicegroup']);
         }
         if (!empty($conditions['Servicegroup'])) {
-            $servicegroups = $this->fetchTable('Servicegroups');
             $servicegroupIds = [];
+            $serviceGroupsWhere = [];
             if (!empty($conditions['Servicegroup']['_ids'])) {
                 $servicegroupIds = explode(',', $conditions['Servicegroup']['_ids']);
             }
-            $whereForCount = [
-                $query->newExpr('FIND_IN_SET (Servicegroups.id,IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                                GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
-                                GROUP_CONCAT(ServiceToServicegroups.servicegroup_id)))')
-            ];
-
             if (!empty($servicegroupIds)) {
-                $whereForCount[] = ['Servicegroups.id IN' => $servicegroupIds];
+                $serviceGroupsWhere[] = ['sg.id IN' => $servicegroupIds];
             }
-
             if (!empty($conditions['Servicegroup']['keywords'])) {
-                $whereForCount[] = new ComparisonExpression(
-                    'IF((Servicegroups.tags IS NOT NULL), Servicegroups.tags, "")',
+                $serviceGroupsWhere[] = new ComparisonExpression(
+                    'sg.tags',
                     $conditions['Servicegroup']['keywords'],
                     'string',
                     'RLIKE'
 
                 );
             }
-
             if (!empty($conditions['Servicegroup']['not_keywords'])) {
-                $whereForCount[] = new ComparisonExpression(
-                    'IF((Servicegroups.tags IS NOT NULL), Servicegroups.tags, "")',
+                $serviceGroupsWhere[] = new ComparisonExpression(
+                    'sg.tags',
                     $conditions['Servicegroups']['not_keywords'],
                     'string',
                     'NOT RLIKE'
                 );
             }
-            if (!empty($whereForCount)) {
-                $query->select([
-                    'servicegroup_ids' => $query->newExpr(
-                        'IF(GROUP_CONCAT(ServiceToServicegroups.servicegroup_id) IS NULL,
-                    GROUP_CONCAT(ServicetemplatesToServicegroups.servicegroup_id),
-                    GROUP_CONCAT(ServiceToServicegroups.servicegroup_id))'),
-                    'service_count'    => $servicegroups->find()->select([$query->func()->count('Servicegroups.id')])
-                        ->where($whereForCount)
+
+            // Direct assignment Service -> Servicegroup
+            $path1 = TableRegistry::getTableLocator()->get('ServicesToServicegroups')->find();
+            $path1->select([
+                'service_id'       => 'ServicesToServicegroups.service_id',
+                'servicegroup_ids' => $path1->newExpr('GROUP_CONCAT(DISTINCT ServicesToServicegroups.servicegroup_id)'),
+                'service_count'    => $path1->newExpr('COUNT(DISTINCT sg.id)')
+            ])
+                ->join([
+                    'table'      => 'servicegroups',
+                    'alias'      => 'sg',
+                    'type'       => 'INNER',
+                    'conditions' => 'sg.id = ServicesToServicegroups.servicegroup_id'
+                ])
+                ->where($serviceGroupsWhere)
+                ->groupBy(['ServicesToServicegroups.service_id']);
+
+            // Assignment via Template -> Servicegroup
+            $path2 = $this->find();
+            $path2->select([
+                'service_id'       => 'Services.id',
+                'servicegroup_ids' => $path2->newExpr('GROUP_CONCAT(DISTINCT st2sg.servicegroup_id)'),
+                'service_count'    => $path2->newExpr('COUNT(DISTINCT sg.id)')
+            ])
+                ->join([
+                    'table'      => 'servicetemplates_to_servicegroups',
+                    'alias'      => 'st2sg',
+                    'type'       => 'INNER',
+                    'conditions' => 'st2sg.servicetemplate_id = Services.servicetemplate_id'
+                ])
+                ->join([
+                    'table'      => 'servicegroups',
+                    'alias'      => 'sg',
+                    'type'       => 'INNER',
+                    'conditions' => 'sg.id = st2sg.servicegroup_id'
+                ])
+                ->where($serviceGroupsWhere)
+                ->groupBy(['Services.id']);
+
+            // Combine both query paths using UNION ALL
+            $unionQuery = $path1->unionAll($path2);
+
+            // Extend base query with union
+            $query
+                ->select([
+                    'servicegroup_ids' => 'ValidServices.servicegroup_ids',
+                    'service_count'    => 'ValidServices.service_count'
+                ])
+                ->join([
+                    'ValidServices' => [
+                        'table'      => $unionQuery,
+                        'type'       => 'INNER',
+                        'alias'      => 'ValidServices',
+                        'conditions' => 'ValidServices.service_id = Services.id',
+                    ]
+                ])
+                ->groupBy([
+                    'Services.id'
                 ]);
 
-            }
-            $query->join([
-                'services_to_servicegroups'         => [
-                    'table'      => 'services_to_servicegroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'ServiceToServicegroups',
-                    'conditions' => 'ServiceToServicegroups.service_id = Services.id',
-                ],
-                'servicetemplates_to_servicegroups' => [
-                    'table'      => 'servicetemplates_to_servicegroups',
-                    'type'       => 'LEFT',
-                    'alias'      => 'ServicetemplatesToServicegroups',
-                    'conditions' => 'ServicetemplatesToServicegroups.servicetemplate_id = Servicetemplates.id',
-                ]
-            ]);
-            $query->having([
-                'servicegroup_ids IS NOT NULL',
-                'service_count > 0'
-            ]);
-        }
 
-        if (isset($conditions['Services.keywords rlike'])) {
-            $where[] = new ComparisonExpression(
-                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                $where['Services.keywords rlike'],
-                'string',
-                'RLIKE'
-            );
-            unset($where['Services.keywords rlike']);
-        }
-
-        if (isset($conditions['Services.not_keywords not rlike'])) {
-            $where[] = new ComparisonExpression(
-                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                $where['Services.not_keywords not rlike'],
-                'string',
-                'NOT RLIKE'
-            );
-            unset($where['Services.not_keywords not rlike']);
-        }
-
-        if (!empty($conditions['Service']['keywords'])) {
-            $where[] = new ComparisonExpression(
-                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                $conditions['Service']['keywords'],
-                'string',
-                'RLIKE'
-            );
-        }
-
-        if (!empty($conditions['Service']['not_keywords'])) {
-            $where[] = new ComparisonExpression(
-                'IF((Services.tags IS NULL OR Services.tags=""), Servicetemplates.tags, Services.tags)',
-                $conditions['Service']['not_keywords'],
-                'string',
-                'NOT RLIKE'
-            );
         }
 
         if (!empty($conditions['Host']['name'])) {
@@ -4472,7 +4480,7 @@ class ServicesTable extends Table {
 
         $query->disableHydration();
         $result = $query->all();
-        if ($result === null) {
+        if (!$result === null) {
             return [];
         }
 

@@ -2857,6 +2857,9 @@ class DashboardsController extends AppController {
         throw new MethodNotAllowedException();
     }
 
+    /**
+     * @throws MissingDbBackendException
+     */
     public function operationsSummaryWidget() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();
