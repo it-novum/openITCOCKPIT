@@ -3278,10 +3278,10 @@ class HostsController extends AppController {
                 'id'      => 1,
                 'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
                     . 'Mohammed 1<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
                 'start'   => "2026-09-09 08:00:35",
                 'end'     => "2026-09-09 14:00:35",
@@ -3294,22 +3294,22 @@ class HostsController extends AppController {
                 'end'     => "2026-09-10 14:00:35",
                 'group'   => 6,
                 'type'    => 'range',
-                'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
+                'content' => '<b class="d-inline-block lh-1 fs-xs">'
                     . 'Mohammed 1<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
             ],
             [
                 'id'      => 3,
                 'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
                     . 'Mohammed 1<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
                 'start'   => "2026-09-11 08:00:35",
                 'end'     => "2026-09-11 14:00:35",
@@ -3320,10 +3320,10 @@ class HostsController extends AppController {
                 'id'      => 4,
                 'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
                     . 'Mohammed 1<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
                 'start'   => "2026-09-12 08:00:35",
                 'end'     => "2026-09-12 14:00:35",
@@ -3334,10 +3334,10 @@ class HostsController extends AppController {
                 'id'      => 5,
                 'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
                     . 'Mohammed 1<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
                 'start'   => "2026-09-09 13:47:35",
                 'group'   => 6,
@@ -3346,10 +3346,10 @@ class HostsController extends AppController {
                 'id'      => 6,
                 'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
                     . 'John Doe<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
                 'start'   => "2026-09-09 00:00:00",
                 'end'     => "2026-09-09 08:00:00",
@@ -3360,10 +3360,10 @@ class HostsController extends AppController {
                 'id'      => 7,
                 'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
                     . 'John Doe<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
                 'start'   => "2026-09-10 00:00:00",
                 'end'     => "2026-09-10 08:00:00",
@@ -3374,10 +3374,10 @@ class HostsController extends AppController {
                 'id'      => 8,
                 'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
                     . 'John Doe<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
                 'start'   => "2026-09-11 00:00:00",
                 'end'     => "2026-09-11 08:00:00",
@@ -3388,10 +3388,10 @@ class HostsController extends AppController {
                 'id'      => 9,
                 'content' => '<b class="not-xss-filtered-html timeline-contact-badge d-inline-block lh-1 fs-xs">'
                     . 'John Doe<br>'
-                    . '<b class="badge bg-success badge-micro">Enabled</b> '
-                    . '<b class="badge bg-success badge-nano">R</b> '
-                    . '<b class="badge bg-danger badge-nano">D</b> '
-                    . '<b class="badge bg-secondary badge-nano">U</b>'
+                    . '<b class="badge bg-success ">Enabled</b> '
+                    . '<b class="badge bg-success ">R</b> '
+                    . '<b class="badge bg-danger ">D</b> '
+                    . '<b class="badge bg-secondary ">U</b>'
                     . '</b>',
                 'start'   => "2026-09-08 00:00:00",
                 'end'     => "2026-09-08 08:00:00",
