@@ -80,11 +80,6 @@ class CmdCommand extends Command {
     private $nagiosCmd = '/opt/openitc/nagios/var/rw/nagios.cmd';
 
     /**
-     * @var ConsoleIo
-     */
-    private $io;
-
-    /**
      * Hook method for defining this command's option parser.
      *
      * @see https://book.cakephp.org/3.0/en/console-and-shells/commands.html#defining-arguments-and-options

@@ -65,11 +65,6 @@ class Update3To4Command extends Command {
     private $limit = 1000;
 
     /**
-     * @var ConsoleIo
-     */
-    private $io;
-
-    /**
      * Statusengine Node Name
      * @var string
      */
