@@ -244,7 +244,7 @@ class CmdCommand extends Command {
                 'id',
                 'uuid',
                 'name',
-                'servicename' => $query->newExpr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
+                'servicename' => $query->expr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
             ])
             ->contain([
                 'Servicetemplates' => function (Query $query) {

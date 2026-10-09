@@ -136,7 +136,7 @@ class OrganizationalChartsTable extends Table {
             ]);
         if (!empty($MY_RIGHTS)) {
             $query->select([
-                'permission_status' => $query->newExpr(
+                'permission_status' => $query->expr(
                     'IF(
                         COUNT(`OrganizationalChartNodes`.`id`) > 0,
                         IF(
@@ -214,7 +214,7 @@ class OrganizationalChartsTable extends Table {
         */
         if (!empty($MY_RIGHTS)) {
             //$query->where(['OrganizationalChartNodes.container_id IN' => $MY_RIGHTS]);
-            $query->where($query->newExpr(
+            $query->where($query->expr(
                 'EXISTS (
                     SELECT ocs.organizational_chart_id
                     FROM `organizational_chart_nodes` ocs
@@ -275,7 +275,7 @@ class OrganizationalChartsTable extends Table {
             ]);
         if (!empty($MY_RIGHTS)) {
             //$query->where(['OrganizationalChartNodes.container_id IN' => $MY_RIGHTS]);
-            $query->where($query->newExpr(
+            $query->where($query->expr(
                 'EXISTS (
                     SELECT ocs.organizational_chart_id
                     FROM `organizational_chart_nodes` ocs
@@ -327,7 +327,7 @@ class OrganizationalChartsTable extends Table {
                 $GenericFilter->genericFilters()
             );
         if (!empty($MY_RIGHTS)) {
-            $query->where($query->newExpr(
+            $query->where($query->expr(
                 'EXISTS (
                     SELECT ocs.organizational_chart_id
                     FROM `organizational_chart_nodes` ocs
@@ -343,7 +343,7 @@ class OrganizationalChartsTable extends Table {
                 'OrganizationalCharts.id NOT IN' => $selected
             ]);
             if (!empty($MY_RIGHTS)) {
-                $query->where($query->newExpr(
+                $query->where($query->expr(
                     'EXISTS (
                     SELECT ocs.organizational_chart_id
                     FROM `organizational_chart_nodes` ocs

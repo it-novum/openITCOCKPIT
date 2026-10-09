@@ -283,7 +283,7 @@ class ServiceescalationsTable extends Table {
                         ->innerJoinWith('Hosts')
                         ->select([
                             'Services.id',
-                            'servicename' => $q->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                            'servicename' => $q->expr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                             'Services.disabled'
                         ]);
                 },
@@ -296,7 +296,7 @@ class ServiceescalationsTable extends Table {
                         ->innerJoinWith('Hosts')
                         ->select([
                             'ServicesExcluded.id',
-                            'servicename' => $q->newExpr('CONCAT(Hosts.name, "/", IF(ServicesExcluded.name IS NULL, Servicetemplates.name, ServicesExcluded.name))'),
+                            'servicename' => $q->expr('CONCAT(Hosts.name, "/", IF(ServicesExcluded.name IS NULL, Servicetemplates.name, ServicesExcluded.name))'),
                             'ServicesExcluded.disabled'
                         ]);
                 },

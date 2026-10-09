@@ -230,7 +230,7 @@ class MessagesOtdTable extends Table {
             'MessagesOtd.date',
             'MessagesOtd.expiration_duration',
             'MessagesOtd.style',
-            'usergroup_ids' => $query->newExpr('GROUP_CONCAT(DISTINCT MessagesOtdToUsergroups.usergroup_id)'),
+            'usergroup_ids' => $query->expr('GROUP_CONCAT(DISTINCT MessagesOtdToUsergroups.usergroup_id)'),
         ])->leftJoin(
             ['MessagesOtdToUsergroups' => 'messages_otd_to_usergroups'],
             ['MessagesOtdToUsergroups.message_otd_id = MessagesOtd.id']

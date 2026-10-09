@@ -1651,7 +1651,7 @@ class UsersTable extends Table {
         $query = $this->find();
         $query->select([
             'id'   => 'DashboardTabs.id',
-            'name' => $query->newExpr('CONCAT(DashboardTabs.name, " (", Users.firstname, " " ,Users.lastname,")")'),
+            'name' => $query->expr('CONCAT(DashboardTabs.name, " (", Users.firstname, " " ,Users.lastname,")")'),
         ])
             ->innerJoinWith('DashboardTabs')
             ->leftJoin(
@@ -1707,7 +1707,7 @@ class UsersTable extends Table {
         $query = $this->find();
         $query->select([
             'id'   => 'FilterBookmarks.id',
-            'name' => $query->newExpr('CONCAT(FilterBookmarks.name, " (", Users.firstname, " " ,Users.lastname,")")'),
+            'name' => $query->expr('CONCAT(FilterBookmarks.name, " (", Users.firstname, " " ,Users.lastname,")")'),
         ])
             ->innerJoinWith('FilterBookmarks')
             ->leftJoin(

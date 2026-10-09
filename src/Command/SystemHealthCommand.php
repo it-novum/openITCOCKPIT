@@ -276,7 +276,7 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             'SatelliteStatus.last_export',
             'SatelliteStatus.last_seen',
             'SatelliteStatus.satellite_id',
-            'status' => $query->newExpr('IF(SatelliteStatus.status IS NULL, 0, SatelliteStatus.status)')
+            'status' => $query->expr('IF(SatelliteStatus.status IS NULL, 0, SatelliteStatus.status)')
         ])
             ->where($where)
             ->having($having)

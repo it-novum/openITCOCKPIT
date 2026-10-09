@@ -1155,7 +1155,7 @@ class StatuspagesTable extends Table {
                         'Services.id',
                         'Services.uuid',
                         'Services.host_id',
-                        'name' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                        'name' => $q->expr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                     ])
                     ->contain([
                         'Servicetemplates' => function (Query $q) {

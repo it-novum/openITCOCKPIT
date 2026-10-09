@@ -146,8 +146,8 @@ class EventlogsTable extends Table {
             'model',
             'type',
             'object_id',
-            'name'       => $query->newExpr('IF(Users.email IS NULL, Eventlogs.name, CONCAT(Users.firstname, " ", Users.lastname))'),
-            'user_email' => $query->newExpr('IF(Users.email IS NOT NULL, Users.email, NULL)'),
+            'name'       => $query->expr('IF(Users.email IS NULL, Eventlogs.name, CONCAT(Users.firstname, " ", Users.lastname))'),
+            'user_email' => $query->expr('IF(Users.email IS NOT NULL, Users.email, NULL)'),
             'data',
             'created'
         ])->contain(['Containers', 'Users']);

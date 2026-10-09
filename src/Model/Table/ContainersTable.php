@@ -1342,7 +1342,7 @@ class ContainersTable extends Table {
             'Containers.id',
             'Containers.name',
             'Containers.containertype_id',
-            'orphaned' => $query->newExpr('
+            'orphaned' => $query->expr('
                 SELECT containers_sub.id
                 FROM containers AS containers_sub
                 WHERE containers_sub.id = Containers.parent_id')

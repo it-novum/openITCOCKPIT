@@ -68,7 +68,7 @@ class UuidCache {
                     $query = $Table->find();
                     $result = $query->select([
                         'Services.id',
-                        'servicename' => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                        'servicename' => $query->expr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                         'Services.uuid'
                     ])->where()
                         ->innerJoinWith('Servicetemplates')

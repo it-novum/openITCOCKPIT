@@ -684,7 +684,7 @@ class HostsTable extends Table {
                     ])
                     ->select([
                         'Services.id',
-                        'name' => $q->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+                        'name' => $q->expr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                         'Services.uuid',
                         'Services.host_id',
                         'Servicetemplates.name'
@@ -932,8 +932,8 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
-                    'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
+                    'hostpriority'    => $query->expr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostdescription' => $query->expr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
                 ]
             ]
         ]);
@@ -1100,8 +1100,8 @@ class HostsTable extends Table {
                     'Hosttemplates.active_checks_enabled',
                     'Hosttemplates.tags',
                     'Hosttemplates.priority',
-                    'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
-                    'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
+                    'hostpriority'    => $query->expr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostdescription' => $query->expr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)')
                 ]
             ]
         ]);
@@ -1109,11 +1109,11 @@ class HostsTable extends Table {
         $where = $HostFilter->indexFilter();
         if (!empty($where['Hostgroups.id IN']) && is_array($where['Hostgroups.id IN'])) {
             $query->select([
-                'hostgroup_ids' => $query->newExpr(
+                'hostgroup_ids' => $query->expr(
                     'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
                     GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                     GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
-                'count'         => $query->newExpr(
+                'count'         => $query->expr(
                     'SELECT COUNT(hostgroups.id)
                                 FROM hostgroups
                                 WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
@@ -1253,7 +1253,7 @@ class HostsTable extends Table {
             'Hoststatus.problem_has_been_acknowledged',
             'Hoststatus.acknowledgement_type',
             'Hoststatus.notifications_enabled',
-            'cumulated_service_status' => $query->newExpr('MAX(Servicestatus.current_state)')
+            'cumulated_service_status' => $query->expr('MAX(Servicestatus.current_state)')
         ]);
 
         $query->join([
@@ -1351,14 +1351,14 @@ class HostsTable extends Table {
             'Hoststatus.is_flapping',
             'Hoststatus.problem_has_been_acknowledged',
             'Hoststatus.acknowledgement_type',
-            'hostpriority'    => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
-            'hostdescription' => $query->newExpr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)'),
+            'hostpriority'    => $query->expr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+            'hostdescription' => $query->expr('IF(Hosts.description IS NULL, Hosttemplates.description, Hosts.description)'),
 
-            'check_interval' => $query->newExpr('IF(Hoststatus.current_state > 0 AND Hoststatus.is_hardstate = 0,
+            'check_interval' => $query->expr('IF(Hoststatus.current_state > 0 AND Hoststatus.is_hardstate = 0,
             IF(Hosts.check_interval IS NULL, Hosttemplates.check_interval, Hosts.check_interval),
             IF(Hosts.retry_interval IS NULL, Hosttemplates.retry_interval, Hosts.retry_interval)
             )'),
-            'delayed'        => $query->newExpr(
+            'delayed'        => $query->expr(
                 'UNIX_TIMESTAMP() - (
     IF(Hoststatus.current_state > 0 AND Hoststatus.is_hardstate = 0,
      IF(Hosts.check_interval IS NULL, Hosttemplates.check_interval, Hosts.check_interval),
@@ -1405,11 +1405,11 @@ class HostsTable extends Table {
         $where = $HostFilter->indexFilter();
         if (!empty($where['Hostgroups.id IN']) && is_array($where['Hostgroups.id IN'])) {
             $query->select([
-                'hostgroup_ids' => $query->newExpr(
+                'hostgroup_ids' => $query->expr(
                     'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
                     GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                     GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
-                'count'         => $query->newExpr(
+                'count'         => $query->expr(
                     'SELECT COUNT(hostgroups.id)
                                 FROM hostgroups
                                 WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
@@ -1499,7 +1499,7 @@ class HostsTable extends Table {
 
         //consider only passive hosts
         $query->where([
-            $query->newExpr('IF(Hosts.active_checks_enabled IS NULL, Hosttemplates.active_checks_enabled, Hosts.active_checks_enabled) = 0'),
+            $query->expr('IF(Hosts.active_checks_enabled IS NULL, Hosttemplates.active_checks_enabled, Hosts.active_checks_enabled) = 0'),
             'Hoststatus.passive_checks_enabled' => 1
         ]);
 
@@ -3239,7 +3239,7 @@ class HostsTable extends Table {
             ->select([
                 'Hoststatus.current_state',
                 'Hosts.id',
-                'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.host_object_id)'),
+                'count' => $query->expr('COUNT(DISTINCT Hoststatus.host_object_id)'),
             ])
             ->where([
                 'Hosts.disabled'       => 0,
@@ -3311,7 +3311,7 @@ class HostsTable extends Table {
             ->select([
                 'Servicestatus.current_state',
                 'Hosts.id',
-                'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_object_id)'),
+                'count' => $query->expr('COUNT(DISTINCT Servicestatus.service_object_id)'),
             ])
             ->where([
                 'Services.disabled'       => 0,
@@ -3386,7 +3386,7 @@ class HostsTable extends Table {
             ->select([
                 'Hoststatus.current_state',
                 'Hosts.id',
-                'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.hostname)'),
+                'count' => $query->expr('COUNT(DISTINCT Hoststatus.hostname)'),
             ])
             ->where([
                 'Hosts.disabled' => 0
@@ -3453,7 +3453,7 @@ class HostsTable extends Table {
             ->select([
                 'Servicestatus.current_state',
                 'Hosts.id',
-                'count' => $query->newExpr('COUNT(DISTINCT Servicestatus.service_description)'),
+                'count' => $query->expr('COUNT(DISTINCT Servicestatus.service_description)'),
             ])
             ->where([
                 'Services.disabled' => 0
@@ -3512,7 +3512,7 @@ class HostsTable extends Table {
         $query = $this->find();
         $query
             ->select([
-                'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.host_object_id)'),
+                'count' => $query->expr('COUNT(DISTINCT Hoststatus.host_object_id)'),
                 'Hosts.id'
             ])
             ->where([
@@ -3589,7 +3589,7 @@ class HostsTable extends Table {
         $query = $this->find();
         $query
             ->select([
-                'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.hostname)'),
+                'count' => $query->expr('COUNT(DISTINCT Hoststatus.hostname)'),
                 'Hosts.id'
             ])
             ->where([
@@ -3661,7 +3661,7 @@ class HostsTable extends Table {
             ->select([
                 'Hosts.id',
                 'Hosts.priority',
-                'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                'hostpriority' => $query->expr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
             ])
             ->innerJoinWith('Hosttemplates')
             ->join([
@@ -3720,11 +3720,11 @@ class HostsTable extends Table {
         if (!empty($conditions['Hostgroup']['_ids'])) {
             $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
             $query->select([
-                'hostgroup_ids' => $query->newExpr(
+                'hostgroup_ids' => $query->expr(
                     'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
                     GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                     GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
-                'count'         => $query->newExpr(
+                'count'         => $query->expr(
                     'SELECT COUNT(hostgroups.id)
                                 FROM hostgroups
                                 WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
@@ -5157,7 +5157,7 @@ class HostsTable extends Table {
             'Hosttemplates' => [
                 'fields' => [
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostpriority' => $query->expr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                 ]
             ]
         ]);
@@ -5168,11 +5168,11 @@ class HostsTable extends Table {
         if (!empty($conditions['Hostgroup']['_ids'])) {
             $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
             $query->select([
-                'hostgroup_ids' => $query->newExpr(
+                'hostgroup_ids' => $query->expr(
                     'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
                     GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                     GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
-                'count'         => $query->newExpr(
+                'count'         => $query->expr(
                     'SELECT COUNT(hostgroups.id)
                                 FROM hostgroups
                                 WHERE FIND_IN_SET (hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
@@ -5292,7 +5292,7 @@ class HostsTable extends Table {
             'Hosttemplates' => [
                 'fields' => [
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'hostpriority' => $query->expr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
                 ]
             ]
         ]);
@@ -5307,7 +5307,7 @@ class HostsTable extends Table {
                 $hostgroupIds = explode(',', $conditions['Hostgroup']['_ids']);
             }
             $whereForCount = [
-                $query->newExpr('FIND_IN_SET (Hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
+                $query->expr('FIND_IN_SET (Hostgroups.id,IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
                                 GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                                 GROUP_CONCAT(HostToHostgroups.hostgroup_id)))')
             ];
@@ -5337,7 +5337,7 @@ class HostsTable extends Table {
 
             if (!empty($whereForCount)) {
                 $query->select([
-                    'hostgroup_ids' => $query->newExpr(
+                    'hostgroup_ids' => $query->expr(
                         'IF(GROUP_CONCAT(HostToHostgroups.hostgroup_id) IS NULL,
                     GROUP_CONCAT(HosttemplatesToHostgroups.hostgroup_id),
                     GROUP_CONCAT(HostToHostgroups.hostgroup_id))'),
@@ -5507,8 +5507,8 @@ class HostsTable extends Table {
             'Hosttemplates' => [
                 'fields' => [
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
-                    'tags'         => $query->newExpr('IF(Hosts.tags IS NULL, Hosttemplates.tags, Hosts.tags)')
+                    'hostpriority' => $query->expr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
+                    'tags'         => $query->expr('IF(Hosts.tags IS NULL, Hosttemplates.tags, Hosts.tags)')
 
                 ]
             ]
@@ -5548,8 +5548,8 @@ class HostsTable extends Table {
             $path1 = TableRegistry::getTableLocator()->get('HostsToHostgroups')->find();
             $path1->select([
                 'host_id'       => 'HostsToHostgroups.host_id',
-                'hostgroup_ids' => $path1->newExpr('GROUP_CONCAT(DISTINCT HostsToHostgroups.hostgroup_id)'),
-                'host_count'    => $path1->newExpr('COUNT(DISTINCT hg.id)')
+                'hostgroup_ids' => $path1->expr('GROUP_CONCAT(DISTINCT HostsToHostgroups.hostgroup_id)'),
+                'host_count'    => $path1->expr('COUNT(DISTINCT hg.id)')
             ])
                 ->join([
                     'table'      => 'hostgroups',
@@ -5564,8 +5564,8 @@ class HostsTable extends Table {
             $path2 = $this->find();
             $path2->select([
                 'host_id'       => 'Hosts.id',
-                'hostgroup_ids' => $path2->newExpr('GROUP_CONCAT(DISTINCT ht2hg.hostgroup_id)'),
-                'host_count'    => $path2->newExpr('COUNT(DISTINCT hg.id)')
+                'hostgroup_ids' => $path2->expr('GROUP_CONCAT(DISTINCT ht2hg.hostgroup_id)'),
+                'host_count'    => $path2->expr('COUNT(DISTINCT hg.id)')
             ])
                 ->join([
                     'table'      => 'hosttemplates_to_hostgroups',
@@ -6075,7 +6075,7 @@ class HostsTable extends Table {
         $query = $this->find();
         $query->select([
             'Hoststatus.current_state',
-            'count' => $query->newExpr('COUNT(DISTINCT Hoststatus.hostname)'),
+            'count' => $query->expr('COUNT(DISTINCT Hoststatus.hostname)'),
         ])
             ->innerJoin(['Hoststatus' => 'statusengine_hoststatus'], [
                 'Hoststatus.hostname = Hosts.uuid'
@@ -6134,7 +6134,7 @@ class HostsTable extends Table {
     public function isHostInSla($id): bool {
         $query = $this->find();
         $query->select([
-            'is_sla_host' => $query->newExpr('IF(Hosts.sla_id IS NULL, Hosttemplates.sla_id, Hosts.sla_id) > 0'),
+            'is_sla_host' => $query->expr('IF(Hosts.sla_id IS NULL, Hosttemplates.sla_id, Hosts.sla_id) > 0'),
         ])
             ->where([
                 'Hosts.id' => $id

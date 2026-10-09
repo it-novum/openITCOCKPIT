@@ -528,7 +528,7 @@ class PackagesLinuxTable extends Table {
             'PackagesLinux.modified',
             'available_updates'          => $subQueryForUpdates,
             'available_security_updates' => $subQueryForSecurityUpdates,
-            'packageStatus'              => $query->newExpr()->add([
+            'packageStatus'              => $query->expr()->add([
                 'CASE
             WHEN (' . $subQueryForSecurityUpdates . ') > 0 THEN 2
             WHEN (' . $subQueryForUpdates . ') > 0 THEN 1

@@ -358,7 +358,7 @@ class SystemdowntimesTable extends Table {
             'Hosts.id',
             'Hosts.name',
             'Hosts.uuid',
-            'container_ids' => $query->newExpr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)')
+            'container_ids' => $query->expr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)')
         ])
             ->innerJoin(['Hosts' => 'hosts'], [
                 'Hosts.id = Systemdowntimes.object_id'
@@ -432,8 +432,8 @@ class SystemdowntimesTable extends Table {
             'Systemdowntimes.author',
             'Services.id',
             'Services.uuid',
-            'container_ids' => $query->newExpr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)'),
-            'servicename'   => $query->newExpr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
+            'container_ids' => $query->expr('GROUP_CONCAT(DISTINCT HostsToContainersSharing.container_id)'),
+            'servicename'   => $query->expr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
             'Hosts.id',
             'Hosts.uuid',
             'Hosts.name',

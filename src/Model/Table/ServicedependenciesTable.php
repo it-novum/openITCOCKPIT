@@ -199,7 +199,7 @@ class ServicedependenciesTable extends Table {
                         ->innerJoinWith('Hosts')
                         ->select([
                             'Services.id',
-                            'servicename' => $q->newExpr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
+                            'servicename' => $q->expr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
                             'Services.disabled'
                         ]);
                 },
@@ -212,7 +212,7 @@ class ServicedependenciesTable extends Table {
                         ->innerJoinWith('Hosts')
                         ->select([
                             'ServicesDependent.id',
-                            'servicename' => $q->newExpr('CONCAT(Hosts.name, "/", IF(ServicesDependent.name IS NULL, Servicetemplates.name, ServicesDependent.name))'),
+                            'servicename' => $q->expr('CONCAT(Hosts.name, "/", IF(ServicesDependent.name IS NULL, Servicetemplates.name, ServicesDependent.name))'),
                             'ServicesDependent.disabled'
                         ]);
                 },

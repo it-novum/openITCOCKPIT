@@ -972,7 +972,7 @@ class TimeperiodsTable extends Table {
 
         $query->where([
             'OR' => [
-                $query->newExpr()->isNull('Timeperiods.exclude_timeperiod_id'),
+                $query->expr()->isNull('Timeperiods.exclude_timeperiod_id'),
                 ['Timeperiods.exclude_timeperiod_id !=' => $excludedTimeperiodId]
             ]
         ])->disableHydration();

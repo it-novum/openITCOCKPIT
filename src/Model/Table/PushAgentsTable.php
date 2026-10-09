@@ -306,7 +306,7 @@ class PushAgentsTable extends Table {
             }
 
             // SQL: IF(Hosts.id IS NOT NULL, `HostsToContainersSharing`.`container_id` in (1, 15, 99999), 1=1)
-            $exp = $query->newExpr();
+            $exp = $query->expr();
             $exp->add("IF(Hosts.id IS NOT NULL, `HostsToContainersSharing`.`container_id` IN (" . implode(', ', $placehoders) . "), 1=1) ");
 
             foreach ($MY_RIGHTS as $index => $MY_RIGHT) {
@@ -317,7 +317,7 @@ class PushAgentsTable extends Table {
                 );
             }
             $query->select([
-                'container_ids' => $query->newExpr('
+                'container_ids' => $query->expr('
             IF(Hosts.id IS NOT NULL,
                 GROUP_CONCAT(
                     DISTINCT `HostsToContainersSharing`.`container_id`
