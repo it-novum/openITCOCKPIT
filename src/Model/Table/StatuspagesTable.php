@@ -1108,7 +1108,7 @@ class StatuspagesTable extends Table {
             return [];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain('Containers', function (Query $q) {
                 $q->select([
                     'Containers.id',
@@ -1401,14 +1401,13 @@ class StatuspagesTable extends Table {
             })
             ->where([
                 'Statuspages.id IN' => $ids
-            ])
-            ->disableHydration();
+            ]);
 
         return $query->toArray();
     }
 
     public function getStatuspageForEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Statuspages.id' => $id
             ])
@@ -1434,7 +1433,6 @@ class StatuspagesTable extends Table {
                     ]);
                 }
             ])
-            ->disableHydration()
             ->first();
 
         $statuspage = $query;
@@ -1592,7 +1590,7 @@ class StatuspagesTable extends Table {
             return $hostAndServices;
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain('Hosts', function (Query $q) use ($MY_RIGHTS) {
                 $q
                     ->select([
@@ -1861,8 +1859,7 @@ class StatuspagesTable extends Table {
             })
             ->where([
                 'Statuspages.id IN' => $ids
-            ])
-            ->disableHydration();
+            ]);
 
         $result = $query->toArray();
         if (empty($result)) {

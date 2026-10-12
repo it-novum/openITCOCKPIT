@@ -153,8 +153,7 @@ class MessagesOtdTable extends Table {
      * @return mixed
      */
     public function getMessagesOTDIndex(GenericFilter $GenericFilter, $PaginateOMat = null) {
-        $query = $this->find('all')
-            ->disableHydration();
+        $query = $this->unhydratedFind('all');
         $where = $GenericFilter->genericFilters();
         if (!empty($where['MessagesOtd.date LIKE'])) {
             if (strpos($where['MessagesOtd.date LIKE'], '-') !== false) {
@@ -197,14 +196,13 @@ class MessagesOtdTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface
      */
     public function getMessageOtdByIdForEdit($id) {
-        $result = $this->find()
+        $result = $this->unhydratedFind()
             ->contain([
                 'Usergroups'
             ])
             ->where([
                 'MessagesOtd.id' => $id
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         $result['usergroups'] = [

@@ -180,8 +180,7 @@ class DumpCommand extends Command {
         $MacrosTable = TableRegistry::getTableLocator()->get('Macros');
 
 
-        $macros = $MacrosTable->find()
-            ->disableHydration()
+        $macros = $MacrosTable->unhydratedFind()
             ->disableResultsCasting()
             ->all();
 
@@ -193,14 +192,13 @@ class DumpCommand extends Command {
         $CronjobsTable = TableRegistry::getTableLocator()->get('Cronjobs');
 
 
-        $cronjobs = $CronjobsTable->find()
+        $cronjobs = $CronjobsTable->unhydratedFind()
             ->contain([
                 'Cronschedules' => function (Query $query) {
                     $query->disableResultsCasting();
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->disableResultsCasting()
             ->all();
 
@@ -212,8 +210,7 @@ class DumpCommand extends Command {
         $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
 
 
-        $systemsettings = $SystemsettingsTable->find()
-            ->disableHydration()
+        $systemsettings = $SystemsettingsTable->unhydratedFind()
             ->disableResultsCasting()
             ->all();
 
@@ -225,14 +222,13 @@ class DumpCommand extends Command {
         $CommandsTable = TableRegistry::getTableLocator()->get('Commands');
 
 
-        $commands = $CommandsTable->find()
+        $commands = $CommandsTable->unhydratedFind()
             ->contain([
                 'Commandarguments' => function (Query $query) {
                     $query->disableResultsCasting();
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->disableResultsCasting()
             ->all();
 
@@ -244,8 +240,7 @@ class DumpCommand extends Command {
         $ContainersTable = TableRegistry::getTableLocator()->get('Containers');
 
 
-        $container = $ContainersTable->find()
-            ->disableHydration()
+        $container = $ContainersTable->unhydratedFind()
             ->disableResultsCasting()
             ->all();
 
@@ -257,14 +252,13 @@ class DumpCommand extends Command {
         $TimeperiodsTable = TableRegistry::getTableLocator()->get('Timeperiods');
 
 
-        $timeperiods = $TimeperiodsTable->find()
+        $timeperiods = $TimeperiodsTable->unhydratedFind()
             ->contain([
                 'TimeperiodTimeranges' => function (Query $query) {
                     $query->disableResultsCasting();
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->disableResultsCasting()
             ->all();
 
@@ -275,7 +269,7 @@ class DumpCommand extends Command {
         /** @var ContactsTable $ContactsTable */
         $ContactsTable = TableRegistry::getTableLocator()->get('Contacts');
 
-        $timeperiods = $ContactsTable->find()
+        $timeperiods = $ContactsTable->unhydratedFind()
             ->contain([
                 'Containers'      => function (Query $query) {
                     $query->disableResultsCasting();
@@ -286,7 +280,6 @@ class DumpCommand extends Command {
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->disableResultsCasting()
             ->all();
 
@@ -297,8 +290,7 @@ class DumpCommand extends Command {
         /** @var UsergroupsTable $UsergroupsTable */
         $UsergroupsTable = TableRegistry::getTableLocator()->get('Usergroups');
 
-        $usergroups = $UsergroupsTable->find()
-            ->disableHydration()
+        $usergroups = $UsergroupsTable->unhydratedFind()
             ->disableResultsCasting()
             ->all();
 
@@ -309,7 +301,7 @@ class DumpCommand extends Command {
         /** @var HosttemplatesTable $HosttemplatesTable */
         $HosttemplatesTable = TableRegistry::getTableLocator()->get('Hosttemplates');
 
-        $hosttemplates = $HosttemplatesTable->find()
+        $hosttemplates = $HosttemplatesTable->unhydratedFind()
             ->contain([
                 'Contacts'                          => function (Query $query) {
                     $query->select(['id']);
@@ -335,7 +327,6 @@ class DumpCommand extends Command {
                     return $query;
                 },
             ])
-            ->disableHydration()
             ->disableResultsCasting()
             ->all();
 
@@ -363,7 +354,7 @@ class DumpCommand extends Command {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        $hosts = $HostsTable->find()
+        $hosts = $HostsTable->unhydratedFind()
             ->contain([
                 'HostsToContainersSharing'  => function (Query $query) {
                     $query->select(['id']);
@@ -394,7 +385,6 @@ class DumpCommand extends Command {
                     return $query;
                 },
             ])
-            ->disableHydration()
             ->disableResultsCasting()
             ->all();
 
@@ -428,7 +418,7 @@ class DumpCommand extends Command {
         /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
-        $servicetemplates = $ServicetemplatesTable->find()
+        $servicetemplates = $ServicetemplatesTable->unhydratedFind()
             ->contain([
                 'Contacts'                                  => function (Query $query) {
                     $query->select(['id']);
@@ -458,7 +448,6 @@ class DumpCommand extends Command {
                     return $query;
                 },
             ])
-            ->disableHydration()
             ->disableResultsCasting()
             ->all();
 
@@ -486,7 +475,7 @@ class DumpCommand extends Command {
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $services = $ServicesTable->find()
+        $services = $ServicesTable->unhydratedFind()
             ->contain([
                 'Contacts'                          => function (Query $query) {
                     $query->select(['id']);
@@ -516,7 +505,6 @@ class DumpCommand extends Command {
                     return $query;
                 },
             ])
-            ->disableHydration()
             ->disableResultsCasting()
             ->all();
 

@@ -249,7 +249,7 @@ class ServiceescalationsTable extends Table {
      * @return array
      */
     public function getServiceescalationsIndex(ServiceescalationsFilter $ServiceescalationsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'Contacts'         => function (Query $q) {
                     return $q->enableAutoFields(false)
@@ -326,8 +326,7 @@ class ServiceescalationsTable extends Table {
                     },
                 ]
             ])
-            ->groupBy('Serviceescalations.id')
-            ->disableHydration();
+            ->groupBy('Serviceescalations.id');
         $indexFilter = $ServiceescalationsFilter->indexFilter();
         $containFilter = [
             'Servicegroups.name'         => '',
@@ -621,7 +620,7 @@ class ServiceescalationsTable extends Table {
         /** @var ContactsToServiceescalationsTable $ContactsToServiceescalationsTable */
         $ContactsToServiceescalationsTable = TableRegistry::getTableLocator()->get('ContactsToServiceescalations');
 
-        $query = $ContactsToServiceescalationsTable->find()
+        $query = $ContactsToServiceescalationsTable->unhydratedFind()
             ->select([
                 'serviceescalation_id'
             ])
@@ -631,7 +630,6 @@ class ServiceescalationsTable extends Table {
             ->groupBy([
                 'serviceescalation_id'
             ])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();

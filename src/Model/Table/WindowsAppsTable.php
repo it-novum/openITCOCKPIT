@@ -115,11 +115,10 @@ class WindowsAppsTable extends Table {
     }
 
     public function getAppById($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'WindowsApps.id' => $id
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         return $query;

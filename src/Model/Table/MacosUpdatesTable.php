@@ -119,11 +119,10 @@ class MacosUpdatesTable extends Table {
     }
 
     public function getUpdateById($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'MacosUpdates.id' => $id
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         return $query;

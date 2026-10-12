@@ -438,15 +438,14 @@ class UsersTable extends Table {
      */
     public function getUsersIndex(UsersFilter $UsersFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         //Get all user ids where container assigned are made directly at the user
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id'
             ])
             ->matching('Containers')
             ->groupBy([
                 'Users.id'
-            ])
-            ->disableHydration();
+            ]);
 
         if (!empty($MY_RIGHTS)) {
             $query->where([
@@ -456,15 +455,14 @@ class UsersTable extends Table {
         $userIds = Hash::extract($query->toArray(), '{n}.id');
 
         //Get all user ids where container assigned are made through an user container role
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id'
             ])
             ->matching('Usercontainerroles.Containers')
             ->groupBy([
                 'Users.id'
-            ])
-            ->disableHydration();
+            ]);
 
         if (!empty($MY_RIGHTS)) {
             $query->where([
@@ -550,7 +548,7 @@ class UsersTable extends Table {
      * @return array
      */
     public function getUserForEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id',
                 'Users.usergroup_id',
@@ -585,7 +583,6 @@ class UsersTable extends Table {
                 ],
                 'Apikeys'
             ])
-            ->disableHydration()
             ->first();
 
 
@@ -637,7 +634,7 @@ class UsersTable extends Table {
      * @return array
      */
     public function getUserForPermissionCheck($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id',
                 'Users.usergroup_id'
@@ -651,7 +648,6 @@ class UsersTable extends Table {
                     'Containers'
                 ],
             ])
-            ->disableHydration()
             ->first();
 
         $user = $query;
@@ -828,15 +824,14 @@ class UsersTable extends Table {
         }
 
         //Get all user ids where container assigned are made directly at the user
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id'
             ])
             ->matching('Containers')
             ->groupBy([
                 'Users.id'
-            ])
-            ->disableHydration();
+            ]);
 
         if (!empty($containerIds)) {
             $query->where([
@@ -847,15 +842,14 @@ class UsersTable extends Table {
         $userIds = Hash::extract($query->toArray(), '{n}.id');
 
         //Get all user ids where container assigned are made through an user container role
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id'
             ])
             ->matching('Usercontainerroles.Containers')
             ->groupBy([
                 'Users.id'
-            ])
-            ->disableHydration();
+            ]);
 
         if (!empty($containerIds)) {
             $query->where([
@@ -938,7 +932,7 @@ class UsersTable extends Table {
      * @return array
      */
     public function getFirstUser() {
-        $query = $this->find('all')->disableHydration();
+        $query = $this->unhydratedFind('all');
         $result = $query->first();
         return $this->formatFirstResultAsCake2($result);
     }
@@ -1186,8 +1180,7 @@ class UsersTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getUserById($id) {
-        $query = $this->find('all')
-            ->disableHydration()
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'Containers',
                 'Usercontainerroles' => [
@@ -1216,15 +1209,14 @@ class UsersTable extends Table {
         }
 
         //Get all user ids where container assigned are made directly at the user
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id'
             ])
             ->matching('Containers')
             ->groupBy([
                 'Users.id'
-            ])
-            ->disableHydration();
+            ]);
 
         if (!empty($containerIds)) {
             $query->where([
@@ -1235,15 +1227,14 @@ class UsersTable extends Table {
         $userIds = Hash::extract($query->toArray(), '{n}.id');
 
         //Get all user ids where container assigned are made through an user container role
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id'
             ])
             ->matching('Usercontainerroles.Containers')
             ->groupBy([
                 'Users.id'
-            ])
-            ->disableHydration();
+            ]);
 
         if (!empty($containerIds)) {
             $query->where([
@@ -1445,15 +1436,14 @@ class UsersTable extends Table {
      */
     public function getUsersForSystemHealth($MY_RIGHTS = []) {
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id'
             ])
             ->matching('Containers')
             ->groupBy([
                 'Users.id'
-            ])
-            ->disableHydration();
+            ]);
 
         if (!empty($MY_RIGHTS)) {
             $query->where([
@@ -1463,15 +1453,14 @@ class UsersTable extends Table {
         $userIds = Hash::extract($query->toArray(), '{n}.id');
 
         //Get all user ids where container assigned are made through an user container role
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id'
             ])
             ->matching('Usercontainerroles.Containers')
             ->groupBy([
                 'Users.id'
-            ])
-            ->disableHydration();
+            ]);
 
         if (!empty($MY_RIGHTS)) {
             $query->where([

@@ -138,9 +138,8 @@ class LocationsTable extends Table {
      * @return array
      */
     public function getLocationsIndex(LocationFilter $LocationFilter, $PaginateOMat = null, array $MY_RIGHTS = []) {
-        $query = $this->find('all')
-            ->contain(['Containers'])
-            ->disableHydration();
+        $query = $this->unhydratedFind('all')
+            ->contain(['Containers']);
         $query->where($LocationFilter->indexFilter());
 
         if (!empty($MY_RIGHTS)) {

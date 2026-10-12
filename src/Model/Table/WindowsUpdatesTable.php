@@ -124,11 +124,10 @@ class WindowsUpdatesTable extends Table {
     }
 
     public function getUpdateById($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'WindowsUpdates.id' => $id
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         return $query;

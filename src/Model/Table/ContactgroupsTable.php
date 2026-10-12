@@ -175,7 +175,7 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     public function getContactgroupById($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Contactgroups.id',
                 'Contactgroups.container_id',
@@ -191,7 +191,6 @@ class ContactgroupsTable extends Table {
             ->contain([
                 'Containers'
             ])
-            ->disableHydration()
             ->first();
 
         return $this->emptyArrayIfNull($query);
@@ -226,13 +225,12 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     private function getContactgroupForEditByWhere(array $where): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where($where)
             ->contain([
                 'Containers',
                 'Contacts',
             ])
-            ->disableHydration()
             ->firstOrFail();
 
 
@@ -298,13 +296,12 @@ class ContactgroupsTable extends Table {
             return [];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain(['Containers'])
             ->where([
                 'Containers.parent_id IN'     => $containerIds,
                 'Containers.containertype_id' => CT_CONTACTGROUP
             ])
-            ->disableHydration()
             ->all();
 
         $records = $query->toArray();
@@ -349,7 +346,7 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     public function getAllContactsAsList() {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Containers.id',
                 'Containers.name',
@@ -359,7 +356,6 @@ class ContactgroupsTable extends Table {
             ->where([
                 'Containers.containertype_id' => CT_CONTACTGROUP
             ])
-            ->disableHydration()
             ->all();
 
         $records = $query->toArray();
@@ -382,7 +378,7 @@ class ContactgroupsTable extends Table {
             $ids = [$ids];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Containers.id',
                 'Containers.name',
@@ -393,7 +389,6 @@ class ContactgroupsTable extends Table {
                 'Contactgroups.id IN'         => $ids,
                 'Containers.containertype_id' => CT_CONTACTGROUP
             ])
-            ->disableHydration()
             ->all();
 
         $records = $query->toArray();
@@ -438,7 +433,7 @@ class ContactgroupsTable extends Table {
             $containerIds = [$containerIds];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Containers.id',
                 'Containers.name',
@@ -448,7 +443,6 @@ class ContactgroupsTable extends Table {
             ->where([
                 'Contactgroups.container_id IN' => $containerIds,
             ])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();
@@ -571,7 +565,7 @@ class ContactgroupsTable extends Table {
         }
         $containerIds = array_unique(array_merge($containerIds, $tenantContainerIds));
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Contactgroups.id',
             ])
@@ -586,7 +580,6 @@ class ContactgroupsTable extends Table {
             ->where([
                 'Contactgroups.id IN ' => $contactgroupsId
             ])
-            ->disableHydration()
             ->all();
 
         if ($query === null) {
@@ -613,7 +606,7 @@ class ContactgroupsTable extends Table {
         /** @var ContactsToContactgroupsTable $ContactsToContactgroupsTable */
         $ContactsToContactgroupsTable = TableRegistry::getTableLocator()->get('ContactsToContactgroups');
 
-        $query = $ContactsToContactgroupsTable->find()
+        $query = $ContactsToContactgroupsTable->unhydratedFind()
             ->select([
                 'contactgroup_id'
             ])
@@ -623,7 +616,6 @@ class ContactgroupsTable extends Table {
             ->groupBy([
                 'contactgroup_id'
             ])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();
@@ -766,7 +758,7 @@ class ContactgroupsTable extends Table {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Contactgroups.id IN' => $ids
             ])
@@ -782,8 +774,7 @@ class ContactgroupsTable extends Table {
             ])
             ->innerJoinWith('Containers', function (Query $q) {
                 return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
-            })
-            ->disableHydration();
+            });
 
         return $this->emptyArrayIfNull($query->toArray());
     }
@@ -885,7 +876,7 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     public function getContactgroupByUuidForImportDiff($uuid) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->select([
                 'Contactgroups.id',
                 'name' => 'Containers.name'
@@ -900,7 +891,6 @@ class ContactgroupsTable extends Table {
                 }
             ])
             ->where(['Contactgroups.uuid' => $uuid])
-            ->disableHydration()
             ->firstOrFail();
 
         $contactgroup = $this->emptyArrayIfNull($query);

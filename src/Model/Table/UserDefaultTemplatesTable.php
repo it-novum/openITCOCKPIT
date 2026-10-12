@@ -296,7 +296,7 @@ class UserDefaultTemplatesTable extends Table {
      */
     public function getUserDefaultTemplateForEdit($id) {
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'UserDefaultTemplates.id',
                 'UserDefaultTemplates.usergroup_id',
@@ -320,7 +320,6 @@ class UserDefaultTemplatesTable extends Table {
                 'Containers',
                 'Ldapgroups' => 'Usercontainerroles'
             ])
-            ->disableHydration()
             ->first();
 
         $userDefaultTemplate = $query;
@@ -370,8 +369,7 @@ class UserDefaultTemplatesTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getUserDefaultTemplateById($id) {
-        $query = $this->find('all')
-            ->disableHydration()
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'UserContainers',
                 'Containers',
@@ -479,7 +477,7 @@ class UserDefaultTemplatesTable extends Table {
     }
 
     public function getUserDefaultTemplatesForLdapUserImport(): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'UserDefaultTemplates.id',
                 'UserDefaultTemplates.usergroup_id',
@@ -501,7 +499,6 @@ class UserDefaultTemplatesTable extends Table {
                 return $query->contain(['Usercontainerroles']);
             })
             ->contain(['UserContainers'])
-            ->disableHydration()
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());

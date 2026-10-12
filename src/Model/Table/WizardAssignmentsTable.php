@@ -708,7 +708,7 @@ class WizardAssignmentsTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getWizardByUuidForEdit($uuid) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where(['WizardAssignments.uuid' => $uuid])
             ->contain([
                 'Servicetemplates' => function (Query $query) {
@@ -719,7 +719,6 @@ class WizardAssignmentsTable extends Table {
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->first();
 
 

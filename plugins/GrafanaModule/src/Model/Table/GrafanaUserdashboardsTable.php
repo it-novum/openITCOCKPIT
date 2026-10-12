@@ -213,7 +213,7 @@ class GrafanaUserdashboardsTable extends Table {
      * @return array
      */
     public function getGrafanaUserDashboardEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'GrafanaUserdashboardPanels' => function (Query $query) {
                     $query->contain([
@@ -283,8 +283,7 @@ class GrafanaUserdashboardsTable extends Table {
                     return $query;
                 },
             ])
-            ->where(['GrafanaUserdashboards.id' => $id])
-            ->disableHydration();
+            ->where(['GrafanaUserdashboards.id' => $id]);
 
 
         $result = $query->first();
@@ -460,11 +459,10 @@ class GrafanaUserdashboardsTable extends Table {
      * @return array
      */
     public function getDashboardUuids(): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'grafana_uid'
             ])
-            ->disableHydration()
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());

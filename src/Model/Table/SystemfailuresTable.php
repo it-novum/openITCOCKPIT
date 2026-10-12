@@ -139,7 +139,7 @@ class SystemfailuresTable extends Table {
      * @return array
      */
     public function getSystemfailuresIndex(SystemfailuresFilter $SystemfailuresFilter, $PaginateOMat = null) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'Users' => function (Query $q) {
                     $q->disableAutoFields();
@@ -155,8 +155,7 @@ class SystemfailuresTable extends Table {
                     ]);
                     return $q;
                 }
-            ])
-            ->disableHydration();
+            ]);
         $where = $SystemfailuresFilter->indexFilter();
 
         $having = [];
@@ -222,7 +221,7 @@ class SystemfailuresTable extends Table {
 
 
         $query = $this
-            ->find()
+            ->unhydratedFind()
             ->where([
                 'OR' => [
                     ['(:start1 BETWEEN Systemfailures.start_time AND Systemfailures.end_time)'],
@@ -235,7 +234,6 @@ class SystemfailuresTable extends Table {
             ->bind(':end1', $endDateSqlFormat, 'date')
             ->bind(':start2', $startDateSqlFormat, 'date')
             ->bind(':end2', $endDateSqlFormat, 'date')
-            ->disableHydration()
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
@@ -251,7 +249,7 @@ class SystemfailuresTable extends Table {
         $endDateSqlFormat = date('Y-m-d H:i:s', $endTimestamp);
 
         $query = $this
-            ->find()
+            ->unhydratedFind()
             ->where([
                 'OR' => [
                     ['(:start1 BETWEEN Systemfailures.start_time AND Systemfailures.end_time)'],
@@ -274,7 +272,6 @@ class SystemfailuresTable extends Table {
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->all();
 
         $result = $this->emptyArrayIfNull($query->toArray());

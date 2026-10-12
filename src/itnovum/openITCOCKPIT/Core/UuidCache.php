@@ -115,13 +115,12 @@ class UuidCache {
                     break;
 
                 default:
-                    $result = $Table->find()
+                    $result = $Table->unhydratedFind()
                         ->select([
                             'id',
                             'name',
                             'uuid'
                         ])
-                        ->disableHydration()
                         ->all();
 
                     foreach ($result->toArray() as $obj) {

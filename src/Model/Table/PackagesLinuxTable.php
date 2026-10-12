@@ -115,11 +115,10 @@ class PackagesLinuxTable extends Table {
     }
 
     public function getPackageBy($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'PackagesLinux.id' => $id
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         return $query;

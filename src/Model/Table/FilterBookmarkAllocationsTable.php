@@ -273,7 +273,7 @@ class FilterBookmarkAllocationsTable extends Table {
 
 
     public function getFilterBookmarkAllocationForEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Users',
                 'Usergroups'
@@ -281,7 +281,6 @@ class FilterBookmarkAllocationsTable extends Table {
             ->where([
                 'FilterBookmarkAllocations.id' => $id
             ])
-            ->disableHydration()
             ->first();
 
         if (empty($query)) {
@@ -338,7 +337,7 @@ class FilterBookmarkAllocationsTable extends Table {
      * @return array
      */
     public function getAllBookmarkAllocations(User $User, string $plugin = '', string $controller = '', string $action = '') {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Users',
                 'Usergroups'
@@ -353,7 +352,6 @@ class FilterBookmarkAllocationsTable extends Table {
             ->groupBy([
                 'FilterBookmarkAllocations.id'
             ])
-            ->disableHydration()
             ->all();
         $allocations = $query->toArray();
         if (empty($allocations)) {

@@ -120,9 +120,8 @@ class ResetPasswordCommand extends Command {
         /** @var UsersTable $UsersTable */
         $UsersTable = TableRegistry::getTableLocator()->get('Users');
 
-        $users = $UsersTable->find()
+        $users = $UsersTable->unhydratedFind()
             ->where(['password !=' => ''])
-            ->disableHydration()
             ->all();
 
         return $users;

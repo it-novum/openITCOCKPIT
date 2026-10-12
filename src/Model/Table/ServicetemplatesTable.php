@@ -478,7 +478,7 @@ class ServicetemplatesTable extends Table {
         }
 
 
-        $query = $this->find('all')->disableHydration();
+        $query = $this->unhydratedFind('all');
         $where = $ServicetemplateFilter->indexFilter();
         //$where['Servicetemplates.servicetemplatetype_id'] = $servicetemplatetypeId;
         if (!empty($MY_RIGHTS)) {
@@ -612,12 +612,11 @@ class ServicetemplatesTable extends Table {
      * @return array
      */
     public function getServicetemplateById($id, $contain = ['Containers']) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Servicetemplates.id' => $id
             ])
             ->contain($contain)
-            ->disableHydration()
             ->first();
 
         return $this->formatFirstResultAsCake2($query, true);
@@ -630,12 +629,11 @@ class ServicetemplatesTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getServicetemplateByUuid($uuid, $contain = ['Containers'], $formatAsCake2 = true) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Servicetemplates.uuid' => $uuid
             ])
             ->contain($contain)
-            ->disableHydration()
             ->first();
 
         if (!$formatAsCake2) {
@@ -649,7 +647,7 @@ class ServicetemplatesTable extends Table {
      * @return array
      */
     private function getServicetemplateForEditByWhere(array $where): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where($where)
             ->contain([
                 'Contactgroups',
@@ -666,7 +664,6 @@ class ServicetemplatesTable extends Table {
                     'Commandarguments'
                 ]
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         $servicetemplate = $query;
@@ -891,15 +888,14 @@ class ServicetemplatesTable extends Table {
 
         $where = $ServicetemplateFilter->ajaxFilter();
         $where['Servicetemplates.container_id IN'] = $containerIds;
-        $query = $this->find('list',
+        $query = $this->unhydratedFind('list',
             keyField: 'id',
             valueField: 'template_name')
             ->where($where)
             ->orderBy([
                 'Servicetemplates.template_name' => 'asc'
             ])
-            ->limit(ITN_AJAX_LIMIT)
-            ->disableHydration();
+            ->limit(ITN_AJAX_LIMIT);
 
         $servicetemplatesWithLimit = $query->toArray();
         if (empty($servicetemplatesWithLimit)) {
@@ -1030,10 +1026,9 @@ class ServicetemplatesTable extends Table {
         }
 
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain(['Containers'])
             ->where($where)
-            ->disableHydration()
             ->all();
 
         $records = $query->toArray();
@@ -1061,12 +1056,11 @@ class ServicetemplatesTable extends Table {
             $ids = [$ids];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicetemplates.id',
                 'Servicetemplates.template_name'
-            ])
-            ->disableHydration();
+            ]);
         if (!empty($ids)) {
             $query->where([
                 'Servicetemplates.id IN' => $ids
@@ -1081,7 +1075,7 @@ class ServicetemplatesTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface
      */
     public function getContactsAndContactgroupsById($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicetemplates.id'
             ])
@@ -1092,7 +1086,6 @@ class ServicetemplatesTable extends Table {
                 'Contactgroups',
                 'Contacts'
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         $servicetemplate = $query;
@@ -1227,7 +1220,7 @@ class ServicetemplatesTable extends Table {
         /** @var ContactsToServicetemplatesTable $ContactsToServicetemplatesTable */
         $ContactsToServicetemplatesTable = TableRegistry::getTableLocator()->get('ContactsToServicetemplates');
 
-        $query = $ContactsToServicetemplatesTable->find()
+        $query = $ContactsToServicetemplatesTable->unhydratedFind()
             ->select([
                 'servicetemplate_id'
             ])
@@ -1237,7 +1230,6 @@ class ServicetemplatesTable extends Table {
             ->groupBy([
                 'servicetemplate_id'
             ])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();
@@ -1288,7 +1280,7 @@ class ServicetemplatesTable extends Table {
      * @return array
      */
     public function getServicetemplateForServiceBrowser($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Servicetemplates.id' => $id
             ])
@@ -1311,7 +1303,6 @@ class ServicetemplatesTable extends Table {
                     'Commandarguments'
                 ]
             ])
-            ->disableHydration()
             ->first();
 
         $servicetemplate = $query;
@@ -1483,7 +1474,7 @@ class ServicetemplatesTable extends Table {
      * @todo delete this method with oITC 4.3 !!
      */
     public function getServicetemplateForNewAgentService($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Servicetemplates.id' => $id
             ])
@@ -1502,7 +1493,6 @@ class ServicetemplatesTable extends Table {
                 'Servicegroups',
                 'Customvariables'
             ])
-            ->disableHydration()
             ->first();
 
         $servicetemplate = $query;
@@ -1737,7 +1727,7 @@ class ServicetemplatesTable extends Table {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Contactgroups'                             => 'Containers',
                 'Contacts'                                  => function (Query $q) {
@@ -1774,7 +1764,6 @@ class ServicetemplatesTable extends Table {
                 'Servicetemplates.id IN'        => $ids,
                 'Servicetemplates.container_id' => ROOT_CONTAINER
             ])
-            ->disableHydration()
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
@@ -1891,7 +1880,7 @@ class ServicetemplatesTable extends Table {
      * @return array
      */
     public function getServicetemplateByUuidForImportDiff($uuid) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicetemplates.id',
                 'name' => 'Servicetemplates.template_name'
@@ -1961,7 +1950,6 @@ class ServicetemplatesTable extends Table {
                 }
             ])
             ->where(['Servicetemplates.uuid' => $uuid])
-            ->disableHydration()
             ->firstOrFail();
 
         $servicetemplate = $this->emptyArrayIfNull($query);

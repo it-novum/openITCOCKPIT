@@ -289,12 +289,11 @@ class PackagesLinuxHostsTable extends Table {
      * @return array
      */
     public function getUpdatesByHostId($hostId): array {
-        return $this->find()
+        return $this->unhydratedFind()
             ->where([
                 'host_id'      => $hostId,
                 'needs_update' => 1
             ])
-            ->disableHydration()
             ->toArray();
     }
 }

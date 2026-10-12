@@ -181,7 +181,7 @@ class ServicedependenciesTable extends Table {
      * @return array
      */
     public function getServicedependenciesIndex(ServicedependenciesFilter $ServicedependenciesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'Timeperiods'       => function (Query $q) {
                     return $q->enableAutoFields(false)
@@ -242,8 +242,7 @@ class ServicedependenciesTable extends Table {
                     },
                 ]
             ])
-            ->groupBy('Servicedependencies.id')
-            ->disableHydration();
+            ->groupBy('Servicedependencies.id');
 
         $indexFilter = $ServicedependenciesFilter->indexFilter();
         $containFilter = [

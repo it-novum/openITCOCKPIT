@@ -292,10 +292,9 @@ class SystemHealthCommand extends Command implements CronjobInterface {
         $SatelliteInformationTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteInformation');
         $updatedSatellites = [];
 
-        $healthMap = $SatelliteInformationTable->find()
+        $healthMap = $SatelliteInformationTable->unhydratedFind()
             ->select(['satellite_id', 'system_health'])
             ->where(['satellite_id IN' => $satelliteIds])
-            ->disableHydration()
             ->all()
             ->combine('satellite_id', function ($row) {
                 if (is_string($row['system_health'])) {

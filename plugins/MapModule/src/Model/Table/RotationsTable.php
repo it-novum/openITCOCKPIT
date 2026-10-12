@@ -343,7 +343,7 @@ class RotationsTable extends Table {
             $containerIds = [$containerIds];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Containers.id'
             ])
@@ -369,7 +369,6 @@ class RotationsTable extends Table {
             ])
             ->distinct()
             ->disableAutoFields()
-            ->disableHydration()
             ->toArray();
         return Hash::extract($query, '{n}.Containers.id');
     }

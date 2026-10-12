@@ -178,7 +178,7 @@ class HostdependenciesTable extends Table {
      * @return array
      */
     public function getHostdependenciesIndex(HostdependenciesFilter $HostdependenciesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'Timeperiods'    => function (Query $q) {
                     return $q->enableAutoFields(false)
@@ -235,8 +235,7 @@ class HostdependenciesTable extends Table {
                     },
                 ]
             ])
-            ->groupBy('Hostdependencies.id')
-            ->disableHydration();
+            ->groupBy('Hostdependencies.id');
         $indexFilter = $HostdependenciesFilter->indexFilter();
         $containFilter = [
             'Hosts.name'               => '',
@@ -683,7 +682,7 @@ class HostdependenciesTable extends Table {
      * @return array
      */
     public function getHostDependenciesTree(int $hostId, array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select(
                 [
                     'Hostdependencies.id',
@@ -764,8 +763,7 @@ class HostdependenciesTable extends Table {
                     },
                 ]
             ])
-            ->groupBy('Hostdependencies.id')
-            ->disableHydration();
+            ->groupBy('Hostdependencies.id');
 
         if (!empty($MY_RIGHTS)) {
             $query->andWhere([

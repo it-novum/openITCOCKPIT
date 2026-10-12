@@ -264,13 +264,12 @@ class AgentchecksTable extends Table {
             $where['Servicetemplates.active_checks_enabled'] = (int)$activeChecksEnabled;
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain(['Servicetemplates'])
             ->where($where)
             ->orderBy([
                 'Agentchecks.name' => 'ASC'
             ])
-            ->disableHydration()
             ->all();
 
 

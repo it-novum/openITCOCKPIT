@@ -499,7 +499,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getHostPrimaryContainerIdsByServicetemplateId($servicetemplateId) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id',
                 'Hosts.id',
@@ -511,7 +511,6 @@ class ServicesTable extends Table {
             ->where([
                 'Services.servicetemplate_id' => $servicetemplateId
             ])
-            ->disableHydration()
             ->all();
 
         $query = $query->toArray();
@@ -1093,7 +1092,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getServiceForEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Services.id' => $id
             ])
@@ -1109,7 +1108,6 @@ class ServicesTable extends Table {
                     'Commandarguments'
                 ]
             ])
-            ->disableHydration()
             ->first();
 
         $service = $query;
@@ -1697,13 +1695,12 @@ class ServicesTable extends Table {
     }
 
     public function getServiceUuidsOfHostByHostId($hostId) {
-        $query = $this->find('list',
+        $query = $this->unhydratedFind('list',
             keyField: 'id',
             valueField: 'uuid')
             ->where([
                 'Services.host_id' => $hostId
-            ])
-            ->disableHydration();
+            ]);
         return $query->toArray();
     }
 
@@ -2970,7 +2967,7 @@ class ServicesTable extends Table {
         /** @var ContactsToServicesTable $ContactsToServicesTable */
         $ContactsToServicesTable = TableRegistry::getTableLocator()->get('ContactsToServices');
 
-        $query = $ContactsToServicesTable->find()
+        $query = $ContactsToServicesTable->unhydratedFind()
             ->select([
                 'service_id'
             ])
@@ -2980,7 +2977,6 @@ class ServicesTable extends Table {
             ->groupBy([
                 'service_id'
             ])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();
@@ -3385,7 +3381,7 @@ class ServicesTable extends Table {
         /** @var ServicetemplatesTable $ServicetemplatesTable */
         $ServicetemplatesTable = TableRegistry::getTableLocator()->get('Servicetemplates');
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id',
                 'Services.name',
@@ -3416,7 +3412,6 @@ class ServicesTable extends Table {
                 'Services.host_id'      => $hostId,
                 'Services.service_type' => OITC_AGENT_SERVICE
             ])
-            ->disableHydration()
             ->all();
 
         $services = $this->emptyArrayIfNull($query->toArray());
@@ -3498,7 +3493,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getServiceForBrowser($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Services.id' => $id
             ])
@@ -3518,7 +3513,6 @@ class ServicesTable extends Table {
                     'Commandarguments'
                 ]
             ])
-            ->disableHydration()
             ->first();
 
         $service = $query;
@@ -4610,13 +4604,13 @@ class ServicesTable extends Table {
         }
         $hostIds = array_unique($hostIds);
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id'
             ])->where([
                 'Services.host_id IN'   => $hostIds,
                 'Services.service_type' => GENERIC_SERVICE
-            ])->disableHydration();
+            ]);
 
         $result = $query->toArray();
         if (empty($result)) {
@@ -4968,13 +4962,12 @@ class ServicesTable extends Table {
             return [];
         }
 
-        $query = $this->find('list',
+        $query = $this->unhydratedFind('list',
             keyField: 'id',
             valueField: 'uuid')
             ->where([
                 'Services.id IN' => $serviceIds
-            ])
-            ->disableHydration();
+            ]);
 
         return $query->toArray();
     }
@@ -5252,7 +5245,7 @@ class ServicesTable extends Table {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id',
                 'Servicegroups.id'
@@ -5263,7 +5256,7 @@ class ServicesTable extends Table {
             ->where([
                 'Services.host_id'         => $hostId,
                 'Containers.parent_id IN ' => $containerIds
-            ])->disableHydration()
+            ])
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
@@ -5281,7 +5274,7 @@ class ServicesTable extends Table {
         if (!is_array($removedContainerIds)) {
             $removedContainerIds = [$removedContainerIds];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id',
                 'Servicegroups.id'
@@ -5293,7 +5286,6 @@ class ServicesTable extends Table {
                 'Services.host_id'         => $hostId,
                 'Containers.parent_id IN ' => $removedContainerIds
             ])
-            ->disableHydration()
             ->all();
 
         $recordsToDelete = $this->emptyArrayIfNull($query->toArray());
@@ -5372,7 +5364,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getAgentServicesByHostId($hostId) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Servicecommandargumentvalues',
                 'Servicetemplates' => [
@@ -5383,7 +5375,6 @@ class ServicesTable extends Table {
                 'Services.host_id'      => $hostId,
                 'Services.service_type' => OITC_AGENT_SERVICE
             ])
-            ->disableHydration()
             ->all();
 
 
@@ -5404,7 +5395,7 @@ class ServicesTable extends Table {
      * @param $commandId
      */
     public function updateServiceCommandIdIfServiceHasOwnCommandArguments($servicetemplateId, $commandId) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id'
             ])
@@ -5417,7 +5408,6 @@ class ServicesTable extends Table {
                 'Services.command_id IS NULL',
                 'Services.servicetemplate_id' => $servicetemplateId
             ])
-            ->disableHydration()
             ->all();
 
         $query = $query->toArray();
@@ -5444,7 +5434,7 @@ class ServicesTable extends Table {
      * @param $commandId
      */
     public function updateServiceEventhandlerCommandIdIfServiceHasOwnEventhandlerCommandArguments($servicetemplateId, $eventhandlerCommandId) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id'
             ])
@@ -5457,7 +5447,6 @@ class ServicesTable extends Table {
                 'Services.eventhandler_command_id IS NULL',
                 'Services.servicetemplate_id' => $servicetemplateId
             ])
-            ->disableHydration()
             ->all();
 
         $query = $query->toArray();

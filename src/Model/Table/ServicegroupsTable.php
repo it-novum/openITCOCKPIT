@@ -196,7 +196,7 @@ class ServicegroupsTable extends Table {
 
         switch ($type) {
             case 'all':
-                $query = $this->find()
+                $query = $this->unhydratedFind()
                     ->contain([
                         'Containers'
                     ])
@@ -207,14 +207,13 @@ class ServicegroupsTable extends Table {
                     ->orderBy([
                         'Containers.name' => 'ASC'
                     ])
-                    ->disableHydration()
                     ->all();
 
                 return $this->emptyArrayIfNull($query->toArray());
 
 
             default:
-                $query = $this->find()
+                $query = $this->unhydratedFind()
                     ->contain([
                         'Containers'
                     ])
@@ -225,7 +224,6 @@ class ServicegroupsTable extends Table {
                     ->orderBy([
                         'Containers.name' => 'ASC'
                     ])
-                    ->disableHydration()
                     ->all();
 
                 $query = $query->toArray();
@@ -255,13 +253,12 @@ class ServicegroupsTable extends Table {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicegroups.id',
                 'Containers.name'
             ])
-            ->contain(['Containers'])
-            ->disableHydration();
+            ->contain(['Containers']);
 
         $where = [];
         if (!empty($ids)) {
@@ -442,7 +439,7 @@ class ServicegroupsTable extends Table {
      * @return array
      */
     public function getServicegroupForEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Servicegroups.id' => $id
             ])
@@ -451,7 +448,6 @@ class ServicegroupsTable extends Table {
                 'Servicetemplates',
                 'Containers'
             ])
-            ->disableHydration()
             ->first();
 
         $servicegroup = $query;
@@ -624,7 +620,7 @@ class ServicegroupsTable extends Table {
             $where['Containers.parent_id IN'] = $MY_RIGHTS;
         }
 
-        $servicegroup = $this->find()
+        $servicegroup = $this->unhydratedFind()
             ->select([
                 'Servicegroups.id',
                 'Servicegroups.description',
@@ -706,7 +702,6 @@ class ServicegroupsTable extends Table {
                 }
             ])
             ->where($where)
-            ->disableHydration()
             ->firstOrFail();
 
         return $servicegroup;
@@ -725,7 +720,7 @@ class ServicegroupsTable extends Table {
             $where['Containers.parent_id IN'] = $MY_RIGHTS;
         }
 
-        $servicegroup = $this->find()
+        $servicegroup = $this->unhydratedFind()
             ->select([
                 'Servicegroups.id'
             ])
@@ -795,7 +790,6 @@ class ServicegroupsTable extends Table {
                 }
             ])
             ->where($where)
-            ->disableHydration()
             ->first();
 
         if ($servicegroup === null) {
@@ -897,7 +891,7 @@ class ServicegroupsTable extends Table {
      * @return array
      */
     public function getServiceIdsByServicegroupId($id) {
-        $servicegroup = $this->find()
+        $servicegroup = $this->unhydratedFind()
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
@@ -936,7 +930,6 @@ class ServicegroupsTable extends Table {
             ->where([
                 'Servicegroups.id' => $id
             ])
-            ->disableHydration()
             ->first();
 
 
@@ -954,7 +947,7 @@ class ServicegroupsTable extends Table {
      * @return array
      */
     public function getServicesByServicegroupIdAndSatelliteId($id, $satelliteId) {
-        $servicegroup = $this->find()
+        $servicegroup = $this->unhydratedFind()
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
@@ -997,7 +990,6 @@ class ServicegroupsTable extends Table {
             ->where([
                 'Servicegroups.id' => $id
             ])
-            ->disableHydration()
             ->first();
 
         $services = [];
@@ -1197,7 +1189,7 @@ class ServicegroupsTable extends Table {
 
         switch ($type) {
             case 'all':
-                $query = $this->find()
+                $query = $this->unhydratedFind()
                     ->contain([
                         'Containers',
                         'Services' => function (Query $query) use ($containerIds, $serviceIds) {
@@ -1227,11 +1219,10 @@ class ServicegroupsTable extends Table {
                     ->orderBy([
                         'Containers.name' => 'ASC'
                     ])
-                    ->disableHydration()
                     ->all();
                 return $this->emptyArrayIfNull($query->toArray());
             default:
-                $query = $this->find()
+                $query = $this->unhydratedFind()
                     ->contain([
                         'Containers',
                         'Services' => function (Query $query) use ($containerIds, $serviceIds) {
@@ -1261,7 +1252,6 @@ class ServicegroupsTable extends Table {
                     ->orderBy([
                         'Containers.name' => 'ASC'
                     ])
-                    ->disableHydration()
                     ->all();
                 $query = $query->toArray();
                 if (empty($query)) {
@@ -1349,7 +1339,7 @@ class ServicegroupsTable extends Table {
      * @return array
      */
     public function getServiceGroupsByServiceId(int $serviceId, array $MY_RIGHTS): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicegroups.id',
                 'Containers.name'
@@ -1366,8 +1356,7 @@ class ServicegroupsTable extends Table {
                 [
                     'Servicegroups.container_id = Containers.id'
                 ]
-            )
-            ->disableHydration();
+            );
         if (!empty($MY_RIGHTS)) {
             $query->andWhere([
                 'Containers.id IN' => $MY_RIGHTS

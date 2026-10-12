@@ -783,7 +783,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostPrimaryContainerIdsByHosttemplateId($hosttemplateId) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.container_id',
@@ -792,7 +792,6 @@ class HostsTable extends Table {
             ->where([
                 'Hosts.hosttemplate_id' => $hosttemplateId
             ])
-            ->disableHydration()
             ->all();
 
         $query = $query->toArray();
@@ -2020,7 +2019,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsForNotificationCalc($ids = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.name',
@@ -2041,7 +2040,6 @@ class HostsTable extends Table {
             ])
             ->where(['Hosts.id IN' => $ids])
             ->orderBy(['Hosts.id' => 'asc'])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();
@@ -2061,13 +2059,13 @@ class HostsTable extends Table {
         }
         $containerIds = array_unique($containerIds);
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.name'
             ])->where([
                 'Hosts.container_id IN' => $containerIds
-            ])->disableHydration();
+            ]);
 
         $result = $query->toArray();
         if (empty($result)) {
@@ -2317,12 +2315,11 @@ class HostsTable extends Table {
             $ids = [$ids];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.name'
-            ])
-            ->disableHydration();
+            ]);
         if (!empty($ids)) {
             $query->where([
                 'Hosts.id IN' => $ids
@@ -2353,12 +2350,11 @@ class HostsTable extends Table {
             $contain[] = 'PrometheusExporters';
         };
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Hosts.id' => $id
             ])
             ->contain($contain)
-            ->disableHydration()
             ->first();
 
         $host = $query;
@@ -2391,14 +2387,13 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostForServiceEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Hosts.id' => $id
             ])
             ->contain([
                 'HostsToContainersSharing',
             ])
-            ->disableHydration()
             ->first();
 
         $host = $query;
@@ -2416,7 +2411,7 @@ class HostsTable extends Table {
      * @return array|null
      */
     public function getHostForBrowser($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Hosts.id' => $id
             ])
@@ -2436,7 +2431,6 @@ class HostsTable extends Table {
                     'Commandarguments'
                 ]
             ])
-            ->disableHydration()
             ->first();
 
         return $query;
@@ -2660,7 +2654,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostSharing($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.uuid',
@@ -2674,7 +2668,6 @@ class HostsTable extends Table {
             ->contain([
                 'HostsToContainersSharing',
             ])
-            ->disableHydration()
             ->first();
 
         $host = $query;
@@ -2768,7 +2761,7 @@ class HostsTable extends Table {
      * @return array|EntityInterface
      */
     public function getContactsAndContactgroupsById($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id'
             ])
@@ -2779,7 +2772,6 @@ class HostsTable extends Table {
                 'Contactgroups',
                 'Contacts'
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         $host = $query;
@@ -2798,7 +2790,7 @@ class HostsTable extends Table {
      * @return array|EntityInterface
      */
     public function getContactsAndContactgroupsByIdForServiceBrowser($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id'
             ])
@@ -2813,7 +2805,6 @@ class HostsTable extends Table {
                     'Containers'
                 ]
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         $host = $query;
@@ -2826,7 +2817,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getServicesForServicetemplateAllocation($hostId) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Hosts.id' => $hostId
             ])
@@ -2860,7 +2851,6 @@ class HostsTable extends Table {
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->first();
 
         $result = $query;
@@ -2973,7 +2963,7 @@ class HostsTable extends Table {
         /** @var ContactsToHostsTable $ContactsToHostsTable */
         $ContactsToHostsTable = TableRegistry::getTableLocator()->get('ContactsToHosts');
 
-        $query = $ContactsToHostsTable->find()
+        $query = $ContactsToHostsTable->unhydratedFind()
             ->select([
                 'host_id'
             ])
@@ -2983,7 +2973,6 @@ class HostsTable extends Table {
             ->groupBy([
                 'host_id'
             ])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();
@@ -3029,8 +3018,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsThatUseOitcAgentInPullModeForExport() {
-        $query = $this->find()
-            ->disableHydration()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.name',
@@ -3083,8 +3071,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsThatUseOitcAgentForExport(int $satelliteId = 0) {
-        $query = $this->find()
-            ->disableHydration()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.name',
@@ -3898,7 +3885,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsForEditDetails($ids = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.hosttemplate_id',
@@ -3961,7 +3948,6 @@ class HostsTable extends Table {
             ])
             ->where(['Hosts.id IN' => $ids])
             ->orderBy(['Hosts.id' => 'asc'])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();
@@ -4216,7 +4202,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function parentHostsWithChildIds() {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->join([
                 [
                     'table'      => 'hosts_to_parenthosts',
@@ -4247,7 +4233,6 @@ class HostsTable extends Table {
                 'HostToParenthostChild.id',
                 'HostToParenthostParent.id'
             ])
-            ->disableHydration()
             ->all();
 
         if (empty($query)) {
@@ -4337,12 +4322,11 @@ class HostsTable extends Table {
             $contain[] = 'PrometheusExporters';
         };
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Hosts.id' => $id
             ])
             ->contain($contain)
-            ->disableHydration()
             ->first();
 
         $host = $query;
@@ -4642,7 +4626,7 @@ class HostsTable extends Table {
      * @return null|int
      */
     public function getSatelliteIdByUuid(string $uuid) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.satellite_id'
@@ -4650,7 +4634,6 @@ class HostsTable extends Table {
             ->where([
                 'Hosts.uuid' => $uuid
             ])
-            ->disableHydration()
             ->first();
 
         if ($query === null) {
@@ -4879,11 +4862,10 @@ class HostsTable extends Table {
         /** @var HostsToParenthostsSelectTable $HostsToParenthostsTable */
         $HostsToParenthostsTable = TableRegistry::getTableLocator()->get('HostsToParenthosts');
 
-        $query = $HostsToParenthostsTable->find()
+        $query = $HostsToParenthostsTable->unhydratedFind()
             ->where([
                 'host_id' => $hostId
             ])
-            ->disableHydration()
             ->all();
 
         if (empty($query)) {
@@ -4974,7 +4956,7 @@ class HostsTable extends Table {
      * @return array|EntityInterface|null
      */
     public function getServicesByHostIdForAllocation($hostId) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Services' => function (Query $query) {
                     return $query
@@ -4989,7 +4971,6 @@ class HostsTable extends Table {
             ->where([
                 'Hosts.id' => $hostId
             ])
-            ->disableHydration()
             ->first();
 
         return $query;
@@ -5031,7 +5012,7 @@ class HostsTable extends Table {
      * @param $commandId
      */
     public function updateHostCommandIdIfHostHasOwnCommandArguments($hosttemplateId, $commandId) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id'
             ])
@@ -5044,7 +5025,6 @@ class HostsTable extends Table {
                 'Hosts.command_id IS NULL',
                 'Hosts.hosttemplate_id' => $hosttemplateId
             ])
-            ->disableHydration()
             ->all();
 
         $query = $query->toArray();
@@ -6102,7 +6082,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostForSlaBrowserTabWithHosttemplateById($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.container_id',
@@ -6117,7 +6097,6 @@ class HostsTable extends Table {
                 'HostsToContainersSharing',
                 'Hosttemplates'
             ])
-            ->disableHydration()
             ->first();
 
         $host = $query;

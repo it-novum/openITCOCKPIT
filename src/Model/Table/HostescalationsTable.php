@@ -249,7 +249,7 @@ class HostescalationsTable extends Table {
      * @return array
      */
     public function getHostescalationsIndex(HostescalationsFilter $HostescalationsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'Contacts'      => function (Query $q) {
                     return $q->enableAutoFields(false)
@@ -334,8 +334,7 @@ class HostescalationsTable extends Table {
                 'Hostescalations.escalate_on_down',
                 'Hostescalations.escalate_on_unreachable'
             ])
-            ->groupBy('Hostescalations.id')
-            ->disableHydration();
+            ->groupBy('Hostescalations.id');
 
         $indexFilter = $HostescalationsFilter->indexFilter();
         $containFilter = [
@@ -606,7 +605,7 @@ class HostescalationsTable extends Table {
         /** @var ContactsToHostescalationsTable $ContactsToHostescalationsTable */
         $ContactsToHostescalationsTable = TableRegistry::getTableLocator()->get('ContactsToHostescalations');
 
-        $query = $ContactsToHostescalationsTable->find()
+        $query = $ContactsToHostescalationsTable->unhydratedFind()
             ->select([
                 'hostescalation_id'
             ])
@@ -616,7 +615,6 @@ class HostescalationsTable extends Table {
             ->groupBy([
                 'hostescalation_id'
             ])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();

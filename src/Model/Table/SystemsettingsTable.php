@@ -289,7 +289,7 @@ class SystemsettingsTable extends Table {
     }
 
     public function getOAuthConfig() {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Systemsettings.key IN' => [
                     'FRONTEND.SSO.CLIENT_ID',
@@ -302,7 +302,6 @@ class SystemsettingsTable extends Table {
                     'FRONTEND.SSO.AUTH_PROVIDER'
                 ]
             ])
-            ->disableHydration()
             ->all();
 
         $result = $query->toArray();

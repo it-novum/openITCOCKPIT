@@ -244,7 +244,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
      * @return array
      */
     public function getServiceDowntimesByHostAndDowntime($hostId, Downtime $Downtime) {
-        $records = $this->find()
+        $records = $this->unhydratedFind()
             ->select([
                 'DowntimeServices.internal_downtime_id'
             ])
@@ -257,7 +257,6 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
                 'DowntimeServices.scheduled_start_time' => $Downtime->getScheduledStartTime(),
                 'DowntimeServices.scheduled_end_time'   => $Downtime->getScheduledEndTime()
             ])
-            ->disableHydration()
             ->all();
 
         $result = $records->toArray();
@@ -436,7 +435,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
      * @return array
      */
     public function getHostAndServiceUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
-        $result = $this->find()
+        $result = $this->unhydratedFind()
             ->select([
                 'DowntimeServices.hostname',
                 'DowntimeServices.service_description',
@@ -464,7 +463,6 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             ->where([
                 'DowntimeServices.internal_downtime_id' => $internalDowntimeId
             ])
-            ->disableHydration()
             ->first();
 
         if ($result === null) {

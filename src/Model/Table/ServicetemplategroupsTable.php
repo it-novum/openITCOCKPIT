@@ -173,11 +173,10 @@ class ServicetemplategroupsTable extends Table {
      * @return array
      */
     public function getServicetemplategroupsIndex(ServicetemplategroupsFilter $ServicetemplategroupsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'Containers'
-            ])
-            ->disableHydration();
+            ]);
         $where = $ServicetemplategroupsFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
             $where['Containers.parent_id IN'] = $MY_RIGHTS;
@@ -317,7 +316,7 @@ class ServicetemplategroupsTable extends Table {
      * @return array
      */
     private function getServicetemplategroupForEditByWhere(array $where): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where($where)
             ->contain([
                 'Containers',
@@ -329,7 +328,6 @@ class ServicetemplategroupsTable extends Table {
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->firstOrFail();
 
 
@@ -363,7 +361,7 @@ class ServicetemplategroupsTable extends Table {
             ];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Containers'
             ])
@@ -378,7 +376,6 @@ class ServicetemplategroupsTable extends Table {
                 'Containers.name' => 'asc'
             ])
             ->limit(ITN_AJAX_LIMIT)
-            ->disableHydration()
             ->all();
 
         $groupsWithLimit = [];
@@ -389,7 +386,7 @@ class ServicetemplategroupsTable extends Table {
 
         $selectedGroups = [];
         if (!empty($selected)) {
-            $query = $this->find()
+            $query = $this->unhydratedFind()
                 ->contain([
                     'Containers'
                 ])
@@ -404,7 +401,6 @@ class ServicetemplategroupsTable extends Table {
                     'Containers.name' => 'asc'
                 ])
                 ->limit(ITN_AJAX_LIMIT)
-                ->disableHydration()
                 ->all();
 
             $selectedGroups = [];
@@ -431,7 +427,7 @@ class ServicetemplategroupsTable extends Table {
             $containerIds = [$containerIds];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Servicetemplategroups.id' => $servicetemplategroupId
             ])
@@ -455,7 +451,6 @@ class ServicetemplategroupsTable extends Table {
                     return $query;
                 }
             ])
-            ->disableHydration()
             ->first();
 
         return $query;
@@ -523,7 +518,7 @@ class ServicetemplategroupsTable extends Table {
      * @return array
      */
     public function getServicetemplatesByServicetemplategroupId($id) {
-        $servicetemplates = $this->find()
+        $servicetemplates = $this->unhydratedFind()
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
@@ -538,7 +533,6 @@ class ServicetemplategroupsTable extends Table {
             ->where([
                 'Servicetemplategroups.id' => $id
             ])
-            ->disableHydration()
             ->first();
 
         if (empty(!$servicetemplates['servicetemplates'])) {
@@ -606,7 +600,7 @@ class ServicetemplategroupsTable extends Table {
             $names = [$names];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Containers',
                 'Servicetemplates'
@@ -614,8 +608,7 @@ class ServicetemplategroupsTable extends Table {
             ->where([
                 'Containers.name IN'          => $names,
                 'Containers.containertype_id' => CT_SERVICETEMPLATEGROUP
-            ])
-            ->disableHydration();
+            ]);
 
         return $query->toArray();
 
@@ -789,7 +782,7 @@ class ServicetemplategroupsTable extends Table {
         if (!is_array($containerIds)) {
             $containerIds = [$containerIds];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Containers'
             ])
@@ -803,7 +796,6 @@ class ServicetemplategroupsTable extends Table {
             ->orderBy([
                 'Containers.name' => 'asc'
             ])
-            ->disableHydration()
             ->all();
 
         $servicetemplategroups = [];
@@ -883,7 +875,7 @@ class ServicetemplategroupsTable extends Table {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicetemplategroups.id',
                 'Servicetemplategroups.uuid',
@@ -913,8 +905,7 @@ class ServicetemplategroupsTable extends Table {
             ])
             ->innerJoinWith('Containers', function (Query $q) {
                 return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
-            })
-            ->disableHydration();
+            });
 
         return $this->emptyArrayIfNull($query->toArray());
     }
@@ -1017,7 +1008,7 @@ class ServicetemplategroupsTable extends Table {
      * @return array
      */
     public function getServicetemplategroupByUuidForImportDiff($uuid) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->select([
                 'Servicetemplategroups.id',
                 'name' => 'Containers.name'
@@ -1032,7 +1023,6 @@ class ServicetemplategroupsTable extends Table {
                 }
             ])
             ->where(['Servicetemplategroups.uuid' => $uuid])
-            ->disableHydration()
             ->firstOrFail();
 
         $servicetemplategroup = $this->emptyArrayIfNull($query);

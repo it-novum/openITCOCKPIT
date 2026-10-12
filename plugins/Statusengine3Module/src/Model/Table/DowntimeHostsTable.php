@@ -208,7 +208,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
      * @return array
      */
     public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
-        $result = $this->find()
+        $result = $this->unhydratedFind()
             ->select([
                 'DowntimeHosts.hostname',
                 'DowntimeHosts.author_name',
@@ -230,7 +230,6 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             ->where([
                 'DowntimeHosts.internal_downtime_id' => $internalDowntimeId
             ])
-            ->disableHydration()
             ->first();
 
         if ($result === null) {

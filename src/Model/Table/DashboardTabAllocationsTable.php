@@ -271,7 +271,7 @@ class DashboardTabAllocationsTable extends Table {
     }
 
     public function getDashboardTabAllocationForEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Author' => function (Query $q) {
                     // User who created the allocation
@@ -291,7 +291,6 @@ class DashboardTabAllocationsTable extends Table {
             ->where([
                 'DashboardTabAllocations.id' => $id
             ])
-            ->disableHydration()
             ->first();
 
         if (empty($query)) {
@@ -333,12 +332,11 @@ class DashboardTabAllocationsTable extends Table {
      * @return array
      */
     public function getAllDashboardAllocations($MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Users',
                 'Usergroups'
             ])
-            ->disableHydration()
             ->all();
         $allocations = $query->toArray();
         if (empty($allocations)) {

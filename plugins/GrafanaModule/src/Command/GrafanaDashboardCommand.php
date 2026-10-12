@@ -210,7 +210,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
      * @return bool|string
      */
     public function getJsonForImport($hostId, HostsTable $HostsTable, ServicestatusTableInterface $ServicestatusTable, ServicestatusFields $ServicestatusFields, ServicestatusConditions $ServicestatusConditions) {
-        $host = $HostsTable->find()
+        $host = $HostsTable->unhydratedFind()
             ->select([
                 'id',
                 'uuid',
@@ -274,7 +274,6 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
             ->where([
                 'Hosts.id' => $hostId
             ])
-            ->disableHydration()
             ->first();
 
         if ($host === null) {

@@ -137,7 +137,7 @@ class MyRightsFactory {
         /** @var AcosTable $AcosTable */
         $AcosTable = TableRegistry::getTableLocator()->get('Acl.Acos');
 
-        $AcosAros = $ArosTable->find()
+        $AcosAros = $ArosTable->unhydratedFind()
             ->where([
                 'Aros.foreign_key' => $usergroupId
             ])
@@ -148,7 +148,6 @@ class MyRightsFactory {
                     ]);
                 }
             ])
-            ->disableHydration()
             ->first();
 
         $acos = $AcosAros['acos'];
@@ -156,8 +155,7 @@ class MyRightsFactory {
         $acoIdsOfUsergroup = Hash::combine($acos, '{n}.id', '{n}.id');
         unset($acos, $AcosAros);
 
-        $acos = $AcosTable->find('threaded')
-            ->disableHydration()
+        $acos = $AcosTable->unhydratedFind('threaded')
             ->all();
 
         $acos = $acos->toArray();

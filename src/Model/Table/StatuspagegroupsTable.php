@@ -282,7 +282,7 @@ class StatuspagegroupsTable extends Table {
         if (!is_array($removedContainerIds)) {
             $removedContainerIds = [$removedContainerIds];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'StatuspagesMemberships.id'
             ])
@@ -293,7 +293,6 @@ class StatuspagegroupsTable extends Table {
                 'StatuspagesMemberships.statuspagegroup_id' => $statuspagegroupId,
                 'Statuspages.container_id IN '              => $removedContainerIds
             ])
-            ->disableHydration()
             ->all();
 
         $recordsToDelete = $this->emptyArrayIfNull($query->toArray());

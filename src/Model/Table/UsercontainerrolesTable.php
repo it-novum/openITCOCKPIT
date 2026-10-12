@@ -280,8 +280,7 @@ class UsercontainerrolesTable extends Table {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
 
-        $query = $this->find()
-            ->disableHydration()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Containers',
                 'Users' => function (Query $q) {
@@ -340,7 +339,7 @@ class UsercontainerrolesTable extends Table {
      * @return array
      */
     public function getUserContainerRoleForEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Usercontainerroles.id' => $id
             ])
@@ -352,7 +351,6 @@ class UsercontainerrolesTable extends Table {
                     ]
                 ]
             ])
-            ->disableHydration()
             ->first();
 
 
@@ -382,12 +380,11 @@ class UsercontainerrolesTable extends Table {
      * @return array
      */
     public function getContainerPermissionsByUserContainerRoleIds($ids = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain('Containers')
             ->where([
                 'Usercontainerroles.id IN' => $ids
             ])
-            ->disableHydration()
             ->all();
 
         /** @var ContainersTable $ContainersTable */
@@ -415,7 +412,7 @@ class UsercontainerrolesTable extends Table {
         if (!is_array($memberOfGroups)) {
             $memberOfGroups = [$memberOfGroups];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Containers'
             ])
@@ -423,7 +420,6 @@ class UsercontainerrolesTable extends Table {
             ->where([
                 'Ldapgroups.dn IN' => $memberOfGroups
             ])
-            ->disableHydration()
             ->all();
 
         /** @var ContainersTable $ContainersTable */
@@ -476,7 +472,7 @@ class UsercontainerrolesTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface
      */
     public function getSourceUserContainerRoleForCopy($id, array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Usercontainerroles.id' => $id
             ])
@@ -488,7 +484,6 @@ class UsercontainerrolesTable extends Table {
                     ]
                 ]
             ])
-            ->disableHydration()
             ->first();
 
 
@@ -552,7 +547,7 @@ class UsercontainerrolesTable extends Table {
      * @return array
      */
     public function getContainerRoleByContainerIdExact(int $containerId, $type = 'all', $index = 'id', $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Usercontainerroles.id',
                 'Usercontainerroles.name'
@@ -571,8 +566,7 @@ class UsercontainerrolesTable extends Table {
                     ]);
                 }
                 return $q;
-            })
-            ->disableHydration();
+            });
         $result = $query->toArray();
 
         if (empty($result)) {
@@ -596,11 +590,10 @@ class UsercontainerrolesTable extends Table {
      * @return array
      */
     public function getUserContainerRoleById($id) {
-        return $this->find()
+        return $this->unhydratedFind()
             ->where([
                 'Usercontainerroles.id' => $id
             ])
-            ->disableHydration()
             ->first();
     }
 

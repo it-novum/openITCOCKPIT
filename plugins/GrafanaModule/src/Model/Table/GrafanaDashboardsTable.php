@@ -188,7 +188,7 @@ class GrafanaDashboardsTable extends Table {
      * @return array
      */
     public function getAllDashboardsForDeleteCronjob(): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'id',
                 'host_uuid',
@@ -197,7 +197,6 @@ class GrafanaDashboardsTable extends Table {
                 return $query
                     ->select(['id']);
             })->whereNull(['Hosts.id'])
-            ->disableHydration()
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
@@ -210,7 +209,7 @@ class GrafanaDashboardsTable extends Table {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        $query = $HostsTable->find()
+        $query = $HostsTable->unhydratedFind()
             ->select([
                 'id',
                 'uuid'
@@ -234,7 +233,6 @@ class GrafanaDashboardsTable extends Table {
                         ]);
                 }
             ])
-            ->disableHydration()
             ->all();
 
         if ($query === null) {
@@ -349,11 +347,10 @@ class GrafanaDashboardsTable extends Table {
      * @return array
      */
     public function getDashboardUuids(): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'grafana_uid'
             ])
-            ->disableHydration()
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());

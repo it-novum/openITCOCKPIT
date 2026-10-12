@@ -290,9 +290,8 @@ class Update3To4Command extends Command {
 
         $systemsettings = $SystemsettingsTable->findAsArray();
 
-        $users = $UsersTable->find()
+        $users = $UsersTable->unhydratedFind()
             ->where(['password !=' => ''])
-            ->disableHydration()
             ->all();
 
         $users = $users->toArray();

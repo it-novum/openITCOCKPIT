@@ -116,11 +116,10 @@ class MacosAppsTable extends Table {
 
 
     public function getAppById($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'MacosApps.id' => $id
             ])
-            ->disableHydration()
             ->firstOrFail();
 
         return $query;

@@ -251,7 +251,7 @@ class InstantreportsTable extends Table {
      * @return array
      */
     public function getInstantreportsIndex(InstantreportFilter $InstantreportFilter, ?PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->contain([
                 'Timeperiods' => function (Query $q) {
                     return $q->enableAutoFields(false)
@@ -281,8 +281,7 @@ class InstantreportsTable extends Table {
                 'Instantreports.send_email',
                 'Instantreports.send_interval'
             ])
-            ->groupBy('Instantreports.id')
-            ->disableHydration();
+            ->groupBy('Instantreports.id');
 
         $indexFilter = $InstantreportFilter->indexFilter();
 
@@ -380,7 +379,7 @@ class InstantreportsTable extends Table {
      * @return array
      */
     public function getInstantreportForEdit($id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Instantreports.id',
                 'Instantreports.name',
@@ -404,7 +403,6 @@ class InstantreportsTable extends Table {
                 'Servicegroups',
                 'Services'
             ])
-            ->disableHydration()
             ->first();
 
         $instantreport = $query;
@@ -833,7 +831,7 @@ class InstantreportsTable extends Table {
                 }
                 /** @var  $ServicesTable ServicesTable */
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
-                $services = $ServicesTable->find()
+                $services = $ServicesTable->unhydratedFind()
                     ->select([
                         'Services.id',
                         'Services.name',
@@ -865,7 +863,6 @@ class InstantreportsTable extends Table {
                         'Services.id IN ' => $servicesIds
                     ])
                     ->distinct()
-                    ->disableHydration()
                     ->all()
                     ->toArray();
 
@@ -1046,14 +1043,13 @@ class InstantreportsTable extends Table {
      * @return array
      */
     public function getInstantreportsForAngular($MY_RIGHTS = []) {
-        $query = $this->find('list')
+        $query = $this->unhydratedFind('list')
             ->select([
                 'Instantreports.id',
                 'Instantreports.container_id',
                 'Instantreports.name',
             ])
-            ->groupBy('Instantreports.id')
-            ->disableHydration();
+            ->groupBy('Instantreports.id');
 
         $where = [];
         if (!empty($MY_RIGHTS)) {
