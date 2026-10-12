@@ -146,7 +146,7 @@ class MacosUpdatesHostsTable extends Table {
     }
 
     public function getUpdateWithHost(int $updateId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'MacosUpdatesHosts.id',
                 'MacosUpdatesHosts.macos_update_id',
@@ -203,8 +203,6 @@ class MacosUpdatesHostsTable extends Table {
         )
             ->groupBy(['Hosts.id']);
 
-        $query->disableHydration();
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
@@ -228,7 +226,7 @@ class MacosUpdatesHostsTable extends Table {
      * @return array
      */
     public function getUpdatesOfHost(int $hostId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'MacosUpdatesHosts.id',
                 'MacosUpdatesHosts.macos_update_id',
@@ -283,8 +281,6 @@ class MacosUpdatesHostsTable extends Table {
                 ['MacosUpdatesHosts.id' => 'asc']
             )
         );
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

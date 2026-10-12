@@ -5760,7 +5760,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getServicesWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $where = [];
         $query
             ->select([
@@ -6036,8 +6036,6 @@ class ServicesTable extends Table {
 
         $query->andWhere($where);
         $query->groupBy('Services.id');
-
-        $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
             return [];

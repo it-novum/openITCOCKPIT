@@ -160,7 +160,7 @@ class WindowsUpdatesHostsTable extends Table {
 
 
     public function getUpdateWithHost(int $updateId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'WindowsUpdatesHosts.id',
                 'WindowsUpdatesHosts.windows_update_id',
@@ -219,8 +219,6 @@ class WindowsUpdatesHostsTable extends Table {
         )
             ->groupBy(['Hosts.id']);
 
-        $query->disableHydration();
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
@@ -257,7 +255,7 @@ class WindowsUpdatesHostsTable extends Table {
      * @return array
      */
     public function getUpdatesOfHost(int $hostId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'WindowsUpdatesHosts.id',
                 'WindowsUpdatesHosts.windows_update_id',
@@ -315,8 +313,6 @@ class WindowsUpdatesHostsTable extends Table {
                 ['WindowsUpdatesHosts.id' => 'asc']
             )
         );
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

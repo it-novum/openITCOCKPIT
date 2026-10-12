@@ -170,7 +170,6 @@ class OrganizationalChartsTable extends Table {
         if (!empty($GenericFilter->genericFilters())) {
             $query->where($GenericFilter->genericFilters());
         }
-        $query->disableHydration();
         $query->orderBy($GenericFilter->getOrderForPaginator('OrganizationalCharts.name', 'asc'));
 
         if ($PaginateOMat === null) {

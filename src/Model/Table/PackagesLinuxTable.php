@@ -516,7 +516,7 @@ class PackagesLinuxTable extends Table {
                 'is_security_update' => 1,
             ]);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'PackagesLinux.id',
             'PackagesLinux.name',
@@ -585,8 +585,6 @@ class PackagesLinuxTable extends Table {
                 ['PackagesLinux.id' => 'asc']
             )
         );
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

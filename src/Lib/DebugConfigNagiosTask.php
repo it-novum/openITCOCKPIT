@@ -173,7 +173,7 @@ class DebugConfigNagiosTask {
             /** @var Table $Table */
             $Table = TableRegistry::getTableLocator()->get($TableName);
 
-            $query = $Table->find()
+            $query = $Table->unhydratedFind()
                 ->select($this->tablesToSeach[$TableName]['fields']);
 
             if (isset($this->tablesToSeach[$TableName]['contain']) && !empty($this->tablesToSeach[$TableName]['contain'])) {
@@ -190,7 +190,7 @@ class DebugConfigNagiosTask {
                 $query->contain($containForQuery);
             }
 
-            $result = $query->disableHydration()->all();
+            $result = $query->all();
 
             if (!empty($result)) {
                 $result = $result->toArray();

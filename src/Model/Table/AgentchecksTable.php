@@ -175,7 +175,7 @@ class AgentchecksTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getAgentcheckByName($name) {
-        return $this->selectQuery()
+        return $this->unhydratedFind()
             ->contain([
                 'Servicetemplates' => function (SelectQuery $q) {
                     $q->contain([
@@ -189,7 +189,6 @@ class AgentchecksTable extends Table {
             ->where([
                 'Agentchecks.name' => $name
             ])
-            ->disableHydration()
             ->first();
     }
 

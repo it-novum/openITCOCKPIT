@@ -266,8 +266,7 @@ class TimeperiodsTable extends Table {
                     return $query->select([
                         'ExcludedTimePeriod.id',
                         'ExcludedTimePeriod.uuid'
-                    ])->disableAutoFields()
-                        ->disableHydration();
+                    ])->disableAutoFields();
                 }
             ]);
         return $this->formatResultAsCake2($query->toArray(), false);
@@ -774,8 +773,7 @@ class TimeperiodsTable extends Table {
                         'ExcludedTimePeriod.uuid',
                         'ExcludedTimePeriod.name'
                     ])
-                        ->disableAutoFields()
-                        ->disableHydration();
+                        ->disableAutoFields();
                 }
             ])
             ->where([

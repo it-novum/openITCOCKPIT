@@ -88,11 +88,10 @@ class SystemsettingsTable extends Table {
      * @return array|SelectQuery
      */
     public function getSystemsettings($asEntity = false) {
-        $query = $this->find('all');
         if ($asEntity) {
-            return $query->all()->toArray();
+            return $this->find('all')->all()->toArray();
         }
-        return $query->disableHydration()->toArray();
+        return $this->unhydratedFind('all')->toArray();
     }
 
     /**

@@ -5184,7 +5184,6 @@ class HostsTable extends Table {
             );
         }
         $query->andWhere($where);
-        $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
             return [];
@@ -5199,7 +5198,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Hosts.id',
@@ -5378,7 +5377,6 @@ class HostsTable extends Table {
 
         $query->andWhere($where);
         $query->groupBy('Hosts.id');
-        $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
             return [];

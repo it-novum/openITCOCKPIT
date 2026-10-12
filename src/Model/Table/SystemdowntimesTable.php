@@ -515,7 +515,7 @@ class SystemdowntimesTable extends Table {
     public function getRecurringHostgroupDowntimes(SystemdowntimesConditions $SystemdowntimesConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $SystemdowntimesConditions->getContainerIds();
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Systemdowntimes.id',
             'Systemdowntimes.objecttype_id',
@@ -576,7 +576,7 @@ class SystemdowntimesTable extends Table {
                     $SystemdowntimesConditions->getOrder(),
                     ['Systemdowntimes.id' => 'asc']
                 )
-            )->disableHydration();
+            );
 
         if ($PaginateOMat === null) {
             //Just execute query
@@ -600,7 +600,7 @@ class SystemdowntimesTable extends Table {
     public function getRecurringNodeDowntimes(SystemdowntimesConditions $SystemdowntimesConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $SystemdowntimesConditions->getContainerIds();
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Systemdowntimes.id',
             'Systemdowntimes.objecttype_id',
@@ -648,7 +648,7 @@ class SystemdowntimesTable extends Table {
                     $SystemdowntimesConditions->getOrder(),
                     ['Systemdowntimes.id' => 'asc']
                 )
-            )->disableHydration();
+            );
 
         if ($PaginateOMat === null) {
             //Just execute query

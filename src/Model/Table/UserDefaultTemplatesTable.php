@@ -393,7 +393,7 @@ class UserDefaultTemplatesTable extends Table {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'UserDefaultTemplates.id',
                 'UserDefaultTemplates.usergroup_id',
@@ -428,7 +428,7 @@ class UserDefaultTemplatesTable extends Table {
             });
         }
 
-        $query->disableHydration()
+        $query
             ->distinct(['UserDefaultTemplates.id'])
             ->all();
 
