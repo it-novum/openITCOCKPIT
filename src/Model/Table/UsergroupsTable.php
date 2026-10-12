@@ -30,7 +30,7 @@ use Acl\Model\Table\ArosTable;
 use App\Lib\AclDependencies;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -158,7 +158,7 @@ class UsergroupsTable extends Table {
     public function getUsergroups($PaginateOMat, GenericFilter $GenericFilter) {
         $query = $this->unhydratedFind()
             ->contain([
-                'Users' => function (Query $q) {
+                'Users' => function (SelectQuery $q) {
                     return $q->select([
                         'Users.id',
                         'Users.usergroup_id'
@@ -401,7 +401,7 @@ class UsergroupsTable extends Table {
                 'Aros.foreign_key' => $usergroupId
             ])
             ->contain([
-                'Acos' => function (Query $query) {
+                'Acos' => function (SelectQuery $query) {
                     return $query->where([
                         '_create' => '1'
                     ]);

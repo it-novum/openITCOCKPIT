@@ -31,6 +31,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Log\Log;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
@@ -365,7 +366,7 @@ class WindowsUpdatesTable extends Table {
                 'WindowsUpdates.kbarticle_ids',
                 'WindowsUpdates.update_id'
             ])->contain([
-                'WindowsUpdatesHosts' => function (Query $q) use ($MY_RIGHTS) {
+                'WindowsUpdatesHosts' => function (SelectQuery $q) use ($MY_RIGHTS) {
                     $query = $q->select([
                         'windows_update_id',
                         'host_id',
@@ -449,7 +450,7 @@ class WindowsUpdatesTable extends Table {
                 'available_security_updates' => $subQueryForSecurityUpdates,
             ])
             ->contain([
-                'WindowsUpdatesHosts' => function (Query $query) use ($MY_RIGHTS) {
+                'WindowsUpdatesHosts' => function (SelectQuery $query) use ($MY_RIGHTS) {
                     $query->select([
                         'WindowsUpdatesHosts.windows_update_id',
                         'WindowsUpdatesHosts.reboot_required',

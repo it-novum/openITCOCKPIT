@@ -31,7 +31,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Behavior\ContainerOwnedBehavior;
 use App\Model\Entity\Statuspagegroup;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -182,7 +182,7 @@ class StatuspagegroupsTable extends Table {
             ])
             ->where($GenericFilter->genericFilters());
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Statuspagegroups.container_id IN' => $MY_RIGHTS]);
             }
@@ -219,15 +219,15 @@ class StatuspagegroupsTable extends Table {
     public function getStatuspagegroupForEdit(int $id): Statuspagegroup {
         $query = $this->find();
         $query->contain([
-            'StatuspagegroupCategories'  => function (Query $query) {
+            'StatuspagegroupCategories'  => function (SelectQuery $query) {
                 // Keep the order of categories stable
                 return $query->orderBy(['StatuspagegroupCategories.id' => 'ASC']);
             },
-            'StatuspagegroupCollections' => function (Query $query) {
+            'StatuspagegroupCollections' => function (SelectQuery $query) {
                 // Keep the order of collections stable
                 return $query->orderBy(['StatuspagegroupCollections.id' => 'ASC']);
             },
-            'StatuspagesMemberships'     => function (Query $query) {
+            'StatuspagesMemberships'     => function (SelectQuery $query) {
                 return $query->select([
                     'StatuspagesMemberships.id',
                     'StatuspagesMemberships.statuspagegroup_id',
@@ -253,11 +253,11 @@ class StatuspagegroupsTable extends Table {
     public function getStatuspagegroupForViewById(int $id): array {
         $query = $this->find();
         $query->contain([
-            'StatuspagegroupCategories'  => function (Query $query) {
+            'StatuspagegroupCategories'  => function (SelectQuery $query) {
                 // Keep the order of categories stable
                 return $query->orderBy(['StatuspagegroupCategories.id' => 'ASC']);
             },
-            'StatuspagegroupCollections' => function (Query $query) {
+            'StatuspagegroupCollections' => function (SelectQuery $query) {
                 // Keep the order of collections stable
                 return $query->orderBy(['StatuspagegroupCollections.id' => 'ASC']);
             },
@@ -286,7 +286,7 @@ class StatuspagegroupsTable extends Table {
             ->select([
                 'StatuspagesMemberships.id'
             ])
-            ->innerJoinWith('StatuspagesMemberships', function (Query $q) {
+            ->innerJoinWith('StatuspagesMemberships', function (SelectQuery $q) {
                 return $q->innerJoinWith('Statuspages');
             })
             ->where([
@@ -385,7 +385,7 @@ class StatuspagegroupsTable extends Table {
             $query->where(['Statuspages.container_id IN' => $MY_RIGHTS]);
         }
         $query
-            ->innerJoinWith('StatuspagesMemberships', function (Query $q) {
+            ->innerJoinWith('StatuspagesMemberships', function (SelectQuery $q) {
                 return $q->select([
                     'StatuspagesMemberships.statuspage_id'
                 ])->innerJoinWith('Statuspages');

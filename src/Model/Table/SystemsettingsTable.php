@@ -28,7 +28,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use Cake\Cache\Cache;
 use Cake\ORM\Locator\LocatorAwareTrait;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
 use Cake\Validation\Validator;
@@ -85,7 +85,7 @@ class SystemsettingsTable extends Table {
 
     /**
      * @param bool $asEntity
-     * @return array|Query
+     * @return array|SelectQuery
      */
     public function getSystemsettings($asEntity = false) {
         $query = $this->find('all');

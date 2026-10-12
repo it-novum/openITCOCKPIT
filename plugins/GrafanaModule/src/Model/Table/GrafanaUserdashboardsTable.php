@@ -37,7 +37,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Core\Plugin;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -215,11 +215,11 @@ class GrafanaUserdashboardsTable extends Table {
     public function getGrafanaUserDashboardEdit($id) {
         $query = $this->unhydratedFind()
             ->contain([
-                'GrafanaUserdashboardPanels' => function (Query $query) {
+                'GrafanaUserdashboardPanels' => function (SelectQuery $query) {
                     $query->contain([
-                        'GrafanaUserdashboardMetrics' => function (Query $query) {
+                        'GrafanaUserdashboardMetrics' => function (SelectQuery $query) {
                             $query->contain([
-                                'Hosts'    => function (Query $query) {
+                                'Hosts'    => function (SelectQuery $query) {
                                     $query->disableAutoFields();
                                     $query->select([
                                         'id',
@@ -228,7 +228,7 @@ class GrafanaUserdashboardsTable extends Table {
                                     ]);
                                     return $query;
                                 },
-                                'Services' => function (Query $query) {
+                                'Services' => function (SelectQuery $query) {
                                     $query->disableAutoFields();
                                     $query->select([
                                         'id',
@@ -238,7 +238,7 @@ class GrafanaUserdashboardsTable extends Table {
                                     ]);
 
                                     if (Plugin::isLoaded('PrometheusModule')) {
-                                        $query->contain('PrometheusAlertRules', function (Query $query) {
+                                        $query->contain('PrometheusAlertRules', function (SelectQuery $query) {
                                             return $query
                                                 ->disableAutoFields()
                                                 ->select([
@@ -261,7 +261,7 @@ class GrafanaUserdashboardsTable extends Table {
                                     }
 
                                     $query->contain([
-                                        'Servicetemplates' => function (Query $query) {
+                                        'Servicetemplates' => function (SelectQuery $query) {
                                             $query->disableAutoFields();
                                             $query->select([
                                                 'id',

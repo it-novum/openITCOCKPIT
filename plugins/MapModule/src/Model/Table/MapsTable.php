@@ -55,6 +55,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -300,7 +301,7 @@ class MapsTable extends Table {
             ->where($MapFilter->indexFilter())
             ->distinct('Maps.id')
             ->contain(['Containers'])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -492,7 +493,7 @@ class MapsTable extends Table {
             ->where(['Maps.id IN' => $ids])
             ->orderBy(['Maps.id' => 'asc'])
             ->contain(['Containers'])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -1144,7 +1145,7 @@ class MapsTable extends Table {
         }
         $allDependentMapElements = $this->unhydratedFind()
             ->contain([
-                'Mapitems'        => function (Query $query) {
+                'Mapitems'        => function (SelectQuery $query) {
                     $query->select([
                         'Mapitems.type',
                         'Mapitems.object_id',
@@ -1154,7 +1155,7 @@ class MapsTable extends Table {
                     ]);
                     return $query;
                 },
-                'Maplines'        => function (Query $query) {
+                'Maplines'        => function (SelectQuery $query) {
                     $query->select([
                         'Maplines.type',
                         'Maplines.object_id',
@@ -1164,7 +1165,7 @@ class MapsTable extends Table {
                     ]);
                     return $query;
                 },
-                'Mapgadgets'      => function (Query $query) {
+                'Mapgadgets'      => function (SelectQuery $query) {
                     $query->select([
                         'Mapgadgets.type',
                         'Mapgadgets.object_id',
@@ -1172,7 +1173,7 @@ class MapsTable extends Table {
                     ]);
                     return $query;
                 },
-                'Mapsummaryitems' => function (Query $query) {
+                'Mapsummaryitems' => function (SelectQuery $query) {
                     $query->select([
                         'Mapsummaryitems.type',
                         'Mapsummaryitems.object_id',
@@ -2210,7 +2211,7 @@ class MapsTable extends Table {
                 'Maps.id',
                 'Maps.name'
             ])
-            ->innerJoinWith('Containers', function (Query $q) use ($containerId, $MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $q) use ($containerId, $MY_RIGHTS) {
                 $q->disableAutoFields()
                     ->select([
                         'Containers.id'
@@ -2260,7 +2261,7 @@ class MapsTable extends Table {
 
 
         $query = $this->find()
-            ->innerJoinWith('Satellites', function (Query $q) use ($satelliteIds) {
+            ->innerJoinWith('Satellites', function (SelectQuery $q) use ($satelliteIds) {
                 $q->where([
                     'Satellites.id IN' => $satelliteIds
                 ]);
@@ -2367,7 +2368,7 @@ class MapsTable extends Table {
                 $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
                 $service = $ServicesTable->unhydratedFind()
-                    ->innerJoinWith('Hosts', function (Query $q) use ($satelliteId) {
+                    ->innerJoinWith('Hosts', function (SelectQuery $q) use ($satelliteId) {
                         $q->where([
                             'Hosts.satellite_id' => $satelliteId
                         ]);
@@ -2387,7 +2388,7 @@ class MapsTable extends Table {
 
             case 'map':
                 $map = $this->unhydratedFind()
-                    ->innerJoinWith('Satellites', function (Query $q) use ($satelliteId) {
+                    ->innerJoinWith('Satellites', function (SelectQuery $q) use ($satelliteId) {
                         $q->where([
                             'Satellites.id' => $satelliteId
                         ]);
@@ -2500,7 +2501,7 @@ class MapsTable extends Table {
         $query = $this->find()
             ->innerJoinWith('Containers')
             ->contain([
-                'Containers' => function (Query $query) use ($containerId) {
+                'Containers' => function (SelectQuery $query) use ($containerId) {
                     return $query->select([
                         'Containers.id',
                     ])->whereNotInList('Containers.id', [$containerId]);
@@ -2755,7 +2756,7 @@ class MapsTable extends Table {
                 'Maps.background',
             ])
             ->contain(['Containers'])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -2778,7 +2779,7 @@ class MapsTable extends Table {
                 'Maps.background'
             ])
             ->contain([
-                'Containers' => function (Query $query) {
+                'Containers' => function (SelectQuery $query) {
                     return $query->select([
                         'Containers.id'
                     ]);
@@ -2801,7 +2802,7 @@ class MapsTable extends Table {
             ])
             ->innerJoinWith('Mapicons')
             ->contain([
-                'Containers' => function (Query $query) {
+                'Containers' => function (SelectQuery $query) {
                     return $query->select([
                         'Containers.id'
                     ]);
@@ -2823,7 +2824,7 @@ class MapsTable extends Table {
                 'Maps.id'
             ])
             ->contain([
-                'Containers' => function (Query $query) {
+                'Containers' => function (SelectQuery $query) {
                     return $query->select([
                         'Containers.id'
                     ]);
@@ -2848,7 +2849,7 @@ class MapsTable extends Table {
             ])
             ->contain([
 
-                'Containers' => function (Query $query) {
+                'Containers' => function (SelectQuery $query) {
                     return $query->select([
                         'Containers.id'
                     ]);
@@ -2876,7 +2877,7 @@ class MapsTable extends Table {
             ])
             ->contain([
 
-                'Containers' => function (Query $query) {
+                'Containers' => function (SelectQuery $query) {
                     return $query->select([
                         'Containers.id'
                     ]);

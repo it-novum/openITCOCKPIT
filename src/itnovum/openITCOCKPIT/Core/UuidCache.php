@@ -26,7 +26,7 @@
 namespace App\itnovum\openITCOCKPIT\Core;
 
 
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -92,7 +92,7 @@ class UuidCache {
                         'uuid'
                     ])->where()
                         ->contain([
-                            'Containers' => function (Query $query) {
+                            'Containers' => function (SelectQuery $query) {
                                 return $query
                                     ->disableAutoFields()
                                     ->select([

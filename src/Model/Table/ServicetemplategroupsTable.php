@@ -30,7 +30,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicetemplategroup;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -210,7 +210,7 @@ class ServicetemplategroupsTable extends Table {
         $query = $this->find('all');
         $query->contain([
             'Containers',
-            'Servicetemplates' => function (Query $query) {
+            'Servicetemplates' => function (SelectQuery $query) {
                 return $query->select([
                     'Servicetemplates.id',
                     'Servicetemplates.template_name',
@@ -250,7 +250,7 @@ class ServicetemplategroupsTable extends Table {
         $query = $this->find()
             ->contain([
                 'Containers',
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     return $query->enableAutoFields(false)
                         ->select([
                             'Servicetemplates.id',
@@ -320,7 +320,7 @@ class ServicetemplategroupsTable extends Table {
             ->where($where)
             ->contain([
                 'Containers',
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->enableAutoFields(false)
                         ->select([
                             'Servicetemplates.id'
@@ -432,7 +432,7 @@ class ServicetemplategroupsTable extends Table {
                 'Servicetemplategroups.id' => $servicetemplategroupId
             ])
             ->contain([
-                'Servicetemplates' => function (Query $query) use ($containerIds) {
+                'Servicetemplates' => function (SelectQuery $query) use ($containerIds) {
                     $query->enableAutoFields(false)
                         ->select([
                             'Servicetemplates.id',
@@ -489,7 +489,7 @@ class ServicetemplategroupsTable extends Table {
                 'Servicetemplategroups.id'
             ])
             ->contain([
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
@@ -499,7 +499,7 @@ class ServicetemplategroupsTable extends Table {
                 'Servicetemplategroups.container_id' => $containerId
             ]);
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $q->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -522,7 +522,7 @@ class ServicetemplategroupsTable extends Table {
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'id'
@@ -886,7 +886,7 @@ class ServicetemplategroupsTable extends Table {
                 'Servicetemplategroups.id IN' => $ids
             ])
             ->contain([
-                'Containers'       => function (Query $q) {
+                'Containers'       => function (SelectQuery $q) {
                     $q->select([
                         'Containers.id',
                         'Containers.parent_id',
@@ -894,7 +894,7 @@ class ServicetemplategroupsTable extends Table {
                     ]);
                     return $q;
                 },
-                'Servicetemplates' => function (Query $q) {
+                'Servicetemplates' => function (SelectQuery $q) {
                     $q->select([
                         'Servicetemplates.id',
                         'Servicetemplates.uuid',
@@ -903,7 +903,7 @@ class ServicetemplategroupsTable extends Table {
                     return $q;
                 }
             ])
-            ->innerJoinWith('Containers', function (Query $q) {
+            ->innerJoinWith('Containers', function (SelectQuery $q) {
                 return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
             });
 
@@ -1015,7 +1015,7 @@ class ServicetemplategroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     return $query->select([
                         'name' => 'Servicetemplates.name',
                         'uuid' => 'Servicetemplates.uuid'

@@ -41,7 +41,7 @@ use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\HasMany;
 use Cake\ORM\Behavior\TimestampBehavior;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -536,17 +536,17 @@ class HostsTable extends Table {
             ])
             ->contain([
                 'HostsToContainersSharing',
-                'Hostgroups'    => function (Query $query) {
+                'Hostgroups'    => function (SelectQuery $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
                 },
-                'Hosttemplates' => function (Query $query) {
+                'Hosttemplates' => function (SelectQuery $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id'])
                         ->contain([
-                            'Hostgroups' => function (Query $query) {
+                            'Hostgroups' => function (SelectQuery $query) {
                                 return $query
                                     ->disableAutoFields()
                                     ->select(['id']);
@@ -622,7 +622,7 @@ class HostsTable extends Table {
             ])
             ->contain([
                 'HostsToContainersSharing',
-                'Services' => function (Query $q) {
+                'Services' => function (SelectQuery $q) {
                     return $q->where([
                         'Services.disabled' => 0
                     ]);
@@ -672,7 +672,7 @@ class HostsTable extends Table {
         }
         $query->contain([
             'HostsToContainersSharing',
-            'Services' => function (Query $q) {
+            'Services' => function (SelectQuery $q) {
                 return $q
                     ->join([
                         [
@@ -2568,7 +2568,7 @@ class HostsTable extends Table {
      * @param null|int $limit
      * @param null|int $offset
      * @param null|string $uuid
-     * @return array|Query
+     * @return array|SelectQuery
      */
     public function getHostsForExport($limit = null, $offset = null, $uuid = null) {
         $where = [
@@ -2582,24 +2582,24 @@ class HostsTable extends Table {
             ->where($where)
             ->contain([
                 'Hosttemplates'             =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id', 'uuid', 'check_interval', 'command_id']);
                     },
                 'Contactgroups'             =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id', 'uuid']);
                     },
                 'Contacts'                  =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id', 'uuid']);
                     },
                 'Hostgroups'                =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id', 'uuid']);
                     },
                 'Customvariables',
                 'Parenthosts'               =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id', 'uuid', 'disabled', 'satellite_id']);
                     },
                 'Hostcommandargumentvalues' => [
@@ -2619,7 +2619,7 @@ class HostsTable extends Table {
     }
 
     /**
-     * @return Query
+     * @return SelectQuery
      */
     public function getHostsForServiceExport() {
         $query = $this->find()
@@ -2828,7 +2828,7 @@ class HostsTable extends Table {
                 'Hosts.address'
             ])
             ->contain([
-                'Services' => function (Query $query) {
+                'Services' => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Services.id',
@@ -2839,7 +2839,7 @@ class HostsTable extends Table {
                             'Services.service_type'
                         ])
                         ->contain([
-                            'Servicetemplates' => function (Query $query) {
+                            'Servicetemplates' => function (SelectQuery $query) {
                                 $query->disableAutoFields()
                                     ->select([
                                         'Servicetemplates.id',
@@ -3029,7 +3029,7 @@ class HostsTable extends Table {
                 'Agentconfigs.use_push_mode',
             ])
             ->contain([
-                'Services' => function (Query $q) {
+                'Services' => function (SelectQuery $q) {
                     $q
                         ->select([
                             'Services.id',
@@ -3968,24 +3968,24 @@ class HostsTable extends Table {
             ])
             ->contain([
                 'HostsToContainersSharing'  =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id']);
                     },
                 'Contactgroups'             =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id']);
                     },
                 'Contacts'                  =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id']);
                     },
                 'Hostgroups'                =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id']);
                     },
                 'Customvariables',
                 'Parenthosts'               =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select([
                             'id',
                             'name',
@@ -4244,7 +4244,7 @@ class HostsTable extends Table {
     public function getHostsForStatusmaps($conditions = [], $containerIds = [], $allHostIds = [], $count = false, $limit = null, $offset = null) {
         $query = $this->find()
             ->contain([
-                'Parenthosts' => function (Query $q) {
+                'Parenthosts' => function (SelectQuery $q) {
                     return $q->select([
                         'Parenthosts.id'
                     ]);
@@ -4575,7 +4575,7 @@ class HostsTable extends Table {
             ])
             ->contain([
                 'HostsToContainersSharing',
-                'Hosttemplates' => function (Query $query) {
+                'Hosttemplates' => function (SelectQuery $query) {
                     $query->select([
                         'Hosttemplates.id',
                         'Hosttemplates.check_period_id',
@@ -4728,7 +4728,7 @@ class HostsTable extends Table {
         $query = $this->find()
             ->enableAutoFields()
             ->contain([
-                'Hosttemplates' => function (Query $query) {
+                'Hosttemplates' => function (SelectQuery $query) {
                     return $query->contain([
                         'Customvariables'
                     ]);
@@ -4753,7 +4753,7 @@ class HostsTable extends Table {
                 'Hosts.satellite_id',
             ])
             ->contain([
-                'Services' => function (Query $query) {
+                'Services' => function (SelectQuery $query) {
                     return $query->select([
                         'Services.id',
                         'Services.host_id',
@@ -4958,7 +4958,7 @@ class HostsTable extends Table {
     public function getServicesByHostIdForAllocation($hostId) {
         $query = $this->unhydratedFind()
             ->contain([
-                'Services' => function (Query $query) {
+                'Services' => function (SelectQuery $query) {
                     return $query
                         ->select([
                             'Services.id',
@@ -4992,7 +4992,7 @@ class HostsTable extends Table {
                 'PushAgents.agentconfig_id',
                 'PushAgents.last_update'
             ])
-            ->innerJoinWith('Agentconfigs', function (Query $q) {
+            ->innerJoinWith('Agentconfigs', function (SelectQuery $q) {
                 $q->innerJoinWith('PushAgents');
                 return $q;
             })
@@ -5672,7 +5672,7 @@ class HostsTable extends Table {
                 'Hosts.uuid' => $hostUuid
             ])
             ->contain([
-                'Hosttemplates' => function (Query $query) {
+                'Hosttemplates' => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Hosttemplates.id',

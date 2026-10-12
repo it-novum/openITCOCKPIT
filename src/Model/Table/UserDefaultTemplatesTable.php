@@ -29,7 +29,7 @@ namespace App\Model\Table;
 
 use App\itnovum\openITCOCKPIT\Filter\UserDefaultTemplatesFilter;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -418,12 +418,12 @@ class UserDefaultTemplatesTable extends Table {
             ]);
 
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 return $query->where(['Containers.id IN' => $MY_RIGHTS]);
             });
         }
         if (!empty($ldapgroupIds)) {
-            $query->innerJoinWith('Ldapgroups', function (Query $query) use ($ldapgroupIds) {
+            $query->innerJoinWith('Ldapgroups', function (SelectQuery $query) use ($ldapgroupIds) {
                 return $query->where(['Ldapgroups.id IN' => $ldapgroupIds]);
             });
         }
@@ -495,7 +495,7 @@ class UserDefaultTemplatesTable extends Table {
                 'Ldapgroups.cn',
                 'Ldapgroups.dn'
             ])
-            ->innerJoinWith('Ldapgroups', function (Query $query) {
+            ->innerJoinWith('Ldapgroups', function (SelectQuery $query) {
                 return $query->contain(['Usercontainerroles']);
             })
             ->contain(['UserContainers'])

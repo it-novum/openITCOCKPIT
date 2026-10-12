@@ -35,7 +35,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Entity\Hosttemplate;
 use App\Model\Entity\User;
 use Cake\Core\Plugin;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -700,7 +700,7 @@ class HosttemplatesTable extends Table {
      * @param array $containerIds
      * @param HosttemplateFilter $HosttemplateFilter
      * @param array $selected
-     * @return array|\Cake\ORM\Query
+     * @return array|SelectQuery
      */
     public function getHosttemplatesForAngular($containerIds, HosttemplateFilter $HosttemplateFilter, $selected = []) {
         if (!is_array($containerIds)) {
@@ -849,7 +849,7 @@ class HosttemplatesTable extends Table {
 
     /**
      * @param null $uuid
-     * @return array|\Cake\ORM\Query
+     * @return array|SelectQuery
      */
     public function getHosttemplatesForExport($uuid = null) {
         $query = $this->find()
@@ -1033,7 +1033,7 @@ class HosttemplatesTable extends Table {
             ])
             ->contain([
                 'Hostgroups' =>
-                    function (Query $query) {
+                    function (SelectQuery $query) {
                         return $query->enableAutoFields(false)->select(['id', 'uuid']);
                     }
             ])

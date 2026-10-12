@@ -50,7 +50,7 @@ use Cake\Command\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Error\Debugger;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use itnovum\openITCOCKPIT\Core\DbBackend;
@@ -194,7 +194,7 @@ class DumpCommand extends Command {
 
         $cronjobs = $CronjobsTable->unhydratedFind()
             ->contain([
-                'Cronschedules' => function (Query $query) {
+                'Cronschedules' => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 }
@@ -224,7 +224,7 @@ class DumpCommand extends Command {
 
         $commands = $CommandsTable->unhydratedFind()
             ->contain([
-                'Commandarguments' => function (Query $query) {
+                'Commandarguments' => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 }
@@ -254,7 +254,7 @@ class DumpCommand extends Command {
 
         $timeperiods = $TimeperiodsTable->unhydratedFind()
             ->contain([
-                'TimeperiodTimeranges' => function (Query $query) {
+                'TimeperiodTimeranges' => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 }
@@ -271,11 +271,11 @@ class DumpCommand extends Command {
 
         $timeperiods = $ContactsTable->unhydratedFind()
             ->contain([
-                'Containers'      => function (Query $query) {
+                'Containers'      => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Customvariables' => function (Query $query) {
+                'Customvariables' => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 }
@@ -303,26 +303,26 @@ class DumpCommand extends Command {
 
         $hosttemplates = $HosttemplatesTable->unhydratedFind()
             ->contain([
-                'Contacts'                          => function (Query $query) {
+                'Contacts'                          => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Contactgroups'                     => function (Query $query) {
+                'Contactgroups'                     => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Hostgroups'                        => function (Query $query) {
+                'Hostgroups'                        => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Customvariables'                   => function (Query $query) {
+                'Customvariables'                   => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Hosttemplatecommandargumentvalues' => function (Query $query) {
+                'Hosttemplatecommandargumentvalues' => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
@@ -356,31 +356,31 @@ class DumpCommand extends Command {
 
         $hosts = $HostsTable->unhydratedFind()
             ->contain([
-                'HostsToContainersSharing'  => function (Query $query) {
+                'HostsToContainersSharing'  => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Contacts'                  => function (Query $query) {
+                'Contacts'                  => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Contactgroups'             => function (Query $query) {
+                'Contactgroups'             => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Hostgroups'                => function (Query $query) {
+                'Hostgroups'                => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Customvariables'           => function (Query $query) {
+                'Customvariables'           => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Hostcommandargumentvalues' => function (Query $query) {
+                'Hostcommandargumentvalues' => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
@@ -420,30 +420,30 @@ class DumpCommand extends Command {
 
         $servicetemplates = $ServicetemplatesTable->unhydratedFind()
             ->contain([
-                'Contacts'                                  => function (Query $query) {
+                'Contacts'                                  => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Contactgroups'                             => function (Query $query) {
+                'Contactgroups'                             => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Servicegroups'                             => function (Query $query) {
+                'Servicegroups'                             => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Customvariables'                           => function (Query $query) {
+                'Customvariables'                           => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Servicetemplatecommandargumentvalues'      => function (Query $query) {
+                'Servicetemplatecommandargumentvalues'      => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Servicetemplateeventcommandargumentvalues' => function (Query $query) {
+                'Servicetemplateeventcommandargumentvalues' => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
@@ -477,30 +477,30 @@ class DumpCommand extends Command {
 
         $services = $ServicesTable->unhydratedFind()
             ->contain([
-                'Contacts'                          => function (Query $query) {
+                'Contacts'                          => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Contactgroups'                     => function (Query $query) {
+                'Contactgroups'                     => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Servicegroups'                     => function (Query $query) {
+                'Servicegroups'                     => function (SelectQuery $query) {
                     $query->select(['id']);
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Customvariables'                   => function (Query $query) {
+                'Customvariables'                   => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Servicecommandargumentvalues'      => function (Query $query) {
+                'Servicecommandargumentvalues'      => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },
-                'Serviceeventcommandargumentvalues' => function (Query $query) {
+                'Serviceeventcommandargumentvalues' => function (SelectQuery $query) {
                     $query->disableResultsCasting();
                     return $query;
                 },

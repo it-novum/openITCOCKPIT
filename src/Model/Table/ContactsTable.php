@@ -30,7 +30,7 @@ use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Contact;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -354,7 +354,7 @@ class ContactsTable extends Table {
         $query->contain(['Containers']);
         $query->where($ContactsFilter->indexFilter());
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.id IN' => $MY_RIGHTS]);
             }
@@ -416,7 +416,7 @@ class ContactsTable extends Table {
             ->orderBy(['Contacts.id' => 'asc']);
 
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $q->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -505,7 +505,7 @@ class ContactsTable extends Table {
 
     /**
      * @param null $uuid
-     * @return array|\Cake\ORM\Query
+     * @return array|SelectQuery
      */
     public function getContactsForExport($uuid = null) {
         $query = $this->find()
@@ -597,7 +597,7 @@ class ContactsTable extends Table {
 
         $query = $this->find('all');
         $query->contain(['Containers']);
-        $query->innerJoinWith('Containers', function (Query $q) use ($containerIds) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($containerIds) {
             return $q->where(['Containers.id IN' => $containerIds]);
         });
 
@@ -784,7 +784,7 @@ class ContactsTable extends Table {
                 'Contacts.id'
             ])
             ->contain([
-                'Containers' => function (Query $q) {
+                'Containers' => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'Containers.id'
@@ -870,7 +870,7 @@ class ContactsTable extends Table {
             'Containers'
         ]);
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.id IN' => $MY_RIGHTS]);
             }
@@ -916,7 +916,7 @@ class ContactsTable extends Table {
             'Containers'
         ]);
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.id IN' => $MY_RIGHTS]);
             }
@@ -947,7 +947,7 @@ class ContactsTable extends Table {
                 'Contacts.id',
                 'Contacts.name'
             ])
-            ->innerJoinWith('Containers', function (Query $q) use ($containerId, $MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $q) use ($containerId, $MY_RIGHTS) {
                 $q->disableAutoFields()
                     ->select([
                         'Containers.id'
@@ -1248,7 +1248,7 @@ class ContactsTable extends Table {
         $query = $this->find()
             ->innerJoinWith('Containers')
             ->contain([
-                'Containers' => function (Query $query) use ($containerId) {
+                'Containers' => function (SelectQuery $query) use ($containerId) {
                     return $query->select([
                         'Containers.id',
                     ])->whereNotInList('Containers.id', [$containerId]);
@@ -1277,28 +1277,28 @@ class ContactsTable extends Table {
         }
         $query = $this->unhydratedFind()
             ->contain([
-                'HostCommands'       => function (Query $q) {
+                'HostCommands'       => function (SelectQuery $q) {
                     return $q->select([
                         'HostCommands.id',
                         'HostCommands.uuid',
                         'HostCommands.name'
                     ]);
                 },
-                'ServiceCommands'    => function (Query $q) {
+                'ServiceCommands'    => function (SelectQuery $q) {
                     return $q->select([
                         'ServiceCommands.id',
                         'ServiceCommands.uuid',
                         'ServiceCommands.name'
                     ]);
                 },
-                'HostTimeperiods'    => function (Query $q) {
+                'HostTimeperiods'    => function (SelectQuery $q) {
                     return $q->select([
                         'HostTimeperiods.id',
                         'HostTimeperiods.uuid',
                         'HostTimeperiods.name'
                     ]);
                 },
-                'ServiceTimeperiods' => function (Query $q) {
+                'ServiceTimeperiods' => function (SelectQuery $q) {
                     return $q->select([
                         'ServiceTimeperiods.id',
                         'ServiceTimeperiods.uuid',
@@ -1307,7 +1307,7 @@ class ContactsTable extends Table {
                 },
                 'Customvariables'
             ])
-            ->innerJoinWith('Containers', function (Query $q) {
+            ->innerJoinWith('Containers', function (SelectQuery $q) {
                 return $q->where(['Containers.id IN' => ROOT_CONTAINER]);
             })->where([
                 'Contacts.id IN' => $ids
@@ -1418,13 +1418,13 @@ class ContactsTable extends Table {
                 'ServiceTimeperiods.uuid'
             ])
             ->contain([
-                'HostCommands'    => function (Query $query) {
+                'HostCommands'    => function (SelectQuery $query) {
                     return $query->select([
                         'name' => 'HostCommands.name',
                         'uuid' => 'HostCommands.uuid'
                     ]);
                 },
-                'ServiceCommands' => function (Query $query) {
+                'ServiceCommands' => function (SelectQuery $query) {
                     return $query->select([
                         'name' => 'ServiceCommands.name',
                         'uuid' => 'ServiceCommands.uuid'
@@ -1432,7 +1432,7 @@ class ContactsTable extends Table {
                 },
                 'HostTimeperiods',
                 'ServiceTimeperiods',
-                'Customvariables' => function (Query $query) {
+                'Customvariables' => function (SelectQuery $query) {
                     return $query->select([
                         'Customvariables.id',
                         'Customvariables.objecttype_id',

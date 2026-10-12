@@ -28,7 +28,7 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -139,7 +139,7 @@ class WindowsAppsHostsTable extends Table {
                 ['Hosts.id = WindowsAppsHosts.host_id']
             )
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts' => function (SelectQuery $query) {
                     return $query->select([
                         'Hosts.id',
                         'Hosts.name',
@@ -212,7 +212,7 @@ class WindowsAppsHostsTable extends Table {
                 ['Hosts.id = WindowsAppsHosts.host_id']
             )
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts' => function (SelectQuery $query) {
                     return $query->select([
                         'Hosts.id',
                         'Hosts.name',

@@ -39,7 +39,7 @@ use Cake\Controller\Exception\MissingComponentException;
 use Cake\Core\Plugin;
 use Cake\Datasource\EntityInterface;
 use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -243,7 +243,7 @@ class PushAgentsTable extends Table {
                 'PushAgents.agentconfig_id IS NOT NULL'
             ])
             ->contain([
-                'Agentconfigs' => function (Query $q) {
+                'Agentconfigs' => function (SelectQuery $q) {
                     $q
                         ->disableAutoFields()
                         ->select([
@@ -251,7 +251,7 @@ class PushAgentsTable extends Table {
                             'Agentconfigs.host_id'
                         ])
                         ->contain([
-                            'Hosts' => function (Query $q) {
+                            'Hosts' => function (SelectQuery $q) {
                                 $q
                                     ->disableAutoFields()
                                     ->select([

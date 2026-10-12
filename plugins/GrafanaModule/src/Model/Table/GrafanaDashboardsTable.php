@@ -31,7 +31,7 @@ use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Table\HostsTable;
 use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -193,7 +193,7 @@ class GrafanaDashboardsTable extends Table {
                 'id',
                 'host_uuid',
                 'grafana_uid'
-            ])->leftJoinWith('Hosts', function (Query $query) {
+            ])->leftJoinWith('Hosts', function (SelectQuery $query) {
                 return $query
                     ->select(['id']);
             })->whereNull(['Hosts.id'])
@@ -215,17 +215,17 @@ class GrafanaDashboardsTable extends Table {
                 'uuid'
             ])
             ->contain([
-                'Hostgroups'    => function (Query $query) {
+                'Hostgroups'    => function (SelectQuery $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
                 },
-                'Hosttemplates' => function (Query $query) {
+                'Hosttemplates' => function (SelectQuery $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id'])
                         ->contain([
-                            'Hostgroups' => function (Query $query) {
+                            'Hostgroups' => function (SelectQuery $query) {
                                 return $query
                                     ->disableAutoFields()
                                     ->select(['id']);

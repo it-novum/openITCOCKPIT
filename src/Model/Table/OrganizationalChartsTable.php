@@ -30,6 +30,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Database\PaginateOMat;
@@ -127,7 +128,7 @@ class OrganizationalChartsTable extends Table {
                 'OrganizationalCharts.modified',
             ])
             ->contain([
-                'OrganizationalChartNodes' => function (Query $q) {
+                'OrganizationalChartNodes' => function (SelectQuery $q) {
                     return $q->contain(['Containers'])
                         ->orderBy([
                             'Containers.name' => 'asc'
@@ -247,9 +248,9 @@ class OrganizationalChartsTable extends Table {
      */
     public function getOrganizationalChartById(int $organizationalChartId, array $MY_RIGHTS = []): array {
         $query = $this->find()
-            ->leftJoinWith('OrganizationalChartNodes', function (Query $q) use ($MY_RIGHTS) {
+            ->leftJoinWith('OrganizationalChartNodes', function (SelectQuery $q) use ($MY_RIGHTS) {
                 return $q->contain([
-                    'Containers' => function (Query $q) use ($MY_RIGHTS) {
+                    'Containers' => function (SelectQuery $q) use ($MY_RIGHTS) {
                         return $q->select([
                             'Containers.id',
                             'Containers.name',
@@ -258,7 +259,7 @@ class OrganizationalChartsTable extends Table {
                             'Containers.name' => 'asc'
                         ]);
                     },
-                    'Users'      => function (Query $q) {
+                    'Users'      => function (SelectQuery $q) {
                         return $q->select([
                             'Users.id',
                             'Users.lastname',

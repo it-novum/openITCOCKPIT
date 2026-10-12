@@ -37,7 +37,7 @@ use Acl\Model\Table\AcosTable;
 use Acl\Model\Table\ArosTable;
 use App\Model\Table\ContainersTable;
 use App\Model\Table\UsersTable;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
@@ -142,7 +142,7 @@ class MyRightsFactory {
                 'Aros.foreign_key' => $usergroupId
             ])
             ->contain([
-                'Acos' => function (Query $query) {
+                'Acos' => function (SelectQuery $query) {
                     return $query->where([
                         '_create' => '1'
                     ]);

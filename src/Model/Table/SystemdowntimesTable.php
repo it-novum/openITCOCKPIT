@@ -26,7 +26,7 @@
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -530,7 +530,7 @@ class SystemdowntimesTable extends Table {
             'Systemdowntimes.author',
         ])
             ->contain([
-                'Hostgroups' => function (Query $query) {
+                'Hostgroups' => function (SelectQuery $query) {
                     $query
                         ->disableAutoFields()
                         ->select([
@@ -540,7 +540,7 @@ class SystemdowntimesTable extends Table {
                             'Hostgroups.container_id'
                         ])
                         ->contain([
-                            'Containers' => function (Query $query) {
+                            'Containers' => function (SelectQuery $query) {
                                 $query
                                     ->disableAutoFields()
                                     ->select([
@@ -615,7 +615,7 @@ class SystemdowntimesTable extends Table {
             'Systemdowntimes.author',
         ])
             ->contain([
-                'Containers' => function (Query $query) {
+                'Containers' => function (SelectQuery $query) {
                     $query
                         ->disableAutoFields()
                         ->select([

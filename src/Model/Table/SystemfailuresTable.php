@@ -27,7 +27,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -141,7 +141,7 @@ class SystemfailuresTable extends Table {
     public function getSystemfailuresIndex(SystemfailuresFilter $SystemfailuresFilter, $PaginateOMat = null) {
         $query = $this->unhydratedFind('all')
             ->contain([
-                'Users' => function (Query $q) {
+                'Users' => function (SelectQuery $q) {
                     $q->disableAutoFields();
                     $q->select([
                         'Users.id',
@@ -263,7 +263,7 @@ class SystemfailuresTable extends Table {
             ->bind(':start2', $startDateSqlFormat, 'date')
             ->bind(':end2', $endDateSqlFormat, 'date')
             ->contain([
-                'Users' => function (Query $query) {
+                'Users' => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Users.firstname',

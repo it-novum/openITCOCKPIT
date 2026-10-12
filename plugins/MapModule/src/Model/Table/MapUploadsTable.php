@@ -41,7 +41,7 @@ use Cake\Datasource\EntityInterface;
 use Cake\ORM\Association\BelongsTo;
 use Cake\ORM\Association\BelongsToMany;
 use Cake\ORM\Behavior\TimestampBehavior;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -196,7 +196,7 @@ class MapUploadsTable extends Table {
             ->contain([
                 'Containers'
             ])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -545,7 +545,7 @@ class MapUploadsTable extends Table {
             ])
             ->where($GenericFilter->genericFilters())
             ->contain(['Containers'])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -610,7 +610,7 @@ class MapUploadsTable extends Table {
             ->contain([
                 'Containers'
             ])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -659,7 +659,7 @@ class MapUploadsTable extends Table {
             ->contain([
                 'Containers'
             ])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -705,7 +705,7 @@ class MapUploadsTable extends Table {
         }
         $query = $this->find('list', valueField: 'saved_name')
             ->contain(['Containers'])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -736,7 +736,7 @@ class MapUploadsTable extends Table {
                 'MapUploads.saved_name'
             ])
             ->contain(['Containers'])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -762,7 +762,7 @@ class MapUploadsTable extends Table {
                 'MapUploads.saved_name'
             ])
             ->contain(['Containers'])
-            ->innerJoinWith('Containers', function (Query $query) use ($MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $query) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $query->where(['Containers.id IN' => $MY_RIGHTS]);
                 }

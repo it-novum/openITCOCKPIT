@@ -32,6 +32,7 @@ use App\Model\Entity\MacosAppsHost;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Log\Log;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
@@ -190,7 +191,7 @@ class MacosAppsTable extends Table {
                 'host_id' => $hostId,
             ])
             ->contain([
-                'MacosApps' => function (Query $query) {
+                'MacosApps' => function (SelectQuery $query) {
                     return $query->select([
                         'id',
                         'name',
@@ -367,7 +368,7 @@ class MacosAppsTable extends Table {
         $query = $this->find('all')
             ->disableAutoFields()
             ->contain([
-                'MacosAppsHosts' => function (Query $query) {
+                'MacosAppsHosts' => function (SelectQuery $query) {
                     $query
                         ->innerJoin(
                             ['Hosts' => 'hosts'],
@@ -422,7 +423,7 @@ class MacosAppsTable extends Table {
                 'MacosApps.modified',
             ])
             ->contain([
-                'MacosAppsHosts' => function (Query $query) use ($MY_RIGHTS) {
+                'MacosAppsHosts' => function (SelectQuery $query) use ($MY_RIGHTS) {
                     $query->select([
                         'MacosAppsHosts.macos_app_id',
                         'MacosAppsHosts.host_id'

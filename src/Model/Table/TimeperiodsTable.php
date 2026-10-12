@@ -32,7 +32,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Entity\Timeperiod;
 use Cake\Core\Plugin;
 use Cake\ORM\Entity;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -517,7 +517,7 @@ class TimeperiodsTable extends Table {
 
         $query = $this->find('all');
         $query->contain(['Containers']);
-        $query->innerJoinWith('Containers', function (Query $q) use ($containerIds) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($containerIds) {
             return $q->where(['Containers.id IN' => $containerIds]);
         });
 

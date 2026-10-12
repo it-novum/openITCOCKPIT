@@ -30,7 +30,7 @@ use App\Lib\Traits\PluginManagerTableTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicegroup;
 use Cake\Database\Expression\ComparisonExpression;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -155,7 +155,7 @@ class ServicegroupsTable extends Table {
      * @param array $containerIds
      * @param string $type
      * @param string $index
-     * @return array|\Cake\ORM\Query
+     * @return array|SelectQuery
      * @deprecated Use self::getServicegroupsByContainerId()
      */
     public function servicegroupsByContainerId($containerIds = [], $type = 'all', $index = 'container_id') {
@@ -336,7 +336,7 @@ class ServicegroupsTable extends Table {
             unset($where['Servicegroups.not_keywords not rlike']);
         }
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
             }
@@ -483,7 +483,7 @@ class ServicegroupsTable extends Table {
         }
         $query = $this->find()
             ->contain([
-                'Containers'       => function (Query $q) use ($MY_RIGHTS) {
+                'Containers'       => function (SelectQuery $q) use ($MY_RIGHTS) {
                     $q->select([
                         'Containers.id',
                         'Containers.name'
@@ -493,7 +493,7 @@ class ServicegroupsTable extends Table {
                     }
                     return $q;
                 },
-                'Services'         => function (Query $q) use ($MY_RIGHTS) {
+                'Services'         => function (SelectQuery $q) use ($MY_RIGHTS) {
                     $q->select([
                         'Services.id',
                         'Services.uuid',
@@ -501,13 +501,13 @@ class ServicegroupsTable extends Table {
                         'Services.host_id'
                     ])
                         ->contain([
-                            'Servicetemplates' => function (Query $q) {
+                            'Servicetemplates' => function (SelectQuery $q) {
                                 return $q->select([
                                     'Servicetemplates.id',
                                     'Servicetemplates.name'
                                 ]);
                             },
-                            'Hosts'            => function (Query $q) {
+                            'Hosts'            => function (SelectQuery $q) {
                                 return $q->select([
                                     'Hosts.id',
                                     'Hosts.uuid',
@@ -520,7 +520,7 @@ class ServicegroupsTable extends Table {
 
                         ])
                         ->innerJoinWith('Hosts')
-                        ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                        ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                             if (!empty($MY_RIGHTS)) {
                                 $q->where([
                                     'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -535,13 +535,13 @@ class ServicegroupsTable extends Table {
                         ]);
                     return $q;
                 },
-                'Servicetemplates' => function (Query $q) use ($MY_RIGHTS) {
+                'Servicetemplates' => function (SelectQuery $q) use ($MY_RIGHTS) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'id'
                         ])
                         ->contain([
-                            'Services' => function (Query $query) use ($MY_RIGHTS) {
+                            'Services' => function (SelectQuery $query) use ($MY_RIGHTS) {
                                 $query
                                     ->disableAutoFields()
                                     ->select([
@@ -552,13 +552,13 @@ class ServicegroupsTable extends Table {
                                         'Services.host_id'
                                     ])
                                     ->contain([
-                                        'Servicetemplates' => function (Query $q) {
+                                        'Servicetemplates' => function (SelectQuery $q) {
                                             return $q->select([
                                                 'Servicetemplates.id',
                                                 'Servicetemplates.name'
                                             ]);
                                         },
-                                        'Hosts'            => function (Query $q) {
+                                        'Hosts'            => function (SelectQuery $q) {
                                             return $q->select([
                                                 'Hosts.id',
                                                 'Hosts.uuid',
@@ -570,7 +570,7 @@ class ServicegroupsTable extends Table {
                                         }
                                     ])
                                     ->innerJoinWith('Hosts')
-                                    ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+                                    ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                                         if (!empty($MY_RIGHTS)) {
                                             $q->where([
                                                 'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -629,7 +629,7 @@ class ServicegroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Services'         => function (Query $q) {
+                'Services'         => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Services.id',
@@ -637,7 +637,7 @@ class ServicegroupsTable extends Table {
                             'Services.name'
                         ])
                         ->contain([
-                            'Hosts'            => function (Query $q) {
+                            'Hosts'            => function (SelectQuery $q) {
                                 return $q->enableAutoFields(false)
                                     ->select([
                                         'Hosts.id',
@@ -647,7 +647,7 @@ class ServicegroupsTable extends Table {
                                     ->contain(['HostsToContainersSharing'])
                                     ->where(['Hosts.disabled' => 0]);
                             },
-                            'Servicetemplates' => function (Query $q) {
+                            'Servicetemplates' => function (SelectQuery $q) {
                                 return $q->enableAutoFields(false)
                                     ->select([
                                         'Servicetemplates.name'
@@ -656,13 +656,13 @@ class ServicegroupsTable extends Table {
                         ])
                         ->where(['Services.disabled' => 0]);
                 },
-                'Servicetemplates' => function (Query $q) {
+                'Servicetemplates' => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'id'
                         ])
                         ->contain([
-                            'Services' => function (Query $query) {
+                            'Services' => function (SelectQuery $query) {
                                 $query
                                     ->disableAutoFields()
                                     ->select([
@@ -672,13 +672,13 @@ class ServicegroupsTable extends Table {
                                         'Services.name'
                                     ])
                                     ->contain([
-                                        'Servicetemplates' => function (Query $q) {
+                                        'Servicetemplates' => function (SelectQuery $q) {
                                             return $q->select([
                                                 'Servicetemplates.id',
                                                 'Servicetemplates.name'
                                             ]);
                                         },
-                                        'Hosts'            => function (Query $q) {
+                                        'Hosts'            => function (SelectQuery $q) {
                                             return $q->contain([
                                                 'HostsToContainersSharing'
                                             ])->select([
@@ -726,13 +726,13 @@ class ServicegroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Services'         => function (Query $q) {
+                'Services'         => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Services.id'
                         ])
                         ->contain([
-                            'Hosts'            => function (Query $q) {
+                            'Hosts'            => function (SelectQuery $q) {
                                 return $q->enableAutoFields(false)
                                     ->select([
                                         'Hosts.id'
@@ -740,7 +740,7 @@ class ServicegroupsTable extends Table {
                                     ->contain(['HostsToContainersSharing'])
                                     ->where(['Hosts.disabled' => 0]);
                             },
-                            'Servicetemplates' => function (Query $q) {
+                            'Servicetemplates' => function (SelectQuery $q) {
                                 return $q->enableAutoFields(false)
                                     ->select([
                                         'Servicetemplates.name'
@@ -749,13 +749,13 @@ class ServicegroupsTable extends Table {
                         ])
                         ->where(['Services.disabled' => 0]);
                 },
-                'Servicetemplates' => function (Query $q) {
+                'Servicetemplates' => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'id'
                         ])
                         ->contain([
-                            'Services' => function (Query $query) {
+                            'Services' => function (SelectQuery $query) {
                                 $query
                                     ->disableAutoFields()
                                     ->select([
@@ -763,12 +763,12 @@ class ServicegroupsTable extends Table {
                                         'Services.servicetemplate_id'
                                     ])
                                     ->contain([
-                                        'Servicetemplates' => function (Query $q) {
+                                        'Servicetemplates' => function (SelectQuery $q) {
                                             return $q->select([
                                                 'Servicetemplates.id'
                                             ]);
                                         },
-                                        'Hosts'            => function (Query $q) {
+                                        'Hosts'            => function (SelectQuery $q) {
                                             return $q->contain([
                                                 'HostsToContainersSharing'
                                             ])->select([
@@ -895,13 +895,13 @@ class ServicegroupsTable extends Table {
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'id',
                         ])
                         ->contain([
-                            'Services' => function (Query $query) {
+                            'Services' => function (SelectQuery $query) {
                                 $query->disableAutoFields()
                                     ->select([
                                         'Services.id',
@@ -918,7 +918,7 @@ class ServicegroupsTable extends Table {
                 },
 
                 // Get all services from this service group
-                'Services'         => function (Query $query) {
+                'Services'         => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Services.id',
@@ -951,13 +951,13 @@ class ServicegroupsTable extends Table {
             ->contain([
                 // Get all services that are in this service group through the service template AND
                 // which does NOT have any own service groups
-                'Servicetemplates' => function (Query $query) use ($satelliteId) {
+                'Servicetemplates' => function (SelectQuery $query) use ($satelliteId) {
                     $query->disableAutoFields()
                         ->select([
                             'id',
                         ])
                         ->contain([
-                            'Services' => function (Query $query) use ($satelliteId) {
+                            'Services' => function (SelectQuery $query) use ($satelliteId) {
                                 $query->disableAutoFields()
                                     ->select([
                                         'Services.id',
@@ -976,7 +976,7 @@ class ServicegroupsTable extends Table {
                 },
 
                 // Get all services from this service group
-                'Services'         => function (Query $query) use ($satelliteId) {
+                'Services'         => function (SelectQuery $query) use ($satelliteId) {
                     $query->disableAutoFields()
                         ->select([
                             'Services.id',
@@ -1070,12 +1070,12 @@ class ServicegroupsTable extends Table {
                 'Servicegroups.id'
             ])
             ->contain([
-                'Services'         => function (Query $query) {
+                'Services'         => function (SelectQuery $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
                 },
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
@@ -1085,7 +1085,7 @@ class ServicegroupsTable extends Table {
                 'Servicegroups.container_id' => $containerId
             ]);
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $q->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -1192,14 +1192,14 @@ class ServicegroupsTable extends Table {
                 $query = $this->unhydratedFind()
                     ->contain([
                         'Containers',
-                        'Services' => function (Query $query) use ($containerIds, $serviceIds) {
+                        'Services' => function (SelectQuery $query) use ($containerIds, $serviceIds) {
                             $query->disableAutoFields()
                                 ->select([
                                     'Services.id',
                                     'Services.uuid',
                                 ])
                                 ->innerJoinWith('Hosts')
-                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds, $serviceIds) {
+                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($containerIds, $serviceIds) {
                                     if (!empty($MY_RIGHTS)) {
                                         $q->where([
                                             'HostsToContainersSharing.id IN ' => $containerIds
@@ -1225,14 +1225,14 @@ class ServicegroupsTable extends Table {
                 $query = $this->unhydratedFind()
                     ->contain([
                         'Containers',
-                        'Services' => function (Query $query) use ($containerIds, $serviceIds) {
+                        'Services' => function (SelectQuery $query) use ($containerIds, $serviceIds) {
                             $query->disableAutoFields()
                                 ->select([
                                     'Services.id',
                                     'Services.uuid',
                                 ])
                                 ->innerJoinWith('Hosts')
-                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds, $serviceIds) {
+                                ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($containerIds, $serviceIds) {
                                     if (!empty($MY_RIGHTS)) {
                                         $q->where([
                                             'HostsToContainersSharing.id IN ' => $containerIds

@@ -16,6 +16,7 @@ use Cake\Core\Plugin;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\Log\Log;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
 use GrafanaModule\Model\Table\GrafanaConfigurationsTable;
@@ -222,7 +223,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                 ['GrafanaDashboards.host_id = Hosts.id']
             )
             ->contain([
-                'Services' => function (Query $query) {
+                'Services' => function (SelectQuery $query) {
                     $query
                         ->disableAutoFields()
                         ->select([
@@ -234,7 +235,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                             'service_type'
                         ])
                         ->contain([
-                            'Servicetemplates' => function (Query $qery) {
+                            'Servicetemplates' => function (SelectQuery $qery) {
                                 return $qery
                                     ->disableAutoFields()
                                     ->select([
@@ -245,7 +246,7 @@ class GrafanaDashboardCommand extends Command implements CronjobInterface {
                         ]);
 
                     if (Plugin::isLoaded('PrometheusModule')) {
-                        $query->contain('PrometheusAlertRules', function (Query $query) {
+                        $query->contain('PrometheusAlertRules', function (SelectQuery $query) {
                             return $query
                                 ->disableAutoFields()
                                 ->select([

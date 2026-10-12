@@ -32,6 +32,7 @@ use App\Model\Entity\PackagesLinuxHost;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Log\Log;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -189,7 +190,7 @@ class PackagesLinuxTable extends Table {
                 'host_id' => $hostId,
             ])
             ->contain([
-                'PackagesLinux' => function (Query $query) {
+                'PackagesLinux' => function (SelectQuery $query) {
                     return $query->select([
                         'id',
                         'name',
@@ -536,7 +537,7 @@ class PackagesLinuxTable extends Table {
             ])
         ])
             ->contain([
-                'PackageLinuxHosts' => function (Query $query) use ($MY_RIGHTS) {
+                'PackageLinuxHosts' => function (SelectQuery $query) use ($MY_RIGHTS) {
                     $query->select([
                         'PackageLinuxHosts.package_linux_id',
                         'PackageLinuxHosts.needs_update',
@@ -625,7 +626,7 @@ class PackagesLinuxTable extends Table {
         $query = $this->find('all')
             ->disableAutoFields()
             ->contain([
-                'PackageLinuxHosts' => function (Query $query) {
+                'PackageLinuxHosts' => function (SelectQuery $query) {
                     $query->select([
                         'PackageLinuxHosts.package_linux_id',
                         'PackageLinuxHosts.needs_update',

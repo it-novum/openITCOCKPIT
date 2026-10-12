@@ -30,7 +30,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Datasource\Exception\RecordNotFoundException;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -405,7 +405,7 @@ class DashboardTabsTable extends Table {
      */
     public function getWidgetsForTabByUserIdAndTabId($userId, $tabId, int $loggedInUserId) {
         $query = $this->unhydratedFind()
-            ->contain('Widgets', function (Query $query) {
+            ->contain('Widgets', function (SelectQuery $query) {
                 $query->orderBy([
                     'Widgets.col' => 'ASC'
                 ]);

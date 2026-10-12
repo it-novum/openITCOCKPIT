@@ -34,7 +34,7 @@ use App\Model\Behavior\ContainerOwnedBehavior;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Servicetemplate;
 use Cake\Core\Plugin;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -876,7 +876,7 @@ class ServicetemplatesTable extends Table {
      * @param array $containerIds
      * @param ServicetemplateFilter $ServicetemplateFilter
      * @param array $selected
-     * @return array|\Cake\ORM\Query
+     * @return array|SelectQuery
      */
     public function getServicetemplatesForAngular($containerIds, ServicetemplateFilter $ServicetemplateFilter, $selected = []) {
         if (!is_array($containerIds)) {
@@ -1101,7 +1101,7 @@ class ServicetemplatesTable extends Table {
 
     /**
      * @param null $uuid
-     * @return array|\Cake\ORM\Query
+     * @return array|SelectQuery
      */
     public function getServicetemplatesForExport($uuid = null) {
         $query = $this->find()
@@ -1730,7 +1730,7 @@ class ServicetemplatesTable extends Table {
         $query = $this->unhydratedFind()
             ->contain([
                 'Contactgroups'                             => 'Containers',
-                'Contacts'                                  => function (Query $q) {
+                'Contacts'                                  => function (SelectQuery $q) {
                     return $q->select([
                         'Contacts.id',
                         'Contacts.uuid',
@@ -1738,14 +1738,14 @@ class ServicetemplatesTable extends Table {
                     ]);
                 },
                 'Customvariables',
-                'CheckPeriod'                               => function (Query $q) {
+                'CheckPeriod'                               => function (SelectQuery $q) {
                     return $q->select([
                         'CheckPeriod.id',
                         'CheckPeriod.uuid',
                         'CheckPeriod.name',
                     ]);
                 },
-                'NotifyPeriod'                              => function (Query $q) {
+                'NotifyPeriod'                              => function (SelectQuery $q) {
                     return $q->select([
                         'NotifyPeriod.id',
                         'NotifyPeriod.uuid',
@@ -1886,38 +1886,38 @@ class ServicetemplatesTable extends Table {
                 'name' => 'Servicetemplates.template_name'
             ])
             ->contain([
-                'CheckPeriod'                               => function (Query $query) {
+                'CheckPeriod'                               => function (SelectQuery $query) {
                     return $query->select([
                         'CheckPeriod.name',
                         'CheckPeriod.uuid'
                     ]);
                 },
-                'NotifyPeriod'                              => function (Query $query) {
+                'NotifyPeriod'                              => function (SelectQuery $query) {
                     return $query->select([
                         'NotifyPeriod.name',
                         'NotifyPeriod.uuid'
                     ]);
                 },
-                'EventhandlerCommand'                       => function (Query $query) {
+                'EventhandlerCommand'                       => function (SelectQuery $query) {
                     return $query->select([
                         'EventhandlerCommand.name',
                         'EventhandlerCommand.uuid',
                     ]);
 
                 },
-                'Contacts'                                  => function (Query $query) {
+                'Contacts'                                  => function (SelectQuery $query) {
                     return $query->select([
                         'Contacts.name',
                         'Contacts.uuid'
                     ]);
                 },
-                'Contactgroups'                             => function (Query $query) {
+                'Contactgroups'                             => function (SelectQuery $query) {
                     return $query->select([
                         'name' => 'Containers.name',
                         'Contactgroups.uuid'
                     ])->contain(['Containers']);
                 },
-                'Servicetemplatecommandargumentvalues'      => function (Query $query) {
+                'Servicetemplatecommandargumentvalues'      => function (SelectQuery $query) {
                     return $query->select([
                         'Servicetemplatecommandargumentvalues.id',
                         'Servicetemplatecommandargumentvalues.servicetemplate_id',
@@ -1928,7 +1928,7 @@ class ServicetemplatesTable extends Table {
                         'Commandarguments'
                     ]);
                 },
-                'Servicetemplateeventcommandargumentvalues' => function (Query $query) {
+                'Servicetemplateeventcommandargumentvalues' => function (SelectQuery $query) {
                     return $query->select([
                         'Servicetemplateeventcommandargumentvalues.id',
                         'Servicetemplateeventcommandargumentvalues.servicetemplate_id',
@@ -1938,7 +1938,7 @@ class ServicetemplatesTable extends Table {
                         'Commandarguments'
                     ]);
                 },
-                'Customvariables'                           => function (Query $query) {
+                'Customvariables'                           => function (SelectQuery $query) {
                     return $query->select([
                         'Customvariables.id',
                         'Customvariables.objecttype_id',

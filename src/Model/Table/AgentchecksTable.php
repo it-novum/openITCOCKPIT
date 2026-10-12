@@ -27,7 +27,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Lib\Traits\PluginManagerTableTrait;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -177,7 +177,7 @@ class AgentchecksTable extends Table {
     public function getAgentcheckByName($name) {
         return $this->selectQuery()
             ->contain([
-                'Servicetemplates' => function (Query $q) {
+                'Servicetemplates' => function (SelectQuery $q) {
                     $q->contain([
                         'Servicetemplatecommandargumentvalues' => [
                             'Commandarguments'

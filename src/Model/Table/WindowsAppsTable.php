@@ -32,6 +32,7 @@ use App\Model\Entity\WindowsAppsHost;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Log\Log;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Validation\Validator;
@@ -189,7 +190,7 @@ class WindowsAppsTable extends Table {
                 'host_id' => $hostId,
             ])
             ->contain([
-                'WindowsApps' => function (Query $query) {
+                'WindowsApps' => function (SelectQuery $query) {
                     return $query->select([
                         'id',
                         'name',
@@ -361,7 +362,7 @@ class WindowsAppsTable extends Table {
         $query = $this->find('all')
             ->disableAutoFields()
             ->contain([
-                'WindowsAppsHosts' => function (Query $query) use ($MY_RIGHTS) {
+                'WindowsAppsHosts' => function (SelectQuery $query) use ($MY_RIGHTS) {
                     $query
                         ->innerJoin(
                             ['Hosts' => 'hosts'],
@@ -416,7 +417,7 @@ class WindowsAppsTable extends Table {
                 'WindowsApps.modified',
             ])
             ->contain([
-                'WindowsAppsHosts' => function (Query $query) use ($MY_RIGHTS) {
+                'WindowsAppsHosts' => function (SelectQuery $query) use ($MY_RIGHTS) {
                     $query->select([
                         'WindowsAppsHosts.windows_app_id',
                         'WindowsAppsHosts.host_id'

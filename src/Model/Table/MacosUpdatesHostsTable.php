@@ -29,7 +29,7 @@ namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\MacosUpdatesHost;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -128,7 +128,7 @@ class MacosUpdatesHostsTable extends Table {
                 'MacosUpdatesHosts.host_id' => $hostId
             ])
             ->contain([
-                'MacosUpdates' => function (Query $query) {
+                'MacosUpdates' => function (SelectQuery $query) {
                     return $query->select([
                         'id',
                         'name',
@@ -173,7 +173,7 @@ class MacosUpdatesHostsTable extends Table {
         $query->where([
             'Hosts.disabled' => 0
         ])->contain([
-            'MacosUpdates' => function (Query $query) {
+            'MacosUpdates' => function (SelectQuery $query) {
                 $query->select([
                     'MacosUpdates.name',
                     'MacosUpdates.description',
@@ -255,7 +255,7 @@ class MacosUpdatesHostsTable extends Table {
         $query->where([
             'Hosts.disabled' => 0
         ])->contain([
-            'MacosUpdates' => function (Query $query) {
+            'MacosUpdates' => function (SelectQuery $query) {
                 $query->select([
                     'MacosUpdates.name',
                     'MacosUpdates.description',

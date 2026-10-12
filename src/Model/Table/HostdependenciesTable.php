@@ -30,7 +30,7 @@ use App\Lib\Traits\CustomValidationTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Host;
 use Cake\Http\Exception\NotFoundException;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Utility\Hash;
@@ -180,14 +180,14 @@ class HostdependenciesTable extends Table {
     public function getHostdependenciesIndex(HostdependenciesFilter $HostdependenciesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->unhydratedFind('all')
             ->contain([
-                'Timeperiods'    => function (Query $q) {
+                'Timeperiods'    => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Timeperiods.id',
                             'Timeperiods.name'
                         ]);
                 },
-                'Hosts'          => function (Query $q) {
+                'Hosts'          => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->where([
                             'HostdependenciesHostMemberships.dependent' => 0
@@ -198,7 +198,7 @@ class HostdependenciesTable extends Table {
                             'Hosts.disabled'
                         ]);
                 },
-                'HostsDependent' => function (Query $q) {
+                'HostsDependent' => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->where([
                             'HostdependenciesHostMemberships.dependent' => 1
@@ -211,7 +211,7 @@ class HostdependenciesTable extends Table {
                 },
 
                 'Hostgroups'          => [
-                    'Containers' => function (Query $q) {
+                    'Containers' => function (SelectQuery $q) {
                         return $q->enableAutoFields(false)
                             ->where([
                                 'HostdependenciesHostgroupMemberships.dependent' => 0
@@ -223,7 +223,7 @@ class HostdependenciesTable extends Table {
                     },
                 ],
                 'HostgroupsDependent' => [
-                    'Containers' => function (Query $q) {
+                    'Containers' => function (SelectQuery $q) {
                         return $q->enableAutoFields(false)
                             ->where([
                                 'HostdependenciesHostgroupMemberships.dependent' => 1
@@ -247,7 +247,7 @@ class HostdependenciesTable extends Table {
             $containFilter['Hosts.name'] = [
                 'Hosts.name LIKE' => $indexFilter['Hosts.name LIKE']
             ];
-            $query->innerJoinWith('Hosts', function (Query $q) use ($containFilter) {
+            $query->innerJoinWith('Hosts', function (SelectQuery $q) use ($containFilter) {
                 return $q->where([
                     'HostdependenciesHostMemberships.dependent' => 0,
                     $containFilter['Hosts.name']
@@ -259,7 +259,7 @@ class HostdependenciesTable extends Table {
             $containFilter['HostsDependent.name'] = [
                 'HostsDependent.name LIKE' => $indexFilter['HostsDependent.name LIKE']
             ];
-            $query->innerJoinWith('HostsDependent', function (Query $q) use ($containFilter) {
+            $query->innerJoinWith('HostsDependent', function (SelectQuery $q) use ($containFilter) {
                 return $q->where([
                     'HostdependenciesHostMemberships.dependent' => 1,
                     $containFilter['HostsDependent.name']
@@ -272,7 +272,7 @@ class HostdependenciesTable extends Table {
             $containFilter['Hostgroups.name'] = [
                 'Containers.name LIKE' => $indexFilter['Hostgroups.name LIKE']
             ];
-            $query->innerJoinWith('Hostgroups.Containers', function (Query $q) use ($containFilter) {
+            $query->innerJoinWith('Hostgroups.Containers', function (SelectQuery $q) use ($containFilter) {
                 return $q->where([
                     'HostdependenciesHostgroupMemberships.dependent' => 0,
                     $containFilter['Hostgroups.name']
@@ -284,7 +284,7 @@ class HostdependenciesTable extends Table {
             $containFilter['HostgroupsDependent.name'] = [
                 'Containers.name LIKE' => $indexFilter['HostgroupsDependent.name LIKE']
             ];
-            $query->innerJoinWith('HostgroupsDependent.Containers', function (Query $q) use ($containFilter) {
+            $query->innerJoinWith('HostgroupsDependent.Containers', function (SelectQuery $q) use ($containFilter) {
                 return $q->where([
                     'HostdependenciesHostgroupMemberships.dependent' => 1,
                     $containFilter['HostgroupsDependent.name']
@@ -372,7 +372,7 @@ class HostdependenciesTable extends Table {
         $query = $this->find()
             ->contain([
                 'Hosts'       =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)
                             ->where([
                                 'Hosts.disabled' => 0
@@ -383,7 +383,7 @@ class HostdependenciesTable extends Table {
                             ]);
                     },
                 'Hostgroups'  =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)
                             ->select([
                                 'id',
@@ -391,7 +391,7 @@ class HostdependenciesTable extends Table {
                             ]);
                     },
                 'Timeperiods' =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)
                             ->select(['uuid']);
                     }
@@ -434,7 +434,7 @@ class HostdependenciesTable extends Table {
         $query = $this->find()
             ->contain([
                 'Hosts' =>
-                    function (Query $q) use ($hostId) {
+                    function (SelectQuery $q) use ($hostId) {
                         if ($hostId !== null) {
                             $q->where([
                                 'Hosts.id !=' => $hostId
@@ -614,7 +614,7 @@ class HostdependenciesTable extends Table {
     public function getHostDependenciesHosts(int $hostId, array $hostgroupIds = [], array $MY_RIGHTS = []): array {
         $query = $this->find()
             ->contain([
-                'Hosts'      => function (Query $q) use ($MY_RIGHTS) {
+                'Hosts'      => function (SelectQuery $q) use ($MY_RIGHTS) {
                     $query = $q->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -631,7 +631,7 @@ class HostdependenciesTable extends Table {
                     }
                     return $query;
                 },
-                'Hostgroups' => function (Query $q) use ($MY_RIGHTS) {
+                'Hostgroups' => function (SelectQuery $q) use ($MY_RIGHTS) {
                     $query = $q->select([
                         'Hostgroups.id'
                     ])
@@ -710,14 +710,14 @@ class HostdependenciesTable extends Table {
                 ]
             ])
             ->contain([
-                'Timeperiods'         => function (Query $q) {
+                'Timeperiods'         => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Timeperiods.id',
                             'Timeperiods.name'
                         ]);
                 },
-                'Hosts'               => function (Query $q) {
+                'Hosts'               => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->where([
                             'HostdependenciesHostMemberships.dependent' => 0,
@@ -727,7 +727,7 @@ class HostdependenciesTable extends Table {
                             'Hosts.uuid'
                         ]);
                 },
-                'HostsDependent'      => function (Query $q) {
+                'HostsDependent'      => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->where([
                             'HostdependenciesHostMemberships.dependent' => 1,
@@ -739,7 +739,7 @@ class HostdependenciesTable extends Table {
                         ]);
                 },
                 'Hostgroups'          => [
-                    'Containers' => function (Query $q) {
+                    'Containers' => function (SelectQuery $q) {
                         return $q->enableAutoFields(false)
                             ->where([
                                 'HostdependenciesHostgroupMemberships.dependent' => 0
@@ -751,7 +751,7 @@ class HostdependenciesTable extends Table {
                     },
                 ],
                 'HostgroupsDependent' => [
-                    'Containers' => function (Query $q) {
+                    'Containers' => function (SelectQuery $q) {
                         return $q->enableAutoFields(false)
                             ->where([
                                 'HostdependenciesHostgroupMemberships.dependent' => 1

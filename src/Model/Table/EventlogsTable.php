@@ -30,7 +30,7 @@ namespace App\Model\Table;
 use App\itnovum\openITCOCKPIT\Filter\EventlogsFilter;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Log\Log;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Inflector;
@@ -156,7 +156,7 @@ class EventlogsTable extends Table {
             $query->where(['Eventlogs.type IN' => $logTypes]);
         }
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.id IN' => $MY_RIGHTS]);
             }

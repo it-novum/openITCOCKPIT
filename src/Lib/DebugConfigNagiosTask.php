@@ -30,7 +30,7 @@ use Cake\Console\ConsoleInput;
 use Cake\Console\ConsoleIo;
 use Cake\Core\Configure;
 use itnovum\openITCOCKPIT\CakePHP\Folder;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\UUID;
@@ -182,7 +182,7 @@ class DebugConfigNagiosTask {
                     $containForQuery[] = $tableName;
                     if (isset($this->tablesToSeach[$TableName]['contain'][$tableName]['fields']) && !empty($this->tablesToSeach[$TableName]['contain'][$tableName]['fields'])) {
                         $fields = $this->tablesToSeach[$TableName]['contain'][$tableName]['fields'];
-                        $containForQuery[$tableName] = function (Query $query) use ($fields) {
+                        $containForQuery[$tableName] = function (SelectQuery $query) use ($fields) {
                             return $query->select($fields);
                         };
                     }

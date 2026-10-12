@@ -30,7 +30,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Behavior\ContainerOwnedBehavior;
 use App\Model\Entity\Instantreport;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -253,14 +253,14 @@ class InstantreportsTable extends Table {
     public function getInstantreportsIndex(InstantreportFilter $InstantreportFilter, ?PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
         $query = $this->unhydratedFind('all')
             ->contain([
-                'Timeperiods' => function (Query $q) {
+                'Timeperiods' => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Timeperiods.id',
                             'Timeperiods.name'
                         ]);
                 },
-                'Users'       => function (Query $q) {
+                'Users'       => function (SelectQuery $q) {
                     return $q->enableAutoFields(false)
                         ->select([
                             'Users.id',
@@ -344,25 +344,25 @@ class InstantreportsTable extends Table {
                 'Instantreports.id' => $id
             ])
             ->contain([
-                'Hostgroups'    => function (Query $q) {
+                'Hostgroups'    => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'id'
                         ]);
                 },
-                'Hosts'         => function (Query $q) {
+                'Hosts'         => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'id'
                         ]);
                 },
-                'Servicegroups' => function (Query $q) {
+                'Servicegroups' => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'id'
                         ]);
                 },
-                'Services'      => function (Query $q) {
+                'Services'      => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'id'
@@ -451,13 +451,13 @@ class InstantreportsTable extends Table {
                         'Containers',
                         // Get all hosts that are in host group through the host template AND
                         // which does NOT have any own host groups
-                        'Hosttemplates' => function (Query $query) use ($instantReport, $MY_RIGHTS) {
+                        'Hosttemplates' => function (SelectQuery $query) use ($instantReport, $MY_RIGHTS) {
                             $query->disableAutoFields()
                                 ->select([
                                     'id'
                                 ])
                                 ->contain([
-                                    'Hosts' => function (Query $query) use ($instantReport, $MY_RIGHTS) {
+                                    'Hosts' => function (SelectQuery $query) use ($instantReport, $MY_RIGHTS) {
                                         $query
                                             ->disableAutoFields()
                                             ->select([
@@ -500,7 +500,7 @@ class InstantreportsTable extends Table {
                             return $query;
                         },
                         // Get all hosts from host group
-                        'Hosts'         => function (Query $query) use ($instantReport, $MY_RIGHTS) {
+                        'Hosts'         => function (SelectQuery $query) use ($instantReport, $MY_RIGHTS) {
                             $query->disableAutoFields()
                                 ->select([
                                     'Hosts.id',
@@ -688,13 +688,13 @@ class InstantreportsTable extends Table {
                         'Containers',
                         // Get all services that are in this service group through the service template AND
                         // which does NOT have any own service groups
-                        'Servicetemplates' => function (Query $query) use ($MY_RIGHTS) {
+                        'Servicetemplates' => function (SelectQuery $query) use ($MY_RIGHTS) {
                             $query->disableAutoFields()
                                 ->select([
                                     'Servicetemplates.id'
                                 ])
                                 ->contain([
-                                    'Services' => function (Query $query) use ($MY_RIGHTS) {
+                                    'Services' => function (SelectQuery $query) use ($MY_RIGHTS) {
                                         $query->disableAutoFields()
                                             ->select([
                                                 'Services.id',
@@ -710,7 +710,7 @@ class InstantreportsTable extends Table {
                                                     'Servicetemplates.name'
                                                 ]
                                             ],
-                                            'Hosts'            => function (Query $q) use ($MY_RIGHTS) {
+                                            'Hosts'            => function (SelectQuery $q) use ($MY_RIGHTS) {
                                                 $q->disableAutoFields()
                                                     ->select([
                                                         'Hosts.id',
@@ -734,7 +734,7 @@ class InstantreportsTable extends Table {
                             return $query;
                         },
                         // Get all services from this service group
-                        'Services'         => function (Query $query) use ($MY_RIGHTS) {
+                        'Services'         => function (SelectQuery $query) use ($MY_RIGHTS) {
                             $query->disableAutoFields()
                                 ->contain([
                                     'Servicetemplates' => [
@@ -742,7 +742,7 @@ class InstantreportsTable extends Table {
                                             'Servicetemplates.name'
                                         ]
                                     ],
-                                    'Hosts'            => function (Query $q) use ($MY_RIGHTS) {
+                                    'Hosts'            => function (SelectQuery $q) use ($MY_RIGHTS) {
                                         $q->disableAutoFields()
                                             ->select([
                                                 'Hosts.id',
@@ -843,7 +843,7 @@ class InstantreportsTable extends Table {
                                 'Servicetemplates.name'
                             ]
                         ],
-                        'Hosts'            => function (Query $q) use ($MY_RIGHTS) {
+                        'Hosts'            => function (SelectQuery $q) use ($MY_RIGHTS) {
                             $q->disableAutoFields()
                                 ->select([
                                     'Hosts.id',

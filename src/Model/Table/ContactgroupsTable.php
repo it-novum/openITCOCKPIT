@@ -29,7 +29,7 @@ use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use App\Model\Entity\Changelog;
 use App\Model\Entity\Contactgroup;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -144,7 +144,7 @@ class ContactgroupsTable extends Table {
         $query->contain(['Containers']);
         $query->where($ContactgroupsFilter->indexFilter());
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
             }
@@ -404,7 +404,7 @@ class ContactgroupsTable extends Table {
 
     /**
      * @param null $uuid
-     * @return array|\Cake\ORM\Query
+     * @return array|SelectQuery
      */
     public function getContactgroupsForExport($uuid = null) {
         $query = $this->find()
@@ -477,7 +477,7 @@ class ContactgroupsTable extends Table {
             ]);
 
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
                 }
@@ -570,7 +570,7 @@ class ContactgroupsTable extends Table {
                 'Contactgroups.id',
             ])
             ->contain([
-                'Containers' => function (Query $q) {
+                'Containers' => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'Containers.parent_id'
@@ -631,7 +631,7 @@ class ContactgroupsTable extends Table {
             'Contactgroups.id IN' => $contactgroupIds
         ]);
 
-        $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+        $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
             if (!empty($MY_RIGHTS)) {
                 return $q->where(['Containers.parent_id IN' => $MY_RIGHTS]);
             }
@@ -659,7 +659,7 @@ class ContactgroupsTable extends Table {
                 'Contactgroups.id'
             ])
             ->contain([
-                'Contacts' => function (Query $query) {
+                'Contacts' => function (SelectQuery $query) {
                     return $query
                         ->disableAutoFields()
                         ->select(['id']);
@@ -669,7 +669,7 @@ class ContactgroupsTable extends Table {
                 'Contactgroups.container_id' => $containerId
             ]);
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Containers', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     return $q->where(['Containers.id IN' => $MY_RIGHTS]);
                 }
@@ -764,7 +764,7 @@ class ContactgroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Contacts' => function (Query $q) {
+                'Contacts' => function (SelectQuery $q) {
                     return $q->select([
                         'Contacts.id',
                         'Contacts.uuid',
@@ -772,7 +772,7 @@ class ContactgroupsTable extends Table {
                     ]);
                 }
             ])
-            ->innerJoinWith('Containers', function (Query $q) {
+            ->innerJoinWith('Containers', function (SelectQuery $q) {
                 return $q->where(['Containers.parent_id IN' => ROOT_CONTAINER]);
             });
 
@@ -883,7 +883,7 @@ class ContactgroupsTable extends Table {
             ])
             ->contain([
                 'Containers',
-                'Contacts' => function (Query $query) {
+                'Contacts' => function (SelectQuery $query) {
                     return $query->select([
                         'name' => 'Contacts.name',
                         'uuid' => 'Contacts.uuid'

@@ -34,6 +34,7 @@ namespace App\Model\Table;
 use App\Lib\Traits\Cake2ResultTableTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
 use Cake\Database\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\Utility\Hash;
@@ -516,7 +517,7 @@ class UsercontainerrolesTable extends Table {
         $query = $this->find()
             ->innerJoinWith('Containers')
             ->contain([
-                'Containers' => function (\Cake\ORM\Query $query) use ($containerId) {
+                'Containers' => function (SelectQuery $query) use ($containerId) {
                     return $query->select([
                         'Containers.id',
                     ])->whereNotInList('Containers.id', [$containerId]);
@@ -552,7 +553,7 @@ class UsercontainerrolesTable extends Table {
                 'Usercontainerroles.id',
                 'Usercontainerroles.name'
             ])
-            ->innerJoinWith('Containers', function (\Cake\ORM\Query $q) use ($containerId, $MY_RIGHTS) {
+            ->innerJoinWith('Containers', function (SelectQuery $q) use ($containerId, $MY_RIGHTS) {
                 $q->disableAutoFields()
                     ->select([
                         'Containers.id'
@@ -611,7 +612,7 @@ class UsercontainerrolesTable extends Table {
             })->select([
             'Usercontainerroles.id'
         ])->contain([
-            'Containers' => function (\Cake\ORM\Query $q) {
+            'Containers' => function (SelectQuery $q) {
                 return $q->select([
                     'Containers.id'
                 ])->disableAutoFields();

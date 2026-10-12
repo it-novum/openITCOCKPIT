@@ -28,7 +28,7 @@ declare(strict_types=1);
 namespace App\Model\Table;
 
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
@@ -157,7 +157,7 @@ class PackagesLinuxHostsTable extends Table {
                 ['Hosts.id = PackagesLinuxHosts.host_id']
             )
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts' => function (SelectQuery $query) {
                     return $query->select([
                         'Hosts.id',
                         'Hosts.name',
@@ -221,7 +221,7 @@ class PackagesLinuxHostsTable extends Table {
                 ['Hosts.id = PackagesLinuxHosts.host_id']
             )
             ->contain([
-                'Hosts'         => function (Query $query) {
+                'Hosts'         => function (SelectQuery $query) {
                     return $query->select([
                         'Hosts.id',
                         'Hosts.name',
@@ -229,7 +229,7 @@ class PackagesLinuxHostsTable extends Table {
                         'Hosts.container_id',
                     ]);
                 },
-                'PackagesLinux' => function (Query $query) {
+                'PackagesLinux' => function (SelectQuery $query) {
                     return $query->select([
                         'PackagesLinux.id',
                         'PackagesLinux.name',

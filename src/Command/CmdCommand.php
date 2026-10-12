@@ -40,7 +40,7 @@ use Cake\Command\Command;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Log\Log;
-use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\UUID;
 use itnovum\openITCOCKPIT\Monitoring\QueryHandler;
@@ -159,14 +159,14 @@ class CmdCommand extends Command {
                 'name'
             ])
             ->contain([
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->select([
                         'id',
                         'name'
                     ]);
                     return $query;
                 },
-                'Hosts'            => function (Query $query) {
+                'Hosts'            => function (SelectQuery $query) {
                     $query->select([
                         'id',
                         'uuid',
@@ -242,14 +242,14 @@ class CmdCommand extends Command {
                 'servicename' => $query->expr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
             ])
             ->contain([
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->select([
                         'id',
                         'name'
                     ]);
                     return $query;
                 },
-                'Hosts'            => function (Query $query) {
+                'Hosts'            => function (SelectQuery $query) {
                     $query->select([
                         'id',
                         'uuid',

@@ -37,6 +37,7 @@ use Cake\Database\Expression\ComparisonExpression;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Datasource\Exception\RecordNotFoundException;
 use Cake\ORM\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
@@ -548,7 +549,7 @@ class ServicesTable extends Table {
             'Services.host_id'
         ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -557,7 +558,7 @@ class ServicesTable extends Table {
                 return $q;
             })
             ->contain([
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->enableAutoFields(false)
                         ->select([
                             'Servicetemplates.id',
@@ -654,7 +655,7 @@ class ServicesTable extends Table {
 
         $query
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 return $q->where([
                     'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
                 ]);
@@ -686,7 +687,7 @@ class ServicesTable extends Table {
             $query = $this->find();
             $query
                 ->innerJoinWith('Hosts')
-                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                     return $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
                     ]);
@@ -772,7 +773,7 @@ class ServicesTable extends Table {
 
         $query
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 return $q->where([
                     'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
                 ]);
@@ -813,7 +814,7 @@ class ServicesTable extends Table {
             $query = $this->find();
             $query
                 ->innerJoinWith('Hosts')
-                ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+                ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                     return $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
                     ]);
@@ -1156,7 +1157,7 @@ class ServicesTable extends Table {
         $query = $this->find()
             ->contain([
                 'Servicecommandargumentvalues',
-                'Servicetemplates' => function (Query $query) use ($servicetemplateType) {
+                'Servicetemplates' => function (SelectQuery $query) use ($servicetemplateType) {
                     $query->contain([
                         //'CheckCommand',
                         'Agentchecks'
@@ -1226,7 +1227,7 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Hosts'            => function (Query $query) {
+                'Hosts'            => function (SelectQuery $query) {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -1239,7 +1240,7 @@ class ServicesTable extends Table {
                         ]);
                     return $query;
                 },
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->select([
                         'Servicetemplates.id',
                         'Servicetemplates.name',
@@ -1266,7 +1267,7 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts' => function (SelectQuery $query) {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -1293,7 +1294,7 @@ class ServicesTable extends Table {
                 'Services.uuid' => $uuid
             ])
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts' => function (SelectQuery $query) {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -1323,7 +1324,7 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Hosts'            => function (Query $query) {
+                'Hosts'            => function (SelectQuery $query) {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -1337,7 +1338,7 @@ class ServicesTable extends Table {
                         ]);
                     return $query;
                 },
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->select([
                         'Servicetemplates.id',
                         'Servicetemplates.uuid',
@@ -1370,15 +1371,15 @@ class ServicesTable extends Table {
                 //        return $q->enableAutoFields(false)->select(['id', 'uuid', 'check_interval', 'command_id']);
                 //    },
                 'Contactgroups'                     =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id', 'uuid']);
                     },
                 'Contacts'                          =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id', 'uuid']);
                     },
                 'Servicegroups'                     =>
-                    function (Query $q) {
+                    function (SelectQuery $q) {
                         return $q->enableAutoFields(false)->select(['id', 'uuid']);
                     },
                 'Customvariables',
@@ -1417,7 +1418,7 @@ class ServicesTable extends Table {
                 'Services.active_checks_enabled'
             ])
             ->contain([
-                'Servicetemplates' => function (Query $q) {
+                'Servicetemplates' => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'Servicetemplates.id',
@@ -1432,7 +1433,7 @@ class ServicesTable extends Table {
                             ]
                         ]);
                 },
-                'Hosts'            => function (Query $q) {
+                'Hosts'            => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'Hosts.id',
@@ -1747,7 +1748,7 @@ class ServicesTable extends Table {
                 'Hosts.disabled',
             ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -1846,7 +1847,7 @@ class ServicesTable extends Table {
                 'Hosts.disabled',
             ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -1939,7 +1940,7 @@ class ServicesTable extends Table {
                 'Hosts.disabled',
             ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -2077,7 +2078,7 @@ class ServicesTable extends Table {
                 'Hosts.notes'
             ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -2268,7 +2269,7 @@ class ServicesTable extends Table {
             ->innerJoin(['Hosttemplates' => 'hosttemplates'], [
                 'Hosttemplates.id = Hosts.hosttemplate_id',
             ])
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -2571,7 +2572,7 @@ class ServicesTable extends Table {
             ->innerJoin(['Hosttemplates' => 'hosttemplates'], [
                 'Hosttemplates.id = Hosts.hosttemplate_id',
             ])
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -2929,7 +2930,7 @@ class ServicesTable extends Table {
             'servicename' => $query->expr('IF((Services.name IS NULL OR Services.name=""), Servicetemplates.name, Services.name)'),
         ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -3011,7 +3012,7 @@ class ServicesTable extends Table {
         ]);
         $query
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -3112,7 +3113,7 @@ class ServicesTable extends Table {
                 'Hosts.disabled',
             ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -3283,7 +3284,7 @@ class ServicesTable extends Table {
                 'Hosts.disabled',
             ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -3474,7 +3475,7 @@ class ServicesTable extends Table {
                 'Services.id' => $id,
             ])
             ->contain([
-                'Hosts' => function (Query $query) {
+                'Hosts' => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Hosts.id',
@@ -3538,7 +3539,7 @@ class ServicesTable extends Table {
                 'Services.id' => $id
             ])
             ->contain([
-                'Hosts'            => function (Query $query) {
+                'Hosts'            => function (SelectQuery $query) {
                     $query->select([
                         'Hosts.id',
                         'Hosts.uuid',
@@ -3549,7 +3550,7 @@ class ServicesTable extends Table {
                         ]);
                     return $query;
                 },
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->select([
                         'Servicetemplates.id',
                         'Servicetemplates.check_period_id',
@@ -3622,7 +3623,7 @@ class ServicesTable extends Table {
                 'Hosts.disabled',
             ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -3748,7 +3749,7 @@ class ServicesTable extends Table {
                 'Hosts.disabled',
             ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()
@@ -3844,7 +3845,7 @@ class ServicesTable extends Table {
             ])
             ->innerJoinWith('Servicetemplates')
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 return $q->where([
                     'HostsToContainersSharing.id IN ' => $MY_RIGHTS
                 ]);
@@ -3919,7 +3920,7 @@ class ServicesTable extends Table {
             ->innerJoinWith('Servicetemplates')
             ->innerJoinWith('Hosts');
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 return $q->where([
                     'HostsToContainersSharing.id IN ' => $MY_RIGHTS
                 ]);
@@ -4796,7 +4797,7 @@ class ServicesTable extends Table {
         ]);
         $query
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -4878,7 +4879,7 @@ class ServicesTable extends Table {
                 'Services.active_checks_enabled'
             ])
             ->contain([
-                'Servicetemplates' => function (Query $q) {
+                'Servicetemplates' => function (SelectQuery $q) {
                     return $q->disableAutoFields()
                         ->select([
                             'Servicetemplates.id',
@@ -5250,7 +5251,7 @@ class ServicesTable extends Table {
                 'Services.id',
                 'Servicegroups.id'
             ])
-            ->innerJoinWith('Servicegroups', function (Query $q) {
+            ->innerJoinWith('Servicegroups', function (SelectQuery $q) {
                 return $q->innerJoinWith('Containers');
             })
             ->where([
@@ -5279,7 +5280,7 @@ class ServicesTable extends Table {
                 'Services.id',
                 'Servicegroups.id'
             ])
-            ->innerJoinWith('Servicegroups', function (Query $q) {
+            ->innerJoinWith('Servicegroups', function (SelectQuery $q) {
                 return $q->innerJoinWith('Containers');
             })
             ->where([
@@ -5694,7 +5695,7 @@ class ServicesTable extends Table {
                 'Hosts'
             ]);
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -5830,7 +5831,7 @@ class ServicesTable extends Table {
                 ]
             ]);
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -6091,14 +6092,14 @@ class ServicesTable extends Table {
                 'Services.servicetemplate_id',
                 'Services.active_checks_enabled',
             ])
-            ->innerJoinWith('Hosts', function (Query $query) use ($hostUuid) {
+            ->innerJoinWith('Hosts', function (SelectQuery $query) use ($hostUuid) {
                 $query->where([
                     'Hosts.uuid' => $hostUuid
                 ]);
                 return $query;
             })
             ->contain([
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Servicetemplates.id',
@@ -6128,7 +6129,7 @@ class ServicesTable extends Table {
                 'Services.uuid' => $serviceUuid
             ])
             ->contain([
-                'Servicetemplates' => function (Query $query) {
+                'Servicetemplates' => function (SelectQuery $query) {
                     $query->disableAutoFields()
                         ->select([
                             'Servicetemplates.id',
@@ -6218,7 +6219,7 @@ class ServicesTable extends Table {
             'servicename' => $query->expr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))')
         ])
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($containerIds) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($containerIds) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $containerIds
@@ -6294,7 +6295,7 @@ class ServicesTable extends Table {
 
         $query = $this->find();
         $query
-            ->innerJoinWith('Hosts', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts', function (SelectQuery $q) use ($ServiceConditions) {
                 return $q->where([
                     'Hosts.container_id IN ' => $ServiceConditions->getContainerIds()
                 ]);
@@ -6330,7 +6331,7 @@ class ServicesTable extends Table {
         if (!empty($selected)) {
             $query = $this->find();
             $query
-                ->innerJoinWith('Hosts', function (Query $q) use ($ServiceConditions) {
+                ->innerJoinWith('Hosts', function (SelectQuery $q) use ($ServiceConditions) {
                     return $q->where([
                         'Hosts.container_id IN ' => $ServiceConditions->getContainerIds()
                     ]);
@@ -6403,7 +6404,7 @@ class ServicesTable extends Table {
                 'Hosts'
             ]);
         if (!empty($MY_RIGHTS)) {
-            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($MY_RIGHTS) {
+            $query->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($MY_RIGHTS) {
                 if (!empty($MY_RIGHTS)) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $MY_RIGHTS
@@ -6583,7 +6584,7 @@ class ServicesTable extends Table {
             ->innerJoin(['Hosts' => 'hosts'], [
                 'Hosts.id = Services.host_id',
             ])
-            ->innerJoinWith('Hosts.HostsToContainersSharing', function (Query $q) use ($ServiceConditions) {
+            ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
                 if (!empty($ServiceConditions->getContainerIds())) {
                     $q->where([
                         'HostsToContainersSharing.id IN ' => $ServiceConditions->getContainerIds()

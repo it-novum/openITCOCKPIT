@@ -38,6 +38,7 @@ use App\Model\Entity\Changelog;
 use App\Model\Entity\User;
 use Authentication\PasswordHasher\DefaultPasswordHasher;
 use Cake\Database\Query;
+use Cake\ORM\Query\SelectQuery;
 use Cake\Datasource\EntityInterface;
 use Cake\Event\Event;
 use Cake\Log\Log;
@@ -1571,7 +1572,7 @@ class UsersTable extends Table {
         $query = $this->find()
             ->innerJoinWith('Containers')
             ->contain([
-                'Containers' => function (\Cake\ORM\Query $query) use ($containerId) {
+                'Containers' => function (SelectQuery $query) use ($containerId) {
                     return $query->select([
                         'Containers.id',
                     ])->whereNotInList('Containers.id', [$containerId]);
