@@ -242,7 +242,7 @@ class UserDefaultTemplatesTable extends Table {
      * @param PaginateOMat|null $PaginateOMat
      * @return array
      */
-    public function getUserDefaultTemplatesIndex(UserDefaultTemplatesFilter $UserDefaultTemplatesFilter, PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
+    public function getUserDefaultTemplatesIndex(UserDefaultTemplatesFilter $UserDefaultTemplatesFilter, ?PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
 
         $where = $UserDefaultTemplatesFilter->indexFilter();
 

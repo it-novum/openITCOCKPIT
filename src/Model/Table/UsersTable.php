@@ -1386,7 +1386,6 @@ class UsersTable extends Table {
             imagealphablending($destImg, false);
             imagesavealpha($destImg, true);
             imagepng($destImg, $newImageFull);
-            imagedestroy($destImg);
 
             //Delete source image
             unlink($tmpImageFull);

@@ -455,7 +455,6 @@ class MapUploadsTable extends Table {
                 throw new \Exception('Filetype not supported!');
                 break;
         }
-        imagedestroy($destImg);
     }
 
     /**
