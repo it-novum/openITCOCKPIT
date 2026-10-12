@@ -176,7 +176,7 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
      */
     public function getRecordsForReporting(StatehistoryHostConditions $StatehistoryHostConditions) {
         $statehistoryRecords = [];
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'StatehistoryHosts.hostname'      => $StatehistoryHostConditions->getHostUuid(),
                 'StatehistoryHosts.state_time <=' => $StatehistoryHostConditions->getFrom()
@@ -191,15 +191,14 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
         }
         $query->orderBy([
             'StatehistoryHosts.state_time' => 'DESC'
-        ])
-            ->disableHydration();
+        ]);
 
         $result = $query->first();
         if (!empty($result)) {
             $statehistoryRecords[] = new \itnovum\openITCOCKPIT\Core\Views\StatehistoryHost($result);
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'StatehistoryHosts.hostname'     => $StatehistoryHostConditions->getHostUuid(),
                 'StatehistoryHosts.state_time >' => $StatehistoryHostConditions->getFrom()
@@ -214,8 +213,7 @@ class StatehistoryHostsTable extends Table implements StatehistoryHostTableInter
         }
         $query->orderBy([
             'StatehistoryHosts.state_time' => 'ASC'
-        ])
-            ->disableHydration();
+        ]);
 
         $results = $query->all();
 

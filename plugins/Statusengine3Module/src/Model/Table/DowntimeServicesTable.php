@@ -494,7 +494,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             $uuids = [$uuids];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'DowntimeServices.service_description',
             'DowntimeServices.author_name',
@@ -522,8 +522,6 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
 
             ]);
         }
-
-        $query->disableHydration();
         $downtimes = $query->all();
         $result = [];
         foreach ($downtimes as $downtime) {
@@ -550,7 +548,7 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
             $uuids = [$uuids];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'DowntimeServices.service_description',
                 'DowntimeServices.author_name',
@@ -580,8 +578,6 @@ class DowntimeServicesTable extends Table implements DowntimehistoryServicesTabl
         $query->orderBy([
             'DowntimeServices.scheduled_start_time' => 'ASC'
         ]);
-
-        $query->disableHydration();
         $downtimes = $query->all();
         $result = [];
         foreach ($downtimes as $downtime) {

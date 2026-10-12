@@ -709,8 +709,8 @@ class UsersTable extends Table {
     }
 
     public function getUserByEmail($email = null) {
-        $query = $this->find();
-        $query->disableHydration()
+        $query = $this->unhydratedFind();
+        $query
             ->where([
                 'Users.email' => $email,
             ])
@@ -865,7 +865,7 @@ class UsersTable extends Table {
             return [];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Users.id',
             'Users.email',
@@ -904,7 +904,6 @@ class UsersTable extends Table {
             ->groupBy([
                 'Users.id'
             ])
-            ->disableHydration()
             ->all();
 
         if ($type === 'list') {
@@ -943,7 +942,7 @@ class UsersTable extends Table {
      * @return array|EntityInterface
      */
     public function getActiveUsersByIdForCake2Login($id) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Users.id',
             'Users.email',
@@ -981,7 +980,6 @@ class UsersTable extends Table {
             ->contain([
                 'Usergroups'
             ])
-            ->disableHydration()
             ->where([
                 'Users.id'        => $id,
                 'Users.is_active' => 1,
@@ -1006,7 +1004,7 @@ class UsersTable extends Table {
      * @return array
      */
     public function getActiveUsersByEmail($email) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Users.id',
             'Users.email',
@@ -1035,7 +1033,6 @@ class UsersTable extends Table {
                 'Users.lastname'  => 'literal'
             ])
         ])
-            ->disableHydration()
             ->where([
                 'Users.email'     => $email,
                 'Users.is_active' => 1
@@ -1403,7 +1400,7 @@ class UsersTable extends Table {
      * @return array
      */
     public function getUsersForMailNotifications($usergroupsIds = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id',
                 'Users.email'
@@ -1421,7 +1418,6 @@ class UsersTable extends Table {
             'Users.id'
         ])
             ->disableAutoFields()
-            ->disableHydration()
             ->all();
 
         $users = $query->toArray();
@@ -1638,7 +1634,7 @@ class UsersTable extends Table {
             $containerIds = [$containerIds];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'id'   => 'DashboardTabs.id',
             'name' => $query->expr('CONCAT(DashboardTabs.name, " (", Users.firstname, " " ,Users.lastname,")")'),
@@ -1675,7 +1671,6 @@ class UsersTable extends Table {
             );
         }
         $query->groupBy(['DashboardTabs.id'])
-            ->disableHydration()
             ->all();
         $result = $this->emptyArrayIfNull($query->toArray());
         if (empty($result)) {
@@ -1694,7 +1689,7 @@ class UsersTable extends Table {
             $containerIds = [$containerIds];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'id'   => 'FilterBookmarks.id',
             'name' => $query->expr('CONCAT(FilterBookmarks.name, " (", Users.firstname, " " ,Users.lastname,")")'),
@@ -1731,7 +1726,6 @@ class UsersTable extends Table {
             );
         }
         $query->groupBy(['FilterBookmarks.id'])
-            ->disableHydration()
             ->all();
         $result = $this->emptyArrayIfNull($query->toArray());
         if (empty($result)) {
@@ -1995,7 +1989,7 @@ class UsersTable extends Table {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Users.id',
                 'Users.lastname',
@@ -2006,7 +2000,7 @@ class UsersTable extends Table {
                 'Users.id IN' => $ids
             ]);
         }
-        $query->disableHydration()
+        $query
             ->all();
 
         foreach ($query->toArray() as $user) {
@@ -2019,12 +2013,11 @@ class UsersTable extends Table {
      * @return User[]
      */
     public function getUsersForLdapImport() {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'id',
             'email' => $query->func()->lcase(['email' => 'identifier'])
         ])
-            ->disableHydration()
             ->all();
 
         return $query->toArray();

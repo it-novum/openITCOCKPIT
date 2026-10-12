@@ -119,7 +119,7 @@ class OrganizationalChartsTable extends Table {
      */
     public function getOrganizationalChartsIndex(GenericFilter $GenericFilter, PaginateOMat $PaginateOMat, array $MY_RIGHTS) {
 
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->select([
                 'OrganizationalCharts.id',
                 'OrganizationalCharts.name',
@@ -167,8 +167,6 @@ class OrganizationalChartsTable extends Table {
                 'permission_status' => 'permitted'
             ])->groupBy(['OrganizationalCharts.id']);
         }
-
-        $query->disableHydration();
         if (!empty($GenericFilter->genericFilters())) {
             $query->where($GenericFilter->genericFilters());
         }
@@ -203,7 +201,7 @@ class OrganizationalChartsTable extends Table {
      * @return array
      */
     public function getOrganizationalChartsByContainerId(int $containerId, array $MY_RIGHTS = [], string $type = 'all'): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->innerJoinWith('OrganizationalChartNodes');
         /* if needed for details
         ->innerJoinWith('OrganizationalChartNodes', function (Query $q) use ($MY_RIGHTS) {
@@ -226,8 +224,7 @@ class OrganizationalChartsTable extends Table {
         }
 
         $query->where(['OrganizationalChartNodes.container_id' => $containerId])
-            ->groupBy(['OrganizationalCharts.id'])
-            ->disableHydration();
+            ->groupBy(['OrganizationalCharts.id']);
 
         if ($type === 'list') {
             $return = [];
@@ -247,7 +244,7 @@ class OrganizationalChartsTable extends Table {
      * @return array
      */
     public function getOrganizationalChartById(int $organizationalChartId, array $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->leftJoinWith('OrganizationalChartNodes', function (SelectQuery $q) use ($MY_RIGHTS) {
                 return $q->contain([
                     'Containers' => function (SelectQuery $q) use ($MY_RIGHTS) {
@@ -287,8 +284,7 @@ class OrganizationalChartsTable extends Table {
         }
 
         $query->where(['OrganizationalCharts.id' => $organizationalChartId])
-            ->groupBy(['OrganizationalCharts.id'])
-            ->disableHydration();
+            ->groupBy(['OrganizationalCharts.id']);
 
         return $query->firstOrFail();
     }

@@ -176,7 +176,7 @@ class StatuspagegroupsTable extends Table {
      * @return array
      */
     public function getStatuspagegroupsIndex(GenericFilter $GenericFilter, $PaginateOMat = null, $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Containers'
             ])
@@ -188,7 +188,6 @@ class StatuspagegroupsTable extends Table {
             }
             return $q;
         });
-        $query->disableHydration();
         $query->orderBy($GenericFilter->getOrderForPaginator('Statuspagegroups.name', 'asc'));
 
         if ($PaginateOMat === null) {
@@ -251,7 +250,7 @@ class StatuspagegroupsTable extends Table {
      * @return array
      */
     public function getStatuspagegroupForViewById(int $id): array {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->contain([
             'StatuspagegroupCategories'  => function (SelectQuery $query) {
                 // Keep the order of categories stable
@@ -265,7 +264,7 @@ class StatuspagegroupsTable extends Table {
         ])
             ->where([
                 'Statuspagegroups.id' => $id
-            ])->disableHydration();
+            ]);
 
         return $query->firstOrFail();
     }
@@ -377,7 +376,7 @@ class StatuspagegroupsTable extends Table {
         if (empty($statuspagegroupIds)) {
             return [];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'StatuspagesMemberships.statuspage_id'
             ]);
@@ -392,7 +391,7 @@ class StatuspagegroupsTable extends Table {
             })
             ->where([
                 'StatuspagesMemberships.statuspagegroup_id IN' => $statuspagegroupIds
-            ])->disableHydration()
+            ])
             ->all();
 
         $result = $query->toArray();

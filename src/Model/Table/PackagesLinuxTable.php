@@ -140,7 +140,7 @@ class PackagesLinuxTable extends Table {
      * @param null|int $offset
      */
     public function getPackagesLinuxWithLimit(?int $limit = null, ?int $offset = null): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'PackagesLinux.id',
                 'PackagesLinux.name',
@@ -152,8 +152,6 @@ class PackagesLinuxTable extends Table {
         if ($offset !== null) {
             $query->offset($offset);
         }
-
-        $query->disableHydration();
 
         $query->all();
         return $query->toArray();
@@ -623,7 +621,7 @@ class PackagesLinuxTable extends Table {
         ];
 
 
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->disableAutoFields()
             ->contain([
                 'PackageLinuxHosts' => function (SelectQuery $query) {
@@ -652,9 +650,6 @@ class PackagesLinuxTable extends Table {
                     return $query;
                 }
             ]);
-
-
-        $query->disableHydration();
         $result = $query->toArray();
         if (empty($result)) {
             return $all_packages_linux_summary;

@@ -541,7 +541,7 @@ class ServicesTable extends Table {
             $where['Services.disabled'] = 0;
         }
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Services.id',
             'Services.name',
@@ -570,8 +570,7 @@ class ServicesTable extends Table {
             ->where($where)
             ->groupBy([
                 'Services.id'
-            ])
-            ->disableHydration();
+            ]);
 
         $result = $query->toArray();
         if (empty($result)) {
@@ -617,7 +616,7 @@ class ServicesTable extends Table {
             unset($where['servicename LIKE']);
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
 
         $select = [
             'servicename' => $query->expr('CONCAT(Hosts.name, "/", IF(Services.name IS NULL, Servicetemplates.name, Services.name))'),
@@ -672,7 +671,6 @@ class ServicesTable extends Table {
             'servicename' => 'asc'
         ])
             ->limit(ITN_AJAX_LIMIT)
-            ->disableHydration()
             ->all();
 
         $servicesWithLimit = [];
@@ -684,7 +682,7 @@ class ServicesTable extends Table {
         }
 
         if (!empty($selected)) {
-            $query = $this->find();
+            $query = $this->unhydratedFind();
             $query
                 ->innerJoinWith('Hosts')
                 ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
@@ -700,7 +698,6 @@ class ServicesTable extends Table {
                 ->orderBy([
                     'servicename' => 'asc'
                 ])
-                ->disableHydration()
                 ->all();
             $results = $this->emptyArrayIfNull($query->toArray());
             foreach ($results as $result) {
@@ -758,7 +755,7 @@ class ServicesTable extends Table {
         }
 
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
 
         if (isset($where['servicename rlike'])) {
             $query->where(new ComparisonExpression(
@@ -801,7 +798,6 @@ class ServicesTable extends Table {
         }
 
         $query
-            ->disableHydration()
             ->all();
 
         $servicesWithLimit = [];
@@ -811,7 +807,7 @@ class ServicesTable extends Table {
             $servicesWithLimit[$result['id']] = $result;
         }
         if (!empty($selected)) {
-            $query = $this->find();
+            $query = $this->unhydratedFind();
             $query
                 ->innerJoinWith('Hosts')
                 ->innerJoinWith('Hosts.HostsToContainersSharing', function (SelectQuery $q) use ($ServiceConditions) {
@@ -835,7 +831,6 @@ class ServicesTable extends Table {
                 ->orderBy([
                     'servicename' => 'asc'
                 ])
-                ->disableHydration()
                 ->all();
 
             $results = $this->emptyArrayIfNull($query->toArray());
@@ -1409,7 +1404,7 @@ class ServicesTable extends Table {
             $containerIds = [$containerIds];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id',
                 'Services.name',
@@ -1458,7 +1453,6 @@ class ServicesTable extends Table {
         $query
             ->where($where)
             ->orderBy(['Services.id' => 'asc'])
-            ->disableHydration()
             ->all();
         $query = $query->toArray();
         if ($query === null) {
@@ -1726,7 +1720,7 @@ class ServicesTable extends Table {
         if ($ServiceConditions->getHostId()) {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -1770,8 +1764,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->where($where);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
 
         if (!empty($having)) {
@@ -1821,7 +1813,7 @@ class ServicesTable extends Table {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -1865,8 +1857,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->where($where);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
 
         if (!empty($having)) {
@@ -1915,7 +1905,7 @@ class ServicesTable extends Table {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -1967,8 +1957,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->where($where);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
 
         if (!empty($having)) {
@@ -2027,7 +2015,7 @@ class ServicesTable extends Table {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -2155,9 +2143,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
 
         if (!empty($having)) {
@@ -2214,7 +2199,7 @@ class ServicesTable extends Table {
         if ($ServiceConditions->getHostId()) {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -2446,9 +2431,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
 
         if (!empty($having)) {
@@ -2505,7 +2487,7 @@ class ServicesTable extends Table {
         if ($ServiceConditions->getHostId()) {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -2776,9 +2758,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
 
         if (!empty($having)) {
@@ -2817,7 +2796,7 @@ class ServicesTable extends Table {
             $ids = [$ids];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -2825,8 +2804,7 @@ class ServicesTable extends Table {
                 'Hosts.name'
             ])
             ->innerJoinWith('Servicetemplates')
-            ->innerJoinWith('Hosts')
-            ->disableHydration();
+            ->innerJoinWith('Hosts');
         if (!empty($ids)) {
             $query->where([
                 'Services.id IN' => $ids
@@ -3071,7 +3049,7 @@ class ServicesTable extends Table {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -3182,8 +3160,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
 
         if (!empty($having)) {
@@ -3244,7 +3220,7 @@ class ServicesTable extends Table {
             $where['Services.host_id'] = $ServiceConditions->getHostId();
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -3350,8 +3326,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
 
         if (!empty($having)) {
@@ -3820,7 +3794,7 @@ class ServicesTable extends Table {
      * @return int
      */
     public function getServicestatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'count' => $query->expr('COUNT(DISTINCT Servicestatus.service_object_id)')
@@ -3852,8 +3826,7 @@ class ServicesTable extends Table {
             })
             ->groupBy([
                 'Servicestatus.current_state',
-            ])
-            ->disableHydration();
+            ]);
 
         $where = [];
         if (!empty($conditions['Host']['name'])) {
@@ -3901,7 +3874,7 @@ class ServicesTable extends Table {
      * @return int
      */
     public function getServicestatusCountBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'count' => $query->expr('COUNT(DISTINCT Servicestatus.service_description)')
@@ -3928,8 +3901,7 @@ class ServicesTable extends Table {
         }
         $query->groupBy([
             'Servicestatus.current_state',
-        ])
-            ->disableHydration();
+        ]);
 
         $where = [];
         if (!empty($conditions['Host']['name'])) {
@@ -3977,7 +3949,7 @@ class ServicesTable extends Table {
      * @return int
      */
     public function getServiceIdsBySelectedStatusExtendedStatusengine3($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.id',
@@ -4177,8 +4149,7 @@ class ServicesTable extends Table {
         }
 
         $query->andWhere($where)
-            ->groupBy(['Services.id'])
-            ->disableHydration();
+            ->groupBy(['Services.id']);
         $result = $query->all();
 
         return $this->emptyArrayIfNull(Hash::extract($result->toArray(), '{n}.id'));
@@ -4191,7 +4162,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getServicesWithExtendedStatusByConditionsStatusengine3($MY_RIGHTS, $conditions): array {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $where = [];
         $query
             ->select([
@@ -4530,8 +4501,6 @@ class ServicesTable extends Table {
 
         $query->andWhere($where);
         $query->groupBy('Services.id');
-
-        $query->disableHydration();
         $result = $query->all();
         if (!$result === null) {
             return [];
@@ -4871,7 +4840,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getServicesForCheckmk($host_id) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Services.id',
                 'Services.name',
@@ -4902,7 +4871,6 @@ class ServicesTable extends Table {
                 'Services.service_type' => MK_SERVICE
             ])
             ->orderBy(['Services.id' => 'asc'])
-            ->disableHydration()
             ->all();
         if (empty($query) || $query === null) {
             return [];
@@ -5487,7 +5455,7 @@ class ServicesTable extends Table {
             $where['Services.id NOT in'] = $excludedServiceIds;
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'servicename' => $query->expr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
@@ -5497,8 +5465,7 @@ class ServicesTable extends Table {
                 $where
             )
             ->innerJoinWith('Hosts')
-            ->innerJoinWith('Servicetemplates')
-            ->disableHydration();
+            ->innerJoinWith('Servicetemplates');
 
         $result = [];
         foreach ($query->all() as $item) {
@@ -5663,7 +5630,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getServicesWithStatusByConditions($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.uuid',
@@ -5779,7 +5746,6 @@ class ServicesTable extends Table {
             );
         }
         $query->andWhere($where);
-        $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
             return [];
@@ -6210,7 +6176,7 @@ class ServicesTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Services.' . $index,
             'Hosts.id',
@@ -6234,8 +6200,6 @@ class ServicesTable extends Table {
             ]);
 
         $query->where($where);
-
-        $query->disableHydration();
         $query->groupBy(['Services.id']);
         $query->orderBy([
             'servicename' => 'asc',
@@ -6293,7 +6257,7 @@ class ServicesTable extends Table {
             unset($where['servicename LIKE']);
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->innerJoinWith('Hosts', function (SelectQuery $q) use ($ServiceConditions) {
                 return $q->where([
@@ -6317,7 +6281,6 @@ class ServicesTable extends Table {
             'servicename' => 'asc'
         ])
             ->limit(ITN_AJAX_LIMIT)
-            ->disableHydration()
             ->all();
 
         $servicesWithLimit = [];
@@ -6329,7 +6292,7 @@ class ServicesTable extends Table {
         }
 
         if (!empty($selected)) {
-            $query = $this->find();
+            $query = $this->unhydratedFind();
             $query
                 ->innerJoinWith('Hosts', function (SelectQuery $q) use ($ServiceConditions) {
                     return $q->where([
@@ -6349,7 +6312,6 @@ class ServicesTable extends Table {
                 ->orderBy([
                     'servicename' => 'asc'
                 ])
-                ->disableHydration()
                 ->all();
             $results = $this->emptyArrayIfNull($query->toArray());
             foreach ($results as $result) {
@@ -6373,7 +6335,7 @@ class ServicesTable extends Table {
      * @return array
      */
     public function getServicesForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Services.host_id',
@@ -6490,8 +6452,6 @@ class ServicesTable extends Table {
         }
         $query->andWhere($where);
         $query->groupBy('Services.id');
-
-        $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
             return [];
@@ -6541,7 +6501,7 @@ class ServicesTable extends Table {
      */
     public function getActiveAndSlaRelavantServicesIdsByHostIdAsList($id) {
         //$list = $this->MODEL->find('list', ['keyField' => 'id', 'valueField' => ('user_type')])->toArray();
-        $query = $this->find('list',
+        $query = $this->unhydratedFind('list',
             keyField: 'id',
             valueField: 'id');
         $query->select([
@@ -6554,7 +6514,6 @@ class ServicesTable extends Table {
                 'Services.disabled' => 0,
                 $query->expr('IF(Services.sla_relevant IS NULL, Servicetemplates.sla_relevant, Services.sla_relevant) = 1')
             ])
-            ->disableHydration()
             ->all();
         return $this->emptyArrayIfNull($query->toArray());
     }
@@ -6575,7 +6534,7 @@ class ServicesTable extends Table {
             $where['Services.id IN'] = $serviceIds;
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Servicestatus.current_state',
             'count' => $query->expr('COUNT(DISTINCT Servicestatus.service_description)'),
@@ -6609,8 +6568,6 @@ class ServicesTable extends Table {
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Servicestatus.current_state']);
         return $this->emptyArrayIfNull($query->toArray());
     }

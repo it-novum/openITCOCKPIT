@@ -262,7 +262,7 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             unset($where['status IN']);
         }
 
-        $query = $SatellitesTable->find('all');
+        $query = $SatellitesTable->unhydratedFind('all');
         $satellitesArray = $query->select([
             'Satellites.id',
             'Satellites.name',
@@ -282,7 +282,6 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             ->having($having)
             ->contain(['SatelliteStatus'])
             ->orderBy($SatelliteFilter->getOrderForPaginator('Satellites.name', 'asc'))
-            ->disableHydration()
             ->toArray();
 
         if (empty($satellitesArray)) {

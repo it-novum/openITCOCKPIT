@@ -272,7 +272,7 @@ class UsergroupsTable extends Table {
      * @return array
      */
     public function getUsergroupsForCopy($ids = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Usergroups.id',
                 'Usergroups.name',
@@ -281,7 +281,7 @@ class UsergroupsTable extends Table {
             ->where(['Usergroups.id IN' => $ids])
             ->orderBy(['Usergroups.id' => 'asc']);
 
-        $query->disableHydration()
+        $query
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());

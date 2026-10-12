@@ -208,7 +208,7 @@ class AgentconfigsTable extends Table {
     }
 
     public function getPullAgents(GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Agentconfigs.id',
                 'Agentconfigs.host_id',
@@ -240,7 +240,6 @@ class AgentconfigsTable extends Table {
 
 
         $query->where($GenericFilter->genericFilters());
-        $query->disableHydration();
         $query->orderBy($GenericFilter->getOrderForPaginator('Hosts.name', 'asc'));
 
         if ($PaginateOMat === null) {

@@ -753,7 +753,7 @@ class ServicetemplatesTable extends Table {
             $excludedUuids = [$excludedUuids];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Servicetemplates.id IN' => $ids
             ]);
@@ -774,7 +774,7 @@ class ServicetemplatesTable extends Table {
                 'Servicetemplates.container_id IN' => $MY_RIGHTS
             ]);
         }
-        $query->disableHydration()
+        $query
             ->all();
 
         $servicetemplates = [];
@@ -822,7 +822,7 @@ class ServicetemplatesTable extends Table {
      * @return array|\Cake\Datasource\EntityInterface|null
      */
     public function getServicetemplateForWizardByUuid($uuid, $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where([
                 'Servicetemplates.uuid' => $uuid
             ])
@@ -839,7 +839,6 @@ class ServicetemplatesTable extends Table {
                 'Servicetemplates.container_id IN' => $MY_RIGHTS
             ]);
         }
-        $query->disableHydration();
         if (!is_null($query)) {
             return $query->first();
         }
@@ -936,7 +935,7 @@ class ServicetemplatesTable extends Table {
         if (!is_array($ids)) {
             $ids = [$ids];
         }
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicetemplates.id',
                 'Servicetemplates.name',
@@ -961,7 +960,6 @@ class ServicetemplatesTable extends Table {
         }
 
         $query
-            ->disableHydration()
             ->all();
 
         $query = $query->toArray();
@@ -1645,7 +1643,7 @@ class ServicetemplatesTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Servicetemplates.' . $index,
             'Servicetemplates.name'
@@ -1657,8 +1655,6 @@ class ServicetemplatesTable extends Table {
                 'Servicetemplates.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->orderBy([
             'Servicetemplates.name' => 'asc'
         ]);

@@ -350,7 +350,7 @@ class ContactsTable extends Table {
      * @return array
      */
     public function getContactsIndex(ContactsFilter $ContactsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->contain(['Containers']);
         $query->where($ContactsFilter->indexFilter());
 
@@ -362,8 +362,6 @@ class ContactsTable extends Table {
         });
 
         $query->distinct('Contacts.id');
-
-        $query->disableHydration();
         $query->orderBy($ContactsFilter->getOrderForPaginator('Contacts.name', 'asc'));
 
 
@@ -403,7 +401,7 @@ class ContactsTable extends Table {
      * @return array
      */
     public function getContactsForCopy($ids = [], array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Contacts.id',
                 'Contacts.name',
@@ -426,7 +424,6 @@ class ContactsTable extends Table {
 
         $query
             ->distinct('Contacts.id')
-            ->disableHydration()
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
@@ -595,14 +592,13 @@ class ContactsTable extends Table {
             return [];
         }
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->contain(['Containers']);
         $query->innerJoinWith('Containers', function (SelectQuery $q) use ($containerIds) {
             return $q->where(['Containers.id IN' => $containerIds]);
         });
 
         $query->distinct('Contacts.id');
-        $query->disableHydration();
 
         if ($type === 'all') {
             return $this->formatResultAsCake2($query->toArray());

@@ -65,14 +65,13 @@ class UuidCache {
 
             switch ($TableName) {
                 case 'Services':
-                    $query = $Table->find();
+                    $query = $Table->unhydratedFind();
                     $result = $query->select([
                         'Services.id',
                         'servicename' => $query->expr('IF(Services.name IS NULL, Servicetemplates.name, Services.name)'),
                         'Services.uuid'
                     ])->where()
                         ->innerJoinWith('Servicetemplates')
-                        ->disableHydration()
                         ->all();
 
                     foreach ($result->toArray() as $service) {
@@ -86,7 +85,7 @@ class UuidCache {
                 case 'Contactgroups':
                 case 'Hostgroups':
                 case 'Servicegroups':
-                    $query = $Table->find();
+                    $query = $Table->unhydratedFind();
                     $result = $query->select([
                         'id',
                         'uuid'
@@ -100,7 +99,6 @@ class UuidCache {
                                     ]);
                             }
                         ])
-                        ->disableHydration()
                         ->all();
 
                     foreach ($result->toArray() as $containerObj) {

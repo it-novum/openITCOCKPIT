@@ -277,7 +277,7 @@ class PushAgentsTable extends Table {
     public function getPushAgents(GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, $MY_RIGHTS = []) {
         // Yes - this query is from hell!
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'PushAgents.id',
             'PushAgents.uuid',
@@ -347,7 +347,6 @@ class PushAgentsTable extends Table {
         }
 
         $query->where($where);
-        $query->disableHydration();
         $query->orderBy(
             array_merge(
                 $GenericFilter->getOrderForPaginator('Hosts.name', 'asc'),
@@ -377,7 +376,7 @@ class PushAgentsTable extends Table {
      * @return array
      */
     public function getPushAgentsForAssignments($agentConfigId = null) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         if (is_numeric($agentConfigId)) {
             $query->where([
                 'OR' => [
@@ -388,7 +387,6 @@ class PushAgentsTable extends Table {
         } else {
             $query->where('PushAgents.agentconfig_id IS NULL');
         }
-        $query->disableHydration();
 
         return $this->emptyArrayIfNull($query->toArray());
     }
@@ -434,7 +432,7 @@ class PushAgentsTable extends Table {
         /** @var ImportedHostsTable $ImportedHostsTable */
         $ImportedHostsTable = TableRegistry::getTableLocator()->get('ImportModule.ImportedHosts');
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $importedHostsSubSelect = $ImportedHostsTable->subquery()
             ->select('ImportedHosts.id')
             ->where([
@@ -458,7 +456,6 @@ class PushAgentsTable extends Table {
                     $importedHostsSubSelect
                 ]
             ]);
-        $query->disableHydration();
         $query->orderBy(['PushAgents.ipaddress' => 'asc']);
 
         return $this->emptyArrayIfNull($query->toArray());

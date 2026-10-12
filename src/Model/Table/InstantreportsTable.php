@@ -446,7 +446,7 @@ class InstantreportsTable extends Table {
                 }
 
                 $HostgroupsTable = TableRegistry::getTableLocator()->get('Hostgroups');
-                $hostgroups = $HostgroupsTable->find()
+                $hostgroups = $HostgroupsTable->unhydratedFind()
                     ->contain([
                         'Containers',
                         // Get all hosts that are in host group through the host template AND
@@ -544,7 +544,6 @@ class InstantreportsTable extends Table {
                     ]);
                 }
                 $hostgroups
-                    ->disableHydration()
                     ->all()
                     ->toArray();
                 foreach ($hostgroups as $hostgroup) {
@@ -601,7 +600,7 @@ class InstantreportsTable extends Table {
                 $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
                 if ($instantReport->get('evaluation') === 1) {
                     $hosts = $HostsTable
-                        ->find()
+                        ->unhydratedFind()
                         ->disableAutoFields()
                         ->select([
                             'Hosts.id',
@@ -618,12 +617,11 @@ class InstantreportsTable extends Table {
                         ]);
                     }
                     $hosts
-                        ->disableHydration()
                         ->all()
                         ->toArray();
                 } else {
                     $hosts = $HostsTable
-                        ->find()
+                        ->unhydratedFind()
                         ->disableAutoFields()
                         ->select([
                             'Hosts.id',
@@ -654,7 +652,6 @@ class InstantreportsTable extends Table {
                         ]);
                     }
                     $hosts
-                        ->disableHydration()
                         ->all()
                         ->toArray();
                 }
@@ -683,7 +680,7 @@ class InstantreportsTable extends Table {
                 }
                 $ServicegroupsTable = TableRegistry::getTableLocator()->get('Servicegroups');
 
-                $servicegroups = $ServicegroupsTable->find()
+                $servicegroups = $ServicegroupsTable->unhydratedFind()
                     ->contain([
                         'Containers',
                         // Get all services that are in this service group through the service template AND
@@ -775,7 +772,6 @@ class InstantreportsTable extends Table {
                     ]);
                 }
                 $servicegroups
-                    ->disableHydration()
                     ->all()
                     ->toArray();
                 foreach ($servicegroups as $servicegroup) {
@@ -934,7 +930,7 @@ class InstantreportsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Instantreports.' . $index,
             'Instantreports.name'
@@ -946,8 +942,6 @@ class InstantreportsTable extends Table {
                 'Instantreports.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
 
         $result = $query->toArray();
         if (empty($result)) {
@@ -984,7 +978,7 @@ class InstantreportsTable extends Table {
      * @return array
      */
     public function getInstantReportsByHostId(int $hostId, array $MY_RIGHTS): array {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Instantreports.id',
             'Instantreports.name'
@@ -1002,7 +996,6 @@ class InstantreportsTable extends Table {
                 'Instantreports.container_id IN' => $MY_RIGHTS
             ]);
         }
-        $query->disableHydration();
 
         return $query->toArray();
     }
@@ -1013,7 +1006,7 @@ class InstantreportsTable extends Table {
      * @return array
      */
     public function getInstantReportsByServiceId(int $serviceId, array $MY_RIGHTS): array {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Instantreports.id',
             'Instantreports.name'
@@ -1031,7 +1024,6 @@ class InstantreportsTable extends Table {
                 'Instantreports.container_id IN' => $MY_RIGHTS
             ]);
         }
-        $query->disableHydration();
 
         return $query->toArray();
     }

@@ -298,7 +298,7 @@ class PackagesHostDetailsTable extends Table {
      * @return array
      */
     public function getPatchstatusIndex(GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->innerJoin(
                 ['Hosts' => 'hosts'],
                 ['Hosts.id = PackagesHostDetails.host_id']
@@ -354,8 +354,6 @@ class PackagesHostDetailsTable extends Table {
         $query->orderBy(
             $GenericFilter->getOrderForPaginator('Hosts.name', 'asc')
         )->groupBy(['Hosts.id']);
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

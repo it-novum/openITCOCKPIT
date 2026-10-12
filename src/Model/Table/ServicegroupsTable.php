@@ -311,7 +311,7 @@ class ServicegroupsTable extends Table {
      * @return array
      */
     public function getServicegroupsIndex(ServicegroupFilter $ServicegroupFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->contain(['Containers']);
 
         $where = $ServicegroupFilter->indexFilter();
@@ -344,9 +344,6 @@ class ServicegroupsTable extends Table {
         });
 
         $query->where($where);
-
-
-        $query->disableHydration();
         $query->orderBy($ServicegroupFilter->getOrderForPaginator('Containers.name', 'asc'));
 
 
@@ -371,7 +368,7 @@ class ServicegroupsTable extends Table {
      */
     public function getServicegroupsForPdf(ServicegroupFilter $ServicegroupFilter, $MY_RIGHTS = []) {
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Services',
                 'Containers'
@@ -384,7 +381,7 @@ class ServicegroupsTable extends Table {
         $query->where($where)
             ->orderBy(
                 $ServicegroupFilter->getOrderForPaginator('Containers.name', 'asc')
-            )->disableHydration();
+            );
 
         $data = $query->all();
         return $this->emptyArrayIfNull($data->toArray());
@@ -809,7 +806,7 @@ class ServicegroupsTable extends Table {
      */
     public function getServicegroupsForAngular(ServicegroupConditions $ServicegroupConditions, $selected = []) {
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Containers'
             ])
@@ -837,7 +834,6 @@ class ServicegroupsTable extends Table {
             ->groupBy([
                 'Containers.id'
             ])
-            ->disableHydration()
             ->limit(ITN_AJAX_LIMIT)
             ->all();
 
@@ -849,7 +845,7 @@ class ServicegroupsTable extends Table {
         }
 
         if (!empty($selected)) {
-            $query = $this->find()
+            $query = $this->unhydratedFind()
                 ->contain([
                     'Containers'
                 ])
@@ -872,7 +868,6 @@ class ServicegroupsTable extends Table {
                 ->groupBy([
                     'Containers.id'
                 ])
-                ->disableHydration()
                 ->limit(ITN_AJAX_LIMIT)
                 ->all();
 
@@ -1107,7 +1102,7 @@ class ServicegroupsTable extends Table {
      * @return array
      */
     public function getServicegroupsByContainerIdExact($containerId, $type = 'all', $index = 'container_id', $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicegroups.id',
                 'Containers.id',
@@ -1126,8 +1121,6 @@ class ServicegroupsTable extends Table {
                 'Containers.id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->orderBy([
             'Containers.name' => 'asc'
         ]);
@@ -1276,7 +1269,7 @@ class ServicegroupsTable extends Table {
      * @return array
      */
     public function getServicegroupsForCopy($ids = [], array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where(['Servicegroups.id IN' => $ids])
             ->contain([
                 'Containers'
@@ -1289,14 +1282,14 @@ class ServicegroupsTable extends Table {
             ]);
         }
 
-        $query->disableHydration()
+        $query
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
     }
 
     public function getSourceServicegroupForCopy($id, array $MY_RIGHTS) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where(['Servicegroups.id' => $id])
             ->contain([
                 'Services',
@@ -1308,8 +1301,6 @@ class ServicegroupsTable extends Table {
                 'Containers.parent_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $result = $query->firstOrFail();
         $servicegroup = $result;
         $servicegroup['services'] = [

@@ -134,7 +134,7 @@ class GrafanaDashboardsTable extends Table {
      * @return array
      */
     public function getGrafanaDashboards(GenericFilter $GenericFilter, $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'id',
                 'host_id',
@@ -176,8 +176,6 @@ class GrafanaDashboardsTable extends Table {
         if (!empty($GenericFilter->genericFilters())) {
             $query->where($GenericFilter->genericFilters());
         }
-
-        $query->disableHydration();
         $result = $query->all();
         $result = $result->toArray();
 

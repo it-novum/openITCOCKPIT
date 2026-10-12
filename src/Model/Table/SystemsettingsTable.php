@@ -163,10 +163,10 @@ class SystemsettingsTable extends Table {
      * @return array
      */
     public function findAsArraySection($section = '') {
-        $query = $this->find()->where([
+        $query = $this->unhydratedFind()->where([
             'section' => $section
         ]);
-        $systemsettings = $query->disableHydration()->toArray();
+        $systemsettings = $query->toArray();
 
         $return = [];
         if (!is_null($systemsettings)) {

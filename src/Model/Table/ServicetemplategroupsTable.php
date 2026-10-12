@@ -207,7 +207,7 @@ class ServicetemplategroupsTable extends Table {
      * @return array
      */
     public function getServicetemplategroupsCsv(ServicetemplategroupsFilter $ServicetemplategroupsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->contain([
             'Containers',
             'Servicetemplates' => function (SelectQuery $query) {
@@ -217,8 +217,7 @@ class ServicetemplategroupsTable extends Table {
                     'Servicetemplates.description',
                 ]);
             }
-        ])
-            ->disableHydration();
+        ]);
         $where = $ServicetemplategroupsFilter->indexFilter();
         if (!empty($MY_RIGHTS)) {
             $where['Containers.parent_id IN'] = $MY_RIGHTS;
@@ -549,7 +548,7 @@ class ServicetemplategroupsTable extends Table {
      * @return array
      */
     public function getServicetemplategroupsByContainerIdExact($containerId, $type = 'all', $index = 'container_id', $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Servicetemplategroups.id',
                 'Containers.id',
@@ -568,8 +567,6 @@ class ServicetemplategroupsTable extends Table {
                 'Containers.id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->orderBy([
             'Containers.name' => 'asc'
         ]);
@@ -813,7 +810,7 @@ class ServicetemplategroupsTable extends Table {
      * @return array
      */
     public function getServicetemplategroupsForCopy($ids = [], array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where(['Servicetemplategroups.id IN' => $ids])
             ->contain([
                 'Containers'
@@ -826,14 +823,14 @@ class ServicetemplategroupsTable extends Table {
             ]);
         }
 
-        $query->disableHydration()
+        $query
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
     }
 
     public function getSourceServicetemplategroupForCopy($id, array $MY_RIGHTS) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where(['Servicetemplategroups.id' => $id])
             ->contain([
                 'Servicetemplates',
@@ -844,8 +841,6 @@ class ServicetemplategroupsTable extends Table {
                 'Containers.parent_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $result = $query->firstOrFail();
         $servicetemplategroup = $result;
         $servicetemplategroup['servicetemplates'] = [

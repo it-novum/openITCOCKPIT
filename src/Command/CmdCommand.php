@@ -151,7 +151,7 @@ class CmdCommand extends Command {
         /** @var ServicesTable $ServicesTable */
         $ServicesTable = TableRegistry::getTableLocator()->get('Services');
 
-        $query = $ServicesTable->find();
+        $query = $ServicesTable->unhydratedFind();
         $query
             ->select([
                 'id',
@@ -178,7 +178,6 @@ class CmdCommand extends Command {
             ->where([
                 'Services.disabled' => 0
             ])
-            ->disableHydration()
             ->all();
 
         foreach ($query as $service) {
@@ -233,7 +232,7 @@ class CmdCommand extends Command {
         //$connection->getDriver()->disconnect();
         //$connection->getDriver()->connect();
 
-        $query = $ServicesTable->find();
+        $query = $ServicesTable->unhydratedFind();
         $query
             ->select([
                 'id',
@@ -265,7 +264,6 @@ class CmdCommand extends Command {
             ->having([
                 'servicename' => $serviceDescription
             ])
-            ->disableHydration()
             ->first();
 
         $service = $query->toArray();

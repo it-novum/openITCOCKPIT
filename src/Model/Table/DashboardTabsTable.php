@@ -277,14 +277,13 @@ class DashboardTabsTable extends Table {
             ];
         }
 
-        $result = $this->find()
+        $result = $this->unhydratedFind()
             ->where($where)
             ->orderBy([
                 'DashboardTabs.position' => 'ASC',
             ]);
 
         $result
-            ->disableHydration()
             ->all();
 
 

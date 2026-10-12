@@ -133,7 +133,7 @@ class WindowsAppsHostsTable extends Table {
      * @return array
      */
     public function getHostsWithApp(int $appId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->innerJoin(
                 ['Hosts' => 'hosts'],
                 ['Hosts.id = WindowsAppsHosts.host_id']
@@ -173,8 +173,6 @@ class WindowsAppsHostsTable extends Table {
             )
             ->groupBy(['Hosts.id']);
 
-        $query->disableHydration();
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
@@ -206,7 +204,7 @@ class WindowsAppsHostsTable extends Table {
      * @return array
      */
     public function getWindowsAppsByHost(int $hostId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->innerJoin(
                 ['Hosts' => 'hosts'],
                 ['Hosts.id = WindowsAppsHosts.host_id']
@@ -244,8 +242,6 @@ class WindowsAppsHostsTable extends Table {
         $query->orderBy(
             $GenericFilter->getOrderForPaginator('WindowsApps.name', 'asc')
         );
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

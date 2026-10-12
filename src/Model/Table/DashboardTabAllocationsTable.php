@@ -310,7 +310,7 @@ class DashboardTabAllocationsTable extends Table {
     }
 
     public function getAllDashboardAllocationsByUser(User $User) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->leftJoinWith('Users')
             ->leftJoinWith('Usergroups');
         $query->andWhere([
@@ -322,7 +322,7 @@ class DashboardTabAllocationsTable extends Table {
         )->groupBy([
             'DashboardTabAllocations.id'
         ]);
-        $query->disableHydration()
+        $query
             ->all();
         return $this->emptyArrayIfNull($query->toArray());
     }
@@ -363,7 +363,7 @@ class DashboardTabAllocationsTable extends Table {
             $containerIds = [$containerIds];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'DashboardTabAllocations.id',
             'DashboardTabAllocations.dashboard_tab_id'
@@ -382,7 +382,6 @@ class DashboardTabAllocationsTable extends Table {
         }
 
         $query->groupBy(['DashboardTabAllocations.dashboard_tab_id'])
-            ->disableHydration()
             ->all();
         return $this->emptyArrayIfNull($query->toArray());
     }
@@ -393,7 +392,7 @@ class DashboardTabAllocationsTable extends Table {
      * @return array
      */
     public function getDashboardAllocationTabIdForUser(int $tabId, User $User): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->leftJoinWith('Users')
             ->leftJoinWith('Usergroups')
             ->contain('DashboardTabs');
@@ -407,8 +406,6 @@ class DashboardTabAllocationsTable extends Table {
         $query->andWhere([
             'DashboardTabAllocations.dashboard_tab_id' => $tabId
         ]);
-
-        $query->disableHydration();
         $result = $query->first();
 
         if (empty($result)) {

@@ -219,7 +219,7 @@ class MessagesOtdTable extends Table {
      */
     public function getMessageOtdForToday($userTimezone, $usergroupId) {
         $today = new \DateTime('now', new \DateTimeZone($userTimezone));
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         return $query->select([
             'MessagesOtd.id',
             'MessagesOtd.title',
@@ -235,7 +235,6 @@ class MessagesOtdTable extends Table {
         )->where([
             ':today BETWEEN MessagesOtd.date AND IF(MessagesOtd.expiration_duration IS NULL, :today, DATE_ADD(MessagesOtd.date, INTERVAL MessagesOtd.expiration_duration DAY))'
         ])->bind(':today', $today, 'date')
-            ->disableHydration()
             ->groupBy('MessagesOtd.date')
             ->having([
                 'FIND_IN_SET(:usergroup_id, IF(usergroup_ids IS NULL, :usergroup_id, usergroup_ids))'

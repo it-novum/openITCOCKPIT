@@ -667,7 +667,7 @@ class HosttemplatesTable extends Table {
             $contain[] = 'PrometheusExporters';
         };
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosttemplates.id',
                 'Hosttemplates.name',
@@ -684,7 +684,6 @@ class HosttemplatesTable extends Table {
         }
 
         $query
-            ->disableHydration()
             ->all();
 
         $query = $query->toArray();
@@ -1286,7 +1285,7 @@ class HosttemplatesTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Hosttemplates.' . $index,
             'Hosttemplates.name'
@@ -1298,8 +1297,6 @@ class HosttemplatesTable extends Table {
                 'Hosttemplates.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->orderBy([
             'Hosttemplates.name' => 'asc'
         ]);
@@ -1367,7 +1364,7 @@ class HosttemplatesTable extends Table {
         /** @var HostsTable $HostsTable */
         $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
 
-        $query = $HostsTable->find()
+        $query = $HostsTable->unhydratedFind()
             ->select([
                 'Hosts.id'
             ])
@@ -1377,7 +1374,6 @@ class HosttemplatesTable extends Table {
             ]);
 
         $hosts = $query
-            ->disableHydration()
             ->all();
 
         if (!empty($hosts)) {

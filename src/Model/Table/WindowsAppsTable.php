@@ -140,7 +140,7 @@ class WindowsAppsTable extends Table {
      * @param null|int $offset
      */
     public function getWindowsAppsWithLimit(?int $limit = null, ?int $offset = null): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'WindowsApps.id',
                 'WindowsApps.name',
@@ -152,8 +152,6 @@ class WindowsAppsTable extends Table {
         if ($offset !== null) {
             $query->offset($offset);
         }
-
-        $query->disableHydration();
 
         $query->all();
         return $query->toArray();
@@ -359,7 +357,7 @@ class WindowsAppsTable extends Table {
         ];
 
 
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->disableAutoFields()
             ->contain([
                 'WindowsAppsHosts' => function (SelectQuery $query) use ($MY_RIGHTS) {
@@ -387,9 +385,6 @@ class WindowsAppsTable extends Table {
                     return $query;
                 }
             ]);
-
-
-        $query->disableHydration();
         $result = $query->toArray();
         if (empty($result)) {
             return $all_windows_apps;
@@ -408,7 +403,7 @@ class WindowsAppsTable extends Table {
     public function getWindowsAppsIndex(GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
         /** @var WindowsAppsHostsTable $WindowsAppsHostsTable */
         $WindowsAppsHostsTable = TableRegistry::getTableLocator()->get('WindowsAppsHosts');
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'WindowsApps.id',
                 'WindowsApps.name',
@@ -456,8 +451,6 @@ class WindowsAppsTable extends Table {
                 ['WindowsApps.id' => 'asc']
             )
         );
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

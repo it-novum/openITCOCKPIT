@@ -537,7 +537,7 @@ class MapUploadsTable extends Table {
             $types = [$types];
         }
 
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->select([
                 'MapUploads.id',
                 'MapUploads.upload_name',
@@ -555,7 +555,6 @@ class MapUploadsTable extends Table {
             $query->whereInList('MapUploads.upload_type', $types);
         }
         $query->groupBy(['MapUploads.id'])
-            ->disableHydration()
             ->orderBy($GenericFilter->getOrderForPaginator('MapUploads.name', 'asc'));
 
         if ($PaginateOMat === null) {
@@ -598,7 +597,7 @@ class MapUploadsTable extends Table {
 
 
     public function getUsedMapIconsWithMapContainerIds(array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'MapUploads.id',
                 'MapUploads.upload_name',
@@ -640,14 +639,13 @@ class MapUploadsTable extends Table {
                 ]
             );
         }
-        $query->groupBy(['Mapicons.id'])
-            ->disableHydration();
+        $query->groupBy(['Mapicons.id']);
 
         return $this->emptyArrayIfNull($query->toArray());
     }
 
     public function getUsedMapItemsWithMapContainerIds(array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'MapUploads.id',
                 'MapUploads.upload_name',
@@ -689,8 +687,7 @@ class MapUploadsTable extends Table {
                 ]
             );
         }
-        $query->groupBy(['Mapitems.id'])
-            ->disableHydration();
+        $query->groupBy(['Mapitems.id']);
 
         return $this->emptyArrayIfNull($query->toArray());
     }

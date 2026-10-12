@@ -731,7 +731,7 @@ class ServiceescalationsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Serviceescalations.' . $index,
         ]);
@@ -742,8 +742,6 @@ class ServiceescalationsTable extends Table {
                 'Serviceescalations.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
 
         $result = $query->toArray();
         if (empty($result)) {

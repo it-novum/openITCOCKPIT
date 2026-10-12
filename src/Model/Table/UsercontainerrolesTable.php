@@ -152,7 +152,7 @@ class UsercontainerrolesTable extends Table {
         if (!is_array($MY_RIGHTS)) {
             $MY_RIGHTS = [$MY_RIGHTS];
         }
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         if (!empty($GenericFilter->genericFilters())) {
             $query->where($GenericFilter->genericFilters());
         }
@@ -175,15 +175,14 @@ class UsercontainerrolesTable extends Table {
             ->orderBy([
                 'Usercontainerroles.name' => 'asc',
                 'Usercontainerroles.id'   => 'asc'
-            ])
-            ->disableHydration();
+            ]);
 
         $result = [];
         foreach ($query->toArray() as $record) {
             $result[$record['id']] = $record['name'];
         }
         if (!empty($selected)) {
-            $query = $this->find()
+            $query = $this->unhydratedFind()
                 ->select([
                     'Usercontainerroles.id',
                     'Usercontainerroles.name'
@@ -206,7 +205,7 @@ class UsercontainerrolesTable extends Table {
                 ->orderBy([
                     'Usercontainerroles.name' => 'asc',
                     'Usercontainerroles.id'   => 'asc'
-                ])->disableHydration();
+                ]);
 
             foreach ($query->toArray() as $record) {
                 $result[$record['id']] = $record['name'];
@@ -226,7 +225,7 @@ class UsercontainerrolesTable extends Table {
             return [];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
 
         if (!empty($GenericFilter->genericFilters())) {
             $query->where($GenericFilter->genericFilters());
@@ -257,8 +256,7 @@ class UsercontainerrolesTable extends Table {
             ->orderBy([
                 'Usercontainerroles.name' => 'asc',
                 'Usercontainerroles.id'   => 'asc'
-            ])
-            ->disableHydration();
+            ]);
 
         $result = [];
         foreach ($query->toArray() as $record) {
@@ -443,7 +441,7 @@ class UsercontainerrolesTable extends Table {
      * @return array
      */
     public function getUsercontainerrolesForCopy($ids = [], array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where(['Usercontainerroles.id IN' => $ids])
             ->contain([
                 'Containers',
@@ -461,7 +459,7 @@ class UsercontainerrolesTable extends Table {
             'Usercontainerroles.id'
         ]);
 
-        $query->disableHydration()
+        $query
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
@@ -631,7 +629,7 @@ class UsercontainerrolesTable extends Table {
             $MY_WRITABLE_CONTAINERS = [$MY_WRITABLE_CONTAINERS];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
 
         $query->select([
             'Usercontainerroles.id',
@@ -651,8 +649,7 @@ class UsercontainerrolesTable extends Table {
             ->orderBy([
                 'Usercontainerroles.name' => 'asc',
                 'Usercontainerroles.id'   => 'asc'
-            ])
-            ->disableHydration();
+            ]);
 
         $result = $query->toArray();
         if (empty($result)) {

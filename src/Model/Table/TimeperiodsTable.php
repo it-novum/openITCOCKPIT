@@ -383,7 +383,7 @@ class TimeperiodsTable extends Table {
      * @return array
      */
     public function getTimeperiodsForCopy($ids = [], array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Timeperiods.id',
                 'Timeperiods.name',
@@ -402,7 +402,7 @@ class TimeperiodsTable extends Table {
             ]);
         }
 
-        $query->disableHydration()
+        $query
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
@@ -515,14 +515,13 @@ class TimeperiodsTable extends Table {
             return [];
         }
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->contain(['Containers']);
         $query->innerJoinWith('Containers', function (SelectQuery $q) use ($containerIds) {
             return $q->where(['Containers.id IN' => $containerIds]);
         });
 
         $query->distinct('Timeperiods.id');
-        $query->disableHydration();
 
         if ($type === 'all') {
             return $this->formatResultAsCake2($query->toArray());
@@ -679,7 +678,7 @@ class TimeperiodsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Timeperiods.' . $index,
             'Timeperiods.name'
@@ -691,8 +690,6 @@ class TimeperiodsTable extends Table {
                 'Timeperiods.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->orderBy([
             'Timeperiods.name' => 'asc'
         ]);
@@ -956,7 +953,7 @@ class TimeperiodsTable extends Table {
             $containerIds = [$containerIds];
         }
 
-        $query = $this->find('list',
+        $query = $this->unhydratedFind('list',
             keyField: 'id',
             valueField: 'name')
             ->where(['Timeperiods.container_id IN' => $containerIds])
@@ -967,7 +964,7 @@ class TimeperiodsTable extends Table {
                 $query->expr()->isNull('Timeperiods.exclude_timeperiod_id'),
                 ['Timeperiods.exclude_timeperiod_id !=' => $excludedTimeperiodId]
             ]
-        ])->disableHydration();
+        ]);
         return $this->emptyArrayIfNull($query->toArray());
     }
 

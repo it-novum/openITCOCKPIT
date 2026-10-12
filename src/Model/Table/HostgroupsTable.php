@@ -592,7 +592,7 @@ class HostgroupsTable extends Table {
 
         $selectedHostgroups = [];
         if (!empty($selected)) {
-            $query = $this->find()
+            $query = $this->unhydratedFind()
                 ->contain([
                     'Containers'
                 ])
@@ -613,7 +613,6 @@ class HostgroupsTable extends Table {
                 'Containers.name' => 'asc'
             ])
                 ->limit(ITN_AJAX_LIMIT)
-                ->disableHydration()
                 ->all();
 
             $selectedHostgroups = [];
@@ -669,7 +668,7 @@ class HostgroupsTable extends Table {
      */
     public function getHostgroupsForPdf(HostgroupFilter $HostgroupFilter, $MY_RIGHTS = []) {
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Hosts',
                 'Containers'
@@ -682,7 +681,7 @@ class HostgroupsTable extends Table {
         $query->where($where)
             ->orderBy(
                 $HostgroupFilter->getOrderForPaginator('Containers.name', 'asc')
-            )->disableHydration();
+            );
 
         $data = $query->all();
         return $this->emptyArrayIfNull($data->toArray());
@@ -1432,7 +1431,7 @@ class HostgroupsTable extends Table {
      * @return array
      */
     public function getHostgroupsByContainerIdExact($containerId, $type = 'all', $index = 'container_id', $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hostgroups.id',
                 'Containers.id',
@@ -1451,8 +1450,6 @@ class HostgroupsTable extends Table {
                 'Containers.id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->orderBy([
             'Containers.name' => 'asc'
         ]);
@@ -1590,7 +1587,7 @@ class HostgroupsTable extends Table {
      * @return array
      */
     public function getHostgroupsForCopy($ids = [], array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where(['Hostgroups.id IN' => $ids])
             ->contain([
                 'Containers'
@@ -1603,14 +1600,14 @@ class HostgroupsTable extends Table {
             ]);
         }
 
-        $query->disableHydration()
+        $query
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());
     }
 
     public function getSourceHostgroupForCopy($id, array $MY_RIGHTS) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->where(['Hostgroups.id' => $id])
             ->contain([
                 'Hosts',
@@ -1622,8 +1619,6 @@ class HostgroupsTable extends Table {
                 'Containers.parent_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $result = $query->firstOrFail();
         $hostgroup = $result;
         $hostgroup['hosts'] = [

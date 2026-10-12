@@ -565,7 +565,7 @@ class ServicedependenciesTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Servicedependencies.' . $index,
         ]);
@@ -576,8 +576,6 @@ class ServicedependenciesTable extends Table {
                 'Servicedependencies.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
 
         $result = $query->toArray();
         if (empty($result)) {

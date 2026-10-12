@@ -141,7 +141,7 @@ class MacosAppsTable extends Table {
      * @param null|int $offset
      */
     public function getMacosAppsWithLimit(?int $limit = null, ?int $offset = null): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'MacosApps.id',
                 'MacosApps.name',
@@ -153,8 +153,6 @@ class MacosAppsTable extends Table {
         if ($offset !== null) {
             $query->offset($offset);
         }
-
-        $query->disableHydration();
 
         $query->all();
         return $query->toArray();
@@ -365,7 +363,7 @@ class MacosAppsTable extends Table {
         ];
 
 
-        $query = $this->find('all')
+        $query = $this->unhydratedFind('all')
             ->disableAutoFields()
             ->contain([
                 'MacosAppsHosts' => function (SelectQuery $query) {
@@ -393,9 +391,6 @@ class MacosAppsTable extends Table {
                     return $query;
                 }
             ]);
-
-
-        $query->disableHydration();
         $result = $query->toArray();
         if (empty($result)) {
             return $all_macos_apps;
@@ -414,7 +409,7 @@ class MacosAppsTable extends Table {
     public function getMacosAppsIndex(GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
         /** @var MacosAppsHostsTable $MacosAppsHostsTable */
         $MacosAppsHostsTable = TableRegistry::getTableLocator()->get('MacosAppsHosts');
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'MacosApps.id',
                 'MacosApps.name',
@@ -462,8 +457,6 @@ class MacosAppsTable extends Table {
                 ['MacosApps.id' => 'asc']
             )
         );
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

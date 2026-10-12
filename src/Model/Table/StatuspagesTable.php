@@ -278,7 +278,7 @@ class StatuspagesTable extends Table {
      */
     public function getStatuspagesIndex(StatuspagesFilter $StatuspagesFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
         $indexFilter = $StatuspagesFilter->indexFilter();
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain(['Hosts', 'Services', 'Hostgroups', 'Servicegroups'])
             ->where($indexFilter);
 
@@ -286,8 +286,7 @@ class StatuspagesTable extends Table {
             $query->where(['Statuspages.container_id IN' => $MY_RIGHTS]);
         }
 
-        $query->orderBy($StatuspagesFilter->getOrderForPaginator('Statuspages.id', 'asc'))
-            ->disableHydration();
+        $query->orderBy($StatuspagesFilter->getOrderForPaginator('Statuspages.id', 'asc'));
 
         if ($PaginateOMat === null) {
             //Just execute query

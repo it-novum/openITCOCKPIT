@@ -132,7 +132,7 @@ class MacosAppsHostsTable extends Table {
      * @return array
      */
     public function getHostsWithApp(int $appId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->innerJoin(
                 ['Hosts' => 'hosts'],
                 ['Hosts.id = MacosAppsHosts.host_id']
@@ -172,8 +172,6 @@ class MacosAppsHostsTable extends Table {
             )
             ->groupBy(['Hosts.id']);
 
-        $query->disableHydration();
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
@@ -204,7 +202,7 @@ class MacosAppsHostsTable extends Table {
      * @return array
      */
     public function getMacosAppsByHost(int $hostId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []): array {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->innerJoin(
                 ['Hosts' => 'hosts'],
                 ['Hosts.id = MacosAppsHosts.host_id']
@@ -242,8 +240,6 @@ class MacosAppsHostsTable extends Table {
         $query->orderBy(
             $GenericFilter->getOrderForPaginator('MacosApps.name', 'asc')
         );
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

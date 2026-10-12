@@ -140,7 +140,7 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     public function getContactgroupsIndex(ContactgroupsFilter $ContactgroupsFilter, $PaginateOMat = null, $MY_RIGHTS = []) {
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->contain(['Containers']);
         $query->where($ContactgroupsFilter->indexFilter());
 
@@ -150,8 +150,6 @@ class ContactgroupsTable extends Table {
             }
             return $q;
         });
-
-        $query->disableHydration();
         $query->orderBy($ContactgroupsFilter->getOrderForPaginator('Containers.name', 'asc'));
 
 
@@ -463,7 +461,7 @@ class ContactgroupsTable extends Table {
             $ids = [$ids];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Containers.id',
                 'Containers.name',
@@ -486,7 +484,6 @@ class ContactgroupsTable extends Table {
         }
 
         $query
-            ->disableHydration()
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
@@ -691,7 +688,7 @@ class ContactgroupsTable extends Table {
      * @return array
      */
     public function getContactgroupsByContainerIdExact($containerId, $type = 'all', $index = 'container_id', $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Contactgroups.id',
                 'Containers.id',
@@ -710,8 +707,6 @@ class ContactgroupsTable extends Table {
                 'Containers.id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->orderBy([
             'Containers.name' => 'asc'
         ]);

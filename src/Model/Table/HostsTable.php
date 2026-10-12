@@ -814,7 +814,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsForHosttemplateUsedBy($hosttemplateId, $MY_RIGHTS = [], $includeDisabled = false) {
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.container_id',
@@ -841,7 +841,6 @@ class HostsTable extends Table {
             ]);
         }
         $query->contain('HostsToContainersSharing');
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy([
             'Hosts.name' => 'asc',
@@ -865,7 +864,7 @@ class HostsTable extends Table {
     public function getHostsIndex(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1006,8 +1005,6 @@ class HostsTable extends Table {
         unset($where['Hoststatus.state_older_than_unit >']);
 
         $query->where($where);
-
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy(
             array_merge(
@@ -1037,7 +1034,7 @@ class HostsTable extends Table {
      */
     public function getHostsIndexStatusengine3(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1192,7 +1189,6 @@ class HostsTable extends Table {
         }
 
         $query->where($where);
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy(
             array_merge(
@@ -1222,7 +1218,7 @@ class HostsTable extends Table {
      */
     public function getHostsIndexForExtendedHostgroupsStatusengine3(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1300,7 +1296,6 @@ class HostsTable extends Table {
 
 
         $query->where($where);
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy(
             array_merge(
@@ -1330,7 +1325,7 @@ class HostsTable extends Table {
      */
     public function getHostsIndexForPassiveHostsStatusengine3(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1531,7 +1526,6 @@ class HostsTable extends Table {
 
 
         $query->where($where);
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy(
             array_merge(
@@ -1563,7 +1557,7 @@ class HostsTable extends Table {
     public function getHostsNotMonitored(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1610,8 +1604,6 @@ class HostsTable extends Table {
         $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
         $where[] = 'HostObject.name1 IS NULL';
         $query->where($where);
-
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy(
             array_merge(
@@ -1642,7 +1634,7 @@ class HostsTable extends Table {
     public function getHostsNotMonitoredStatusengine3(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1689,8 +1681,6 @@ class HostsTable extends Table {
         $where['Hosts.disabled'] = (int)$HostConditions->includeDisabled();
         $where[] = 'Hoststatus.hostname IS NULL';
         $query->where($where);
-
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy(
             array_merge(
@@ -1721,7 +1711,7 @@ class HostsTable extends Table {
     public function getHostsDisabled(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1754,7 +1744,6 @@ class HostsTable extends Table {
             ]
 
         ]);
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy(
             array_merge(
@@ -1784,7 +1773,7 @@ class HostsTable extends Table {
     public function getHostsByHostConditions(HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1843,8 +1832,6 @@ class HostsTable extends Table {
 
 
         $query->where($where);
-
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         if (!empty($HostConditions->getOrder())) {
             $query->orderBy(
@@ -1876,7 +1863,7 @@ class HostsTable extends Table {
     public function getHostsByHostConditionsWithServices(HostConditions $HostConditions, $PaginateOMat = null) {
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -1934,8 +1921,6 @@ class HostsTable extends Table {
 
 
         $query->where($where);
-
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy([
             'Hosts.name' => 'asc',
@@ -1974,7 +1959,7 @@ class HostsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Hosts.' . $index,
             'Hosts.name',
@@ -1990,7 +1975,6 @@ class HostsTable extends Table {
                 'HostsToContainersSharing.container_id IN' => $containerIds
             ]);
         }
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy([
             'Hosts.name' => 'asc',
@@ -3141,7 +3125,7 @@ class HostsTable extends Table {
     public function getHostsByRegularExpression(HostFilter $HostFilter, HostConditions $HostConditions, $PaginateOMat = null, $type = 'all') {
         $MY_RIGHTS = $HostConditions->getContainerIds();
 
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->select([
             'Hosts.id',
             'Hosts.uuid',
@@ -3176,7 +3160,6 @@ class HostsTable extends Table {
             ]
 
         ]);
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         if ($type === 'all') {
             $query->orderBy(
@@ -3221,7 +3204,7 @@ class HostsTable extends Table {
             $hoststatusCount['0'] = 0;
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Hoststatus.current_state',
@@ -3260,8 +3243,7 @@ class HostsTable extends Table {
             ])
             ->groupBy([
                 'Hoststatus.current_state',
-            ])
-            ->disableHydration();
+            ]);
 
         if ($includeOkState === false) {
             $query->andWhere([
@@ -3293,7 +3275,7 @@ class HostsTable extends Table {
             $servicestatusCount['0'] = 0;
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Servicestatus.current_state',
@@ -3337,8 +3319,7 @@ class HostsTable extends Table {
         ])
             ->groupBy([
                 'Servicestatus.current_state',
-            ])
-            ->disableHydration();
+            ]);
 
         if ($includeOkState === false) {
             $query->andWhere([
@@ -3368,7 +3349,7 @@ class HostsTable extends Table {
             $hoststatusCount['0'] = 0;
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Hoststatus.current_state',
@@ -3402,8 +3383,7 @@ class HostsTable extends Table {
             ])
             ->groupBy([
                 'Hoststatus.current_state',
-            ])
-            ->disableHydration();
+            ]);
 
         if ($includeOkState === false) {
             $query->andWhere([
@@ -3435,7 +3415,7 @@ class HostsTable extends Table {
             $servicestatusCount['0'] = 0;
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Servicestatus.current_state',
@@ -3472,8 +3452,7 @@ class HostsTable extends Table {
         ])
             ->groupBy([
                 'Servicestatus.current_state',
-            ])
-            ->disableHydration();
+            ]);
 
         if ($includeOkState === false) {
             $query->andWhere([
@@ -3496,7 +3475,7 @@ class HostsTable extends Table {
      */
     public function getHoststatusCountBySelectedStatus($MY_RIGHTS, $conditions) {
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'count' => $query->expr('COUNT(DISTINCT Hoststatus.host_object_id)'),
@@ -3530,8 +3509,7 @@ class HostsTable extends Table {
         }
         $query->contain([
             'HostsToContainersSharing'
-        ])
-            ->disableHydration();
+        ]);
 
         $where = [];
         if (!empty($conditions['Host']['name'])) {
@@ -3573,7 +3551,7 @@ class HostsTable extends Table {
      */
     public function getHoststatusCountBySelectedStatusStatusengine3($MY_RIGHTS, $conditions) {
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'count' => $query->expr('COUNT(DISTINCT Hoststatus.hostname)'),
@@ -3600,8 +3578,7 @@ class HostsTable extends Table {
         }
         $query->contain([
             'HostsToContainersSharing'
-        ])
-            ->disableHydration();
+        ]);
 
         $where = [];
         if (!empty($conditions['Host']['name'])) {
@@ -3643,7 +3620,7 @@ class HostsTable extends Table {
      */
     public function getHostIdsBySelectedStatusExtendedStatusengine3($MY_RIGHTS, $conditions) {
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Hosts.id',
@@ -3819,8 +3796,7 @@ class HostsTable extends Table {
         }
 
         $query->andWhere($where)
-            ->groupBy(['Hosts.id'])
-            ->disableHydration();
+            ->groupBy(['Hosts.id']);
         $result = $query->all();
 
         return $this->emptyArrayIfNull(Hash::extract($result->toArray(), '{n}.id'));
@@ -3852,7 +3828,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsForCopy($ids = [], array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.name',
@@ -3874,7 +3850,6 @@ class HostsTable extends Table {
 
         $query
             ->groupBy(['Hosts.id'])
-            ->disableHydration()
             ->all();
 
         return $this->formatResultAsCake2($query->toArray(), false);
@@ -4242,7 +4217,7 @@ class HostsTable extends Table {
     }
 
     public function getHostsForStatusmaps($conditions = [], $containerIds = [], $allHostIds = [], $count = false, $limit = null, $offset = null) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->contain([
                 'Parenthosts' => function (SelectQuery $q) {
                     return $q->select([
@@ -4286,7 +4261,7 @@ class HostsTable extends Table {
             $query->offset($offset);
         }
         $query->groupBy('Hosts.id');
-        $query->disableHydration()->all();
+        $query->all();
 
         if ($count === true) {
             return $query->count();
@@ -4658,7 +4633,7 @@ class HostsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Hosts.' . $index,
             'Hosts.name'
@@ -4673,8 +4648,6 @@ class HostsTable extends Table {
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy([
             'Hosts.name' => 'asc',
@@ -4793,7 +4766,7 @@ class HostsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->where($where);
 
         if (!empty($MY_RIGHTS)) {
@@ -4804,8 +4777,6 @@ class HostsTable extends Table {
                 'HostsToContainersSharing.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy([
             'Hosts.name' => 'asc',
@@ -5057,7 +5028,7 @@ class HostsTable extends Table {
             $hostIdsToExclude = [$hostIdsToExclude];
         }
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
 
         $where = [
             'Hosts.name' => $hostname
@@ -5078,7 +5049,6 @@ class HostsTable extends Table {
             ]);
         }
         $query->contain('HostsToContainersSharing');
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
 
         $result = $query->count();
@@ -5095,7 +5065,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsWithStatusByConditions($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Hosts.uuid',
@@ -5200,8 +5170,6 @@ class HostsTable extends Table {
             );
             unset($where['Hosts.not_keywords not rlike']);
         }
-
-        $query->disableHydration();
 
         $where = [];
         if (!empty($conditions['Host']['name'])) {
@@ -5425,7 +5393,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsWithExtendedStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Hosts.id',
@@ -5647,7 +5615,6 @@ class HostsTable extends Table {
 
         $query->andWhere($where);
         $query->groupBy('Hosts.id');
-        $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
             return [];
@@ -5715,7 +5682,7 @@ class HostsTable extends Table {
         }
 
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'Hosts.id',
                 'Hosts.uuid',
@@ -5735,8 +5702,6 @@ class HostsTable extends Table {
                 'HostsToContainers.container_id IN' => $containerIds
             ]);
         }
-
-        $query->disableHydration();
         $query->all();
 
         return $query->toArray();
@@ -5766,7 +5731,7 @@ class HostsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Hosts.' . $index,
             'Hosts.name'
@@ -5784,7 +5749,6 @@ class HostsTable extends Table {
                 'HostsToContainersSharing.container_id IN' => $containerIds
             ]);
         }
-        $query->disableHydration();
         $query->groupBy(['Hosts.id']);
         $query->orderBy([
             'Hosts.name' => 'asc',
@@ -5905,7 +5869,7 @@ class HostsTable extends Table {
      * @return array
      */
     public function getHostsForDesktopWithStatusByConditionsStatusengine3($MY_RIGHTS, $conditions) {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query
             ->select([
                 'Hosts.id',
@@ -6018,7 +5982,6 @@ class HostsTable extends Table {
 
         $query->andWhere($where);
         $query->groupBy('Hosts.id');
-        $query->disableHydration();
         $result = $query->all();
         if ($result === null) {
             return [];
@@ -6052,7 +6015,7 @@ class HostsTable extends Table {
 
             $where['Hosts.id IN'] = $hostIds;
         }
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Hoststatus.current_state',
             'count' => $query->expr('COUNT(DISTINCT Hoststatus.hostname)'),
@@ -6071,8 +6034,6 @@ class HostsTable extends Table {
         if (!empty($where)) {
             $query->andWhere($where);
         }
-
-        $query->disableHydration();
         $query->groupBy(['Hoststatus.current_state']);
         return $this->emptyArrayIfNull($query->toArray());
     }
@@ -6111,7 +6072,7 @@ class HostsTable extends Table {
      * @return bool
      */
     public function isHostInSla($id): bool {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'is_sla_host' => $query->expr('IF(Hosts.sla_id IS NULL, Hosttemplates.sla_id, Hosts.sla_id) > 0'),
         ])
@@ -6120,8 +6081,7 @@ class HostsTable extends Table {
             ])
             ->contain([
                 'Hosttemplates'
-            ])
-            ->disableHydration();
+            ]);
         $result = $query->first();
         return isset($result['is_sla_host']) && $result['is_sla_host'];
     }

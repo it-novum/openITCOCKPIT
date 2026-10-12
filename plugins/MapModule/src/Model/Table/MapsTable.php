@@ -2530,7 +2530,7 @@ class MapsTable extends Table {
      * @return array
      */
     public function getMapsByServiceId(int $serviceId, array $MY_RIGHTS): array {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Maps.id',
             'Maps.name'
@@ -2585,8 +2585,7 @@ class MapsTable extends Table {
                 'Mapgadgets.id IS NOT NULL'
             ]
         ]);
-        $query->groupBy(['Maps.id'])
-            ->disableHydration();
+        $query->groupBy(['Maps.id']);
 
         return $this->emptyArrayIfNull($query->toArray());
     }
@@ -2598,7 +2597,7 @@ class MapsTable extends Table {
      * @return array
      */
     public function getMapsByHostId(int $hostId, array $MY_RIGHTS): array {
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Maps.id',
             'Maps.name'
@@ -2644,8 +2643,7 @@ class MapsTable extends Table {
                 'Mapsummaryitems.id IS NOT NULL'
             ]
         ]);
-        $query->groupBy(['Maps.id'])
-            ->disableHydration();
+        $query->groupBy(['Maps.id']);
 
         return $this->emptyArrayIfNull($query->toArray());
     }

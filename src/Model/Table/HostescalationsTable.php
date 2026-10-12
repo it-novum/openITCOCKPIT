@@ -717,7 +717,7 @@ class HostescalationsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Hostescalations.' . $index,
         ]);
@@ -728,8 +728,6 @@ class HostescalationsTable extends Table {
                 'Hostescalations.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
 
         $result = $query->toArray();
         if (empty($result)) {

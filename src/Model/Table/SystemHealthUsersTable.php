@@ -108,7 +108,7 @@ class SystemHealthUsersTable extends Table {
      */
     public function getUsersForNotifications($notify_on_warning, $notify_on_critical, $notify_on_recovery) {
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'full_name' => $query->func()->concat([
                 'Users.firstname' => 'literal',
@@ -137,7 +137,7 @@ class SystemHealthUsersTable extends Table {
             ]);
         }
 
-        $query->disableHydration()->all();
+        $query->all();
 
         if (empty($query)) {
             return [];

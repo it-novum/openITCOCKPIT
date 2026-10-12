@@ -165,7 +165,7 @@ class GrafanaUserdashboardsTable extends Table {
      * @return array
      */
     public function getGrafanaUserdashboardsIndex(GrafanaUserDashboardFilter $GrafanaUserDashboardFilter, $PaginateOMat = null, $MY_RIGHTS = [], $skipUnsyncDashboards = false) {
-        $query = $this->find('all');
+        $query = $this->unhydratedFind('all');
         $query->contain(['Containers']);
         $query->where($GrafanaUserDashboardFilter->indexFilter());#
         if (!empty($MY_RIGHTS)) {
@@ -183,7 +183,6 @@ class GrafanaUserdashboardsTable extends Table {
         }
 
         $query->orderBy($GrafanaUserDashboardFilter->getOrderForPaginator('GrafanaUserdashboards.name', 'asc'));
-        $query->disableHydration();
 
 
         if ($PaginateOMat === null) {
@@ -336,7 +335,7 @@ class GrafanaUserdashboardsTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'GrafanaUserdashboards.' . $index,
             'GrafanaUserdashboards.name'
@@ -348,8 +347,6 @@ class GrafanaUserdashboardsTable extends Table {
                 'GrafanaUserdashboards.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
 
         $result = $query->toArray();
         if (empty($result)) {
@@ -394,7 +391,7 @@ class GrafanaUserdashboardsTable extends Table {
      * @return array
      */
     public function getGrafanaUserdashboardsForCopy($ids = [], array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'GrafanaUserdashboards.id',
                 'GrafanaUserdashboards.name'
@@ -408,7 +405,7 @@ class GrafanaUserdashboardsTable extends Table {
             ]);
         }
 
-        $query->disableHydration()
+        $query
             ->all();
 
         return $this->emptyArrayIfNull($query->toArray());

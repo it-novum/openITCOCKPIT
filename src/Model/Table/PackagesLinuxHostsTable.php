@@ -151,7 +151,7 @@ class PackagesLinuxHostsTable extends Table {
      * @return array
      */
     public function getHostsWithPackage(int $packageId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->innerJoin(
                 ['Hosts' => 'hosts'],
                 ['Hosts.id = PackagesLinuxHosts.host_id']
@@ -191,8 +191,6 @@ class PackagesLinuxHostsTable extends Table {
             )
             ->groupBy(['Hosts.id']);
 
-        $query->disableHydration();
-
         if ($PaginateOMat === null) {
             //Just execute query
             $result = $query->toArray();
@@ -215,7 +213,7 @@ class PackagesLinuxHostsTable extends Table {
      * @return array
      */
     public function getPackagesOfHost(int $hostId, GenericFilter $GenericFilter, ?PaginateOMat $PaginateOMat = null, array $MY_RIGHTS = []) {
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->innerJoin(
                 ['Hosts' => 'hosts'],
                 ['Hosts.id = PackagesLinuxHosts.host_id']
@@ -259,8 +257,6 @@ class PackagesLinuxHostsTable extends Table {
         $query->orderBy(
             $GenericFilter->getOrderForPaginator('PackagesLinux.name', 'asc')
         );
-
-        $query->disableHydration();
 
         if ($PaginateOMat === null) {
             //Just execute query

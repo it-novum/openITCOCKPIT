@@ -536,7 +536,7 @@ class HostdependenciesTable extends Table {
 
         $where = Hash::merge($_where, $where);
 
-        $query = $this->find();
+        $query = $this->unhydratedFind();
         $query->select([
             'Hostdependencies.' . $index,
         ]);
@@ -547,8 +547,6 @@ class HostdependenciesTable extends Table {
                 'Hostdependencies.container_id IN' => $MY_RIGHTS
             ]);
         }
-
-        $query->disableHydration();
 
         $result = $query->toArray();
         if (empty($result)) {
