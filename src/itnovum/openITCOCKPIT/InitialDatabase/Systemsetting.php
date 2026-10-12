@@ -926,6 +926,22 @@ class Systemsetting extends Importer {
                 'created'  => '2026-10-06 09:28:17',
                 'modified' => '2026-10-06 09:28:17'
             ],
+            (int)109  => [
+                'key'      => 'SYSTEM_HEALTH.SATELLITES_THRESHOLD_WARNING_IN_PERCENT',
+                'value'    => '75',
+                'info'     => 'Warning threshold in percent for all Satellites system health monitoring',
+                'section'  => 'SYSTEM_HEALTH',
+                'created'  => '2026-10-12 11:00:00',
+                'modified' => '2026-10-12 11:00:00'
+            ],
+            (int)110  => [
+                'key'      => 'SYSTEM_HEALTH.SATELLITES_THRESHOLD_CRITICAL_IN_PERCENT',
+                'value'    => '90',
+                'info'     => 'Critical threshold in percent for all Satellites system health monitoring',
+                'section'  => 'SYSTEM_HEALTH',
+                'created'  => '2026-10-12 11:00:00',
+                'modified' => '2026-10-12 11:00:00'
+            ],
         ];
 
         return $data;

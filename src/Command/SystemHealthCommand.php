@@ -253,6 +253,11 @@ class SystemHealthCommand extends Command implements CronjobInterface {
     public function getSatellitesStatusWithHealth(): array {
 
         $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
+        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
+        $systemsetting = $SystemsettingsTable->findAsArray();
+
+        $satellitesWarningInPercent = !empty($systemsetting['SYSTEM_HEALTH']['SYSTEM_HEALTH.SATELLITES_THRESHOLD_WARNING_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['SYSTEM_HEALTH.SATELLITES_THRESHOLD_WARNING_IN_PERCENT'] : 0.75; // 75% of core count
+        $satellitesCriticalInPercent = !empty($systemsetting['SYSTEM_HEALTH']['SYSTEM_HEALTH.SATELLITES_THRESHOLD_CRITICAL_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['SYSTEM_HEALTH.SATELLITES_THRESHOLD_CRITICAL_IN_PERCENT'] : 0.90; // 90% of core count
 
         $SatelliteFilter = new SatelliteFilter(new ServerRequest());
         $where = $SatelliteFilter->statusFilter();
@@ -326,8 +331,8 @@ class SystemHealthCommand extends Command implements CronjobInterface {
                  * scaled poorly on larger ones. Using proportional thresholds keeps the
                  * warning/critical levels consistent across different host sizes.
                  */
-                $cpu_cores_warning = max(1, $cpu_cores * 0.75); // 75% of core count
-                $cpu_cores_critical = max(1, $cpu_cores * 0.90); // 90% of core count
+                $cpu_cores_warning = max(1, $cpu_cores * $satellitesWarningInPercent); // 75% of core count
+                $cpu_cores_critical = max(1, $cpu_cores * $satellitesCriticalInPercent); // 90% of core count
 
                 $parsedHealth['cpu_state'] = 'ok';
 
