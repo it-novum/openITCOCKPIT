@@ -1248,7 +1248,7 @@ class HostsTable extends Table {
             'Hoststatus.problem_has_been_acknowledged',
             'Hoststatus.acknowledgement_type',
             'Hoststatus.notifications_enabled',
-            'cumulated_service_status' => $query->expr('MAX(Servicestatus.current_state)')
+            'cumulated_service_status' => $query->func()->max('Servicestatus.current_state')
         ]);
 
         $query->join([
