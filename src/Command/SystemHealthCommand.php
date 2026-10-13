@@ -43,14 +43,12 @@ use Cake\Console\Arguments;
 use Cake\Console\ConsoleIo;
 use Cake\Console\ConsoleOptionParser;
 use Cake\Core\Plugin;
-use Cake\Http\ServerRequest;
 use Cake\ORM\TableRegistry;
 use itnovum\openITCOCKPIT\Core\Interfaces\CronjobInterface;
 use itnovum\openITCOCKPIT\Core\System\Gearman;
 use itnovum\openITCOCKPIT\Core\System\Health\CpuLoad;
 use itnovum\openITCOCKPIT\Core\System\Health\Disks;
 use itnovum\openITCOCKPIT\Core\System\Health\MemoryUsage;
-use itnovum\openITCOCKPIT\Filter\SatelliteFilter;
 
 /**
  * SystemHealth command.
@@ -244,29 +242,15 @@ class SystemHealthCommand extends Command implements CronjobInterface {
         if (Plugin::isLoaded('DistributeModule')) {
             $data['isDistributeModuleInstalled'] = true;
             // @var SatellitesTable $SatellitesTable
-            $data['satellites'] = $this->getSatellitesStatusWithHealth();
+            $data['satellites'] = $this->getSatellitesStatusWithHealth($systemsetting['SYSTEM_HEALTH'] ?? []);
         }
 
         return $data;
     }
-
-    public function getSatellitesStatusWithHealth(): array {
-
+    public function getSatellitesStatusWithHealth($systemHealthSettings = []): array {
+        // STAGE 1
+        // Get satellites with their status
         $SatellitesTable = TableRegistry::getTableLocator()->get('DistributeModule.Satellites');
-        $SystemsettingsTable = TableRegistry::getTableLocator()->get('Systemsettings');
-        $systemsetting = $SystemsettingsTable->findAsArray();
-
-        $satellitesWarningInPercent = !empty($systemsetting['SYSTEM_HEALTH']['SYSTEM_HEALTH.SATELLITES_THRESHOLD_WARNING_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['SYSTEM_HEALTH.SATELLITES_THRESHOLD_WARNING_IN_PERCENT'] : 0.75; // 75% of core count
-        $satellitesCriticalInPercent = !empty($systemsetting['SYSTEM_HEALTH']['SYSTEM_HEALTH.SATELLITES_THRESHOLD_CRITICAL_IN_PERCENT']) ? $systemsetting['SYSTEM_HEALTH']['SYSTEM_HEALTH.SATELLITES_THRESHOLD_CRITICAL_IN_PERCENT'] : 0.90; // 90% of core count
-
-        $SatelliteFilter = new SatelliteFilter(new ServerRequest());
-        $where = $SatelliteFilter->statusFilter();
-        $having = [];
-        if (isset($where['status IN'])) {
-            $having['status IN'] = $where['status IN'];
-            unset($where['status IN']);
-        }
-
         $query = $SatellitesTable->find('all');
         $satellitesArray = $query->select([
             'Satellites.id',
@@ -283,10 +267,8 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             'SatelliteStatus.satellite_id',
             'status' => $query->newExpr('IF(SatelliteStatus.status IS NULL, 0, SatelliteStatus.status)')
         ])
-            ->where($where)
-            ->having($having)
             ->contain(['SatelliteStatus'])
-            ->orderBy($SatelliteFilter->getOrderForPaginator('Satellites.name', 'asc'))
+            ->orderBy(['Satellites.id'])
             ->disableHydration()
             ->toArray();
 
@@ -313,8 +295,12 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             })
             ->toArray();
 
-        foreach ($satellitesArray as $satellite) {
+        // STAGE 2
+        // Get thresholds for satellites health checks
+        $thresholds = $this->getSatelliteThresholds($systemHealthSettings);
+        $diskExcludeRegex = $this->sanitizeRegex($systemHealthSettings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_DISK_EXCLUDE_REGEX'] ?? null);
 
+        foreach ($satellitesArray as $satellite) {
             if (!isset($satellite['satellite_status'])) {
                 continue;
             }
@@ -322,6 +308,7 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             $parsedHealth = $healthMap[$satellite['id']] ?? null;
 
             if (!empty($parsedHealth) && is_array($parsedHealth)) {
+                // CPU
                 $cpu_cores = (int)$parsedHealth['cpu_cores'];
                 $cpu_load15 = (float)$parsedHealth['cpu_load15'];
 
@@ -331,22 +318,51 @@ class SystemHealthCommand extends Command implements CronjobInterface {
                  * scaled poorly on larger ones. Using proportional thresholds keeps the
                  * warning/critical levels consistent across different host sizes.
                  */
-                $cpu_cores_warning = max(1, $cpu_cores * $satellitesWarningInPercent); // 75% of core count
-                $cpu_cores_critical = max(1, $cpu_cores * $satellitesCriticalInPercent); // 90% of core count
+                $cpu_cores_warning = max(1, $cpu_cores * ($thresholds['cpu']['warning'] / 100)); // 75% of core count
+                $cpu_cores_critical = max(1, $cpu_cores * ($thresholds['cpu']['critical'] / 100)); // 90% of core count
 
-                $parsedHealth['cpu_state'] = 'ok';
+                $parsedHealth['cpu_state'] = $this->getStateByPercentage($cpu_load15, $cpu_cores_warning, $cpu_cores_critical);
 
-                if ($cpu_load15 >= $cpu_cores_warning) {
-                    $parsedHealth['cpu_state'] = 'warning';
+                // RAM
+                if (isset($parsedHealth['memory']['memory']['percentage'])) {
+                    $parsedHealth['memory']['memory']['state'] = $this->getStateByPercentage(
+                        $parsedHealth['memory']['memory']['percentage'],
+                        $thresholds['ram']['warning'],
+                        $thresholds['ram']['critical']
+                    );
                 }
 
-                if ($cpu_load15 >= $cpu_cores_critical) {
-                    $parsedHealth['cpu_state'] = 'critical';
+                // SWAP
+                if (isset($parsedHealth['memory']['swap']['percentage'])) {
+                    $parsedHealth['memory']['swap']['state'] = $this->getStateByPercentage(
+                        $parsedHealth['memory']['swap']['percentage'],
+                        $thresholds['swap']['warning'],
+                        $thresholds['swap']['critical']
+                    );
+                }
+
+                // DISKS
+                if (!empty($parsedHealth['disks']) && is_array($parsedHealth['disks'])) {
+                    $disksWithState = [];
+                    foreach ($parsedHealth['disks'] as $disk) {
+                        if ($diskExcludeRegex !== null && (
+                                preg_match($diskExcludeRegex, $disk['disk'] ?? '') === 1 ||
+                                preg_match($diskExcludeRegex, $disk['mountpoint'] ?? '') === 1)) {
+                            continue;
+                        }
+                        $disk['state'] = $this->getStateByPercentage(
+                            $disk['use_percentage'],
+                            $thresholds['disk']['warning'],
+                            $thresholds['disk']['critical']
+                        );
+                        $disksWithState[] = $disk;
+                    }
+                    $parsedHealth['disks'] = $disksWithState;
                 }
 
                 $satellite['satellite_information'] = [
                     'satellite_id'  => $satellite['id'],
-                    'system_health' => $parsedHealth ?? []
+                    'system_health' => $parsedHealth
                 ];
             }
             $updatedSatellites[] = $satellite;
@@ -590,6 +606,59 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             2, 3 => 'critical',//2 => 'warning'
             default => 'unknown',
         };
+    }
+
+    private function getSatelliteThresholds(array $settings): array {
+        return [
+            'cpu'  => [
+                'warning'  => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_CPU_LOAD_WARNING_IN_PERCENT'] ?? null, 75),
+                'critical' => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_CPU_LOAD_CRITICAL_IN_PERCENT'] ?? null, 90),
+            ],
+            'ram'  => [
+                'warning'  => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_RAM_WARNING_IN_PERCENT'] ?? null, 75),
+                'critical' => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES.THRESHOLD_RAM_CRITICAL_IN_PERCENT'] ?? null, 90),
+            ],
+            'swap' => [
+                'warning'  => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_SWAP_WARNING_IN_PERCENT'] ?? null, 75),
+                'critical' => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_SWAP_CRITICAL_IN_PERCENT'] ?? null, 90),
+            ],
+            'disk' => [
+                'warning'  => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_DISK_WARNING_IN_PERCENT'] ?? null, 75),
+                'critical' => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_DISK_CRITICAL_IN_PERCENT'] ?? null, 90),
+            ],
+        ];
+    }
+
+    private function getPercentSetting($value, $default): float {
+        return (is_numeric($value) && $value > 0) ? (float)$value : $default;
+    }
+
+    private function getStateByPercentage($percentage, $warningInPercent, $criticalInPercent): string
+    {
+        $state = 'ok';
+        if ($percentage >= $warningInPercent) {
+            $state = 'warning';
+        }
+        if ($percentage >= $criticalInPercent) {
+            $state = 'critical';
+        }
+        return $state;
+    }
+
+    /**
+     * @param string|null $diskExcludeRegex
+     * @return string|null
+     */
+    private function sanitizeRegex(?string $diskExcludeRegex): ?string {
+        if (!$diskExcludeRegex || trim($diskExcludeRegex) === '') {
+            return null;
+        }
+
+        $pattern = '`' . trim($diskExcludeRegex) . '`';
+        if (@preg_match($pattern, '') === false) {
+            return null;
+        }
+        return $pattern;
     }
 
 }
