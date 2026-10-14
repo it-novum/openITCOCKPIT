@@ -382,6 +382,213 @@ class Agent extends Importer {
                 'plugin_name'        => 'Packagemanager',
                 'servicetemplate_id' => 'eef93b44-1ffa-4b8b-a8c3-e1a1258bf68c'
             ],
+
+            // Agent 3.7: new monitoring features (logfiles, system health, security, ZFS, Ceph, SMART, Proxmox VE, Redfish, ...)
+            [
+                'name'               => 'system_health.raid',
+                'plugin_name'        => 'Mdraid',
+                'servicetemplate_id' => '4d293bff-06fc-48c1-acd6-564fed2e7359'
+            ],
+            [
+                'name'               => 'system_health.oom',
+                'plugin_name'        => 'OomKill',
+                'servicetemplate_id' => '85c25766-2afc-4c6b-89b3-565cb8d66b96'
+            ],
+            [
+                'name'               => 'system_health.file_descriptors',
+                'plugin_name'        => 'FileDescriptors',
+                'servicetemplate_id' => '8089e21b-d5be-4187-b9d6-0409c1a59b9a'
+            ],
+            [
+                'name'               => 'system_health.conntrack',
+                'plugin_name'        => 'Conntrack',
+                'servicetemplate_id' => 'ce769054-6fbb-44d6-a14d-47db38313a91'
+            ],
+            [
+                'name'               => 'system_health.pressure',
+                'plugin_name'        => 'Pressure',
+                'servicetemplate_id' => '3589b65e-8403-464b-befd-c1c6689ded21'
+            ],
+            [
+                'name'               => 'disks_inodes',
+                'plugin_name'        => 'DiskInodes',
+                'servicetemplate_id' => '80ae83c6-41eb-443b-9e18-c32341b0ed95'
+            ],
+            [
+                'name'               => 'disks_readonly',
+                'plugin_name'        => 'MountReadonly',
+                'servicetemplate_id' => '7b779163-4bfa-462c-bac7-b84515cc6347'
+            ],
+            [
+                'name'               => 'systemd_services.failed',
+                'plugin_name'        => 'SystemdFailedUnits',
+                'servicetemplate_id' => '08514e2c-c23c-4431-98f5-a213df7098df'
+            ],
+            [
+                'name'               => 'processes.zombies',
+                'plugin_name'        => 'ZombieProcesses',
+                'servicetemplate_id' => '21945974-bb8a-4dd1-a0e1-765cdb5663c0'
+            ],
+            [
+                'name'               => 'windows_services.automatic',
+                'plugin_name'        => 'WindowsAutomaticServices',
+                'servicetemplate_id' => 'c3c79ca5-a29e-467e-a8e5-2800406c3c70'
+            ],
+            [
+                'name'               => 'logfiles',
+                'plugin_name'        => 'Logfile',
+                'servicetemplate_id' => 'fc6ecf52-e354-4e7f-b88b-cf5133a3b6aa'
+            ],
+            [
+                'name'               => 'certificates',
+                'plugin_name'        => 'Certificate',
+                'servicetemplate_id' => '052eca9c-4161-413a-998e-bf1298bd5b64'
+            ],
+            [
+                'name'               => 'files.file',
+                'plugin_name'        => 'File',
+                'servicetemplate_id' => '8c6112c9-5bec-43bd-bfb9-6924274f54b2'
+            ],
+            [
+                'name'               => 'files.directory',
+                'plugin_name'        => 'Directory',
+                'servicetemplate_id' => 'd82d997c-bb5e-48dc-b7a1-8e1c57078bd0'
+            ],
+            [
+                'name'               => 'http',
+                'plugin_name'        => 'Http',
+                'servicetemplate_id' => 'e82dfaa1-0af9-4c7e-a12e-d4c7c7aacc3b'
+            ],
+            [
+                'name'               => 'windows_perfcounters',
+                'plugin_name'        => 'WindowsPerfCounter',
+                'servicetemplate_id' => 'bec5d45c-d9b0-4d1d-8611-fef685a3510e'
+            ],
+            [
+                'name'               => 'windows_scheduled_tasks',
+                'plugin_name'        => 'WindowsScheduledTask',
+                'servicetemplate_id' => '153fadc5-9b88-4bbc-b981-97081b817840'
+            ],
+            [
+                'name'               => 'security.firewall',
+                'plugin_name'        => 'Firewall',
+                'servicetemplate_id' => 'f5c7d77c-5b69-4498-bab5-6f6b5db59ba1'
+            ],
+            [
+                'name'               => 'security.selinux',
+                'plugin_name'        => 'Selinux',
+                'servicetemplate_id' => 'b45f7351-2591-449b-a212-34ad1b0497fa'
+            ],
+            [
+                'name'               => 'security.apparmor',
+                'plugin_name'        => 'Apparmor',
+                'servicetemplate_id' => 'f4b6c286-00fd-47f8-8a28-a34def9100e3'
+            ],
+            [
+                'name'               => 'security.filevault',
+                'plugin_name'        => 'FileVault',
+                'servicetemplate_id' => 'e1fa1856-cd40-4e9a-ad89-75c4bcd3ecc5'
+            ],
+            [
+                'name'               => 'security.sip',
+                'plugin_name'        => 'SystemIntegrityProtection',
+                'servicetemplate_id' => 'd906c938-ec3d-4c83-ac96-d9e8b670b9b8'
+            ],
+            [
+                'name'               => 'security.defender',
+                'plugin_name'        => 'WindowsDefender',
+                'servicetemplate_id' => 'f28f4628-e03a-4813-936e-0ecbea92986f'
+            ],
+            [
+                'name'               => 'zfs.pools',
+                'plugin_name'        => 'ZfsPool',
+                'servicetemplate_id' => '6af127b0-56b2-41e0-8ad6-ffe1c633f54d'
+            ],
+            [
+                'name'               => 'zfs.arc',
+                'plugin_name'        => 'ZfsArc',
+                'servicetemplate_id' => 'f20b6c89-8914-46b6-b7a9-ef0115e76895'
+            ],
+            [
+                'name'               => 'ceph.health',
+                'plugin_name'        => 'CephHealth',
+                'servicetemplate_id' => '043c16e6-e033-446c-b399-3be4afd6a561'
+            ],
+            [
+                'name'               => 'ceph.osds',
+                'plugin_name'        => 'CephOsd',
+                'servicetemplate_id' => 'c7c80d63-6b7c-46dc-97ec-799efdef7149'
+            ],
+            [
+                'name'               => 'ceph.usage',
+                'plugin_name'        => 'CephUsage',
+                'servicetemplate_id' => '6383a920-f22a-47a8-b1ca-b0de18184f6c'
+            ],
+            [
+                'name'               => 'smart',
+                'plugin_name'        => 'Smart',
+                'servicetemplate_id' => '82188d07-d8a1-4cc1-84c7-3782f80c730f'
+            ],
+            [
+                'name'               => 'redfish.health',
+                'plugin_name'        => 'RedfishHealth',
+                'servicetemplate_id' => '83d6640a-adbe-443e-b823-470869629712'
+            ],
+            [
+                'name'               => 'redfish.sensors',
+                'plugin_name'        => 'RedfishSensors',
+                'servicetemplate_id' => '9fb0d09b-e467-4282-ae86-b7b538e888d7'
+            ],
+            [
+                'name'               => 'redfish.power',
+                'plugin_name'        => 'RedfishPower',
+                'servicetemplate_id' => '50ff1ade-8596-46e8-9fc2-23607bea6aad'
+            ],
+            [
+                'name'               => 'redfish.storage',
+                'plugin_name'        => 'RedfishStorage',
+                'servicetemplate_id' => '459f2366-c067-45a9-86d1-3e2d1183271e'
+            ],
+            [
+                'name'               => 'redfish.eventlog',
+                'plugin_name'        => 'RedfishEventLog',
+                'servicetemplate_id' => 'dea2ecf4-001b-44aa-b345-a0198ac2f510'
+            ],
+            [
+                'name'               => 'docker.health',
+                'plugin_name'        => 'DockerContainerHealth',
+                'servicetemplate_id' => 'f108b1f7-3f5e-4217-bc3d-df6f56cef2e3'
+            ],
+            [
+                'name'               => 'postfix',
+                'plugin_name'        => 'PostfixQueue',
+                'servicetemplate_id' => 'e9db80e0-7cea-48c8-8229-3cf74d71f0b1'
+            ],
+            [
+                'name'               => 'proxmox.cluster',
+                'plugin_name'        => 'ProxmoxCluster',
+                'servicetemplate_id' => '161f2e1c-f173-40f3-ae12-b22ff1ef679c'
+            ],
+            [
+                'name'               => 'proxmox.storages',
+                'plugin_name'        => 'ProxmoxStorage',
+                'servicetemplate_id' => 'db5a02aa-b017-47bd-b7eb-870b470bfa9f'
+            ],
+            [
+                'name'               => 'proxmox.guests',
+                'plugin_name'        => 'ProxmoxGuest',
+                'servicetemplate_id' => 'f5b2deea-0198-4b46-92f6-456ca4b75035'
+            ],
+            [
+                'name'               => 'proxmox.backups',
+                'plugin_name'        => 'ProxmoxBackup',
+                'servicetemplate_id' => 'f1372ba7-e1df-4d9e-9ccc-cd9e238df708'
+            ],
+            [
+                'name'               => 'proxmox.replication',
+                'plugin_name'        => 'ProxmoxReplication',
+                'servicetemplate_id' => '42ee9475-f1d4-43a7-9b40-bba50896d340'
+            ],
         ];
         return $data;
     }
@@ -1272,7 +1479,8 @@ class Agent extends Importer {
                 'uuid'             => 'e96abe8e-af71-4565-9997-dfeb9e518cac',
                 'description'      => "Monitores if the system clock is synchronized to a time source like NTP.\n" .
                     "Warning and Critical thresholds are range integer values in seconds (e.g. -60:60 or -90:90).\n" .
-                    "On macOS clients the system time will be compared against the server time",
+                    "On macOS and FreeBSD (if ntpd is not running) the agent measures the offset to the time server with SNTP.\n" .
+                    "If no time server is reachable, the system time will be compared against the server time",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -1313,6 +1521,1101 @@ class Agent extends Importer {
                 ]
             ],
 
+            // Agent 3.7: new monitoring features (logfiles, system health, security, ZFS, Ceph, SMART, Proxmox VE, Redfish, ...)
+            [
+                'name'             => 'check_oitc_agent_mdraid',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '3c1e4e69-d27b-495c-bd91-e5b22a1afb31',
+                'description'      => "Checks Linux software RAID arrays (/proc/mdstat).\n" .
+                    "CRITICAL: failed or missing disks or an inactive array. WARNING: the array is rebuilding or resyncing.\n" .
+                    "md device: Name of the array, e.g. md0. Empty = all arrays.\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'md device (empty = all)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_oom_kill',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '06d903d9-02b0-419a-9c1b-2fce8c1b1d26',
+                'description'      => "Counts the processes killed by the Linux out of memory killer within the given window.\n" .
+                    "Warning and Critical: Number of OOM kills (e.g. 0 = warning on the first OOM kill).\n" .
+                    "Window: Time window in seconds (maximum 86400).\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Window in seconds'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_file_descriptors',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '02e4c02d-5116-4ca1-989d-ea0e72c941a4',
+                'description'      => "Checks the system wide usage of file descriptors (/proc/sys/fs/file-nr).\n" .
+                    "Warning and Critical: Usage in percent (0-100).\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical %'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_conntrack',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '41c7a349-df22-4b57-9cf1-0e5c87f1c992',
+                'description'      => "Checks the usage of the netfilter connection tracking table. A full table drops new connections.\n" .
+                    "Warning and Critical: Usage in percent (0-100).\n" .
+                    "Linux only, if the conntrack module is loaded.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical %'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_pressure',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '5c5fa13c-c28f-4d6e-a880-9700c47e9e80',
+                'description'      => "Checks the pressure stall information (PSI): percentage of time tasks were stalled waiting for a resource.\n" .
+                    "Resource: cpu, memory or io.\n" .
+                    "Warning and Critical: Percent of time (0-100). Empty = only performance data.\n" .
+                    "Type: some (at least one task was stalled) or full (all non-idle tasks were stalled).\n" .
+                    "Average: 10, 60 or 300 seconds.\n" .
+                    "Linux 4.20 or newer with PSI enabled.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Resource (cpu, memory, io)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical %'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Type (some, full)'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Average (10, 60, 300)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_disk_inodes',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '0ddcc07b-6c84-4b3c-8888-619466b2ee90',
+                'description'      => "Checks the inode usage of a filesystem. A filesystem without free inodes can not store new files, even if space is available.\n" .
+                    "Warning and Critical: Usage in percent (0-100).\n" .
+                    "Mountpoint: Mountpoint of the filesystem, e.g. / or /var.\n" .
+                    "Linux, macOS and FreeBSD. Filesystems without inodes (e.g. btrfs) are reported as OK.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Mountpoint'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_mount_readonly',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '3104c1eb-75c7-44c9-9f3b-fa81bd55b58c',
+                'description'      => "Checks if filesystems are mounted read-only, e.g. after filesystem errors.\n" .
+                    "Mountpoint: Check only this mountpoint. Empty = all mountpoints (pseudo filesystems and the sealed system volume of macOS are ignored).\n" .
+                    "State if read-only: warning or critical.\n" .
+                    "Exclude: Regular expression for mountpoints which are read-only by intention (only if mountpoint is empty), e.g. ^/mnt/backup\n" .
+                    "Linux, macOS and FreeBSD.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Mountpoint (empty = all)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State if read-only'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Exclude mountpoints (regex)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_systemd_failed_units',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'c48cb0c8-eebc-4690-8067-61ef41c6f6b7',
+                'description'      => "Counts all systemd units in the state failed, like \"systemctl --failed\".\n" .
+                    "Warning and Critical: Number of failed units (default: critical on the first failed unit).\n" .
+                    "Exclude: Regular expression for units which should be ignored, e.g. ^(apt-daily|fwupd)\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Exclude units (regex)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_zombie_processes',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '0cf03564-c4e8-4b7b-b336-7c968ec28c54',
+                'description'      => "Counts zombie (defunct) processes. A zombie is only removed if its parent collects the exit status,\n" .
+                    "so the long output lists the zombies grouped by their parent process.\n" .
+                    "Warning and Critical: Number of zombie processes.\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux, macOS and FreeBSD.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_windows_automatic_services',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '4ee8f012-f14d-4bd2-b568-f0e5e76da27a',
+                'description'      => "Checks all Windows services with the start type Automatic or Automatic (Delayed Start) which are not running.\n" .
+                    "Warning and Critical: Number of services which are not running (default: critical on the first service).\n" .
+                    "Exclude: Regular expression for the name or display name of services which should be ignored (case insensitive).\n" .
+                    "Grace period: No alert within this time after the boot, as delayed services start about 2 minutes after the boot.\n" .
+                    "Include trigger start services: Services with a trigger start are stopped by Windows if they are idle, so they are\n" .
+                    "ignored by default unless they stopped with an error (true/false).\n" .
+                    "Windows only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Exclude services (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Grace period after boot'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Include trigger start services (true/false)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_logfile',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '71fef69e-a452-41c6-940a-88c14773a7f1',
+                'description'      => "Counts the lines of a log file, the journal (Linux) or the unified log (macOS) which match the regular expression\n" .
+                    "of the definition within its time window. The definition is configured in the logfiles.ini of the agent.\n" .
+                    "Name: Name of the section in the logfiles.ini.\n" .
+                    "Warning and Critical: Number of matching lines (default: warning on the first matching line).\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Name'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_certificate',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '0240157d-9ab9-43c1-b03e-8ca8734428c5',
+                'description'      => "Checks a certificate file, a TLS endpoint or the Windows certificate store defined in the certificates.ini of the agent.\n" .
+                    "Expired certificates are always critical.\n" .
+                    "Name: Name of the section in the certificates.ini.\n" .
+                    "Warning and Critical: Days until the certificate expires.\n" .
+                    "State if not trusted: State if the certificate is not trusted or the hostname does not match.\n" .
+                    "State on weak cryptography: e.g. SHA-1 signatures, short keys or TLS older than 1.2.\n" .
+                    "Check chain: Also check the intermediate certificates (1/0).\n" .
+                    "States: ok, warning, critical or unknown.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Name'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning days'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical days'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'State if not trusted'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'State on weak cryptography'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'Check chain (1/0)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_file',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'a6d7bf0d-529f-4107-9bc7-5eb78dd09bb5',
+                'description'      => "Checks the age and the size of the newest file which matches a file definition of the files.ini of the agent,\n" .
+                    "e.g. to monitor that a backup was created.\n" .
+                    "Name: Name of the section in the files.ini (type = file).\n" .
+                    "Warning and Critical age: Maximum age, e.g. 25h. Durations can be written with units: s, m, h, d, w (e.g. 25h or 7d).\n" .
+                    "Warning and Critical size: Size range, e.g. 1MB: (alert if smaller than 1 MB). Units: B, kB, MB, GB, TB, KiB, MiB, GiB, TiB.\n" .
+                    "State if missing: States: ok, warning, critical or unknown.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Name'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning age'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical age'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Warning size'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Critical size'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'State if missing'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_directory',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '59f4b534-936f-4ece-9c6c-c6cd5518451a',
+                'description'      => "Checks the number of files, the age of the newest and oldest file and the total size of a directory definition\n" .
+                    "of the files.ini of the agent, e.g. to monitor a spool directory.\n" .
+                    "Name: Name of the section in the files.ini (type = directory).\n" .
+                    "Files: Range for the number of files, e.g. ~:50.\n" .
+                    "Newest and oldest age: Maximum age, e.g. 1h. Durations can be written with units: s, m, h, d, w (e.g. 25h or 7d).\n" .
+                    "Total size: Size range. Units: B, kB, MB, GB, TB, KiB, MiB, GiB, TiB.\n" .
+                    "State if missing: States: ok, warning, critical or unknown.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Name'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning files'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical files'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Warning newest age'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Critical newest age'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'State if missing'
+                    ],
+                    [
+                        'name'       => '$ARG7$',
+                        'human_name' => 'Warning oldest age'
+                    ],
+                    [
+                        'name'       => '$ARG8$',
+                        'human_name' => 'Critical oldest age'
+                    ],
+                    [
+                        'name'       => '$ARG9$',
+                        'human_name' => 'Warning total size'
+                    ],
+                    [
+                        'name'       => '$ARG10$',
+                        'human_name' => 'Critical total size'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_http',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'cecb5bd7-4356-41cf-aeb2-3b46abb6dea7',
+                'description'      => "Checks an HTTP(S) endpoint defined in the http.ini of the agent. The agent can reach internal services,\n" .
+                    "which are not reachable by the openITCOCKPIT server.\n" .
+                    "Connection errors, unexpected status codes and content mismatches are critical.\n" .
+                    "Name: Name of the section in the http.ini.\n" .
+                    "Warning and Critical: Response time in seconds.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Name'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning response time'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical response time'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_windows_perfcounter',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '0dbd706e-8098-433e-a5af-93d3d8070020',
+                'description'      => "Checks a Windows performance counter defined in the perfcounters.ini of the agent.\n" .
+                    "Name: Name of the section in the perfcounters.ini.\n" .
+                    "Warning and Critical: Thresholds for the value, e.g. ~:500.\n" .
+                    "Instance: Check only this instance, empty = all instances.\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Windows only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Name'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Instance (empty = all)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_windows_scheduled_task',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '9888c028-2f2d-4b97-9ef7-b4ecda238a4b',
+                'description'      => "Checks the last run of Windows scheduled tasks. Disabled tasks raise a warning.\n" .
+                    "Task path: Regular expression for the path of the tasks, e.g. ^\\\\Backup\\\\\n" .
+                    "Warning and Critical age: Maximum age of the last run, e.g. 25h. Durations can be written with units: s, m, h, d, w (e.g. 25h or 7d).\n" .
+                    "State if the last run failed and state if no task matches: States: ok, warning, critical or unknown.\n" .
+                    "Windows only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Task path (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning age of the last run'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical age of the last run'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'State if the last run failed'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'State if no task matches'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_firewall',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'f8cfa21c-8ba2-420c-8963-893d38951818',
+                'description'      => "Checks if the firewall is enabled.\n" .
+                    "State if disabled: States: ok, warning, critical or unknown.\n" .
+                    "Profiles (Windows only): active = only the active network profiles, all = domain, private and public.\n" .
+                    "Windows and macOS.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'State if disabled'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Profiles (active, all)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_selinux',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '3a57f78a-4521-4bfd-9829-88346d57e07b',
+                'description'      => "Checks the mode of SELinux.\n" .
+                    "Expected mode: enforcing, permissive or disabled.\n" .
+                    "State if the mode is weaker than expected: States: ok, warning, critical or unknown.\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Expected mode'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State if weaker'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_apparmor',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'a34116a8-1e13-45be-8048-3e647eba5345',
+                'description'      => "Checks if AppArmor is enabled and if profiles are in complain mode.\n" .
+                    "State if disabled and state if profiles are in complain mode: States: ok, warning, critical or unknown.\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'State if disabled'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State if profiles in complain mode'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_filevault',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '484df7ea-50a5-4333-a2fc-ab028bf375f3',
+                'description'      => "Checks if the disk encryption FileVault is enabled.\n" .
+                    "State if disabled: States: ok, warning, critical or unknown.\n" .
+                    "macOS only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'State if disabled'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_system_integrity_protection',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '4b46b59d-dc23-49e1-a93a-2e9fc7c41a7c',
+                'description'      => "Checks if the System Integrity Protection (SIP) is enabled.\n" .
+                    "State if disabled and state if a custom configuration is used: States: ok, warning, critical or unknown.\n" .
+                    "macOS only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'State if disabled'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State if custom configuration'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_windows_defender',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '8a30dedd-0d94-48de-970c-c147b2ac9124',
+                'description'      => "Checks Microsoft Defender: disabled antivirus or real-time protection is critical.\n" .
+                    "The passive mode is OK if another antivirus is active.\n" .
+                    "Warning and Critical: Age of the signatures in days.\n" .
+                    "Windows only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning days'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical days'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_zfs_pool',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'c8903188-fcb0-409e-8610-40395878a3e7',
+                'description'      => "Checks the health and the capacity of ZFS pools.\n" .
+                    "DEGRADED pools and device errors are warnings, FAULTED or UNAVAIL pools and data errors are critical.\n" .
+                    "Pool: Name of the pool, empty = all pools.\n" .
+                    "Warning and Critical: Capacity in percent (0-100).\n" .
+                    "Maximum age of the last scrub (optional), e.g. 35d. Durations can be written with units: s, m, h, d, w (e.g. 25h or 7d).\n" .
+                    "Linux and FreeBSD.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Pool (empty = all)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical %'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Maximum age of the last scrub'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_zfs_arc',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'e8fbd219-3a4e-46a4-864b-a9c97d6ec1f5',
+                'description'      => "Reports the size and the hit ratio of the ZFS adaptive replacement cache (ARC).\n" .
+                    "Warning and Critical: Hit ratio in percent, e.g. 80: and 60:. Empty = only performance data.\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux and FreeBSD.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning hit ratio'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical hit ratio'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_ceph_health',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'd85e4b92-ff08-402d-acf6-077c06e0762c',
+                'description'      => "Checks the health of a Ceph cluster. HEALTH_ERR is critical, muted health checks are ignored.\n" .
+                    "State for HEALTH_WARN: States: ok, warning, critical or unknown.\n" .
+                    "Ignore: Regular expression for health checks which should be ignored, e.g. ^(RECENT_CRASH|POOL_NO_REDUNDANCY)\$\n" .
+                    "Linux only (e.g. Proxmox VE nodes with Ceph).",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'State for HEALTH_WARN'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Ignore health checks (regex)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_ceph_osd',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'fcfbcc00-d909-45cb-9b52-024f171cedb5',
+                'description'      => "Checks the OSDs and placement groups of a Ceph cluster.\n" .
+                    "Warning and Critical: Number of OSDs which are down or out (default: warning on the first OSD).\n" .
+                    "PG Warning and Critical: Number of placement groups which are not active+clean.\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'PG Warning'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'PG Critical'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_ceph_usage',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'e8a7c9bd-529e-49b8-ad72-876dc893f36c',
+                'description'      => "Checks the raw usage of a Ceph cluster or the usage of a pool.\n" .
+                    "Ceph warns at 85% (nearfull) and stops writing at 95% (full) of the fullest OSD.\n" .
+                    "Pool: Name of the pool, empty = raw usage of the cluster.\n" .
+                    "Warning and Critical: Usage in percent (0-100).\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Pool (empty = cluster)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical %'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_smart',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '5e7baf52-2f9e-461b-9e4f-e167f67a225a',
+                'description'      => "Checks the SMART health of disks (requires smartmontools 7.0 or newer on the monitored system).\n" .
+                    "A failed self-assessment and failing attributes are critical, reallocated, pending or uncorrectable sectors raise a warning.\n" .
+                    "Device: Device (e.g. /dev/sda) or serial number, empty = all disks with SMART.\n" .
+                    "Warning and Critical temperature in degrees Celsius.\n" .
+                    "Warning and Critical wear of SSDs in percent.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Device or serial (empty = all)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning temperature'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical temperature'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Warning SSD wear %'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Critical SSD wear %'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_redfish_health',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '9f4594a3-24b3-4c7d-8cf8-09515e0f3cd7',
+                'description'      => "Checks the health of a server reported by its BMC (Redfish): systems including CPUs and memory, chassis and the BMC itself.\n" .
+                    "The BMC is defined in the redfish.ini of the agent. Warning is a warning, Critical is critical.\n" .
+                    "BMC: Name of the section in the redfish.ini.\n" .
+                    "Expected power state: e.g. On. Empty = any power state.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'BMC'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Expected power state'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_redfish_sensors',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '6b66ec2c-0301-434f-b7e9-8881b4b84def',
+                'description'      => "Checks the temperatures and fans of a server reported by its BMC (Redfish).\n" .
+                    "BMC: Name of the section in the redfish.ini of the agent.\n" .
+                    "Type: temperature, fan or empty for both.\n" .
+                    "Sensor names: Regular expression for the sensor names (case insensitive), empty = all sensors.\n" .
+                    "Warning and Critical: Own thresholds (requires a type, degrees Celsius for temperatures).\n" .
+                    "Empty = the thresholds and the health reported by the BMC are used.\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'BMC'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Type (temperature, fan, empty = both)'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Sensor names (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_redfish_power',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '56f8c7f5-96a1-4107-bd98-64241fcea30c',
+                'description'      => "Checks the power supplies, the power redundancy and the power consumption of a server reported by its BMC (Redfish).\n" .
+                    "BMC: Name of the section in the redfish.ini of the agent.\n" .
+                    "Warning and Critical: Power consumption in watts (optional, per chassis).\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'BMC'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning watts'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical watts'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_redfish_storage',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '3a006d24-7fa8-4dc8-92a5-b2ad9170a0eb',
+                'description'      => "Checks the storage controllers, drives (including predicted failures) and volumes of a server reported by its BMC (Redfish).\n" .
+                    "BMC: Name of the section in the redfish.ini of the agent.\n" .
+                    "Storage names: Regular expression for the storage subsystems (case insensitive), empty = all.\n" .
+                    "Warning and Critical: Minimum life left of SSDs in percent.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'BMC'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Storage names (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning life left %'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical life left %'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_redfish_eventlog',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '25e72e58-9d81-47e0-90e9-d77b9db6c238',
+                'description'      => "Checks the warning and critical entries of the event logs (e.g. SEL or IML) of a BMC (Redfish)\n" .
+                    "within the time window (eventlog_window) of the redfish.ini of the agent.\n" .
+                    "BMC: Name of the section in the redfish.ini.\n" .
+                    "Exclude: Regular expression for the message or message id of entries which should be ignored.\n" .
+                    "State for warning entries and state for critical entries: States: ok, warning, critical or unknown.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'BMC'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Exclude entries (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'State for warning entries'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'State for critical entries'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_docker_container_health',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'b8e97f2f-043e-4184-b0ab-874e40bada26',
+                'description'      => "Checks the healthcheck state and restart loops of a Docker container.\n" .
+                    "Unhealthy containers and containers which are restarting are critical, OOM kills raise a warning.\n" .
+                    "Identifier: Field used to find the container (name or id).\n" .
+                    "Container: Name or id of the container.\n" .
+                    "Warning and Critical: Number of restarts within the last hour (default: warning on the first restart).\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Identifier (name, id)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Container'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning restarts'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical restarts'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_postfix_queue',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '826d26ff-7447-40ca-a706-10522e972d1a',
+                'description'      => "Checks the number of messages in the Postfix mail queues (Postfix 3.1 or newer). A stopped Postfix is critical.\n" .
+                    "Queue: maildrop, incoming, active, deferred or hold. Empty = all queues.\n" .
+                    "Warning and Critical: Number of messages.\n" .
+                    "Warning and Critical age: Age of the oldest message (optional), e.g. 1h. Durations can be written with units: s, m, h, d, w (e.g. 25h or 7d).\n" .
+                    "Linux and FreeBSD.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Queue (empty = all)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning messages'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical messages'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Warning age'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Critical age'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_proxmox_cluster',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '5c0b2cd7-39ce-4758-8a9d-108ccf3d043d',
+                'description'      => "Checks the quorum, the nodes and the HA resources of a Proxmox VE cluster.\n" .
+                    "A lost quorum and HA resources in the state error or fence are critical.\n" .
+                    "State if a node is offline: States: ok, warning, critical or unknown.\n" .
+                    "Proxmox VE only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'State if a node is offline'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_proxmox_storage',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'c1a9003a-0ccb-4288-8140-ac7a798ada72',
+                'description'      => "Checks the storages of a Proxmox VE node. Enabled storages which are not active are critical.\n" .
+                    "Storage: Name of the storage, empty = all enabled storages.\n" .
+                    "Warning and Critical: Usage in percent (0-100).\n" .
+                    "Proxmox VE only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Storage (empty = all)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical %'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_proxmox_guest',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '01c87717-091d-4b04-9259-2f6380f3da65',
+                'description'      => "Checks the state of a virtual machine or container of a Proxmox VE cluster. The guest is found on every node of the cluster.\n" .
+                    "Guest: VMID or name of the guest.\n" .
+                    "Expected state: e.g. running or stopped.\n" .
+                    "Proxmox VE only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'VMID or name'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Expected state'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_proxmox_backup',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '99a1ab5e-12bc-4db8-a372-5042ba0a3ec8',
+                'description'      => "Checks the backups (vzdump) of the guests of a Proxmox VE node. A failed last backup is critical.\n" .
+                    "Maximum age of the last successful backup, e.g. 25h. Durations can be written with units: s, m, h, d, w (e.g. 25h or 7d).\n" .
+                    "State for guests without backup job: States: ok, warning, critical or unknown.\n" .
+                    "Proxmox VE only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Maximum age of the last backup'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State for guests without backup job'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_proxmox_replication',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'f25bfe01-0257-4029-9864-ca3d6973baf4',
+                'description'      => "Checks the storage replication jobs of a Proxmox VE node. Failed replication jobs are critical.\n" .
+                    "Maximum age of the last sync (optional), e.g. 1h. Durations can be written with units: s, m, h, d, w (e.g. 25h or 7d).\n" .
+                    "Proxmox VE only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Maximum age of the last sync'
+                    ]
+                ]
+            ],
         ];
         return $data;
     }
@@ -3675,8 +4978,126 @@ class Agent extends Importer {
                 'contactgroups'                             => [],
                 'contacts'                                  => []
             ],
+
+            // Agent 3.7: new monitoring features (logfiles, system health, security, ZFS, Ceph, SMART, Proxmox VE, Redfish, ...)
+            $this->getAgentServicetemplate('4d293bff-06fc-48c1-acd6-564fed2e7359', 'OITC_AGENT_MDRAID', 'Software RAID', '3c1e4e69-d27b-495c-bd91-e5b22a1afb31', ['']),
+            $this->getAgentServicetemplate('85c25766-2afc-4c6b-89b3-565cb8d66b96', 'OITC_AGENT_OOM_KILL', 'OOM kills', '06d903d9-02b0-419a-9c1b-2fce8c1b1d26', ['0', '', '3600']),
+            $this->getAgentServicetemplate('8089e21b-d5be-4187-b9d6-0409c1a59b9a', 'OITC_AGENT_FILE_DESCRIPTORS', 'File descriptors', '02e4c02d-5116-4ca1-989d-ea0e72c941a4', ['80', '90']),
+            $this->getAgentServicetemplate('ce769054-6fbb-44d6-a14d-47db38313a91', 'OITC_AGENT_CONNTRACK', 'Conntrack table', '41c7a349-df22-4b57-9cf1-0e5c87f1c992', ['80', '90']),
+            $this->getAgentServicetemplate('3589b65e-8403-464b-befd-c1c6689ded21', 'OITC_AGENT_PRESSURE', 'Pressure stall information', '5c5fa13c-c28f-4d6e-a880-9700c47e9e80', ['cpu', '40', '80', 'some', '60']),
+            $this->getAgentServicetemplate('80ae83c6-41eb-443b-9e18-c32341b0ed95', 'OITC_AGENT_DISK_INODES', 'Inode usage', '0ddcc07b-6c84-4b3c-8888-619466b2ee90', ['80', '90', '/']),
+            $this->getAgentServicetemplate('7b779163-4bfa-462c-bac7-b84515cc6347', 'OITC_AGENT_MOUNT_READONLY', 'Read-only filesystems', '3104c1eb-75c7-44c9-9f3b-fa81bd55b58c', ['', 'critical', '']),
+            $this->getAgentServicetemplate('08514e2c-c23c-4431-98f5-a213df7098df', 'OITC_AGENT_SYSTEMD_FAILED_UNITS', 'Failed systemd units', 'c48cb0c8-eebc-4690-8067-61ef41c6f6b7', ['', '0', '']),
+            $this->getAgentServicetemplate('21945974-bb8a-4dd1-a0e1-765cdb5663c0', 'OITC_AGENT_ZOMBIE_PROCESSES', 'Zombie processes', '0cf03564-c4e8-4b7b-b336-7c968ec28c54', ['5', '10']),
+            $this->getAgentServicetemplate('c3c79ca5-a29e-467e-a8e5-2800406c3c70', 'OITC_AGENT_WINDOWS_AUTOMATIC_SERVICES', 'Automatic services', '4ee8f012-f14d-4bd2-b568-f0e5e76da27a', ['', '0', '^(MapsBroker|TrustedInstaller|gupdate|GoogleUpdaterService.*|edgeupdate|sppsvc)$', '10m', 'false']),
+            $this->getAgentServicetemplate('fc6ecf52-e354-4e7f-b88b-cf5133a3b6aa', 'OITC_AGENT_LOGFILE', 'Logfile', '71fef69e-a452-41c6-940a-88c14773a7f1', ['', '0', '']),
+            $this->getAgentServicetemplate('052eca9c-4161-413a-998e-bf1298bd5b64', 'OITC_AGENT_CERTIFICATE', 'Certificate', '0240157d-9ab9-43c1-b03e-8ca8734428c5', ['', '30', '14', 'warning', 'warning', '1']),
+            $this->getAgentServicetemplate('8c6112c9-5bec-43bd-bfb9-6924274f54b2', 'OITC_AGENT_FILE', 'File', 'a6d7bf0d-529f-4107-9bc7-5eb78dd09bb5', ['', '', '', '', '', 'critical']),
+            $this->getAgentServicetemplate('d82d997c-bb5e-48dc-b7a1-8e1c57078bd0', 'OITC_AGENT_DIRECTORY', 'Directory', '59f4b534-936f-4ece-9c6c-c6cd5518451a', ['', '', '', '', '', 'critical', '', '', '', '']),
+            $this->getAgentServicetemplate('e82dfaa1-0af9-4c7e-a12e-d4c7c7aacc3b', 'OITC_AGENT_HTTP', 'HTTP', 'cecb5bd7-4356-41cf-aeb2-3b46abb6dea7', ['', '1', '5']),
+            $this->getAgentServicetemplate('bec5d45c-d9b0-4d1d-8611-fef685a3510e', 'OITC_AGENT_WINDOWS_PERFCOUNTER', 'Performance counter', '0dbd706e-8098-433e-a5af-93d3d8070020', ['', '', '', '']),
+            $this->getAgentServicetemplate('153fadc5-9b88-4bbc-b981-97081b817840', 'OITC_AGENT_WINDOWS_SCHEDULED_TASK', 'Scheduled task', '9888c028-2f2d-4b97-9ef7-b4ecda238a4b', ['', '', '', 'critical', 'critical']),
+            $this->getAgentServicetemplate('f5c7d77c-5b69-4498-bab5-6f6b5db59ba1', 'OITC_AGENT_FIREWALL', 'Firewall', 'f8cfa21c-8ba2-420c-8963-893d38951818', ['critical', 'active']),
+            $this->getAgentServicetemplate('b45f7351-2591-449b-a212-34ad1b0497fa', 'OITC_AGENT_SELINUX', 'SELinux', '3a57f78a-4521-4bfd-9829-88346d57e07b', ['enforcing', 'critical']),
+            $this->getAgentServicetemplate('f4b6c286-00fd-47f8-8a28-a34def9100e3', 'OITC_AGENT_APPARMOR', 'AppArmor', 'a34116a8-1e13-45be-8048-3e647eba5345', ['critical', 'ok']),
+            $this->getAgentServicetemplate('e1fa1856-cd40-4e9a-ad89-75c4bcd3ecc5', 'OITC_AGENT_FILEVAULT', 'FileVault', '484df7ea-50a5-4333-a2fc-ab028bf375f3', ['critical']),
+            $this->getAgentServicetemplate('d906c938-ec3d-4c83-ac96-d9e8b670b9b8', 'OITC_AGENT_SYSTEM_INTEGRITY_PROTECTION', 'System Integrity Protection', '4b46b59d-dc23-49e1-a93a-2e9fc7c41a7c', ['critical', 'warning']),
+            $this->getAgentServicetemplate('f28f4628-e03a-4813-936e-0ecbea92986f', 'OITC_AGENT_WINDOWS_DEFENDER', 'Microsoft Defender', '8a30dedd-0d94-48de-970c-c147b2ac9124', ['3', '7']),
+            $this->getAgentServicetemplate('6af127b0-56b2-41e0-8ad6-ffe1c633f54d', 'OITC_AGENT_ZFS_POOL', 'ZFS pools', 'c8903188-fcb0-409e-8610-40395878a3e7', ['', '80', '90', '']),
+            $this->getAgentServicetemplate('f20b6c89-8914-46b6-b7a9-ef0115e76895', 'OITC_AGENT_ZFS_ARC', 'ZFS ARC', 'e8fbd219-3a4e-46a4-864b-a9c97d6ec1f5', ['', '']),
+            $this->getAgentServicetemplate('043c16e6-e033-446c-b399-3be4afd6a561', 'OITC_AGENT_CEPH_HEALTH', 'Ceph health', 'd85e4b92-ff08-402d-acf6-077c06e0762c', ['warning', '']),
+            $this->getAgentServicetemplate('c7c80d63-6b7c-46dc-97ec-799efdef7149', 'OITC_AGENT_CEPH_OSD', 'Ceph OSDs', 'fcfbcc00-d909-45cb-9b52-024f171cedb5', ['0', '', '', '']),
+            $this->getAgentServicetemplate('6383a920-f22a-47a8-b1ca-b0de18184f6c', 'OITC_AGENT_CEPH_USAGE', 'Ceph usage', 'e8a7c9bd-529e-49b8-ad72-876dc893f36c', ['', '75', '85']),
+            $this->getAgentServicetemplate('82188d07-d8a1-4cc1-84c7-3782f80c730f', 'OITC_AGENT_SMART', 'SMART', '5e7baf52-2f9e-461b-9e4f-e167f67a225a', ['', '60', '70', '80', '90']),
+            $this->getAgentServicetemplate('83d6640a-adbe-443e-b823-470869629712', 'OITC_AGENT_REDFISH_HEALTH', 'Redfish health', '9f4594a3-24b3-4c7d-8cf8-09515e0f3cd7', ['', '']),
+            $this->getAgentServicetemplate('9fb0d09b-e467-4282-ae86-b7b538e888d7', 'OITC_AGENT_REDFISH_SENSORS', 'Redfish sensors', '6b66ec2c-0301-434f-b7e9-8881b4b84def', ['', '', '', '', '']),
+            $this->getAgentServicetemplate('50ff1ade-8596-46e8-9fc2-23607bea6aad', 'OITC_AGENT_REDFISH_POWER', 'Redfish power', '56f8c7f5-96a1-4107-bd98-64241fcea30c', ['', '', '']),
+            $this->getAgentServicetemplate('459f2366-c067-45a9-86d1-3e2d1183271e', 'OITC_AGENT_REDFISH_STORAGE', 'Redfish storage', '3a006d24-7fa8-4dc8-92a5-b2ad9170a0eb', ['', '', '20', '10']),
+            $this->getAgentServicetemplate('dea2ecf4-001b-44aa-b345-a0198ac2f510', 'OITC_AGENT_REDFISH_EVENTLOG', 'Redfish event log', '25e72e58-9d81-47e0-90e9-d77b9db6c238', ['', '', 'warning', 'critical']),
+            $this->getAgentServicetemplate('f108b1f7-3f5e-4217-bc3d-df6f56cef2e3', 'OITC_AGENT_DOCKER_CONTAINER_HEALTH', 'Docker container health', 'b8e97f2f-043e-4184-b0ab-874e40bada26', ['name', '', '0', '']),
+            $this->getAgentServicetemplate('e9db80e0-7cea-48c8-8229-3cf74d71f0b1', 'OITC_AGENT_POSTFIX_QUEUE', 'Postfix queue', '826d26ff-7447-40ca-a706-10522e972d1a', ['', '50', '100', '', '']),
+            $this->getAgentServicetemplate('161f2e1c-f173-40f3-ae12-b22ff1ef679c', 'OITC_AGENT_PROXMOX_CLUSTER', 'Proxmox cluster', '5c0b2cd7-39ce-4758-8a9d-108ccf3d043d', ['warning']),
+            $this->getAgentServicetemplate('db5a02aa-b017-47bd-b7eb-870b470bfa9f', 'OITC_AGENT_PROXMOX_STORAGE', 'Proxmox storages', 'c1a9003a-0ccb-4288-8140-ac7a798ada72', ['', '80', '90']),
+            $this->getAgentServicetemplate('f5b2deea-0198-4b46-92f6-456ca4b75035', 'OITC_AGENT_PROXMOX_GUEST', 'Proxmox guest', '01c87717-091d-4b04-9259-2f6380f3da65', ['', 'running']),
+            $this->getAgentServicetemplate('f1372ba7-e1df-4d9e-9ccc-cd9e238df708', 'OITC_AGENT_PROXMOX_BACKUP', 'Proxmox backups', '99a1ab5e-12bc-4db8-a372-5042ba0a3ec8', ['25h', 'warning']),
+            $this->getAgentServicetemplate('42ee9475-f1d4-43a7-9b40-bba50896d340', 'OITC_AGENT_PROXMOX_REPLICATION', 'Proxmox replication', 'f25bfe01-0257-4029-9864-ca3d6973baf4', ['']),
         ];
         return $data;
+    }
+
+    /**
+     * Returns a service template for a passive check of the openITCOCKPIT Monitoring Agent
+     *
+     * @param string $uuid
+     * @param string $templateName
+     * @param string $name
+     * @param string $commandUuid
+     * @param array $commandargumentValues Values of $ARG1$, $ARG2$, ...
+     * @return array
+     */
+    private function getAgentServicetemplate(string $uuid, string $templateName, string $name, string $commandUuid, array $commandargumentValues): array {
+        $servicetemplatecommandargumentvalues = [];
+        foreach (array_values($commandargumentValues) as $index => $value) {
+            $servicetemplatecommandargumentvalues[] = [
+                'commandargument_id' => sprintf('$ARG%d$', $index + 1),
+                'value'              => $value,
+            ];
+        }
+
+        return [
+            'uuid'                                      => $uuid,
+            'template_name'                             => $templateName,
+            'name'                                      => $name,
+            'container_id'                              => ROOT_CONTAINER,
+            'servicetemplatetype_id'                    => OITC_AGENT_SERVICE,
+            'check_period_id'                           => '1',
+            'notify_period_id'                          => '1',
+            'description'                               => '',
+            'command_id'                                => $commandUuid,
+            'check_command_args'                        => '',
+            'checkcommand_info'                         => '',
+            'eventhandler_command_id'                   => '0',
+            'timeperiod_id'                             => '0',
+            'check_interval'                            => '300',
+            'retry_interval'                            => '60',
+            'max_check_attempts'                        => '3',
+            'first_notification_delay'                  => '0',
+            'notification_interval'                     => '7200',
+            'notify_on_warning'                         => '1',
+            'notify_on_unknown'                         => '1',
+            'notify_on_critical'                        => '1',
+            'notify_on_recovery'                        => '1',
+            'notify_on_flapping'                        => '0',
+            'notify_on_downtime'                        => '0',
+            'flap_detection_enabled'                    => '0',
+            'flap_detection_on_ok'                      => '0',
+            'flap_detection_on_warning'                 => '0',
+            'flap_detection_on_unknown'                 => '0',
+            'flap_detection_on_critical'                => '0',
+            'low_flap_threshold'                        => '0',
+            'high_flap_threshold'                       => '0',
+            'process_performance_data'                  => '1',
+            'freshness_checks_enabled'                  => '1',
+            'freshness_threshold'                       => '300',
+            'passive_checks_enabled'                    => '1',
+            'event_handler_enabled'                     => '0',
+            'active_checks_enabled'                     => '0',
+            'retain_status_information'                 => '0',
+            'retain_nonstatus_information'              => '0',
+            'notifications_enabled'                     => '1',
+            'notes'                                     => '',
+            'priority'                                  => '1',
+            'tags'                                      => '',
+            'service_url'                               => '',
+            'is_volatile'                               => '0',
+            'check_freshness'                           => '0',
+            'servicetemplateeventcommandargumentvalues' => [],
+            'servicetemplatecommandargumentvalues'      => $servicetemplatecommandargumentvalues,
+            'customvariables'                           => [],
+            'servicegroups'                             => [],
+            'contactgroups'                             => [],
+            'contacts'                                  => []
+        ];
     }
 
     /**

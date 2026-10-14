@@ -163,6 +163,18 @@ class AgentResponseToServices {
                     if ($disksFreeSpaceServices) {
                         $services['disks_free'] = $disksFreeSpaceServices;
                     }
+
+                    $diskInodesServices = $this->getServiceStructForDiskInodes();
+                    if ($diskInodesServices) {
+                        $services['disks_inodes'] = $diskInodesServices;
+                    }
+
+                    if (!$this->isWindows()) {
+                        $readonlyService = $this->getServiceStructByName('disks_readonly', 'Read-only filesystems');
+                        if ($readonlyService) {
+                            $services['disks_readonly'] = $readonlyService;
+                        }
+                    }
                     break;
                 case 'net_io':
                     $netIoServices = $this->getServiceStructForNetIo();
@@ -181,11 +193,25 @@ class AgentResponseToServices {
                     if ($processServices) {
                         $services['processes'] = $processServices;
                     }
+
+                    if (!$this->isWindows() && !isset($this->agentResponse['processes']['error'])) {
+                        $zombieService = $this->getServiceStructByName('processes.zombies', 'Zombie processes');
+                        if ($zombieService) {
+                            $services['processes_zombies'] = $zombieService;
+                        }
+                    }
                     break;
                 case 'systemd_services':
                     $systemdServices = $this->getServiceStructForSystemdServices();
                     if ($systemdServices) {
                         $services['systemd_services'] = $systemdServices;
+                    }
+
+                    if (!isset($this->agentResponse['systemd_services']['error'])) {
+                        $failedUnitsService = $this->getServiceStructByName('systemd_services.failed', 'Failed systemd units');
+                        if ($failedUnitsService) {
+                            $services['systemd_services_failed'] = $failedUnitsService;
+                        }
                     }
                     break;
                 case 'launchd_services':
@@ -198,6 +224,13 @@ class AgentResponseToServices {
                     $windowsServices = $this->getServiceStructForwindowsServices();
                     if ($windowsServices) {
                         $services['windows_services'] = $windowsServices;
+                    }
+
+                    if (!isset($this->agentResponse['windows_services']['error'])) {
+                        $automaticServices = $this->getServiceStructByName('windows_services.automatic', 'Automatic services');
+                        if ($automaticServices) {
+                            $services['windows_services_automatic'] = $automaticServices;
+                        }
                     }
                     break;
                 case 'windows_eventlog':
@@ -216,7 +249,8 @@ class AgentResponseToServices {
                     $dockerCheckTypes = [
                         'docker.running',
                         'docker.cpu',
-                        'docker.memory'
+                        'docker.memory',
+                        'docker.health'
                     ];
                     foreach ($dockerCheckTypes as $type) {
                         $dockerServices = $this->getServiceStructForDocker($type);
@@ -236,6 +270,120 @@ class AgentResponseToServices {
                     if ($ntp) {
                         $services['ntp'] = $ntp;
                     }
+                    break;
+
+                case 'system_health':
+                    $services = array_merge($services, $this->getServiceStructsForSystemHealth());
+                    break;
+
+                case 'security':
+                    $services = array_merge($services, $this->getServiceStructsForSecurity());
+                    break;
+
+                case 'logfiles':
+                case 'certificates':
+                case 'http':
+                case 'windows_perfcounters':
+                    // One service per definition of the logfiles.ini, certificates.ini, http.ini or perfcounters.ini of the agent
+                    $formats = [
+                        'logfiles'             => 'Logfile: %s',
+                        'certificates'         => 'Certificate: %s',
+                        'http'                 => 'HTTP: %s',
+                        'windows_perfcounters' => 'Performance counter: %s'
+                    ];
+                    if (is_array($items) && !isset($items['error'])) {
+                        $names = array_keys($items);
+                        $definitionServices = $this->getServiceStructsForValues($mainKey, 0, array_combine($names, $names), $formats[$mainKey]);
+                        if ($definitionServices) {
+                            $services[$mainKey] = $definitionServices;
+                        }
+                    }
+                    break;
+
+                case 'files':
+                    // files.ini of the agent: the definitions have the type file or directory
+                    if (is_array($items) && !isset($items['error'])) {
+                        foreach (['file' => 'File: %s', 'directory' => 'Directory: %s'] as $type => $format) {
+                            $names = array_keys(array_filter($items, function ($item) use ($type) {
+                                return is_array($item) && ($item['type'] ?? '') === $type;
+                            }));
+                            $fileServices = $this->getServiceStructsForValues('files.' . $type, 0, array_combine($names, $names), $format);
+                            if ($fileServices) {
+                                $services['files_' . $type] = $fileServices;
+                            }
+                        }
+                    }
+                    break;
+
+                case 'windows_scheduled_tasks':
+                    if (is_array($items) && !isset($items['error'])) {
+                        $tasks = [];
+                        foreach ($items as $task) {
+                            if (isset($task['path'])) {
+                                // Regular expression which matches exactly this task, e.g. ^\\Backup\\Daily$
+                                $tasks['^' . addcslashes($task['path'], '\\.+*?[^]$(){}|') . '$'] = $task['path'];
+                            }
+                        }
+                        $taskServices = $this->getServiceStructsForValues('windows_scheduled_tasks', 0, $tasks, 'Scheduled task: %s');
+                        if ($taskServices) {
+                            $services['windows_scheduled_tasks'] = $taskServices;
+                        }
+                    }
+                    break;
+
+                case 'zfs':
+                    if (!empty($items['pools']) && !isset($items['pools']['error'])) {
+                        $zfsPools = $this->getServiceStructByName('zfs.pools', 'ZFS pools');
+                        if ($zfsPools) {
+                            $services['zfs_pools'] = $zfsPools;
+                        }
+                    }
+                    if (isset($items['arc']) && !isset($items['arc']['error'])) {
+                        $zfsArc = $this->getServiceStructByName('zfs.arc', 'ZFS ARC');
+                        if ($zfsArc) {
+                            $services['zfs_arc'] = $zfsArc;
+                        }
+                    }
+                    break;
+
+                case 'ceph':
+                    if (isset($items['health']) && !isset($items['error'])) {
+                        foreach (['ceph.health' => 'Ceph health', 'ceph.osds' => 'Ceph OSDs', 'ceph.usage' => 'Ceph usage'] as $name => $servicename) {
+                            $cephService = $this->getServiceStructByName($name, $servicename);
+                            if ($cephService) {
+                                $services[str_replace('.', '_', $name)] = $cephService;
+                            }
+                        }
+                    }
+                    break;
+
+                case 'smart':
+                    // A single service for all disks which support SMART
+                    if (is_array($items) && !isset($items['error']) && !empty(array_filter($items, function ($device) {
+                            return !empty($device['smart_available']);
+                        }))) {
+                        $smartService = $this->getServiceStructByName('smart', 'SMART');
+                        if ($smartService) {
+                            $services['smart'] = $smartService;
+                        }
+                    }
+                    break;
+
+                case 'proxmox':
+                    $services = array_merge($services, $this->getServiceStructsForProxmox());
+                    break;
+
+                case 'postfix':
+                    if (!isset($items['error'])) {
+                        $postfixService = $this->getServiceStructByName('postfix', 'Postfix queue');
+                        if ($postfixService) {
+                            $services['postfix'] = $postfixService;
+                        }
+                    }
+                    break;
+
+                case 'redfish':
+                    $services = array_merge($services, $this->getServiceStructsForRedfish());
                     break;
 
                 case 'packagemanager':
@@ -824,6 +972,26 @@ class AgentResponseToServices {
                         }
 
                         break;
+
+                    case 'docker.health':
+                        // Agents >= 3.7 report the state of the healthcheck and restart loops
+                        if (isset($item['name']) && array_key_exists('health', $item)) {
+                            $args = [
+                                0 => 'name',
+                                1 => $this->shortCommandargumentValue($item['name'])
+                            ];
+
+                            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], $args)) {
+                                $servicetemplatecommandargumentvalues[0]['value'] = 'name'; // identifier
+                                $servicetemplatecommandargumentvalues[1]['value'] = $this->shortCommandargumentValue($item['name']); // grafana
+                                $services[] = $this->getServiceStruct(
+                                    $agentcheck['servicetemplate_id'],
+                                    sprintf('Container %s health', $item['name']),
+                                    $servicetemplatecommandargumentvalues
+                                );
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -912,6 +1080,293 @@ class AgentResponseToServices {
         }
         if (empty($services)) {
             return false;
+        }
+        return $services;
+    }
+
+    /**
+     * @return bool
+     */
+    private function isWindows() {
+        return ($this->agentResponse['agent']['goos'] ?? '') === 'windows';
+    }
+
+    /**
+     * Creates a service for every value, e.g. for every definition of the logfiles.ini of the agent
+     *
+     * @param string $agentcheckName
+     * @param int $argIndex Index of the command argument which gets the value
+     * @param array $values value => name of the service, e.g. 'nginx_errors' => 'nginx_errors'
+     * @param string $nameFormat e.g. 'Logfile: %s'
+     * @return array|false
+     */
+    private function getServiceStructsForValues(string $agentcheckName, int $argIndex, array $values, string $nameFormat) {
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName($agentcheckName);
+        if (empty($agentcheck) || empty($values)) {
+            return false;
+        }
+
+        $services = [];
+        $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+        foreach ($values as $value => $name) {
+            $value = $this->shortCommandargumentValue((string)$value);
+            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [$argIndex => $value])) {
+                $servicetemplatecommandargumentvalues[$argIndex]['value'] = $value;
+                $services[] = $this->getServiceStruct(
+                    $agentcheck['servicetemplate_id'],
+                    sprintf($nameFormat, $name),
+                    $servicetemplatecommandargumentvalues
+                );
+            }
+        }
+        if (empty($services)) {
+            return false;
+        }
+        return $services;
+    }
+
+    /**
+     * @return array|false
+     */
+    private function getServiceStructForDiskInodes() {
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('disks_inodes');
+        if (empty($agentcheck) || !is_array($this->agentResponse['disks'] ?? null) || isset($this->agentResponse['disks']['error'])) {
+            return false;
+        }
+
+        $services = [];
+        $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+        foreach ($this->agentResponse['disks'] as $device) {
+            // Filesystems without inodes (e.g. btrfs, vfat or Windows) report 0 inodes.
+            // ZFS has no fixed number of inodes and FUSE filesystems (e.g. /etc/pve) report virtual values.
+            $fstype = strtolower($device['disk']['fstype'] ?? '');
+            if (empty($device['usage']['inodes_total']) || !isset($device['disk']['mountpoint']) || $fstype === 'zfs' || str_starts_with($fstype, 'fuse')) {
+                continue;
+            }
+            $mountpoint = $this->shortCommandargumentValue($device['disk']['mountpoint']);
+            if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [2 => $mountpoint])) {
+                $servicetemplatecommandargumentvalues[2]['value'] = $mountpoint;
+                $services[] = $this->getServiceStruct(
+                    $agentcheck['servicetemplate_id'],
+                    sprintf('Inode usage of: %s (%s)', $device['disk']['mountpoint'], $device['disk']['device'] ?? ''),
+                    $servicetemplatecommandargumentvalues
+                );
+            }
+        }
+        if (empty($services)) {
+            return false;
+        }
+        return $services;
+    }
+
+    /**
+     * Linux system health: software RAID, OOM kills, file descriptors, conntrack and pressure stall information
+     *
+     * @return array
+     */
+    private function getServiceStructsForSystemHealth() {
+        $services = [];
+        $health = $this->agentResponse['system_health'];
+        if (!is_array($health) || isset($health['error'])) {
+            return $services;
+        }
+
+        $parts = [
+            'raid'             => ['system_health.raid', 'Software RAID'],
+            'oom_kills'        => ['system_health.oom', 'OOM kills'],
+            'file_descriptors' => ['system_health.file_descriptors', 'File descriptors'],
+            'conntrack'        => ['system_health.conntrack', 'Conntrack table'],
+        ];
+        foreach ($parts as $part => [$name, $servicename]) {
+            if (!isset($health[$part]) || !is_array($health[$part]) || isset($health[$part]['error'])) {
+                continue;
+            }
+            if ($part === 'raid' && empty($health[$part])) {
+                // No software RAID arrays
+                continue;
+            }
+            if ($part === 'conntrack' && empty($health[$part]['available'])) {
+                // The conntrack module is not loaded
+                continue;
+            }
+            $service = $this->getServiceStructByName($name, $servicename);
+            if ($service) {
+                $services['system_health_' . $part] = $service;
+            }
+        }
+
+        // One service per resource (cpu, memory, io) with suitable thresholds
+        if (!empty($health['pressure']['available']) && is_array($health['pressure']['resources'] ?? null)) {
+            $agentcheck = $this->AgentchecksTable->getAgentcheckByName('system_health.pressure');
+            if (!empty($agentcheck)) {
+                $thresholds = [
+                    'cpu'    => ['40', '80'],
+                    'memory' => ['10', '25'],
+                    'io'     => ['30', '60']
+                ];
+                $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+                foreach ($thresholds as $resource => [$warning, $critical]) {
+                    if (!isset($health['pressure']['resources'][$resource])) {
+                        continue;
+                    }
+                    if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $resource])) {
+                        $servicetemplatecommandargumentvalues[0]['value'] = $resource;
+                        $servicetemplatecommandargumentvalues[1]['value'] = $warning;
+                        $servicetemplatecommandargumentvalues[2]['value'] = $critical;
+                        $services['system_health_pressure'][] = $this->getServiceStruct(
+                            $agentcheck['servicetemplate_id'],
+                            sprintf('Pressure stall information: %s', $resource),
+                            $servicetemplatecommandargumentvalues
+                        );
+                    }
+                }
+            }
+        }
+        return $services;
+    }
+
+    /**
+     * Firewall (Windows, macOS), SELinux, AppArmor (Linux), FileVault, SIP (macOS) and Microsoft Defender (Windows)
+     *
+     * @return array
+     */
+    private function getServiceStructsForSecurity() {
+        $services = [];
+        $security = $this->agentResponse['security'];
+        if (!is_array($security) || isset($security['error'])) {
+            return $services;
+        }
+
+        $parts = [
+            'firewall'  => ['security.firewall', 'Firewall'],
+            'apparmor'  => ['security.apparmor', 'AppArmor'],
+            'filevault' => ['security.filevault', 'FileVault'],
+            'sip'       => ['security.sip', 'System Integrity Protection'],
+            'defender'  => ['security.defender', 'Microsoft Defender'],
+        ];
+        foreach ($parts as $part => [$name, $servicename]) {
+            if (!isset($security[$part]) || !is_array($security[$part]) || isset($security[$part]['error'])) {
+                continue;
+            }
+            if ($part === 'apparmor' && empty($security[$part]['enabled'])) {
+                continue;
+            }
+            if ($part === 'defender' && empty($security[$part]['available'])) {
+                // Microsoft Defender is not installed or replaced by another antivirus
+                continue;
+            }
+            $service = $this->getServiceStructByName($name, $servicename);
+            if ($service) {
+                $services['security_' . $part] = $service;
+            }
+        }
+
+        // SELinux: the current mode is expected, so a system in permissive mode does not raise an alert right away
+        $mode = $security['selinux']['mode'] ?? '';
+        if (in_array($mode, ['enforcing', 'permissive'], true)) {
+            $agentcheck = $this->AgentchecksTable->getAgentcheckByName('security.selinux');
+            if (!empty($agentcheck) && !$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'])) {
+                $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+                $servicetemplatecommandargumentvalues[0]['value'] = $mode;
+                $services['security_selinux'] = $this->getServiceStruct($agentcheck['servicetemplate_id'], 'SELinux', $servicetemplatecommandargumentvalues);
+            }
+        }
+        return $services;
+    }
+
+    /**
+     * Proxmox VE: cluster, storages, backups, replication and the guests of the local node
+     *
+     * @return array
+     */
+    private function getServiceStructsForProxmox() {
+        $services = [];
+        $proxmox = $this->agentResponse['proxmox'];
+        if (!is_array($proxmox) || isset($proxmox['error'])) {
+            return $services;
+        }
+
+        $parts = [
+            'cluster'     => ['proxmox.cluster', 'Proxmox cluster'],
+            'storages'    => ['proxmox.storages', 'Proxmox storages'],
+            'backups'     => ['proxmox.backups', 'Proxmox backups'],
+            'replication' => ['proxmox.replication', 'Proxmox replication'],
+        ];
+        foreach ($parts as $part => [$name, $servicename]) {
+            if (!isset($proxmox[$part]) || !is_array($proxmox[$part]) || isset($proxmox[$part]['error'])) {
+                continue;
+            }
+            if (in_array($part, ['storages', 'replication'], true) && empty($proxmox[$part])) {
+                continue;
+            }
+            $service = $this->getServiceStructByName($name, $servicename);
+            if ($service) {
+                $services['proxmox_' . $part] = $service;
+            }
+        }
+
+        // One service per guest of the local node, the current state is the expected state
+        if (is_array($proxmox['guests'] ?? null) && !isset($proxmox['guests']['error'])) {
+            $agentcheck = $this->AgentchecksTable->getAgentcheckByName('proxmox.guests');
+            if (!empty($agentcheck)) {
+                $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+                foreach ($proxmox['guests'] as $guest) {
+                    if (!empty($guest['template']) || ($guest['node'] ?? '') !== ($proxmox['node'] ?? '') || !isset($guest['vmid'])) {
+                        continue;
+                    }
+                    $vmid = (string)$guest['vmid'];
+                    if (!$this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => $vmid])) {
+                        $servicetemplatecommandargumentvalues[0]['value'] = $vmid;
+                        $servicetemplatecommandargumentvalues[1]['value'] = ($guest['status'] ?? '') === 'running' ? 'running' : 'stopped';
+                        $services['proxmox_guests'][] = $this->getServiceStruct(
+                            $agentcheck['servicetemplate_id'],
+                            sprintf('Proxmox %s %s: %s', ($guest['type'] ?? '') === 'lxc' ? 'CT' : 'VM', $vmid, $guest['name'] ?? ''),
+                            $servicetemplatecommandargumentvalues
+                        );
+                    }
+                }
+            }
+        }
+        return $services;
+    }
+
+    /**
+     * Redfish: health, sensors, power, storage and event log of every BMC of the redfish.ini of the agent
+     *
+     * @return array
+     */
+    private function getServiceStructsForRedfish() {
+        $services = [];
+        $redfish = $this->agentResponse['redfish'];
+        if (!is_array($redfish) || (isset($redfish['error']) && !is_array($redfish['error']))) {
+            return $services;
+        }
+
+        $checks = [
+            'redfish.health'   => 'health',
+            'redfish.sensors'  => 'sensors',
+            'redfish.power'    => 'power',
+            'redfish.storage'  => 'storage',
+            'redfish.eventlog' => 'event log'
+        ];
+        foreach ($checks as $name => $description) {
+            $bmcs = [];
+            foreach ($redfish as $bmcName => $bmc) {
+                $collected = isset($bmc['collected_at']) && !isset($bmc['error']);
+                // The event log is optional (eventlog = false in the redfish.ini)
+                if ($name === 'redfish.eventlog' && $collected && !isset($bmc['eventlog'])) {
+                    continue;
+                }
+                // Not all BMCs report the storage of the server
+                if ($name === 'redfish.storage' && $collected && empty($bmc['storage'])) {
+                    continue;
+                }
+                $bmcs[$bmcName] = $bmcName;
+            }
+            $bmcServices = $this->getServiceStructsForValues($name, 0, $bmcs, 'Redfish %s: ' . $description);
+            if ($bmcServices) {
+                $services[str_replace('.', '_', $name)] = $bmcServices;
+            }
         }
         return $services;
     }
