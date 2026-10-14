@@ -34,7 +34,9 @@ declare(strict_types=1);
 namespace Statusengine3Module\Model\Table;
 
 use App\Lib\Interfaces\StatehistoryServiceTableInterface;
+use App\Lib\Traits\DatabasePartitionsTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
+use Cake\Cache\Cache;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
@@ -68,6 +70,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
     /*****************************************************/
 
     use PaginationAndScrollIndexTrait;
+    use DatabasePartitionsTrait;
 
     /**
      * Initialize method
@@ -231,14 +234,31 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
         if (empty($StatehistoryServiceConditions->getServiceUuids())) {
             return [];
         }
-        $query = $this->find()
-            ->select([
-                'StatehistoryServices.service_description',
-                'StatehistoryServices.state',
-                'StatehistoryServices.state_time',
-                'StatehistoryServices.state_change',
-                'StatehistoryServices.last_state'
-            ])
+
+        $partitions = Cache::read('StatehistoryServicesTable_getStatehistoryByUuids', 'permissions');
+        if ($partitions === null) {
+            // MySQL partitions do not change super often so we can cache the result as the operation is expensive
+            $partitions = $this->getPartitionsForUnixTimestamp($this, $StatehistoryServiceConditions->getFrom());
+            Cache::write('StatehistoryServicesTable_getStatehistoryByUuids', $partitions, 'permissions');
+        }
+
+        $query = $this->find();
+
+        if (!empty($partitions)) {
+            $partitionSql = '`' . implode('`, `', $partitions) . '`';
+            $query->from([
+                'StatehistoryServices' =>
+                    '`statusengine_service_statehistory` PARTITION (' . $partitionSql . ')',
+            ], true);
+        }
+
+        $query->select([
+            'StatehistoryServices.service_description',
+            'StatehistoryServices.state',
+            'StatehistoryServices.state_time',
+            'StatehistoryServices.state_change',
+            'StatehistoryServices.last_state'
+        ])
             ->where([
                 'StatehistoryServices.service_description IN' => $StatehistoryServiceConditions->getServiceUuids(),
                 'StatehistoryServices.state_time >'           => $StatehistoryServiceConditions->getFrom()
@@ -285,4 +305,5 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
 
         return $statehistoryRecords;
     }
+
 }
