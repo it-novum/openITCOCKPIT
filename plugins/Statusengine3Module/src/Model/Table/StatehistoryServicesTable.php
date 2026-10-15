@@ -36,7 +36,6 @@ namespace Statusengine3Module\Model\Table;
 use App\Lib\Interfaces\StatehistoryServiceTableInterface;
 use App\Lib\Traits\DatabasePartitionsTrait;
 use App\Lib\Traits\PaginationAndScrollIndexTrait;
-use Cake\Cache\Cache;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
 use itnovum\openITCOCKPIT\Core\StatehistoryServiceConditions;
@@ -234,13 +233,7 @@ class StatehistoryServicesTable extends Table implements StatehistoryServiceTabl
         if (empty($StatehistoryServiceConditions->getServiceUuids())) {
             return [];
         }
-
-        $partitions = Cache::read('StatehistoryServicesTable_getStatehistoryByUuids', 'permissions');
-        if ($partitions === null) {
-            // MySQL partitions do not change super often so we can cache the result as the operation is expensive
-            $partitions = $this->getPartitionsForUnixTimestamp($this, $StatehistoryServiceConditions->getFrom());
-            Cache::write('StatehistoryServicesTable_getStatehistoryByUuids', $partitions, 'permissions');
-        }
+        $partitions = $this->getPartitionsForUnixTimestamp($this, $StatehistoryServiceConditions->getFrom());
 
         $query = $this->find();
 

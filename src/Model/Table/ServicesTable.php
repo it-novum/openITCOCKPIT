@@ -6789,6 +6789,10 @@ class ServicesTable extends Table {
             : sprintf('`%s`', $serviceConditions['keywords']);
 
         foreach ($servicestatus as $service) {
+            //Check for random exit codes like 255...
+            if ($service['Servicestatus']['current_state'] > 3) {
+                $service['Servicestatus']['current_state'] = 3;
+            }
             $status = new Servicestatus($service['Servicestatus']);
             $currentState = $status->currentState();
             $isAcknowledged = $status->isAcknowledged();
