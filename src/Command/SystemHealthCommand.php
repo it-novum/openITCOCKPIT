@@ -295,7 +295,6 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             ->toArray();
 
         $thresholds = $this->getSatelliteThresholds($systemHealthSettings);
-        $diskExcludeRegex = $this->sanitizeRegex($systemHealthSettings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_DISK_EXCLUDE_REGEX'] ?? null);
 
         foreach ($satellitesArray as $satellite) {
             if (!isset($satellite['satellite_status'])) {
@@ -332,7 +331,7 @@ class SystemHealthCommand extends Command implements CronjobInterface {
                 if (!empty($parsedHealth['disks']) && is_array($parsedHealth['disks'])) {
                     $disksWithState = [];
                     foreach ($parsedHealth['disks'] as $disk) {
-                        if ($diskExcludeRegex !== null && (preg_match($diskExcludeRegex, $disk['disk'] ?? '') === 1 || preg_match($diskExcludeRegex, $disk['mountpoint'] ?? '') === 1)) {
+                        if ($thresholds['exclude_regex'] !== null && (preg_match($thresholds['exclude_regex'], $disk['disk'] ?? '') === 1 || preg_match($thresholds['exclude_regex'], $disk['mountpoint'] ?? '') === 1)) {
                             continue;
                         }
                         $disk['state'] = $this->getStateByPercentage($disk['use_percentage'],$thresholds['disk']['warning'],$thresholds['disk']['critical']);
@@ -607,11 +606,12 @@ class SystemHealthCommand extends Command implements CronjobInterface {
                 'warning'  => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_DISK_WARNING_IN_PERCENT'] ?? null, 75),
                 'critical' => $this->getPercentSetting($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_DISK_CRITICAL_IN_PERCENT'] ?? null, 90),
             ],
+            'exclude_regex' => $this->sanitizeRegex($settings['SYSTEM_HEALTH.SATELLITES_THRESHOLD_DISK_EXCLUDE_REGEX'] ?? null)
         ];
     }
 
     private function getPercentSetting($value, $default): float {
-        return (is_numeric($value) && $value > 0) ? (float)$value : $default;
+        return (is_numeric($value) && $value > 0) ? (float)$value : (float)$default;
     }
 
     private function getStateByPercentage($percentage, $warningInPercent, $criticalInPercent): string
