@@ -626,6 +626,33 @@ class Agent extends Importer {
                 'plugin_name'        => 'BitLocker',
                 'servicetemplate_id' => '10fc3768-884c-4286-9490-89d9d4b4a7b1'
             ],
+
+            // Agent 3.7: network ports
+            [
+                'name'               => 'network_ports.listener',
+                'plugin_name'        => 'NetworkPort',
+                'servicetemplate_id' => 'b4736b11-23aa-4f64-b717-64e7e155e675'
+            ],
+            [
+                'name'               => 'network_ports.tcp_states',
+                'plugin_name'        => 'TcpStates',
+                'servicetemplate_id' => '38ebb55e-9c88-455f-a536-d0f930a465d1'
+            ],
+            [
+                'name'               => 'network_ports.ephemeral_ports',
+                'plugin_name'        => 'EphemeralPorts',
+                'servicetemplate_id' => '27a4b783-621f-42bc-b104-d9cb06d288a2'
+            ],
+            [
+                'name'               => 'network_ports.tcp_errors',
+                'plugin_name'        => 'TcpErrors',
+                'servicetemplate_id' => '2d3faac5-82f6-4f08-83d5-3891788a350d'
+            ],
+            [
+                'name'               => 'network_ports.unexpected',
+                'plugin_name'        => 'UnexpectedPorts',
+                'servicetemplate_id' => '33d9e80f-228e-4507-ab85-b173c2f98f05'
+            ],
         ];
         return $data;
     }
@@ -2848,6 +2875,191 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG2$',
                         'human_name' => 'State if off'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_network_port',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '4651f946-f9c3-442c-a899-404ab84007eb',
+                'description'      => "Checks that a service listens on a port of the host, like check_tcp but without network access from the openITCOCKPIT server. A port which is not listening is critical.\n" .
+                    "Port: e.g. 443. Empty = any port of the process (the process is required in this case).\n" .
+                    "Protocol: tcp or udp.\n" .
+                    "Process: regular expression for the process which has to listen on the port (optional), e.g. ^nginx$. The process of other users requires the agent to run as root (Linux, FreeBSD) or as service (Windows).\n" .
+                    "Address: empty = any address, public = at least one address which is not 127.0.0.1 or ::1, or an IP address (also fulfilled by 0.0.0.0 and ::).\n" .
+                    "Warning and Critical: Number of established TCP connections (optional).\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Port'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Protocol (tcp, udp)'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Process (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Address (empty, public or IP)'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Warning connections'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'Critical connections'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_tcp_states',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'b209a015-9814-4fc3-919f-77ec9aaa75a0',
+                'description'      => "Checks the number of TCP connections per state.\n" .
+                    "CLOSE_WAIT: the remote side closed the connection, but the local application did not. Many connections in this state are almost always a bug of the application.\n" .
+                    "SYN_RECV: half open incoming connections, e.g. SYN flood or an overloaded application.\n" .
+                    "TIME_WAIT and ESTABLISHED: optional thresholds.\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning CLOSE_WAIT'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical CLOSE_WAIT'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning SYN_RECV'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical SYN_RECV'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Warning TIME_WAIT'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'Critical TIME_WAIT'
+                    ],
+                    [
+                        'name'       => '$ARG7$',
+                        'human_name' => 'Warning ESTABLISHED'
+                    ],
+                    [
+                        'name'       => '$ARG8$',
+                        'human_name' => 'Critical ESTABLISHED'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_ephemeral_ports',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '48583e60-042f-4b67-8756-fb82b2c8f382',
+                'description'      => "Checks the usage of the local port range for outgoing TCP connections (ephemeral ports). If the range is exhausted, new connections fail with \"Cannot assign requested address\", e.g. on proxies or applications without connection pooling.\n" .
+                    "Warning and Critical: Usage in percent.\n" .
+                    "The output contains the destination with the most connections.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning %'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical %'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_tcp_errors',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'f0e8e9f8-14cd-47a5-861a-e179245209eb',
+                'description'      => "Checks TCP and UDP errors per second, averaged over the check interval of the agent.\n" .
+                    "Dropped connection attempts: e.g. if the accept queue is full because the application does not accept the connections fast enough. The clients see timeouts (default: warning on the first drop).\n" .
+                    "Retransmits: retransmitted TCP segments in percent of the sent segments, e.g. packet loss. Only evaluated if at least 1000 segments were sent.\n" .
+                    "UDP buffer errors: dropped UDP packets per second because the buffer of a socket was full.\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning drops/s'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical drops/s'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning retransmits %'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical retransmits %'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Warning UDP buffer errors/s'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'Critical UDP buffer errors/s'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_unexpected_ports',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'f27e454c-5576-4ae2-8420-69095f155aba',
+                'description'      => "Alerts on listening ports which are not allowed, e.g. a new service or a forgotten debug port.\n" .
+                    "Allowed ports: comma separated list, e.g. 22,80,443,udp/53,tcp/8000-8100. Ports without protocol apply to TCP and UDP.\n" .
+                    "Protocols: tcp, udp or all.\n" .
+                    "Include loopback: yes or no. Ports on 127.0.0.1 and ::1 are ignored by default.\n" .
+                    "Ignore ephemeral ports: yes or no, e.g. for the dynamic RPC ports of Windows (49152-65535).\n" .
+                    "Ignore processes: regular expression (optional).\n" .
+                    "State for unexpected ports: ok, warning, critical or unknown.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Allowed ports'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Protocols (tcp, udp, all)'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Include loopback (yes, no)'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Ignore ephemeral ports (yes, no)'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Ignore processes (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'State if unexpected'
                     ]
                 ]
             ],
@@ -5265,6 +5477,13 @@ class Agent extends Importer {
             $this->getAgentServicetemplate('8eb07426-462c-4e09-bdc3-3f0091e9d8a9', 'OITC_AGENT_MISSING_MOUNTS', 'Missing mounts', 'e04b9f41-55b8-4665-9543-b07b5c9892cb', ['critical', 'warning', '']),
             $this->getAgentServicetemplate('0f0690ec-4bb4-4d0e-9af7-79d14cf12a12', 'OITC_AGENT_EXIM_QUEUE', 'Exim queue', '953b13cf-6b78-4366-b229-44dd3b71e409', ['50', '100', '0', '', '', '']),
             $this->getAgentServicetemplate('10fc3768-884c-4286-9490-89d9d4b4a7b1', 'OITC_AGENT_BITLOCKER', 'BitLocker', '40e92165-c7f8-4009-8431-5a6a334d12ba', ['', 'critical']),
+
+            // Agent 3.7: network ports
+            $this->getAgentServicetemplate('b4736b11-23aa-4f64-b717-64e7e155e675', 'OITC_AGENT_NETWORK_PORT', 'Network port', '4651f946-f9c3-442c-a899-404ab84007eb', ['', 'tcp', '', '', '', '']),
+            $this->getAgentServicetemplate('38ebb55e-9c88-455f-a536-d0f930a465d1', 'OITC_AGENT_TCP_STATES', 'TCP connection states', 'b209a015-9814-4fc3-919f-77ec9aaa75a0', ['100', '500', '100', '500', '', '', '', '']),
+            $this->getAgentServicetemplate('27a4b783-621f-42bc-b104-d9cb06d288a2', 'OITC_AGENT_EPHEMERAL_PORTS', 'Ephemeral ports', '48583e60-042f-4b67-8756-fb82b2c8f382', ['80', '90']),
+            $this->getAgentServicetemplate('2d3faac5-82f6-4f08-83d5-3891788a350d', 'OITC_AGENT_TCP_ERRORS', 'TCP errors', 'f0e8e9f8-14cd-47a5-861a-e179245209eb', ['0', '1', '5', '10', '1', '10']),
+            $this->getAgentServicetemplate('33d9e80f-228e-4507-ab85-b173c2f98f05', 'OITC_AGENT_UNEXPECTED_PORTS', 'Unexpected ports', 'f27e454c-5576-4ae2-8420-69095f155aba', ['', 'tcp', 'no', 'no', '', 'warning']),
         ];
         return $data;
     }

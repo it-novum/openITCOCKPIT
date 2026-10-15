@@ -35,6 +35,16 @@ use Cake\Utility\Hash;
 class AgentResponseToServices {
 
     /**
+     * Processes with more listening ports get one service for the process instead of one service per port
+     */
+    const MAX_PORTS_PER_PROCESS = 3;
+
+    /**
+     * Processes which listen for different services (e.g. RDP and RPC of svchost.exe), they always get one service per port
+     */
+    const SHARED_PORT_PROCESSES = ['svchost.exe', 'System', 'systemd', 'launchd', 'inetd', 'xinetd'];
+
+    /**
      * @var int
      */
     private $hostId;
@@ -440,6 +450,10 @@ class AgentResponseToServices {
                             $services['exim'] = $eximService;
                         }
                     }
+                    break;
+
+                case 'network_ports':
+                    $services = array_merge($services, $this->getServiceStructsForNetworkPorts());
                     break;
 
                 case 'packagemanager':
@@ -1428,6 +1442,98 @@ class AgentResponseToServices {
                     }
                 }
             }
+        }
+        return $services;
+    }
+
+    /**
+     * Network ports: one service per listening TCP port, TCP states, ephemeral ports and TCP errors (Linux).
+     * Ports of the ephemeral range above 32767 are skipped, as they change with every start of the process
+     * (e.g. the dynamic RPC ports of Windows). Processes with more than MAX_PORTS_PER_PROCESS ports (e.g. Ceph OSDs)
+     * get one service for the process instead of one service per port, except SHARED_PORT_PROCESSES.
+     * Unexpected ports are not suggested, as the allowed ports are unknown.
+     *
+     * @return array
+     */
+    private function getServiceStructsForNetworkPorts() {
+        $services = [];
+        $networkPorts = $this->agentResponse['network_ports'];
+        if (!is_array($networkPorts) || isset($networkPorts['error'])) {
+            return $services;
+        }
+
+        $parts = [
+            'tcp_states'      => ['network_ports.tcp_states', 'TCP connection states'],
+            'ephemeral_ports' => ['network_ports.ephemeral_ports', 'Ephemeral ports'],
+            'tcp_errors'      => ['network_ports.tcp_errors', 'TCP errors'],
+        ];
+        foreach ($parts as $part => [$name, $servicename]) {
+            if (!is_array($networkPorts[$part] ?? null)) {
+                continue;
+            }
+            $service = $this->getServiceStructByName($name, $servicename);
+            if ($service) {
+                $services['network_ports_' . $part] = $service;
+            }
+        }
+
+        $agentcheck = $this->AgentchecksTable->getAgentcheckByName('network_ports.listener');
+        if (empty($agentcheck) || !is_array($networkPorts['listeners'] ?? null)) {
+            return $services;
+        }
+
+        $ephemeralFirst = max(32768, (int)($networkPorts['ephemeral_ports']['first'] ?? 32768));
+        $ports = [];
+        foreach ($networkPorts['listeners'] as $listener) {
+            if (($listener['protocol'] ?? '') !== 'tcp' || empty($listener['port']) || $listener['port'] >= $ephemeralFirst) {
+                continue;
+            }
+            $port = (int)$listener['port'];
+            if (!isset($ports[$port]) || $ports[$port] === '') {
+                $ports[$port] = (string)($listener['process'] ?? '');
+            }
+        }
+        ksort($ports);
+
+        $portsPerProcess = [];
+        foreach ($ports as $port => $process) {
+            if ($process !== '' && !in_array($process, self::SHARED_PORT_PROCESSES, true)) {
+                $portsPerProcess[$process][] = $port;
+            }
+        }
+
+        $servicetemplatecommandargumentvalues = $agentcheck['servicetemplate']['servicetemplatecommandargumentvalues'];
+        $processServices = [];
+        foreach ($ports as $port => $process) {
+            // A hyphen outside of a character class does not need to be escaped (e.g. ^ceph-osd$)
+            $processRegex = $process !== '' ? $this->shortCommandargumentValue('^' . str_replace('\\-', '-', preg_quote($process, '#')) . '$') : '';
+            $args = $servicetemplatecommandargumentvalues;
+            $args[1]['value'] = 'tcp';
+            $args[2]['value'] = $processRegex;
+
+            if (sizeof($portsPerProcess[$process] ?? []) > self::MAX_PORTS_PER_PROCESS) {
+                if (isset($processServices[$process]) || $this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => '', 2 => $processRegex])) {
+                    continue;
+                }
+                $processServices[$process] = true;
+                $args[0]['value'] = '';
+                $services['network_ports'][] = $this->getServiceStruct(
+                    $agentcheck['servicetemplate_id'],
+                    sprintf('Ports of %s', $process),
+                    $args
+                );
+                continue;
+            }
+
+            if ($this->doesServiceAlreadyExists($agentcheck['servicetemplate_id'], [0 => (string)$port])) {
+                continue;
+            }
+            $args[0]['value'] = (string)$port;
+            $services['network_ports'][] = $this->getServiceStruct(
+                $agentcheck['servicetemplate_id'],
+                $process !== '' ? sprintf('Port tcp/%s (%s)', $port, $process) : sprintf('Port tcp/%s', $port),
+                $args
+            );
         }
         return $services;
     }
