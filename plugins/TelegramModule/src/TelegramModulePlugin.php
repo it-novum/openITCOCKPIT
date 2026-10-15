@@ -16,7 +16,7 @@ use Cake\Routing\RouteBuilder;
 /**
  * Plugin for ExampleModule
  */
-class Plugin extends BasePlugin {
+class TelegramModulePlugin extends BasePlugin {
     /**
      * Load all the plugin configuration and bootstrap logic.
      *

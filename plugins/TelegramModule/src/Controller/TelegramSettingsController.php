@@ -8,12 +8,10 @@ declare(strict_types=1);
 
 namespace TelegramModule\Controller;
 
-use App\Model\Table\CommandsTable;
 use App\Model\Table\ContactsTable;
 use App\Model\Table\SystemsettingsTable;
 use Cake\Datasource\ResultSetInterface;
 use Cake\ORM\TableRegistry;
-use Cake\Utility\Hash;
 use TelegramBot\Api\Exception;
 use TelegramBot\Api\InvalidArgumentException;
 use TelegramModule\Command\TelegramNotificationCommand;
@@ -37,8 +35,7 @@ class TelegramSettingsController extends AppController {
      */
     public function index() {
         if (!$this->isAngularJsRequest()) {
-            //Only ship html template
-            return;
+            throw new \Cake\Http\Exception\MethodNotAllowedException();
         }
 
         /** @var TelegramSettingsTable $telegramSettingsTable */
@@ -55,49 +52,14 @@ class TelegramSettingsController extends AppController {
         $telegramChatsTable = TableRegistry::getTableLocator()->get('TelegramModule.TelegramChats');
         $chats = $telegramChatsTable->getTelegramChats();
 
+        $MY_RIGHTS = $this->MY_RIGHTS;
+        if ($this->hasRootPrivileges) {
+            $MY_RIGHTS = [];
+        }
+
         /** @var ContactsTable $contactsTable */
         $contactsTable = TableRegistry::getTableLocator()->get('Contacts');
-        $contacts = [];
-        /*$contactsQuery = $ContactsTable->find()
-            ->select([
-                'Contacts.name',
-                'Contacts.uuid'
-            ])
-            ->disableHydration()
-            ->all();
-
-        if ($contactsQuery !== null) {
-            $contacts = $contactsQuery->toArray();
-        }*/
-
-        $allContacts = $contactsTable->find()
-            ->contain([
-                'Containers',
-                'HostCommands',
-                'ServiceCommands',
-                'Customvariables'
-            ])
-            ->disableHydration()
-            ->all();
-
-        /** @var CommandsTable $commandsTable */
-        $commandsTable = TableRegistry::getTableLocator()->get('Commands');
-        $telegramHostNotificationCommand = $commandsTable->getCommandByName('host-notify-by-telegram', false, false);
-        $telegramServiceNotificationCommand = $commandsTable->getCommandByName(
-            'service-notify-by-telegram',
-            false,
-            false
-        );
-
-        foreach ($allContacts as $contact) {
-            if (in_array($telegramHostNotificationCommand[0]['id'], Hash::extract($contact, 'host_commands.{n}.id')) ||
-                in_array(
-                    $telegramServiceNotificationCommand[0]['id'],
-                    Hash::extract($contact, 'service_commands.{n}.id')
-                )) {
-                $contacts[] = $contact;
-            }
-        }
+        $contacts = $contactsTable->getContactsForTelegram($MY_RIGHTS);
 
         if ($telegramSettings->get('external_webhook_domain') == "") {
             /** @var SystemsettingsTable $systemsettingsTable */

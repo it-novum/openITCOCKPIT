@@ -46,7 +46,7 @@ class TelegramActions {
     /**
      * @throws \Exception | BotTokenMissingException
      */
-    public function __construct(string $tokenOverwrite = null) {
+    public function __construct(?string $tokenOverwrite = null) {
         $this->telegramChatsTable = TableRegistry::getTableLocator()->get('TelegramModule.TelegramChats');
         $this->telegramSettingsTable = TableRegistry::getTableLocator()->get('TelegramModule.TelegramSettings');
         $this->telegramContactsAccessKeysTable = TableRegistry::getTableLocator()->get(
