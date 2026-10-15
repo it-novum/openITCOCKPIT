@@ -653,6 +653,23 @@ class Agent extends Importer {
                 'plugin_name'        => 'UnexpectedPorts',
                 'servicetemplate_id' => '33d9e80f-228e-4507-ab85-b173c2f98f05'
             ],
+
+            // Agent 3.7: IPMI
+            [
+                'name'               => 'ipmi.health',
+                'plugin_name'        => 'IpmiHealth',
+                'servicetemplate_id' => '96d90f51-95ab-4ff7-82af-62681fdcdec8'
+            ],
+            [
+                'name'               => 'ipmi.sensors',
+                'plugin_name'        => 'IpmiSensors',
+                'servicetemplate_id' => '2281db92-0525-4dd4-ac53-d04ed66d9278'
+            ],
+            [
+                'name'               => 'ipmi.sel',
+                'plugin_name'        => 'IpmiSel',
+                'servicetemplate_id' => '8e883faf-31e1-4e6a-9c86-65846ae4dca4'
+            ],
         ];
         return $data;
     }
@@ -3060,6 +3077,88 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG6$',
                         'human_name' => 'State if unexpected'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_ipmi_health',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '7b777447-441e-4889-a6b1-bc44840564bd',
+                'description'      => "Checks the overall health of the server reported by the local BMC (IPMI): all sensors and the chassis status.\n" .
+                    "Analog sensors (temperatures, fans, voltages, ...) are evaluated with the thresholds of the BMC, discrete sensors (power supplies, redundancy, drives, memory, ...) with the severities of the IPMI specification. Sensors without reading (e.g. empty DIMM slots) are ignored.\n" .
+                    "Exclude sensors: regular expression for sensor names (case insensitive, optional).\n" .
+                    "State if the chassis was opened: ok, warning, critical or unknown.\n" .
+                    "Requires a BMC: Linux /dev/ipmi0 (kernel modules ipmi_si and ipmi_devintf, agent as root), Windows the IPMI driver (agent as service). No ipmitool required.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Exclude sensors (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State if chassis opened'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_ipmi_sensors',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '212418a9-a5ab-43af-8a99-1784541d8595',
+                'description'      => "Checks the sensors with readings of the local BMC (IPMI) and creates performance data.\n" .
+                    "Type: temperature, fan, voltage, power, current or empty for all sensors with readings.\n" .
+                    "Sensor names: regular expression (case insensitive, optional).\n" .
+                    "Warning and Critical: own thresholds (optional), they replace the thresholds of the BMC and require a type. Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Requires a BMC: Linux /dev/ipmi0 (kernel modules ipmi_si and ipmi_devintf, agent as root), Windows the IPMI driver (agent as service). No ipmitool required.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Type'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Sensor names (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_ipmi_sel',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'c4f7b1bc-0a88-4491-99c7-917b150a402f',
+                'description'      => "Checks the system event log (SEL) of the local BMC (IPMI): warnings and critical entries within the time window of the agent (ipmi-sel-window, default 24 hours). The end of a condition (e.g. a power supply which works again) is not reported.\n" .
+                    "Exclude: regular expression for the sensor and the description (case insensitive, optional).\n" .
+                    "State for warning entries and for critical entries: ok, warning, critical or unknown.\n" .
+                    "SEL usage: warning if the SEL is full or the usage exceeds the given percent (0 = off). Many BMCs stop logging if the SEL is full.\n" .
+                    "Requires a BMC: Linux /dev/ipmi0 (kernel modules ipmi_si and ipmi_devintf, agent as root), Windows the IPMI driver (agent as service). No ipmitool required.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Exclude (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State for warning entries'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'State for critical entries'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Warning SEL usage %'
                     ]
                 ]
             ],
@@ -5484,6 +5583,11 @@ class Agent extends Importer {
             $this->getAgentServicetemplate('27a4b783-621f-42bc-b104-d9cb06d288a2', 'OITC_AGENT_EPHEMERAL_PORTS', 'Ephemeral ports', '48583e60-042f-4b67-8756-fb82b2c8f382', ['80', '90']),
             $this->getAgentServicetemplate('2d3faac5-82f6-4f08-83d5-3891788a350d', 'OITC_AGENT_TCP_ERRORS', 'TCP errors', 'f0e8e9f8-14cd-47a5-861a-e179245209eb', ['0', '1', '5', '10', '1', '10']),
             $this->getAgentServicetemplate('33d9e80f-228e-4507-ab85-b173c2f98f05', 'OITC_AGENT_UNEXPECTED_PORTS', 'Unexpected ports', 'f27e454c-5576-4ae2-8420-69095f155aba', ['', 'tcp', 'no', 'no', '', 'warning']),
+
+            // Agent 3.7: IPMI
+            $this->getAgentServicetemplate('96d90f51-95ab-4ff7-82af-62681fdcdec8', 'OITC_AGENT_IPMI_HEALTH', 'IPMI health', '7b777447-441e-4889-a6b1-bc44840564bd', ['', 'warning']),
+            $this->getAgentServicetemplate('2281db92-0525-4dd4-ac53-d04ed66d9278', 'OITC_AGENT_IPMI_SENSORS', 'IPMI sensors', '212418a9-a5ab-43af-8a99-1784541d8595', ['', '', '', '']),
+            $this->getAgentServicetemplate('8e883faf-31e1-4e6a-9c86-65846ae4dca4', 'OITC_AGENT_IPMI_SEL', 'IPMI event log', 'c4f7b1bc-0a88-4491-99c7-917b150a402f', ['', 'warning', 'critical', '90']),
         ];
         return $data;
     }

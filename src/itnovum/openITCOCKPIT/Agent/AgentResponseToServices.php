@@ -456,6 +456,10 @@ class AgentResponseToServices {
                     $services = array_merge($services, $this->getServiceStructsForNetworkPorts());
                     break;
 
+                case 'ipmi':
+                    $services = array_merge($services, $this->getServiceStructsForIpmi());
+                    break;
+
                 case 'packagemanager':
                     if (!empty($this->agentResponse['packagemanager']['Enabled'])) {
                         $packagemanager = $this->getServiceStructByName('packagemanager', 'System Updates');
@@ -1534,6 +1538,55 @@ class AgentResponseToServices {
                 $process !== '' ? sprintf('Port tcp/%s (%s)', $port, $process) : sprintf('Port tcp/%s', $port),
                 $args
             );
+        }
+        return $services;
+    }
+
+    /**
+     * IPMI (local BMC): health, one service per sensor type with readings and the SEL
+     *
+     * @return array
+     */
+    private function getServiceStructsForIpmi() {
+        $services = [];
+        $ipmi = $this->agentResponse['ipmi'];
+        if (!is_array($ipmi) || isset($ipmi['error']) || !is_array($ipmi['sensors'] ?? null)) {
+            return $services;
+        }
+
+        $health = $this->getServiceStructByName('ipmi.health', 'IPMI health');
+        if ($health) {
+            $services['ipmi_health'] = $health;
+        }
+
+        // Sensor types with readings, the order is the order of the services
+        $types = ['temperature' => 'IPMI temperatures', 'fan' => 'IPMI fans', 'voltage' => 'IPMI voltages', 'power' => 'IPMI power consumption'];
+        $available = [];
+        foreach ($ipmi['sensors'] as $sensor) {
+            if (!isset($sensor['reading'])) {
+                continue;
+            }
+            if (($sensor['type'] ?? '') === 'Temperature') {
+                $available['temperature'] = $types['temperature'];
+            } else if (($sensor['type'] ?? '') === 'Fan') {
+                $available['fan'] = $types['fan'];
+            } else if (($sensor['type'] ?? '') === 'Voltage') {
+                $available['voltage'] = $types['voltage'];
+            } else if (($sensor['unit'] ?? '') === 'Watts') {
+                $available['power'] = $types['power'];
+            }
+        }
+        $available = array_intersect_key($types, $available);
+        $sensorServices = $this->getServiceStructsForValues('ipmi.sensors', 0, $available, '%s');
+        if ($sensorServices) {
+            $services['ipmi_sensors'] = $sensorServices;
+        }
+
+        if (is_array($ipmi['sel'] ?? null)) {
+            $sel = $this->getServiceStructByName('ipmi.sel', 'IPMI event log');
+            if ($sel) {
+                $services['ipmi_sel'] = $sel;
+            }
         }
         return $services;
     }
