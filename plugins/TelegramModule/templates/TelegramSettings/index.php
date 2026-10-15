@@ -149,8 +149,10 @@
                         <div class="card margin-top-10">
                             <div class="card-body">
                                 <div class="float-right">
-                                    <input class="btn btn-primary" type="submit"
-                                           value="<?= __('Save configuration') ?>">&nbsp;
+                                    <?php if ($this->Acl->hasPermission('save', 'telegramsettings', 'telegrammodule')): ?>
+                                        <input class="btn btn-primary" type="submit"
+                                               value="<?= __('Save configuration') ?>">&nbsp;
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

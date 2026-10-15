@@ -71,66 +71,75 @@ class TelegramSettingsController extends AppController {
             );
         }
 
-        if ($this->request->is('get')) {
-            $this->set('telegramSettings', $telegramSettings);
-            $this->set('contacts', $contacts);
-            $this->set('contactsAccessKeys', $contactsAccessKeys);
-            $this->set('chats', $chats);
-            $this->viewBuilder()->setOption('serialize', [
-                'telegramSettings',
-                'contacts',
-                'contactsAccessKeys',
-                'chats'
-            ]);
+        $this->set('telegramSettings', $telegramSettings);
+        $this->set('contacts', $contacts);
+        $this->set('contactsAccessKeys', $contactsAccessKeys);
+        $this->set('chats', $chats);
+        $this->viewBuilder()->setOption('serialize', [
+            'telegramSettings',
+            'contacts',
+            'contactsAccessKeys',
+            'chats'
+        ]);
+    }
+
+    /**
+     * Saves the Telegram Settings / Configuration.
+     * @throws Exception
+     * @throws \Exception
+     */
+    public function save() {
+        if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
+            throw new \Cake\Http\Exception\MethodNotAllowedException();
+        }
+
+        /** @var TelegramSettingsTable $telegramSettingsTable */
+        $telegramSettingsTable = TableRegistry::getTableLocator()->get('TelegramModule.TelegramSettings');
+
+        $entity = $telegramSettingsTable->getTelegramSettingsEntity();
+        $originalTwoWaySetting = $entity->get('two_way');
+        $entity = $telegramSettingsTable->patchEntity($entity, $this->request->getData(null, []));
+
+        if (
+            ($originalTwoWaySetting || $originalTwoWaySetting == 1) &&
+            (!$entity->get('two_way') || $entity->get('two_way') == 0) &&
+            $entity->get('token') != ""
+        ) {
+            //disable Telegram bot webhook
+            $telegramActions = new TelegramActions($entity->get('token'));
+            $telegramActions->disableWebhook();
+        } else if (
+            ($entity->get('two_way') || $entity->get('two_way') == 1) &&
+            $entity->get('token') != "" &&
+            $entity->get('external_webhook_domain') != "" &&
+            $entity->get('webhook_api_key') != ""
+        ) {
+            //enable/update Telegram bot webhook
+            $telegramActions = new TelegramActions($entity->get('token'));
+            $webhookUrl = sprintf(
+                '%s/telegram_module/telegram_webhook/notify.json?apikey=%s',
+                $entity->get('external_webhook_domain'),
+                $entity->get('webhook_api_key')
+            );
+            $addressSystemSetting = $telegramActions->enableWebhook($webhookUrl);
+
+            if (!$addressSystemSetting || trim($addressSystemSetting) === '') {
+                $entity->set('two_way', false);
+            }
+        }
+
+        $telegramSettingsTable->save($entity);
+        if ($entity->hasErrors()) {
+            $this->response = $this->response->withStatus(400);
+            $this->set('error', $entity->getErrors());
+            $this->viewBuilder()->setOption('serialize', ['error']);
             return;
         }
 
-        if ($this->request->is('post')) {
-            $entity = $telegramSettingsTable->getTelegramSettingsEntity();
-            $originalTwoWaySetting = $entity->get('two_way');
-            $entity = $telegramSettingsTable->patchEntity($entity, $this->request->getData(null, []));
-
-            if (
-                ($originalTwoWaySetting || $originalTwoWaySetting == 1) &&
-                (!$entity->get('two_way') || $entity->get('two_way') == 0) &&
-                $entity->get('token') != ""
-            ) {
-                //disable Telegram bot webhook
-                $telegramActions = new TelegramActions($entity->get('token'));
-                $telegramActions->disableWebhook();
-            } else if (
-                ($entity->get('two_way') || $entity->get('two_way') == 1) &&
-                $entity->get('token') != "" &&
-                $entity->get('external_webhook_domain') != "" &&
-                $entity->get('webhook_api_key') != ""
-            ) {
-                //enable/update Telegram bot webhook
-                $telegramActions = new TelegramActions($entity->get('token'));
-                $webhookUrl = sprintf(
-                    '%s/telegram_module/telegram_webhook/notify.json?apikey=%s',
-                    $entity->get('external_webhook_domain'),
-                    $entity->get('webhook_api_key')
-                );
-                $addressSystemSetting = $telegramActions->enableWebhook($webhookUrl);
-
-                if (!$addressSystemSetting || trim($addressSystemSetting) === '') {
-                    $entity->set('two_way', false);
-                }
-            }
-
-            $telegramSettingsTable->save($entity);
-            if ($entity->hasErrors()) {
-                $this->response = $this->response->withStatus(400);
-                $this->set('error', $entity->getErrors());
-                $this->viewBuilder()->setOption('serialize', ['error']);
-                return;
-            }
-
-            $this->set('telegramSettings', $entity);
-            $this->viewBuilder()->setOption('serialize', [
-                'telegramSettings'
-            ]);
-        }
+        $this->set('telegramSettings', $entity);
+        $this->viewBuilder()->setOption('serialize', [
+            'telegramSettings'
+        ]);
     }
 
     /**
