@@ -332,8 +332,15 @@ class AgentResponseToServices {
                     break;
 
                 case 'zfs':
-                    if (!empty($items['pools']) && !isset($items['pools']['error'])) {
-                        $zfsPools = $this->getServiceStructByName('zfs.pools', 'ZFS pools');
+                    // One service per pool, so every pool can get its own thresholds (e.g. a backup pool which is always quite full)
+                    if (is_array($items['pools'] ?? null) && !isset($items['pools']['error'])) {
+                        $pools = [];
+                        foreach ($items['pools'] as $pool) {
+                            if (isset($pool['name'])) {
+                                $pools[$pool['name']] = $pool['name'];
+                            }
+                        }
+                        $zfsPools = $this->getServiceStructsForValues('zfs.pools', 0, $pools, 'ZFS pool: %s');
                         if ($zfsPools) {
                             $services['zfs_pools'] = $zfsPools;
                         }
@@ -348,11 +355,26 @@ class AgentResponseToServices {
 
                 case 'ceph':
                     if (isset($items['health']) && !isset($items['error'])) {
-                        foreach (['ceph.health' => 'Ceph health', 'ceph.osds' => 'Ceph OSDs', 'ceph.usage' => 'Ceph usage'] as $name => $servicename) {
+                        // Health and OSDs are a state of the whole cluster
+                        foreach (['ceph.health' => 'Ceph health', 'ceph.osds' => 'Ceph OSDs'] as $name => $servicename) {
                             $cephService = $this->getServiceStructByName($name, $servicename);
                             if ($cephService) {
                                 $services[str_replace('.', '_', $name)] = $cephService;
                             }
+                        }
+
+                        // Raw usage of the cluster (empty pool) and one service per pool, so every pool can get its own thresholds.
+                        // Internal pools like .mgr or .rgw.root are skipped.
+                        $cephUsage = $this->getServiceStructsForValues('ceph.usage', 0, ['' => ''], 'Ceph usage%s') ?: [];
+                        $pools = [];
+                        foreach ((is_array($items['pools'] ?? null) && !isset($items['pools']['error'])) ? $items['pools'] : [] as $pool) {
+                            if (isset($pool['name']) && !str_starts_with($pool['name'], '.')) {
+                                $pools[$pool['name']] = $pool['name'];
+                            }
+                        }
+                        $cephUsage = array_merge($cephUsage, $this->getServiceStructsForValues('ceph.usage', 0, $pools, 'Ceph pool: %s') ?: []);
+                        if (!empty($cephUsage)) {
+                            $services['ceph_usage'] = $cephUsage;
                         }
                     }
                     break;
@@ -1288,7 +1310,6 @@ class AgentResponseToServices {
 
         $parts = [
             'cluster'     => ['proxmox.cluster', 'Proxmox cluster'],
-            'storages'    => ['proxmox.storages', 'Proxmox storages'],
             'backups'     => ['proxmox.backups', 'Proxmox backups'],
             'replication' => ['proxmox.replication', 'Proxmox replication'],
         ];
@@ -1296,12 +1317,26 @@ class AgentResponseToServices {
             if (!isset($proxmox[$part]) || !is_array($proxmox[$part]) || isset($proxmox[$part]['error'])) {
                 continue;
             }
-            if (in_array($part, ['storages', 'replication'], true) && empty($proxmox[$part])) {
+            if ($part === 'replication' && empty($proxmox[$part])) {
                 continue;
             }
             $service = $this->getServiceStructByName($name, $servicename);
             if ($service) {
                 $services['proxmox_' . $part] = $service;
+            }
+        }
+
+        // One service per enabled storage, so every storage can get its own thresholds (e.g. a backup storage which is always quite full)
+        if (is_array($proxmox['storages'] ?? null) && !isset($proxmox['storages']['error'])) {
+            $storages = [];
+            foreach ($proxmox['storages'] as $storage) {
+                if (isset($storage['storage']) && !empty($storage['enabled'])) {
+                    $storages[$storage['storage']] = $storage['storage'];
+                }
+            }
+            $storageServices = $this->getServiceStructsForValues('proxmox.storages', 0, $storages, 'Proxmox storage: %s');
+            if ($storageServices) {
+                $services['proxmox_storages'] = $storageServices;
             }
         }
 
