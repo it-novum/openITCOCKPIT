@@ -589,6 +589,43 @@ class Agent extends Importer {
                 'plugin_name'        => 'ProxmoxReplication',
                 'servicetemplate_id' => '42ee9475-f1d4-43a7-9b40-bba50896d340'
             ],
+
+            // Agent 3.7: bonding, filesystem errors, EDAC, LVM thin pools, missing mounts, Exim and BitLocker
+            [
+                'name'               => 'system_health.bonding',
+                'plugin_name'        => 'Bonding',
+                'servicetemplate_id' => '92889b93-26d0-4624-8c89-5786de537853'
+            ],
+            [
+                'name'               => 'system_health.filesystem_errors',
+                'plugin_name'        => 'FilesystemErrors',
+                'servicetemplate_id' => '00c5473d-9060-46b4-bae8-14293f169361'
+            ],
+            [
+                'name'               => 'system_health.edac',
+                'plugin_name'        => 'Edac',
+                'servicetemplate_id' => '68addeef-25bd-477a-a67a-37d2032f0e33'
+            ],
+            [
+                'name'               => 'lvm.thin_pools',
+                'plugin_name'        => 'LvmThin',
+                'servicetemplate_id' => '19acdc71-ba20-44a8-a3e6-402b8cd7cd60'
+            ],
+            [
+                'name'               => 'mounts',
+                'plugin_name'        => 'MissingMounts',
+                'servicetemplate_id' => '8eb07426-462c-4e09-bdc3-3f0091e9d8a9'
+            ],
+            [
+                'name'               => 'exim',
+                'plugin_name'        => 'EximQueue',
+                'servicetemplate_id' => '0f0690ec-4bb4-4d0e-9af7-79d14cf12a12'
+            ],
+            [
+                'name'               => 'security.bitlocker',
+                'plugin_name'        => 'BitLocker',
+                'servicetemplate_id' => '10fc3768-884c-4286-9490-89d9d4b4a7b1'
+            ],
         ];
         return $data;
     }
@@ -2037,7 +2074,8 @@ class Agent extends Importer {
                 'description'      => "Checks if the firewall is enabled.\n" .
                     "State if disabled: States: ok, warning, critical or unknown.\n" .
                     "Profiles (Windows only): active = only the active network profiles, all = domain, private and public.\n" .
-                    "Windows and macOS.",
+                    "Linux: the firewall is active, if nftables or iptables contain rules for incoming connections (e.g. firewalld, ufw or the Proxmox VE firewall).\n" .
+                    "Windows, macOS and Linux.",
                 'commandarguments' => [
                     [
                         'name'       => '$ARG1$',
@@ -2613,6 +2651,203 @@ class Agent extends Importer {
                     [
                         'name'       => '$ARG1$',
                         'human_name' => 'Maximum age of the last sync'
+                    ]
+                ]
+            ],
+
+            // Agent 3.7: bonding, filesystem errors, EDAC, LVM thin pools, missing mounts, Exim and BitLocker
+            [
+                'name'             => 'check_oitc_agent_bonding',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '3f1fb4cc-8417-4650-9abf-77364a356e56',
+                'description'      => "Checks Linux network bonds (/proc/net/bonding). A bond keeps working if a link fails, so a failed link is easily overlooked.\n" .
+                    "A bond which is down or has no working slave is critical.\n" .
+                    "Bond: Name of the bond, e.g. bond0. Empty = all bonds.\n" .
+                    "State if a slave is down: States: ok, warning, critical or unknown.\n" .
+                    "State if a slave is not part of the active aggregator (802.3ad/LACP, e.g. wrong configuration of the switch): States: ok, warning, critical or unknown.\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Bond (empty = all)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State if a slave is down'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'State if a slave is not in the active aggregator'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_filesystem_errors',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'd8e66844-71a3-4c49-86d9-b6089554fa0b',
+                'description'      => "Checks the error counters of ext4 and btrfs filesystems. Filesystem errors are often the first sign of a failing disk.\n" .
+                    "ext4 keeps the error counter until the filesystem was checked with fsck, btrfs counters are reset with \"btrfs device stats -z\".\n" .
+                    "Filesystems: Regular expression for the mountpoint or device, empty = all filesystems.\n" .
+                    "Warning and Critical: Number of errors (default: critical on the first error).\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Filesystems (regex)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_edac',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '0e5fcb46-93ef-4909-b4b3-f21875f57c13',
+                'description'      => "Checks the memory errors of ECC memory reported by the Linux EDAC driver since the boot.\n" .
+                    "Uncorrected errors are always critical. A growing number of corrected errors is a sign of a failing DIMM.\n" .
+                    "Warning and Critical: Number of corrected errors (default: warning on the first error).\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux only, physical servers with ECC memory.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning corrected errors'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical corrected errors'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_lvm_thin',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '18ec98c6-ec5c-46d6-93b8-be4b23a2ec72',
+                'description'      => "Checks the usage of LVM thin pools, e.g. local-lvm of Proxmox VE. A full thin pool corrupts the filesystems of its thin volumes.\n" .
+                    "Unhealthy pools (e.g. out of data space or read only metadata) are critical.\n" .
+                    "Thin pool: vg/pool, e.g. pve/data. Empty = all thin pools.\n" .
+                    "Warning and Critical: Usage of the data and the metadata in percent (0-100).\n" .
+                    "Linux only.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Thin pool (vg/pool, empty = all)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Warning data %'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Critical data %'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Warning metadata %'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Critical metadata %'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_missing_mounts',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => 'e04b9f41-55b8-4665-9543-b07b5c9892cb',
+                'description'      => "Checks if all filesystems of the /etc/fstab are mounted, e.g. a NFS share after a reboot. Swap and entries with noauto are ignored.\n" .
+                    "State if a filesystem is missing and state if a filesystem with the option nofail (FreeBSD: failok) is missing: States: ok, warning, critical or unknown.\n" .
+                    "Exclude: Regular expression for mountpoints which should be ignored, e.g. ^/mnt/usb\n" .
+                    "Linux and FreeBSD.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'State if missing'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State if missing with nofail'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Exclude mountpoints (regex)'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_exim_queue',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '953b13cf-6b78-4366-b229-44dd3b71e409',
+                'description'      => "Checks the mail queue of Exim. Frozen messages are not delivered by Exim anymore.\n" .
+                    "Warning and Critical: Number of messages.\n" .
+                    "Warning and Critical frozen: Number of frozen messages (default: warning on the first frozen message).\n" .
+                    "Warning and Critical age: Age of the oldest message (optional), e.g. 1h. Durations can be written with units: s, m, h, d, w (e.g. 25h or 7d).\n" .
+                    "Thresholds use the range format of the monitoring plugins: https://www.monitoring-plugins.org/doc/guidelines.html#THRESHOLDFORMAT\n" .
+                    "Linux and FreeBSD.",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Warning messages'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'Critical messages'
+                    ],
+                    [
+                        'name'       => '$ARG3$',
+                        'human_name' => 'Warning frozen'
+                    ],
+                    [
+                        'name'       => '$ARG4$',
+                        'human_name' => 'Critical frozen'
+                    ],
+                    [
+                        'name'       => '$ARG5$',
+                        'human_name' => 'Warning age'
+                    ],
+                    [
+                        'name'       => '$ARG6$',
+                        'human_name' => 'Critical age'
+                    ]
+                ]
+            ],
+            [
+                'name'             => 'check_oitc_agent_bitlocker',
+                'command_line'     => '$USER1$/check_dummy 3 "No data received from agent"',
+                'command_type'     => CHECK_COMMAND,
+                'human_args'       => null,
+                'uuid'             => '40e92165-c7f8-4009-8431-5a6a334d12ba',
+                'description'      => "Checks the BitLocker drive encryption. An encryption or decryption in progress is a warning.\n" .
+                    "Drive: e.g. C:, empty = the operating system volume and all fixed data volumes.\n" .
+                    "State if the protection is off or suspended: States: ok, warning, critical or unknown.\n" .
+                    "Windows only, the agent has to run as service (SYSTEM).",
+                'commandarguments' => [
+                    [
+                        'name'       => '$ARG1$',
+                        'human_name' => 'Drive (empty = OS and fixed volumes)'
+                    ],
+                    [
+                        'name'       => '$ARG2$',
+                        'human_name' => 'State if off'
                     ]
                 ]
             ],
@@ -5021,6 +5256,15 @@ class Agent extends Importer {
             $this->getAgentServicetemplate('f5b2deea-0198-4b46-92f6-456ca4b75035', 'OITC_AGENT_PROXMOX_GUEST', 'Proxmox guest', '01c87717-091d-4b04-9259-2f6380f3da65', ['', 'running']),
             $this->getAgentServicetemplate('f1372ba7-e1df-4d9e-9ccc-cd9e238df708', 'OITC_AGENT_PROXMOX_BACKUP', 'Proxmox backups', '99a1ab5e-12bc-4db8-a372-5042ba0a3ec8', ['25h', 'warning']),
             $this->getAgentServicetemplate('42ee9475-f1d4-43a7-9b40-bba50896d340', 'OITC_AGENT_PROXMOX_REPLICATION', 'Proxmox replication', 'f25bfe01-0257-4029-9864-ca3d6973baf4', ['']),
+
+            // Agent 3.7: bonding, filesystem errors, EDAC, LVM thin pools, missing mounts, Exim and BitLocker
+            $this->getAgentServicetemplate('92889b93-26d0-4624-8c89-5786de537853', 'OITC_AGENT_BONDING', 'Network bond', '3f1fb4cc-8417-4650-9abf-77364a356e56', ['', 'warning', 'warning']),
+            $this->getAgentServicetemplate('00c5473d-9060-46b4-bae8-14293f169361', 'OITC_AGENT_FILESYSTEM_ERRORS', 'Filesystem errors', 'd8e66844-71a3-4c49-86d9-b6089554fa0b', ['', '', '0']),
+            $this->getAgentServicetemplate('68addeef-25bd-477a-a67a-37d2032f0e33', 'OITC_AGENT_EDAC', 'Memory errors (ECC)', '0e5fcb46-93ef-4909-b4b3-f21875f57c13', ['0', '']),
+            $this->getAgentServicetemplate('19acdc71-ba20-44a8-a3e6-402b8cd7cd60', 'OITC_AGENT_LVM_THIN', 'LVM thin pool', '18ec98c6-ec5c-46d6-93b8-be4b23a2ec72', ['', '80', '90', '80', '90']),
+            $this->getAgentServicetemplate('8eb07426-462c-4e09-bdc3-3f0091e9d8a9', 'OITC_AGENT_MISSING_MOUNTS', 'Missing mounts', 'e04b9f41-55b8-4665-9543-b07b5c9892cb', ['critical', 'warning', '']),
+            $this->getAgentServicetemplate('0f0690ec-4bb4-4d0e-9af7-79d14cf12a12', 'OITC_AGENT_EXIM_QUEUE', 'Exim queue', '953b13cf-6b78-4366-b229-44dd3b71e409', ['50', '100', '0', '', '', '']),
+            $this->getAgentServicetemplate('10fc3768-884c-4286-9490-89d9d4b4a7b1', 'OITC_AGENT_BITLOCKER', 'BitLocker', '40e92165-c7f8-4009-8431-5a6a334d12ba', ['', 'critical']),
         ];
         return $data;
     }

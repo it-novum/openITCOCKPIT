@@ -408,6 +408,40 @@ class AgentResponseToServices {
                     $services = array_merge($services, $this->getServiceStructsForRedfish());
                     break;
 
+                case 'lvm':
+                    // One service per thin pool, so every pool can get its own thresholds
+                    if (is_array($items['thin_pools'] ?? null) && !isset($items['thin_pools']['error'])) {
+                        $pools = [];
+                        foreach ($items['thin_pools'] as $pool) {
+                            if (!empty($pool['active']) && isset($pool['vg'], $pool['name'])) {
+                                $pools[$pool['vg'] . '/' . $pool['name']] = $pool['vg'] . '/' . $pool['name'];
+                            }
+                        }
+                        $lvmServices = $this->getServiceStructsForValues('lvm.thin_pools', 0, $pools, 'LVM thin pool: %s');
+                        if ($lvmServices) {
+                            $services['lvm_thin_pools'] = $lvmServices;
+                        }
+                    }
+                    break;
+
+                case 'mounts':
+                    if (!isset($items['error']) && !empty($items['expected'])) {
+                        $mountsService = $this->getServiceStructByName('mounts', 'Missing mounts');
+                        if ($mountsService) {
+                            $services['mounts'] = $mountsService;
+                        }
+                    }
+                    break;
+
+                case 'exim':
+                    if (!isset($items['error'])) {
+                        $eximService = $this->getServiceStructByName('exim', 'Exim queue');
+                        if ($eximService) {
+                            $services['exim'] = $eximService;
+                        }
+                    }
+                    break;
+
                 case 'packagemanager':
                     if (!empty($this->agentResponse['packagemanager']['Enabled'])) {
                         $packagemanager = $this->getServiceStructByName('packagemanager', 'System Updates');
@@ -1198,6 +1232,8 @@ class AgentResponseToServices {
             'oom_kills'        => ['system_health.oom', 'OOM kills'],
             'file_descriptors' => ['system_health.file_descriptors', 'File descriptors'],
             'conntrack'        => ['system_health.conntrack', 'Conntrack table'],
+            'filesystem_errors' => ['system_health.filesystem_errors', 'Filesystem errors'],
+            'edac'             => ['system_health.edac', 'Memory errors (ECC)'],
         ];
         foreach ($parts as $part => [$name, $servicename]) {
             if (!isset($health[$part]) || !is_array($health[$part]) || isset($health[$part]['error'])) {
@@ -1211,9 +1247,31 @@ class AgentResponseToServices {
                 // The conntrack module is not loaded
                 continue;
             }
+            if ($part === 'filesystem_errors' && empty($health[$part])) {
+                // No ext4 or btrfs filesystems
+                continue;
+            }
+            if ($part === 'edac' && empty($health[$part]['available'])) {
+                // No ECC memory or a virtual machine
+                continue;
+            }
             $service = $this->getServiceStructByName($name, $servicename);
             if ($service) {
                 $services['system_health_' . $part] = $service;
+            }
+        }
+
+        // One service per network bond
+        if (is_array($health['bonding'] ?? null) && !isset($health['bonding']['error'])) {
+            $bonds = [];
+            foreach ($health['bonding'] as $bond) {
+                if (isset($bond['name'])) {
+                    $bonds[$bond['name']] = $bond['name'];
+                }
+            }
+            $bondServices = $this->getServiceStructsForValues('system_health.bonding', 0, $bonds, 'Network bond: %s');
+            if ($bondServices) {
+                $services['system_health_bonding'] = $bondServices;
             }
         }
 
@@ -1265,6 +1323,7 @@ class AgentResponseToServices {
             'filevault' => ['security.filevault', 'FileVault'],
             'sip'       => ['security.sip', 'System Integrity Protection'],
             'defender'  => ['security.defender', 'Microsoft Defender'],
+            'bitlocker' => ['security.bitlocker', 'BitLocker'],
         ];
         foreach ($parts as $part => [$name, $servicename]) {
             if (!isset($security[$part]) || !is_array($security[$part]) || isset($security[$part]['error'])) {
@@ -1275,6 +1334,14 @@ class AgentResponseToServices {
             }
             if ($part === 'defender' && empty($security[$part]['available'])) {
                 // Microsoft Defender is not installed or replaced by another antivirus
+                continue;
+            }
+            if ($part === 'firewall' && array_key_exists('active', $security[$part]) && empty($security[$part]['active'])) {
+                // Linux without firewall rules for incoming connections, a service would be critical right away
+                continue;
+            }
+            if ($part === 'bitlocker' && empty($security[$part]['available'])) {
+                // BitLocker is not installed (e.g. Windows Home)
                 continue;
             }
             $service = $this->getServiceStructByName($name, $servicename);
