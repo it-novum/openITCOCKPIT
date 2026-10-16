@@ -47,6 +47,9 @@ nbproject/*
 # Sass preprocessor
 .sass-cache/
 licenses.csv
+# Claude
+.claude
+.mcp.json
 
 # openITCOCKPIT files #
 #######################

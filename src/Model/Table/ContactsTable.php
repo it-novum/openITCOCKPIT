@@ -380,6 +380,67 @@ class ContactsTable extends Table {
     }
 
     /**
+     * Returns all contacts the user is allowed to see, which have the Telegram host- or service notification
+     * command assigned.
+     *
+     * @param array $MY_RIGHTS
+     * @return array
+     */
+    public function getContactsForTelegram($MY_RIGHTS = []) {
+        $commandsTable = TableRegistry::getTableLocator()->get('Commands');
+        $hostCommandIds = Hash::extract(
+            $commandsTable->find()->select(['Commands.id'])->where(['Commands.name' => 'host-notify-by-telegram'])->disableHydration()->toArray(),
+            '{n}.id'
+        );
+        $serviceCommandIds = Hash::extract(
+            $commandsTable->find()->select(['Commands.id'])->where(['Commands.name' => 'service-notify-by-telegram'])->disableHydration()->toArray(),
+            '{n}.id'
+        );
+
+        $query = $this->find()
+            ->select([
+                'Contacts.id',
+                'Contacts.name',
+                'Contacts.uuid'
+            ])
+            ->disableHydration();
+
+        if (!empty($MY_RIGHTS)) {
+            $query->innerJoinWith('Containers', function (Query $q) use ($MY_RIGHTS) {
+                return $q->where(['Containers.id IN' => $MY_RIGHTS]);
+            });
+        }
+
+        $conditions = [];
+        if (!empty($hostCommandIds)) {
+            $junction = $this->HostCommands->junction(); //
+            $alias = $junction->getAlias();
+            $subquery = $junction->find()
+                ->select(["{$alias}.contact_id"])
+                ->where(["{$alias}.command_id IN" => $hostCommandIds]);
+            $conditions[] = ['Contacts.id IN' => $subquery];
+        }
+        if (!empty($serviceCommandIds)) {
+            $junction = $this->ServiceCommands->junction();
+            $alias = $junction->getAlias();
+            $subquery = $junction->find()
+                ->select(["{$alias}.contact_id"])
+                ->where(["{$alias}.command_id IN" => $serviceCommandIds]);
+            $conditions[] = ['Contacts.id IN' => $subquery];
+        }
+
+        if (empty($conditions)) {
+            return [];
+        }
+
+        $query->where(['OR' => $conditions]);
+        $query->group(['Contacts.id']);
+        $query->orderBy(['Contacts.name' => 'asc']);
+
+        return $query->toArray();
+    }
+
+    /**
      * @param int $id
      * @param array $contain
      * @return array
