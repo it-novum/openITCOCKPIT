@@ -88,7 +88,7 @@ class TelegramSettingsController extends AppController {
      * @throws Exception
      * @throws \Exception
      */
-    public function save() {
+    public function saveConfig() {
         if (!$this->isAngularJsRequest() || !$this->request->is('post')) {
             throw new \Cake\Http\Exception\MethodNotAllowedException();
         }
@@ -146,7 +146,7 @@ class TelegramSettingsController extends AppController {
      * Generates an access key for the given contact.
      * @return void
      */
-    public function genKey() {
+    public function generateContactAccessKey() {
         if ($this->isAngularJsRequest() && $this->request->is('post')) {
             $contact_uuid = $this->request->getData('contact_uuid');
             if ($contact_uuid !== null) {
@@ -184,7 +184,7 @@ class TelegramSettingsController extends AppController {
      * Removes the access key for the given contact.
      * @return void
      */
-    public function rmKey() {
+    public function removeContactAccesKey() {
         if ($this->isAngularJsRequest() && $this->request->is('post')) {
             $contact_uuid = $this->request->getData('contact_uuid');
             if ($contact_uuid !== null) {
@@ -225,7 +225,7 @@ class TelegramSettingsController extends AppController {
      * @throws InvalidArgumentException
      * @throws \Exception
      */
-    public function rmChat() {
+    public function deleteChat() {
         if ($this->isAngularJsRequest() && $this->request->is('post')) {
             $id = $this->request->getData('id');
             if ($id !== null) {
