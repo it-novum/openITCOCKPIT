@@ -262,7 +262,7 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             unset($where['status IN']);
         }
 
-        $query = $SatellitesTable->find('all');
+        $query = $SatellitesTable->unhydratedFind('all');
         $satellitesArray = $query->select([
             'Satellites.id',
             'Satellites.name',
@@ -276,13 +276,12 @@ class SystemHealthCommand extends Command implements CronjobInterface {
             'SatelliteStatus.last_export',
             'SatelliteStatus.last_seen',
             'SatelliteStatus.satellite_id',
-            'status' => $query->newExpr('IF(SatelliteStatus.status IS NULL, 0, SatelliteStatus.status)')
+            'status' => $query->expr('IF(SatelliteStatus.status IS NULL, 0, SatelliteStatus.status)')
         ])
             ->where($where)
             ->having($having)
             ->contain(['SatelliteStatus'])
             ->orderBy($SatelliteFilter->getOrderForPaginator('Satellites.name', 'asc'))
-            ->disableHydration()
             ->toArray();
 
         if (empty($satellitesArray)) {
@@ -292,10 +291,9 @@ class SystemHealthCommand extends Command implements CronjobInterface {
         $SatelliteInformationTable = TableRegistry::getTableLocator()->get('DistributeModule.SatelliteInformation');
         $updatedSatellites = [];
 
-        $healthMap = $SatelliteInformationTable->find()
+        $healthMap = $SatelliteInformationTable->unhydratedFind()
             ->select(['satellite_id', 'system_health'])
             ->where(['satellite_id IN' => $satelliteIds])
-            ->disableHydration()
             ->all()
             ->combine('satellite_id', function ($row) {
                 if (is_string($row['system_health'])) {

@@ -208,7 +208,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
      * @return array
      */
     public function getHostUuidWithDowntimeByInternalDowntimeId($internalDowntimeId) {
-        $result = $this->find()
+        $result = $this->unhydratedFind()
             ->select([
                 'DowntimeHosts.hostname',
                 'DowntimeHosts.author_name',
@@ -230,7 +230,6 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             ->where([
                 'DowntimeHosts.internal_downtime_id' => $internalDowntimeId
             ])
-            ->disableHydration()
             ->first();
 
         if ($result === null) {
@@ -399,7 +398,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             $uuids = [$uuids];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'DowntimeHosts.hostname',
                 'DowntimeHosts.author_name',
@@ -427,8 +426,6 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
 
             ]);
         }
-
-        $query->disableHydration();
 
         $downtimes = $query->all();
         $result = [];
@@ -458,7 +455,7 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
             $uuids = [$uuids];
         }
 
-        $query = $this->find()
+        $query = $this->unhydratedFind()
             ->select([
                 'DowntimeHosts.hostname',
                 'DowntimeHosts.author_name',
@@ -488,8 +485,6 @@ class DowntimeHostsTable extends Table implements DowntimehistoryHostsTableInter
         $query->orderBy([
             'DowntimeHosts.scheduled_start_time' => 'ASC'
         ]);
-
-        $query->disableHydration();
         $downtimes = $query->all();
         $result = [];
         foreach ($downtimes as $downtime) {

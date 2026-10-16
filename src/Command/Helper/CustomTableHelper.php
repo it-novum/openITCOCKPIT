@@ -15,7 +15,7 @@
 
 namespace App\Command\Helper;
 
-use Cake\Command\Helper\TableHelper;
+use Cake\Console\Helper\TableHelper;
 use UnexpectedValueException;
 
 class CustomTableHelper extends TableHelper {

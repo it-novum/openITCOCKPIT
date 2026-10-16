@@ -167,4 +167,4 @@ plugins/AristaNetworksModule
 # NFS mounts
 .nfs.*
 
-
+.mcp.json
