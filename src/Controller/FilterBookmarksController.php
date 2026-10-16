@@ -115,6 +115,10 @@ class FilterBookmarksController extends AppController {
             $decoded['Hostgroups']['id'] = $this->keepAllowedHostgroups($decoded['Hostgroups']['id']);
         }
 
+        if (isset($decoded['Hostgroups.id']) && is_array($decoded['Hostgroups.id'])) {
+            $decoded['Hostgroups.id'] = $this->keepAllowedHostgroups($decoded['Hostgroups.id']);
+        }
+
         if (isset($decoded['Servicegroups']['id']) && is_array($decoded['Servicegroups']['id'])) {
             $decoded['Servicegroups']['id'] = $this->keepAllowedServicegroups($decoded['Servicegroups']['id']);
         }
