@@ -4711,6 +4711,72 @@ class HostsTable extends Table {
         return $query;
     }
 
+    /**
+     * Returns the host with its contacts and contact groups (incl. the host template ones)
+     * and the containers they belong to. Used to check if the notifications overview is allowed.
+     *
+     * @param int $id
+     * @return \App\Model\Entity\Host|null
+     */
+    public function getHostContactsAndContactgroupsWithContainersById($id) {
+        $contactsContain = function (Query $query) {
+            return $query
+                ->select([
+                    'Contacts.id'
+                ])
+                ->contain([
+                    'Containers' => function (Query $query) {
+                        return $query->select([
+                            'Containers.id'
+                        ]);
+                    }
+                ]);
+        };
+
+        $contactgroupsContain = function (Query $query) use ($contactsContain) {
+            return $query
+                ->select([
+                    'Contactgroups.id',
+                    'Contactgroups.container_id'
+                ])
+                ->contain([
+                    'Containers' => function (Query $query) {
+                        return $query->select([
+                            'Containers.id',
+                            'Containers.parent_id'
+                        ]);
+                    },
+                    'Contacts'   => $contactsContain
+                ]);
+        };
+
+        return $this->find()
+            ->select([
+                'Hosts.id',
+                'Hosts.container_id',
+                'Hosts.hosttemplate_id'
+            ])
+            ->where([
+                'Hosts.id' => $id
+            ])
+            ->contain([
+                'HostsToContainersSharing',
+                'Contacts'      => $contactsContain,
+                'Contactgroups' => $contactgroupsContain,
+                'Hosttemplates' => function (Query $query) use ($contactsContain, $contactgroupsContain) {
+                    return $query
+                        ->select([
+                            'Hosttemplates.id'
+                        ])
+                        ->contain([
+                            'Contacts'      => $contactsContain,
+                            'Contactgroups' => $contactgroupsContain
+                        ]);
+                }
+            ])
+            ->first();
+    }
+
 
     /**
      * @param int $satelliteId

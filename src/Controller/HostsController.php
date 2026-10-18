@@ -3349,6 +3349,75 @@ class HostsController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['host', 'contacts', 'timeperiods']);
     }
 
+    /**
+     * The notifications overview is only allowed if the user has rights to the containers of all
+     * contact groups and to at least one container of every contact (incl. the contacts of the contact groups) of the host.
+     *
+     * @param int|null $id
+     */
+    public function notificationsOverviewAllowed($id = null) {
+        $session = $this->request->getSession();
+        $session->close();
+
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var HostsTable $HostsTable */
+        $HostsTable = TableRegistry::getTableLocator()->get('Hosts');
+
+        if (!$HostsTable->existsById($id)) {
+            throw new NotFoundException(__('Invalid host'));
+        }
+
+        $host = $HostsTable->getHostContactsAndContactgroupsWithContainersById($id);
+
+        if (!$this->allowedByContainerId($host->getContainerIds(), false)) {
+            $this->render403();
+            return;
+        }
+
+        $notificationsOverviewAllowed = true;
+        if ($this->hasRootPrivileges === false) {
+            $contacts = $host->get('contacts') ?? [];
+            $contactgroups = $host->get('contactgroups') ?? [];
+            if (empty($contacts) && empty($contactgroups)) {
+                $hosttemplate = $host->get('hosttemplate');
+                $contacts = $hosttemplate->get('contacts') ?? [];
+                $contactgroups = $hosttemplate->get('contactgroups') ?? [];
+            }
+
+            $contactgroupContainerIds = [];
+            foreach ($contactgroups as $contactgroup) {
+                // The container_id of a contact group points to its own container (CT_CONTACTGROUP),
+                // the parent_id is the container the contact group belongs to
+                $contactgroupContainerIds[] = (int)$contactgroup->get('container')->get('parent_id');
+                foreach ($contactgroup->get('contacts') ?? [] as $contact) {
+                    $contacts[] = $contact;
+                }
+            }
+
+            if (!empty(array_diff(array_unique($contactgroupContainerIds), $this->MY_RIGHTS))) {
+                $notificationsOverviewAllowed = false;
+            }
+
+            foreach ($contacts as $contact) {
+                $contactContainerIds = [];
+                foreach ($contact->get('containers') ?? [] as $container) {
+                    $contactContainerIds[] = (int)$container->get('id');
+                }
+                // Same as the contacts index: a contact is visible if at least one of its containers is in MY_RIGHTS
+                if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
+                    $notificationsOverviewAllowed = false;
+                    break;
+                }
+            }
+        }
+
+        $this->set('notifications_overview_allowed', $notificationsOverviewAllowed);
+        $this->viewBuilder()->setOption('serialize', ['notifications_overview_allowed']);
+    }
+
     public function getGrafanaIframeUrlForDatepicker() {
         if (!$this->isAngularJsRequest()) {
             throw new MethodNotAllowedException();

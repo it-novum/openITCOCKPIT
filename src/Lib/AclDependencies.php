@@ -389,6 +389,7 @@ class AclDependencies {
             ->dependency('Hosts', 'delete', 'Hosts', 'mass_delete')
             ->dependency('Hosts', 'deactivate', 'Hosts', 'mass_deactivate')
             ->dependency('Hosts', 'browser', 'Hosts', 'getGrafanaIframeUrlForDatepicker')
+            ->dependency('Hosts', 'notificationsOverview', 'Hosts', 'notificationsOverviewAllowed')
             ->dependency('Hosts', 'browser', 'Hosts', 'loadAdditionalInformation')
             ->dependency('Hosts', 'browser', 'Hosts', 'loadSlaInformation')
             ->dependency('Hosts', 'browser', 'Hosts', 'loadIsarFlowInformation')
