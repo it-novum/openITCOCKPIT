@@ -506,7 +506,8 @@ class AclDependencies {
             ->dependency('Services', 'edit', 'Services', 'loadEventhandlerCommandArguments')
             ->dependency('Services', 'serviceList', 'Services', 'deleted')
             ->dependency('Services', 'browser', 'Services', 'loadCustomalerts')
-            ->dependency('Services', 'browser', 'Services', 'loadSlaInformation');
+            ->dependency('Services', 'browser', 'Services', 'loadSlaInformation')
+            ->dependency('Services', 'notificationsOverview', 'Services', 'notificationsOverviewAllowed');
 
 
         $this

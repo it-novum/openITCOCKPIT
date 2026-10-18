@@ -2855,6 +2855,82 @@ class ServicesController extends AppController {
         $this->viewBuilder()->setOption('serialize', ['service', 'contacts', 'timeperiods']);
     }
 
+    /**
+     * The notifications overview is only allowed if the user has rights to the containers of all
+     * contact groups and to at least one container of every contact (incl. the contacts of the contact groups) of the service.
+     *
+     * @param int|null $id
+     */
+    public function notificationsOverviewAllowed($id = null) {
+        $session = $this->request->getSession();
+        $session->close();
+
+        if (!$this->isApiRequest()) {
+            throw new MethodNotAllowedException();
+        }
+
+        /** @var ServicesTable $ServicesTable */
+        $ServicesTable = TableRegistry::getTableLocator()->get('Services');
+
+        if (!$ServicesTable->existsById($id)) {
+            throw new NotFoundException(__('Service not found'));
+        }
+
+        $service = $ServicesTable->getServiceContactsAndContactgroupsWithContainersById($id);
+
+        if (!$this->allowedByContainerId($service->getContainerIds(), false)) {
+            $this->render403();
+            return;
+        }
+
+        $notificationsOverviewAllowed = true;
+        if ($this->hasRootPrivileges === false) {
+            $host = $service->get('host');
+
+            // Contacts and contact groups are inherited together. The first level that has contacts or
+            // contact groups wins: service → service template → host → host template (see ServiceMergerForView)
+            $contacts = [];
+            $contactgroups = [];
+            foreach ([$service, $service->get('servicetemplate'), $host, $host->get('hosttemplate')] as $level) {
+                $contacts = $level->get('contacts') ?? [];
+                $contactgroups = $level->get('contactgroups') ?? [];
+                if (!empty($contacts) || !empty($contactgroups)) {
+                    break;
+                }
+            }
+
+            $contactgroupContainerIds = [];
+            foreach ($contactgroups as $contactgroup) {
+                // The container_id of a contact group points to its own container (CT_CONTACTGROUP),
+                // the parent_id is the container the contact group belongs to
+                $contactgroupContainerIds[] = (int)$contactgroup->get('container')->get('parent_id');
+                foreach ($contactgroup->get('contacts') ?? [] as $contact) {
+                    $contacts[] = $contact;
+                }
+            }
+
+            if (!empty(array_diff(array_unique($contactgroupContainerIds), $this->MY_RIGHTS))) {
+                $notificationsOverviewAllowed = false;
+            }
+
+            // Same as the contacts index: a contact is visible if at least one of its containers is in MY_RIGHTS
+            foreach ($contacts as $contact) {
+                $contactContainerIds = [];
+                foreach ($contact->get('containers') ?? [] as $container) {
+                    $contactContainerIds[] = (int)$container->get('id');
+                }
+
+                if (empty(array_intersect($contactContainerIds, $this->MY_RIGHTS))) {
+                    $notificationsOverviewAllowed = false;
+                    break;
+                }
+            }
+        }
+
+        $this->set('notifications_overview_allowed', $notificationsOverviewAllowed);
+        $this->viewBuilder()->setOption('serialize', ['notifications_overview_allowed']);
+    }
+
     /****************************
      *       AJAX METHODS       *
      ****************************/
