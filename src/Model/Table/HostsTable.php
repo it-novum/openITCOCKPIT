@@ -5451,7 +5451,8 @@ class HostsTable extends Table {
                 'Hosts.id',
                 'Hosts.uuid',
                 'Hosts.name',
-                'Hosts.priority',
+                'hostpriority' => $query->func()->coalesce(['Hosts.priority' => 'identifier', 'Hosttemplates.priority' => 'identifier']),
+                'tags'         => $query->func()->coalesce(['Hosts.tags' => 'identifier', 'Hosttemplates.tags' => 'identifier']),
                 'Hoststatus.current_state',
                 'Hoststatus.scheduled_downtime_depth',
                 'Hoststatus.active_checks_enabled',
@@ -5507,9 +5508,7 @@ class HostsTable extends Table {
             'Hosttemplates' => [
                 'fields' => [
                     'Hosttemplates.priority',
-                    'hostpriority' => $query->newExpr('IF(Hosts.priority IS NULL, Hosttemplates.priority, Hosts.priority)'),
-                    'tags'         => $query->newExpr('IF(Hosts.tags IS NULL, Hosttemplates.tags, Hosts.tags)')
-
+                    'Hosttemplates.tags'
                 ]
             ]
         ]);
@@ -5678,12 +5677,12 @@ class HostsTable extends Table {
             // Rebuild the same result as CakePHP would do when hydration is disabled
             // Not an optimal solution but faster than using the CakePHP ORM result set
             $result[] = [
-                'id'         => (int)$row['Hosts__id'],
-                'uuid'       => $row['Hosts__uuid'],
-                'name'       => $row['Hosts__name'],
-                'priority'   => (int)$row['hostpriority'],
-                'tags'       => $row['tags'],
-                'Hoststatus' => [
+                'id'           => (int)$row['Hosts__id'],
+                'uuid'         => $row['Hosts__uuid'],
+                'name'         => $row['Hosts__name'],
+                'hostpriority' => (int)$row['hostpriority'],
+                'tags'         => $row['tags'],
+                'Hoststatus'   => [
                     'current_state'                 => (int)$row['Hoststatus__current_state'],
                     'scheduled_downtime_depth'      => (int)$row['Hoststatus__scheduled_downtime_depth'],
                     'active_checks_enabled'         => (int)$row['Hoststatus__active_checks_enabled'],
@@ -6538,7 +6537,7 @@ class HostsTable extends Table {
                         $statusDetails = [
                             'id'            => $hoststatus['id'],
                             'hostUuid'      => $hoststatus['uuid'],
-                            'name'          => $hoststatus['Hosts']['name'],
+                            'name'          => $hoststatus['name'],
                             'hostpriority'  => $hoststatus['hostpriority'],
                             'current_state' => $currentState > 2 ? 2 : $currentState,
                         ];
