@@ -522,7 +522,8 @@ class ContactgroupsController extends AppController {
                     'fields' => [
                         'ContactgroupsToServicetemplates.contactgroup_id',
                         'Servicetemplates.id',
-                        'Servicetemplates.name'
+                        'Servicetemplates.name',
+                        'Servicetemplates.template_name'
                     ]
                 ],
                 'Services'           => [
@@ -533,7 +534,8 @@ class ContactgroupsController extends AppController {
                     ],
                     'Servicetemplates' => [
                         'fields' => [
-                            'Servicetemplates.name'
+                            'Servicetemplates.name',
+                            'Servicetemplates.template_name'
                         ]
                     ],
                     'fields'           => [
