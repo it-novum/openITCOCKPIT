@@ -22,7 +22,6 @@
 //     under the terms of the openITCOCKPIT Enterprise Edition license agreement.
 //     License agreement and license key will be shipped with the order
 //     confirmation.
-//
 
 namespace App\Model\Table;
 
@@ -1459,7 +1458,8 @@ class ServicetemplatesTable extends Table {
         ]);
         $query->select([
             'Servicetemplates.id',
-            'Servicetemplates.name'
+            'Servicetemplates.name',
+            'Servicetemplates.template_name'
         ]);
 
         if (!empty($MY_RIGHTS)) {
