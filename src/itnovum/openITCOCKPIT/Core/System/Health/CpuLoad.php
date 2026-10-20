@@ -126,24 +126,23 @@ class CpuLoad {
          * scaled poorly on larger ones. Using proportional thresholds keeps the
          * warning/critical levels consistent across different host sizes.
          */
-        $defaultWarning = max(1, $load['cores'] * 0.75);
-        $defaultCritical = max(1, $load['cores'] * 0.90);
+        $usedPercentage = $load['cores'] > 0 ? ($load['load15'] / $load['cores']) * 100 : 0;
 
         if (is_numeric($warning) && $warning > 0) {
-            if ($load['load15'] > $warning) {
+            if ($usedPercentage >= $warning) {
                 $load['state'] = 'warning';
             }
         } else {
-            if ($load['load15'] >= $defaultWarning) {
+            if ($usedPercentage >= 75) {
                 $load['state'] = 'warning';
             }
         }
         if (is_numeric($critical) && $critical > 0) {
-            if ($load['load15'] >= $critical) {
+            if ($usedPercentage >= $critical) {
                 $load['state'] = 'critical';
             }
         } else {
-            if ($load['load15'] >= $defaultCritical) {
+            if ($usedPercentage >= 90) {
                 $load['state'] = 'critical';
             }
         }

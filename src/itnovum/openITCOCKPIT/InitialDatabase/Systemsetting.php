@@ -801,7 +801,7 @@ class Systemsetting extends Importer {
             (int)93  => [
                 'key'      => 'SYSTEM_HEALTH.CPU.LOAD_WARNING',
                 'value'    => '',
-                'info'     => 'Warning threshold for the CPU load (openITCOCKPIT evaluates the value of load15). If empty, openITCOCKPIT will calculate the threshold values automatically based on the CPU core count of the system.',
+                'info'     => 'Warning threshold for the CPU load in percent, Defaults to 75',
                 'section'  => 'SYSTEM_HEALTH',
                 'created'  => '2023-03-16 13:45:00',
                 'modified' => '2023-03-16 13:45:00'
@@ -809,7 +809,7 @@ class Systemsetting extends Importer {
             (int)94  => [
                 'key'      => 'SYSTEM_HEALTH.CPU.LOAD_CRITICAL',
                 'value'    => '',
-                'info'     => 'Critical threshold for the CPU load (openITCOCKPIT evaluates the value of load15). If empty, openITCOCKPIT will calculate the threshold values automatically based on the CPU core count of the system.',
+                'info'     => 'Critical threshold for the CPU load in percent, Defaults to 90',
                 'section'  => 'SYSTEM_HEALTH',
                 'created'  => '2023-03-16 13:45:00',
                 'modified' => '2023-03-16 13:45:00'
