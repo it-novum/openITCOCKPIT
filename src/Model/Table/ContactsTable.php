@@ -436,7 +436,7 @@ class ContactsTable extends Table {
         }
 
         $query->where(['OR' => $conditions]);
-        $query->group(['Contacts.id']);
+        $query->groupBy(['Contacts.id']);
         $query->orderBy(['Contacts.name' => 'asc']);
 
         return $query->toArray();
